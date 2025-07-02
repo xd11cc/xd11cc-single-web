@@ -1,0 +1,33 @@
+{
+  "name": "xd11cc-single-web",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --mode dev",
+    "test": "vite --mode test",
+    "build": "vite build --mode dev",
+    "build:test": "vite build --mode test",
+    "build:prod": "vite build --mode prod",
+    "preview": "vite preview",
+    "format": "prettier --write src/"
+  },
+  "dependencies": {
+    "element-plus": "^2.10.2",
+    "pinia": "^3.0.3",
+    "vue": "^3.5.17",
+    "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.0",
+    "@vitejs/plugin-vue-jsx": "^5.0.0",
+    "axios": "^1.10.0",
+    "mockjs": "^1.1.0",
+    "prettier": "3.5.3",
+    "sass": "^1.89.2",
+    "vite": "^7.0.0",
+    "vite-plugin-compression": "^0.5.1",
+    "vite-plugin-mock": "^3.0.2",
+    "vite-plugin-svg-icons": "^2.0.1"
+  }
+}
