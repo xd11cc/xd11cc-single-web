@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 // 创建axios实例
-const BASE_URL = import.meta.env.XD11CC_BASE_API
+const BASE_URL = import.meta.env.VITE_BASE_API
 const service = axios.create({
   baseURL: BASE_URL,
   timeout: 3000,
@@ -40,7 +40,7 @@ service.interceptors.response.use(
     const status = error.response?.status
     switch (status) {
       case 400:
-        console.error('请求参数错误')
+        console.error('请求参数错误', error)
         break
       case 401:
         console.error('未授权或者token过期')
@@ -52,7 +52,7 @@ service.interceptors.response.use(
         console.error('接口不存在')
         break
       case 500:
-        console.error('服务器内部异常')
+        console.error('服务器内部异常', error)
         break
     }
     return Promise.reject(error)
