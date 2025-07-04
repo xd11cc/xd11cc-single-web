@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="login-container">
     <el-form ref="form" :model="loginData.loginForm" :rules="loginRules" label-width="80px">
       <div class="title-container">
         <h3 class="title">登录</h3>
@@ -31,7 +31,6 @@
 <script setup>
 import { reactive, ref } from 'vue'
 import { loginByPassword } from '@/api/login'
-import { ElMessage } from 'element-plus'
 
 const loginData = reactive({
   loginForm: {
@@ -78,7 +77,7 @@ const login = async () => {
 </script>
 
 <style lang="scss" scoped>
-.container {
+.login-container {
   height: 100vh;
   display: flex;
   justify-content: center;
