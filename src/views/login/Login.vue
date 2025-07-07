@@ -19,7 +19,8 @@ const title = import.meta.env.VITE_APP_TITLE;
 <style lang="scss" scoped>
 .container {
   display: flex;
-  height: 100vh;
+  position: relative;
+  min-height: 100vh; // 使用 min-height 确保内容可以撑开容器
   width: 100%;
   &-left {
     flex: 0 0 50%; // 占据50%宽度
@@ -31,7 +32,6 @@ const title = import.meta.env.VITE_APP_TITLE;
     justify-content: center; // 垂直居中
     align-items: center; // 水平居中
     position: relative; // 为内部元素定位提供参考
-    padding: 20px; // 添加内边距防止内容贴边
     > img{
       max-width: 80%;
       max-height: 60%;
@@ -54,7 +54,6 @@ const title = import.meta.env.VITE_APP_TITLE;
     justify-content: center;
     align-items: center;
     background-color: #fff;
-    padding: 20px;
   }
 }
 </style>

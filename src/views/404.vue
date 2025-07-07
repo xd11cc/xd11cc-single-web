@@ -1,5 +1,5 @@
 <template>
-  <div>登录成功</div>
+  <div>404</div>
 </template>
 
 <script>

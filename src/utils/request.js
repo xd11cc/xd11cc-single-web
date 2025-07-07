@@ -29,7 +29,7 @@ service.interceptors.request.use(
 // 响应拦截器
 service.interceptors.response.use(
   (response) => {
-    const res = response.data
+    const res = response
     if (res.code && res.code !== 200) {
       console.warn('业务错误', res.message)
       return Promise.reject(new Error(res.message))

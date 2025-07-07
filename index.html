@@ -10,4 +10,19 @@
     <div id="app"></div>
     <script type="module" src="/src/main.js"></script>
   </body>
+
+  <style>
+    /* 去除所有元素的默认内外边距 */
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+  </style>
 </html>
