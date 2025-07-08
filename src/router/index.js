@@ -9,7 +9,7 @@ const publicRoutes = [
   },
   {
     path: '/:pathMatch(.*)*',
-    redirect: '/404 '
+    redirect: '/404 ',
   },
   {
     path: '/login',

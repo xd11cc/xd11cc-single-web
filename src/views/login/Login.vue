@@ -13,7 +13,7 @@
 <script setup>
 import LoginForm from '@/views/login/LoginForm.vue'
 
-const title = import.meta.env.VITE_APP_TITLE;
+const title = import.meta.env.VITE_APP_TITLE
 </script>
 
 <style lang="scss" scoped>
@@ -32,13 +32,13 @@ const title = import.meta.env.VITE_APP_TITLE;
     justify-content: center; // 垂直居中
     align-items: center; // 水平居中
     position: relative; // 为内部元素定位提供参考
-    > img{
+    > img {
       max-width: 80%;
       max-height: 60%;
       object-fit: contain;
       margin-bottom: 20px;
     }
-    > div{
+    > div {
       color: #fff;
       font-size: 36px;
       font-weight: bold;

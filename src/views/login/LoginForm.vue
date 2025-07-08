@@ -28,10 +28,10 @@
 
 <script setup>
 import { reactive, ref } from 'vue'
-import { useUserStore } from '@/stores/user';
-import { ElMessage } from 'element-plus';
+import { useUserStore } from '@/stores/user'
+import { ElMessage } from 'element-plus'
 
-let useStore = useUserStore();
+let useStore = useUserStore()
 
 const loginData = reactive({
   loginForm: {
@@ -50,7 +50,7 @@ const validatorPassword = (rule, value, callback) => {
   const reg = /^(?=.*\d)(?=.*[a-zA-Z])[\x20-\x7E]{8,20}$/
   if (!reg.test(value)) {
     callback(new Error('密码必须包含字母和数字，且不能少于8位'))
-  }else{
+  } else {
     callback()
   }
 }
@@ -76,15 +76,18 @@ const loginRef = ref(null)
 const loading = ref(false)
 
 const login = () => {
-  loginRef.value.validate((valid) =>{
-    if(!valid) return
+  loginRef.value.validate((valid) => {
+    if (!valid) return
     loading.value = true
-    useStore.userLogin(loginData.loginForm).then(() =>{
-      ElMessage.success('登录成功')
-    }).catch(() =>{
-      ElMessage.error('登录失败')
-    })
-    loading.value = false;
+    useStore
+      .userLogin(loginData.loginForm)
+      .then(() => {
+        ElMessage.success('登录成功')
+      })
+      .catch(() => {
+        ElMessage.error('登录失败')
+      })
+    loading.value = false
   })
 }
 </script>
@@ -122,11 +125,11 @@ const login = () => {
     margin-top: 10px;
     box-shadow: 0 2px 6px rgba(64, 158, 255, 0.3);
     transition: all 0.3s;
-    &:hover{
+    &:hover {
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(64, 158, 255, 0.4);
     }
-    &:active{
+    &:active {
       transform: translateY(0);
     }
   }
