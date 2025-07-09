@@ -8,6 +8,10 @@ import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 
 import './permission'
+import 'virtual:svg-icons-register'
+import SvgIcon from '@/components/SvgIcon/index.vue'
+
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 
 // 动态设置标题
 document.title = import.meta.env.VITE_APP_TITLE
@@ -17,4 +21,10 @@ app.use(createPinia())
 app.use(router)
 app.use(ElementPlus)
 
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+  app.component(key, component)
+}
+
 app.mount('#app')
+
+app.component('SvgIcon', SvgIcon)

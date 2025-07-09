@@ -14,8 +14,8 @@ export default defineConfig({
     vue(),
     vueJsx(),
     createSvgIconsPlugin({
-      iconDirs: [path.resolve(process.cwd(), 'src/assets/icons')],
-      symbolId: 'icon-[dir]-[name]',
+      iconDirs: [path.resolve(process.cwd(), 'src/assets/svgs')],
+      symbolId: 'icon-[name]', // 符号ID格式
     }),
     viteMockServe({
       mockPath: 'mock', // mock数据存放目录

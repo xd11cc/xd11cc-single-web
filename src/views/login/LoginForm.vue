@@ -10,7 +10,11 @@
           placeholder="请输入用户名"
           name="username"
           type="text"
-        />
+        >
+          <template #prefix>
+            <SvgIcon name="zhanghu-yonghuguanli" class="el-input__icon" />
+          </template>
+        </el-input>
       </el-form-item>
       <el-form-item prop="password">
         <el-input
@@ -18,8 +22,19 @@
           @keyup.enter="login"
           placeholder="请输入密码"
           name="password"
-          type="password"
-        />
+          :type="passwordData.passwordType"
+        >
+          <template #prefix>
+            <SvgIcon name="mima" class="el-input__icon" />
+          </template>
+          <template #suffix>
+            <SvgIcon
+              :name="passwordData.eyeStatus"
+              class="el-input__icon-eye"
+              @click="showPassword"
+            />
+          </template>
+        </el-input>
       </el-form-item>
       <el-button type="primary" @click="login" :loading="loading">登录</el-button>
     </el-form>
@@ -90,6 +105,18 @@ const login = () => {
     loading.value = false
   })
 }
+
+const passwordData = reactive({
+  passwordVisible: false,
+  eyeStatus: 'eye-close',
+  passwordType: 'password',
+})
+
+const showPassword = () => {
+  passwordData.passwordVisible = !passwordData.passwordVisible
+  passwordData.eyeStatus = passwordData.passwordVisible ? 'eye' : 'eye-close'
+  passwordData.passwordType = passwordData.passwordVisible ? 'text' : 'password'
+}
 </script>
 
 <style lang="scss" scoped>
@@ -113,6 +140,9 @@ const login = () => {
     }
     .el-input {
       width: 100%;
+      .el-input__icon-eye {
+        cursor: pointer;
+      }
     }
   }
   .el-button {
