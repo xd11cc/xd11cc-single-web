@@ -4,7 +4,6 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
-import { viteMockServe } from 'vite-plugin-mock'
 import path from 'path'
 import viteCompression from 'vite-plugin-compression'
 
@@ -16,11 +15,6 @@ export default defineConfig({
     createSvgIconsPlugin({
       iconDirs: [path.resolve(process.cwd(), 'src/assets/svgs')],
       symbolId: 'icon-[name]', // 符号ID格式
-    }),
-    viteMockServe({
-      mockPath: 'mock', // mock数据存放目录
-      localEnabled: true, // 开发环境启用
-      prodEnabled: false, // 生产环境是否启用
     }),
     viteCompression({
       verbose: true, // 是否在控制台输出压缩的结果

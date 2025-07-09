@@ -22,12 +22,11 @@
     "@vitejs/plugin-vue": "^6.0.0",
     "@vitejs/plugin-vue-jsx": "^5.0.0",
     "axios": "^1.10.0",
-    "mockjs": "^1.1.0",
+    "fast-glob": "^3.3.3",
     "prettier": "3.5.3",
     "sass": "^1.89.2",
     "vite": "^7.0.0",
     "vite-plugin-compression": "^0.5.1",
-    "vite-plugin-mock": "^3.0.2",
     "vite-plugin-svg-icons": "^2.0.1"
   }
 }
