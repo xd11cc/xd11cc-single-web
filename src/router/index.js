@@ -18,8 +18,8 @@ const publicRoutes = [
   },
   {
     path: '/',
-    name: 'System',
-    component: () => import('@/views/system/index.vue'),
+    name: 'Layout',
+    component: () => import('@/layout/index.vue'),
   },
 ]
 const router = createRouter({

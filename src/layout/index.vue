@@ -15,7 +15,7 @@
 </template>
 
 <script setup>
-import Menu from './Menu.vue'
+import Menu from './menu/index.vue'
 </script>
 
 <style lang="scss" scoped>
