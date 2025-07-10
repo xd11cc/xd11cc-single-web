@@ -1,12 +1,12 @@
 <template>
   <div class="login-container">
-    <el-form ref="loginRef" :model="loginData.loginForm" :rules="loginRules">
+    <el-form ref="loginRef" :model="loginForm" :rules="loginRules">
       <div class="title-container">
         <h3 class="title">用户登录</h3>
       </div>
       <el-form-item prop="username">
         <el-input
-          v-model.trim="loginData.loginForm.username"
+          v-model.trim="loginForm.username"
           placeholder="请输入用户名"
           name="username"
           type="text"
@@ -18,7 +18,7 @@
       </el-form-item>
       <el-form-item prop="password">
         <el-input
-          v-model.trim="loginData.loginForm.password"
+          v-model.trim="loginForm.password"
           @keyup.enter="login"
           placeholder="请输入密码"
           name="password"
@@ -48,14 +48,12 @@ import { ElMessage } from 'element-plus'
 
 let useStore = useUserStore()
 
-const loginData = reactive({
-  loginForm: {
-    username: '',
-    password: '',
-    way: 0,
-    device: 0,
-    app: 0,
-  },
+const loginForm = reactive({
+  username: '',
+  password: '',
+  way: 0,
+  device: 0,
+  app: 0,
 })
 
 const validatorPassword = (rule, value, callback) => {
@@ -95,7 +93,7 @@ const login = () => {
     if (!valid) return
     loading.value = true
     useStore
-      .userLogin(loginData.loginForm)
+      .userLogin(loginForm)
       .then(() => {
         ElMessage.success('登录成功')
       })
