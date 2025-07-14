@@ -14,15 +14,7 @@
         @open="handleOpen"
         @close="handleClose"
       >
-        <el-sub-menu :index="item.id" v-for="item in treeMenu" :key="item.id">
-          <template #title>
-            <el-icon><location /></el-icon>
-            <span>{{ item.menuName }}</span>
-          </template>
-          <el-sub-menu :index="children.id" v-for="children in item.children" :key="children.id">
-            <template #title>{{ children.menuName }}</template>
-          </el-sub-menu>
-        </el-sub-menu>
+        <RecursiveMenu v-for="item in treeMenu" :key="item.id" :menu-item="item" />
       </el-menu>
     </el-col>
   </el-row>
@@ -31,12 +23,13 @@
 <script setup>
 import { getTreeMenu } from '@/api/system/menu'
 import { ref } from 'vue'
+import RecursiveMenu from './RecursiveMenu.vue'
 
 const treeMenu = ref(null)
 
 const initTreeMenu = async () => {
   const result = await getTreeMenu()
-  if(result.code === 200){
+  if (result.code === 200) {
     treeMenu.value = result.data
   }
 }
