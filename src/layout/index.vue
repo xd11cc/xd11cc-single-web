@@ -1,17 +1,19 @@
 <template>
   <el-container class="layout-container">
     <el-aside class="aside-container">
-      <Menu></Menu>
+      <Menu />
     </el-aside>
 
     <el-container class="layout-container">
       <el-header class="header-container">
         <div class="toolbar">
-          <Header></Header>
+          <Header />
         </div>
       </el-header>
 
-      <el-main class="main-container"> </el-main>
+      <el-main class="main-container">
+        <router-view />
+      </el-main>
     </el-container>
   </el-container>
 </template>

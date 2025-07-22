@@ -20,6 +20,13 @@ const publicRoutes = [
     path: '/',
     name: 'Layout',
     component: () => import('@/layout/index.vue'),
+    children: [
+      {
+        path: '/menu',
+        name: 'Menu',
+        component: () => import('@/views/menu/index.vue'),
+      },
+    ],
   },
 ]
 const router = createRouter({

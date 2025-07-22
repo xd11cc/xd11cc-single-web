@@ -11,7 +11,7 @@ router.beforeEach((to, from, next) => {
   // 1、如果用户已经登陆，则不允许进入login
   if (useStore.token) {
     if (to.path === '/login') {
-      next('/system')
+      next('/')
     } else {
       next()
     }
