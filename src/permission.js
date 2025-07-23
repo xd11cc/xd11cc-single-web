@@ -11,6 +11,10 @@ router.beforeEach((to, from, next) => {
   // 1、如果用户已经登陆，则不允许进入login
   if (useStore.token) {
     if (to.path === '/login') {
+      // 确保菜单已加载（动态菜单场景）
+      if (!menuStore.treeMenu) {
+        menuStore.initMenu()
+      }
       next('/')
     } else {
       next()

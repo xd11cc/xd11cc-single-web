@@ -1,5 +1,5 @@
 <template>
-  <el-breadcrumb separator="/">
+  <el-breadcrumb :separator-icon="ArrowRight">
     <template v-for="(crumb, index) in breadcrumbs">
       <el-breadcrumb-item
         :key="crumb.id"
@@ -54,6 +54,14 @@ watchEffect(() => {
 
   // 生成面包屑数组
   breadcrumbs.value = getParentCrumbs(currentMenu)
+
+  // 查找首页菜单，确保首页为面包屑的第一项
+  if (breadcrumbs.value.length > 0 && breadcrumbs.value[0].label !== '首页') {
+    const homeMenu = menuStore.flatMenu.find((item) => item.label === '首页')
+    if (homeMenu) {
+      breadcrumbs.value.unshift(homeMenu)
+    }
+  }
 })
 </script>
 

@@ -21,18 +21,17 @@ export const useMenuStore = defineStore('menu', {
       }
     },
     // 扁平化菜单
-    flattenMenus(menus, parentPath = '', result = []) {
+    flattenMenus(menus, result = []) {
       menus.forEach((menu) => {
-        const currentPath = parentPath ? `${parentPath}/${menu.path}` : menu.path
         result.push({
           id: menu.id,
           label: menu.menuName,
-          path: currentPath,
+          path: menu.path,
           parentId: menu.parentId,
           children: menu.children,
         })
         if (menu.children && menu.children.length) {
-          this.flattenMenus(menu.children, currentPath, result)
+          this.flattenMenus(menu.children, result)
         }
       })
       return result

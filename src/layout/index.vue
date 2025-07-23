@@ -31,7 +31,9 @@ import Header from './header/index.vue'
     background-color: #2e394b;
   }
   .header-container {
-    padding: 16px;
+    padding: 18px;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    height: 64px;
   }
   .main-container {
     height: 100%;
