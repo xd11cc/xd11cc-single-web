@@ -29,7 +29,7 @@ menuStore.initMenu()
 // 监听路由变化，从flatMenu生成面包屑
 watchEffect(() => {
   // 等待菜单加载完成
-  if (!menuStore.flatMenu.length) return
+  if (!menuStore.flatMenu) return
 
   const currentMenu = menuStore.flatMenu.find((menu) => menu.path === route.path)
   if (!currentMenu) {
