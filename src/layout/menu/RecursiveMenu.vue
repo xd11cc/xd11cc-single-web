@@ -11,12 +11,9 @@
     </template>
 
     <!-- 子菜单内容 -->
-    <RecursiveMenu
-      v-if="menuItem.children?.length > 0"
-      v-for="child in menuItem.children"
-      :key="child.id"
-      :menu-item="child"
-    />
+    <div v-if="menuItem.children && menuItem.children.length > 0">
+      <RecursiveMenu v-for="child in menuItem.children" :key="child.id" :menu-item="child" />
+    </div>
   </component>
 </template>
 
