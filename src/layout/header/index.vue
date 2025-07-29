@@ -1,24 +1,48 @@
 <template>
-  <el-breadcrumb :separator-icon="ArrowRight">
-    <template v-for="(crumb, index) in breadcrumbs">
-      <el-breadcrumb-item
-        :key="crumb.id"
-        v-if="index < breadcrumbs.length - 1"
-        :to="{ path: crumb.path }"
-      >
-        {{ crumb.label }}
-      </el-breadcrumb-item>
-      <el-breadcrumb-item :key="crumb.id + '_last'" v-else>
-        {{ crumb.label }}
-      </el-breadcrumb-item>
-    </template>
-  </el-breadcrumb>
+  <div class="header-container">
+    <div class="header-breadcrumb">
+      <el-breadcrumb :separator-icon="ArrowRight">
+        <template v-for="(crumb, index) in breadcrumbs">
+          <el-breadcrumb-item
+            :key="crumb.id"
+            v-if="index < breadcrumbs.length - 1"
+            :to="{ path: crumb.path }"
+          >
+            {{ crumb.label }}
+          </el-breadcrumb-item>
+          <el-breadcrumb-item :key="crumb.id + '_last'" v-else>
+            {{ crumb.label }}
+          </el-breadcrumb-item>
+        </template>
+      </el-breadcrumb>
+    </div>
+    <div class="header-center">
+      <el-dropdown>
+        <span class="el-dropdown-link">
+          Dropdown List
+          <el-icon class="el-icon--right">
+            <arrow-down />
+          </el-icon>
+        </span>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item>Action 1</el-dropdown-item>
+            <el-dropdown-item>Action 2</el-dropdown-item>
+            <el-dropdown-item>Action 3</el-dropdown-item>
+            <el-dropdown-item disabled>Action 4</el-dropdown-item>
+            <el-dropdown-item divided>Action 5</el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { useRoute } from 'vue-router'
 import { useMenuStore } from '@/stores/menu'
 import { ref, watchEffect } from 'vue'
+import { ArrowRight, ArrowDown } from '@element-plus/icons-vue'
 
 const route = useRoute()
 const menuStore = useMenuStore()

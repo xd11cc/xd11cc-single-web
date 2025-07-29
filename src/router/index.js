@@ -17,7 +17,7 @@ const publicRoutes = [
     component: () => import('@/views/login/Login.vue'),
   },
   {
-    path: '/',
+    path: '/index',
     name: 'Layout',
     component: () => import('@/layout/index.vue'),
     children: [

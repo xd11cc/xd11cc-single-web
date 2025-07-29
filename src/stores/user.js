@@ -15,7 +15,7 @@ export const useUserStore = defineStore('user', {
         let token = res.data.accessToken
         this.token = token
         setItem('token', token)
-        router.push('/')
+        router.push('/index')
         return 'success'
       } else {
         return Promise.reject(new Error(res.data.msg))
