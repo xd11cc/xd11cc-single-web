@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    // 将 module 设置为支持 import.meta 的值
+    "module": "esnext", // 或 "es2020"、"es2022"、"bundler"（TypeScript 5.0+）
+    // 模块解析策略需与 module 匹配
+    "moduleResolution": "bundler", // 适合 Vite 等打包工具（推荐）
+    // 或根据 module 选择 "NodeNext"（若 module 为 node16/node18 等）
+    "target": "es2020", // 目标语法版本至少为 es2020（与模块版本匹配）
+    // 其他必要配置...
+    "strict": true,
+    "jsx": "preserve",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "types": ["vite/client"] // 确保包含 Vite 类型定义
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

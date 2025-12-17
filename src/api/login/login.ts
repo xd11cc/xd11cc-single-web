@@ -1,6 +1,7 @@
 import request from '@/utils/request'
+import type { ResponseVO, LoginResultVO } from '@/types'
 
-export function loginByPassword(data) {
+export function loginByPassword<T>(data: T): Promise<ResponseVO<LoginResultVO>> {
   return request({
     url: '/user/loginByPassword',
     method: 'POST',
@@ -8,9 +9,9 @@ export function loginByPassword(data) {
   })
 }
 
-export function logout() {
+export function logout(): Promise<ResponseVO> {
   return request({
     url: '/logout',
-    method: 'GEY',
+    method: 'GET',
   })
 }

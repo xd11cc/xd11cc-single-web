@@ -1,28 +1,40 @@
 import { defineStore } from 'pinia'
 import { getTreeMenu } from '@/api/system/menu'
+import type { TreeMenuVO } from '@/types'
 
-// 定义菜单接口
-interface MenuItem {
-  id: string | number
-  menuName: string
-  path: string
-  parentId?: string | number
-  children?: MenuItem[]
-}
+export const useMenuStore = defineStore('menu', {
+  state: () => ({
+    // 用MenuItem类型约束菜单数据
+    treeMenu: null as TreeMenuVO[] | null,
+    flatMenu: [] as TreeMenuVO[], // 明确类型为扁平化后的菜单数组
+  }),
+  actions: {
+    async initMenu() {
+      if (this.treeMenu) return
+      const result = await getTreeMenu()
+      if (result.code === 200) {
+        this.treeMenu = result.data
+        // 直接调用纯函数，传入原始菜单数据
+        this.flatMenu = flattenMenus(result.data)
+      }
+    },
+    // 移除原有的flattenMenus方法（已改为纯函数）
+  },
+})
 
 // 纯函数实现（无副作用）
-export const flattenMenus = (menus: MenuItem[]): MenuItem[] => {
-  return menus.reduce((result, menu) => {
-    // 复制当前菜单（避免修改原对象）
-    const flatMenu = { ...menu, children: undefined }
-    result.push(flatMenu)
+export const flattenMenus = (menus: TreeMenuVO[]): TreeMenuVO[] => {
+  const result: TreeMenuVO[] = []
+  const stack = [...menus] // 用栈模拟递归
+  while (stack.length) {
+    const menu = stack.pop()!
+    result.push({ ...menu, children: undefined })
     if (menu.children && menu.children.length) {
-      result.push(...flattenMenus(menu.children))
+      stack.push(...menu.children) // 子菜单入栈
     }
-    return result
-  }, [] as MenuItem[])
+  }
+  return result
 }
-
 // export const useMenuStore = defineStore('menu', {
 //   state: () => {
 //     {

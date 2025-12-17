@@ -1,5 +1,6 @@
 import axios from 'axios'
 import router from '@/router'
+import { ElMessage } from 'element-plus'
 
 // 创建axios实例
 const BASE_URL = import.meta.env.VITE_BASE_API
@@ -35,7 +36,7 @@ service.interceptors.response.use(
       console.warn('业务错误', res.msg)
       switch (res.code) {
         case 400:
-          console.error('请求参数错误', error)
+          console.error('请求参数错误')
           break
         case 401:
           console.error('未授权或者token过期')
@@ -51,7 +52,7 @@ service.interceptors.response.use(
           console.error('接口不存在')
           break
         case 500:
-          console.error('服务器内部异常', error)
+          console.error('服务器内部异常')
           break
       }
       return Promise.reject(new Error(res.msg))
@@ -59,6 +60,13 @@ service.interceptors.response.use(
     return res
   },
   (error) => {
+    if (error.code === 'ECONNABORTED' && error.message.includes('timeout')) {
+      // 方式2：UI 库提示（推荐，更美观，以 Element Plus 为例）
+      ElMessage.error({
+        message: '请求超时啦～ 请检查网络或稍后重试',
+        duration: 3000, // 提示显示3秒后自动关闭
+      })
+    }
     const status = error.response?.status
     switch (status) {
       case 400:

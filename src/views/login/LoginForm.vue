@@ -46,7 +46,7 @@ import { reactive, ref } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { ElMessage } from 'element-plus'
 
-let useStore = useUserStore()
+const useStore = useUserStore()
 
 const loginForm = reactive({
   username: '',

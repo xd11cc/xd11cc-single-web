@@ -1,5 +1,6 @@
 import router from '@/router'
 import { useUserStore } from './stores/user'
+import { useMenuStore } from './stores/menu'
 
 // 不需要token的白名单页面
 const whiteList = ['/login', '/404']
@@ -7,7 +8,8 @@ const whiteList = ['/login', '/404']
 // from：从哪里来
 // next：是否要去
 router.beforeEach((to, from, next) => {
-  let useStore = useUserStore()
+  const useStore = useUserStore()
+  const menuStore = useMenuStore()
   // 1、如果用户已经登陆，则不允许进入login
   if (useStore.token) {
     if (to.path === '/login') {
