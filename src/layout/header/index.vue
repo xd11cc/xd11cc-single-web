@@ -16,7 +16,7 @@
         </template>
       </el-breadcrumb>
     </div>
-    <div class="header-center">
+    <div class="header-action">
       <el-dropdown>
         <span class="el-dropdown-link">
           Dropdown List
@@ -26,11 +26,8 @@
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item>Action 1</el-dropdown-item>
-            <el-dropdown-item>Action 2</el-dropdown-item>
-            <el-dropdown-item>Action 3</el-dropdown-item>
-            <el-dropdown-item disabled>Action 4</el-dropdown-item>
-            <el-dropdown-item divided>Action 5</el-dropdown-item>
+            <el-dropdown-item @click="personCenter">个人中心</el-dropdown-item>
+            <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -43,6 +40,7 @@ import { useRoute } from 'vue-router'
 import { useMenuStore } from '@/stores/menu'
 import { ref, watchEffect } from 'vue'
 import { ArrowRight, ArrowDown } from '@element-plus/icons-vue'
+import { logout } from '@/api/login/login'
 
 const route = useRoute()
 const menuStore = useMenuStore()
@@ -90,12 +88,42 @@ watchEffect(() => {
 </script>
 
 <style lang="scss" scoped>
-.el-breadcrumb {
-  padding: 0 16px;
-}
-
-.el-breadcrumb_item:last-child .el-breadcrumb_inner {
-  color: #606266;
-  font-weight: normal;
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  background-color: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  .header-breadcrumb {
+    flex: 1;
+    padding: 0;
+    .el-breadcrumb {
+      font-size: 14px;
+      .el-breadcrumb__item:last-child .el-breadcrumb__inner {
+        color: #606266;
+        font-weight: normal;
+      }
+    }
+  }
+  .header-action {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding-left: 16px;
+    .el-dropdown-link {
+      color: #606266;
+      text-decoration: none;
+      transition: color 0.2s;
+      &:hover {
+        color: #409eff;
+      }
+      .el-icon--right {
+        margin-left: 4px;
+      }
+    }
+  }
 }
 </style>

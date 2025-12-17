@@ -7,3 +7,10 @@ export function loginByPassword(data) {
     data: data,
   })
 }
+
+export function logout() {
+  return request({
+    url: '/logout',
+    method: 'GEY',
+  })
+}
