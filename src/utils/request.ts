@@ -1,5 +1,4 @@
 import axios from 'axios'
-import router from '@/router'
 import { ElMessage } from 'element-plus'
 
 // 创建axios实例
@@ -42,6 +41,7 @@ service.interceptors.response.use(
           console.error('未授权或者token过期')
           // 清除本地存储的token
           localStorage.removeItem('token')
+          localStorage.removeItem('userInfo')
           // 强制刷新页面，触发导航守卫
           window.location.reload()
           break

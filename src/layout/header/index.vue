@@ -1,16 +1,20 @@
 <template>
   <div class="header-container">
+    <div class="header-left">
+      <el-icon @click="toggleCollapse">
+        <component :is="isCollapse ? Expand : Flod" />
+      </el-icon>
+    </div>
     <div class="header-breadcrumb">
       <el-breadcrumb :separator-icon="ArrowRight">
-        <template v-for="(crumb, index) in breadcrumbs">
+        <template v-for="(crumb, index) in breadcrumbs" :key="crumb.id || index">
           <el-breadcrumb-item
-            :key="crumb.id"
-            v-if="index < breadcrumbs.length - 1"
+            v-if="index < breadcrumbs.length - 1 && crumb.path"
             :to="{ path: crumb.path }"
           >
             {{ crumb.label }}
           </el-breadcrumb-item>
-          <el-breadcrumb-item :key="crumb.id + '_last'" v-else>
+          <el-breadcrumb-item v-else>
             {{ crumb.label }}
           </el-breadcrumb-item>
         </template>
@@ -19,15 +23,15 @@
     <div class="header-action">
       <el-dropdown>
         <span class="el-dropdown-link">
-          Dropdown List
+          {{ nickname || '用户中心' }}
           <el-icon class="el-icon--right">
-            <arrow-down />
+            <ArrowDown />
           </el-icon>
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item @click="personCenter">个人中心</el-dropdown-item>
-            <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
+            <el-dropdown-item @click="handlePersonCenter">个人中心</el-dropdown-item>
+            <el-dropdown-item @click="handleLogout">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -37,23 +41,31 @@
 
 <script setup>
 import { useRoute } from 'vue-router'
-import { useMenuStore } from '@/stores/menu'
-import { ref, watchEffect } from 'vue'
-import { ArrowRight, ArrowDown } from '@element-plus/icons-vue'
+import { computed, onMounted, ref, watchEffect } from 'vue'
+import { ArrowRight, ArrowDown, Expand, Fold } from '@element-plus/icons-vue'
 import { logout } from '@/api/login/login'
+import { useUserStore } from '@/stores/user'
+import { useMenuStore } from '@/stores/menu'
+import { ElMessage } from 'element-plus'
+import router from '@/router'
 
 const route = useRoute()
+const userStore = useUserStore()
 const menuStore = useMenuStore()
 const breadcrumbs = ref([])
+const nickname = ref('')
 
-menuStore.initMenu()
+onMounted(async () => {
+  await userStore.initMenu()
+  nickname.value = userStore.userloginInfo?.nickname
+})
 
 // 监听路由变化，从flatMenu生成面包屑
 watchEffect(() => {
   // 等待菜单加载完成
-  if (!menuStore.flatMenu) return
+  if (!userStore.flatMenu) return
 
-  const currentMenu = menuStore.flatMenu.find((menu) => menu.path === route.path)
+  const currentMenu = userStore.flatMenu.find((menu) => menu.path === route.path)
   if (!currentMenu) {
     breadcrumbs.value = []
     return
@@ -67,11 +79,8 @@ watchEffect(() => {
     if (!menuItem.parentId) return crumbs
 
     // 查找父级菜单
-    const parentMenu = menuStore.flatMenu.find((item) => item.id === menuItem.parentId)
-    if (parentMenu) {
-      return getParentCrumbs(parentMenu, crumbs)
-    }
-    return crumbs
+    const parentMenu = userStore.flatMenu.find((item) => item.id === menuItem.parentId)
+    return parentMenu ? getParentCrumbs(parentMenu, crumbs) : crumbs
   }
 
   // 生成面包屑数组
@@ -79,12 +88,29 @@ watchEffect(() => {
 
   // 查找首页菜单，确保首页为面包屑的第一项
   if (breadcrumbs.value.length > 0 && breadcrumbs.value[0].label !== '首页') {
-    const homeMenu = menuStore.flatMenu.find((item) => item.label === '首页')
+    const homeMenu = userStore.flatMenu.find((item) => item.label === '首页')
     if (homeMenu) {
       breadcrumbs.value.unshift(homeMenu)
     }
   }
 })
+
+// 实现退出登录
+const handleLogout = async () => {
+  userStore
+    .logout()
+    .then(() => {
+      ElMessage.success('退出成功')
+    })
+    .catch(() => {
+      ElMessage.error('退出失败')
+    })
+}
+
+// 跳转个人中心页面
+const handlePersonCenter = () => {
+  router.push('/personCenter')
+}
 </script>
 
 <style lang="scss" scoped>
@@ -94,36 +120,6 @@ watchEffect(() => {
   justify-content: space-between;
   width: 100%;
   padding: 12px 20px;
-  box-sizing: border-box;
   background-color: #fff;
-  border-bottom: 1px solid #e5e7eb;
-  .header-breadcrumb {
-    flex: 1;
-    padding: 0;
-    .el-breadcrumb {
-      font-size: 14px;
-      .el-breadcrumb__item:last-child .el-breadcrumb__inner {
-        color: #606266;
-        font-weight: normal;
-      }
-    }
-  }
-  .header-action {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding-left: 16px;
-    .el-dropdown-link {
-      color: #606266;
-      text-decoration: none;
-      transition: color 0.2s;
-      &:hover {
-        color: #409eff;
-      }
-      .el-icon--right {
-        margin-left: 4px;
-      }
-    }
-  }
 }
 </style>
