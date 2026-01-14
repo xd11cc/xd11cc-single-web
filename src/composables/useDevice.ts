@@ -1,0 +1,14 @@
+import { DeviceEnum } from '@/constants/app-key'
+import { useAppStore } from '@/pinia/stores/app'
+import { computed } from 'vue'
+
+const appStore = useAppStore()
+
+const isMobile = computed(() => appStore.device === DeviceEnum.Mobile)
+
+const isDesktop = computed(() => appStore.device === DeviceEnum.Desktop)
+
+// 设备类型
+export function useDevice() {
+  return { isMobile, isDesktop }
+}

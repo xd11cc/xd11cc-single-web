@@ -1,0 +1,19 @@
+/* 基础颜色 */
+html.dark-blue {
+  /* color-primary */
+  --el-color-primary: #00bb99;
+  /* fill-color */
+  --el-fill-color: #002b6b;
+  --el-fill-color-darker: #002b6b;
+  --el-fill-color-lighter: #002359;
+  /* bg-color */
+  --el-bg-color: #001b44;
+  --el-bg-color-overlay: #002359;
+  /* text-color */
+  --el-text-color-placeholder: #8d9095;
+  --el-text-color-regular: #cfd3dc;
+  --el-text-color-primary: #e5eaf3;
+  /* boder-color */
+  --el-border-color: #003380;
+  --el-border-color-lighter: #003380;
+}

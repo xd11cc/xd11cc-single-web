@@ -1,8 +1,8 @@
 import axios from 'axios'
-import { ElMessage } from 'element-plus'
+import { getToken } from '@/utils/cache/cookies'
 
 // 创建axios实例
-const BASE_URL = import.meta.env.VITE_BASE_API
+const BASE_URL = import.meta.env.VITE_BASE_URL + import.meta.env.VITE_PUBLIC_PATH
 const service = axios.create({
   baseURL: BASE_URL,
   timeout: 3000,
@@ -14,7 +14,7 @@ const service = axios.create({
 // 请求拦截器
 service.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token')
+    const token = getToken()
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`
     }

@@ -5,6 +5,7 @@ export interface ResponseVO<T = any> {
   msg: string
 }
 
+// 用户信息
 export interface UserLoginInfoVO {
   id: number
   username: string
@@ -13,7 +14,8 @@ export interface UserLoginInfoVO {
   phone: string
   email: string
   headUrl: string
-  treeMenuVOS: TreeMenuVO[]
+  roles: string[]
+  permissions: string[]
 }
 
 // 菜单单项类型
@@ -24,10 +26,20 @@ export interface TreeMenuVO {
   sort: number
   path: string
   component: string
-  ifFrame: string
+  ifFrame: boolean
   menuType: string
   visible: string
   status: string
   icon: string
   children?: TreeMenuVO[]
+}
+
+// 登录参数
+export interface LoginForm {
+  username: string
+  password: string
+  way: number
+  device: number
+  app: number
+  code: string
 }

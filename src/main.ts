@@ -1,29 +1,24 @@
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
-
+// core
+import { pinia } from './pinia'
+import { router } from './router'
+import { installPlugins } from './plugins'
 import App from './App.vue'
-import router from './router'
 
-import ElementPlus from 'element-plus'
-import 'element-plus/dist/index.css'
-import * as ElementPlusIconsVue from '@element-plus/icons-vue'
-
-import './permission'
-import 'virtual:svg-icons-register'
-import SvgIcon from '@/components/SvgIcon/index.vue'
+// css
+import '@/styles/index.scss'
+import 'nprogress/nprogress.css'
 
 // 动态设置标题
 document.title = import.meta.env.VITE_APP_TITLE
+// 创建应用实例
 const app = createApp(App)
 
-app.use(createPinia())
-app.use(router)
-app.use(ElementPlus)
+// 安装插件
+installPlugins(app)
 
-for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
-  app.component(key, component)
-}
+app.use(pinia).use(router)
 
-app.mount('#app')
-
-app.component('SvgIcon', SvgIcon)
+// router 准备就绪后挂载应用
+router.isReady().then(() => {
+  app.mount('#app')
+})

@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="container-left">
-      <img src="@/assets/svgs/login-box-bg.svg" alt="" />
+      <img src="@/assets/icons/login-box-bg.svg" alt="" />
       <div>欢迎使用本系统</div>
     </div>
     <div class="container-right">
@@ -10,8 +10,8 @@
   </div>
 </template>
 
-<script setup>
-import LoginForm from '@/views/login/LoginForm.vue'
+<script lang="ts" setup>
+import LoginForm from './components/LoginForm.vue'
 
 const title = import.meta.env.VITE_APP_TITLE
 </script>
@@ -24,7 +24,7 @@ const title = import.meta.env.VITE_APP_TITLE
   width: 100%;
   &-left {
     flex: 0 0 50%; // 占据50%宽度
-    background-image: url('@/assets/svgs/login-bg.svg');
+    background-image: url('@/assets/icons/login-bg.svg');
     background-size: cover; // 确保背景图覆盖整个区域
     background-position: center; // 确保背景图居中显示
     display: flex;

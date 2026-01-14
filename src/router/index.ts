@@ -1,37 +1,101 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router'
+import { createRouter } from 'vue-router'
+import { routerConfig } from './config'
+import { registerNavigationGuard } from './guard'
+import { flatMultiLevelRoutes } from './helper'
 
-// 公共路由
-const publicRoutes = [
+const Layouts = () => import('@/layouts/index.vue')
+
+/**
+ * @name 公共路由
+ * @description 除了 redirect/403/404/login 等隐藏页面，其他页面建议设置唯一的 Name 属性
+ */
+export const publicRoutes: RouteRecordRaw[] = [
   {
-    path: '/404',
-    name: '404',
-    component: () => import('@/views/404.vue'),
+    path: '/redirect',
+    component: Layouts,
+    meta: {
+      hidden: true,
+    },
+    children: [
+      {
+        path: ':path(.*)',
+        component: () => import('@/views/redirect/index.vue'),
+      },
+    ],
   },
   {
-    path: '/:pathMatch(.*)*',
-    redirect: '/404 ',
+    path: '/403',
+    component: () => import('@/views/error/403.vue'),
+    meta: {
+      hidden: true,
+    },
+  },
+  {
+    path: '/404',
+    component: () => import('@/views/error/404.vue'),
+    meta: {
+      hidden: true,
+    },
   },
   {
     path: '/login',
-    name: 'Login',
     component: () => import('@/views/login/Login.vue'),
+    meta: {
+      hidden: true,
+    },
   },
   {
-    path: '/index',
-    name: 'Layout',
-    component: () => import('@/layout/index.vue'),
+    path: '/',
+    component: Layouts,
+    redirect: '/dashboard',
     children: [
       {
-        path: '/menu',
-        name: 'Menu',
-        component: () => import('@/views/menu/index.vue'),
+        path: 'dashboard',
+        name: 'Dashboard',
+        component: () => import('@/views/dashboard/index.vue'),
+        meta: {
+          title: '首页',
+          svgIcon: 'dashboard',
+          affix: true,
+        },
       },
     ],
   },
 ]
-const router = createRouter({
-  history: createWebHistory(),
-  routes: publicRoutes,
+
+/**
+ * 动态路由
+ */
+export const dynamicRoutes: RouteRecordRaw[] = []
+
+/**
+ * 路由实例
+ */
+export const router = createRouter({
+  history: routerConfig.history,
+  routes: routerConfig.thirdLevelRouteCache ? flatMultiLevelRoutes(publicRoutes) : publicRoutes,
 })
 
-export default router
+/**
+ * 重置路由
+ */
+export function resetRouter() {
+  try {
+    // 注意：所有动态路由必须带有Name属性，否则可能会不能完全重置干净
+    router.getRoutes().forEach((route) => {
+      const { name, meta } = route
+      if (name && meta.roles?.length) {
+        router.hasRoute(name) && router.removeRoute(name)
+      }
+    })
+  } catch {
+    // 强制刷新浏览器（兜底）
+    location.reload()
+  }
+}
+
+/**
+ * 注册路由导航守卫
+ */
+registerNavigationGuard(router)
