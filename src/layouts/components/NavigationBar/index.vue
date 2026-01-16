@@ -26,6 +26,9 @@
           </el-dropdown-menu>
         </template>
       </el-dropdown>
+      <el-icon :size="18">
+        <Setting />
+      </el-icon>
     </div>
   </div>
 </template>
@@ -38,7 +41,7 @@ import { useAppStore } from '@/pinia/stores/app'
 import { useLayoutMode } from '@/composables/useLayoutMode'
 import { useDevice } from '@/composables/useDevice'
 import { useSettingsStore } from '@/pinia/stores/settings'
-import { UserFilled } from '@element-plus/icons-vue'
+import { Setting, UserFilled } from '@element-plus/icons-vue'
 import { useUserStore } from '@/pinia/stores/user'
 
 const appStore = useAppStore()

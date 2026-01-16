@@ -11,6 +11,7 @@
 
 <script lang="ts" setup>
 import { ref } from 'vue'
+import { Setting } from '@element-plus/icons-vue'
 
 const show = ref(false)
 </script>

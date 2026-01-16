@@ -25,8 +25,14 @@ import { storeToRefs } from 'pinia'
 import { useDevice } from '@/composables/useDevice'
 import { getCssVar, setCssVar } from '@/utils/css'
 import { useResize } from './composables/useResize'
+import { useWatermark } from '@/composables/useWatermark'
+import { useUserStore } from '@/pinia/stores/user'
 
 useResize()
+
+const userStore = useUserStore()
+
+const { setWatermark, clearWatermark } = useWatermark()
 
 const { isMobile } = useDevice()
 
@@ -43,5 +49,12 @@ const v3Tagsviewheight = getCssVar(cssVarname)
 
 watchEffect(() => {
   showTagsView.value ? setCssVar(cssVarname, v3Tagsviewheight) : setCssVar(cssVarname, '0px')
+})
+
+// 开启或关闭系统水印
+watchEffect(() => {
+  showWatermark.value
+    ? setWatermark(import.meta.env.VITE_APP_TITLE + '-' + userStore.username)
+    : clearWatermark()
 })
 </script>
