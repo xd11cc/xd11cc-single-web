@@ -3,6 +3,7 @@
     <Logo v-if="isLogo" :collapse="isCollapse" />
     <el-scrollbar wrap-class="scrollbar-wrapper">
       <el-menu
+        :default-active="activeMenu"
         :collapse="isCollapse && !isTop"
         :background-color="backgroudColor"
         :text-color="textColor"
@@ -10,15 +11,18 @@
         :collapse-transition="false"
         :mode="isTop && !isMobile ? 'horizontal' : 'vertical'"
       >
-        <Item v-for="route in routes" :key="route.path" :item="route" />
+        <Item
+          v-for="noHiddenRoute in noHiddenRoutes"
+          :key="noHiddenRoute.path"
+          :item="noHiddenRoute"
+          :base-path="noHiddenRoute.path"
+        />
       </el-menu>
     </el-scrollbar>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, watchEffect } from 'vue'
-import { useUserStore } from '@/pinia/stores/user'
 import Item from './Item.vue'
 import Logo from '../Logo/index.vue'
 import { useAppStore } from '@/pinia/stores/app'
@@ -28,19 +32,21 @@ import { useDevice } from '@/composables/useDevice'
 import { useSettingsStore } from '@/pinia/stores/settings'
 import { usePermissionStore } from '@/pinia/stores/permission'
 
-const userStore = useUserStore()
-
 const appStore = useAppStore()
 
 const { isTop, isLeft } = useLayoutMode()
 
 const { isMobile } = useDevice()
 
+const route = useRoute()
+
 const settingsStore = useSettingsStore()
 
 const permissionStore = usePermissionStore()
 
-const routes = permissionStore.routes
+const activeMenu = computed(() => route.meta.activeMenu || route.path)
+
+const noHiddenRoutes = computed(() => permissionStore.routes.filter((item) => !item.meta?.hidden))
 
 const v3SidebarMenuBgColor = getCssVar('--v3-sidebar-menu-bg-color')
 

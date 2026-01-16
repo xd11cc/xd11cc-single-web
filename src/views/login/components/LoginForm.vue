@@ -60,7 +60,7 @@ import { Key, Lock, User } from '@element-plus/icons-vue'
 import ThemeSwitch from '@/components/ThemeSwitch/index.vue'
 import { useSettingsStore } from '@/pinia/stores/settings'
 import type { FormRules } from 'element-plus'
-import type { LoginForm } from '@/types'
+import type { LoginForm } from '../apis/type'
 
 const useStore = useUserStore()
 

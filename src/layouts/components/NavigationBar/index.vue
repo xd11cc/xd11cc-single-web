@@ -20,7 +20,9 @@
         </div>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item>个人中心</el-dropdown-item>
+            <router-link to="/user/profile">
+              <el-dropdown-item>个人中心</el-dropdown-item>
+            </router-link>
             <el-dropdown-item divided @click="logout">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </template>

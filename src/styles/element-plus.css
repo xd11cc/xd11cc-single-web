@@ -16,4 +16,5 @@ html.dark-blue {
   /* boder-color */
   --el-border-color: #003380;
   --el-border-color-lighter: #003380;
+  --el-border-color-darker: #003380;
 }

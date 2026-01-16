@@ -1,6 +1,6 @@
 <template>
   <div class="tags-view-container">
-    <ScrollPane>
+    <ScrollPane class="tags-view-wrapper" :tag-refs="tagRefs">
       <router-link
         v-for="tag in tagsViewStore.visitedViews"
         :key="tag.path"
@@ -27,13 +27,14 @@
 </template>
 
 <script lang="ts" setup>
-import { TagView, useTagsViewStore } from '@/pinia/stores/tags-view'
-import ScrollPane from './ScrollPane.vue'
+import type { RouteLocationNormalizedGeneric, RouteRecordRaw, RouterLink } from 'vue-router'
+import type { TagView } from '@/pinia/stores/tags-view'
 import { usePermissionStore } from '@/pinia/stores/permission'
 import { useRouteListener } from '@/composables/useRouteListener'
-import { RouteLocationNormalizedGeneric, RouteRecordRaw, RouterLink } from 'vue-router'
+import { useTagsViewStore } from '@/pinia/stores/tags-view'
 import { Close } from '@element-plus/icons-vue'
 import path from 'path-browserify'
+import ScrollPane from './ScrollPane.vue'
 
 const router = useRouter()
 

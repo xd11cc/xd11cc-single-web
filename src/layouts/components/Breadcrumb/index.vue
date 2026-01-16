@@ -1,29 +1,66 @@
 <template>
   <el-breadcrumb>
-    <el-breadcrumb-item v-for="(item, index) in breadcrumbs" :key="item.id">
-      <span v-if="index === breadcrumb.length - 1" class="no-redirect"> {{ item.menuName }}</span>
+    <el-breadcrumb-item v-for="(item, index) in breadcrumbs" :key="item.path">
+      <span
+        v-if="item.redirect === 'noRedirect' || index === breadcrumbs.length - 1"
+        class="no-redirect"
+      >
+        {{ item.meta.title }}</span
+      >
+      <a v-else @click.prevent="handleLink(item)">
+        {{ item.meta.title }}
+      </a>
     </el-breadcrumb-item>
   </el-breadcrumb>
 </template>
 
 <script lang="ts" setup>
-import { ref, watchEffect } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { TreeMenuVO } from '@/types/index'
-import { useUserStore } from '@/pinia/stores/user'
+import { useRouteListener } from '@/composables/useRouteListener'
+import type { RouteLocationMatched } from 'vue-router'
+import { compile } from 'path-to-regexp'
 
 const route = useRoute()
 
 const router = useRouter()
 
-const userStore = useUserStore()
+const { listenerRouteChange } = useRouteListener()
 
 // 定义响应式数据breadcrumbs，用于存储面包屑导航信息
-const breadcrumbs = ref<TreeMenuVO[]>([])
+const breadcrumbs = ref<RouteLocationMatched[]>([])
 
-watchEffect(() => {
-  breadcrumbs.value = userStore.treeMenu
-})
+/**
+ * 获取面包屑导航信息
+ */
+function getBreadcrumb() {
+  breadcrumbs.value = route.matched.filter(
+    (item) => item.meta?.title && item.meta?.breadcrumb !== false,
+  )
+}
+
+/**
+ * 编译路由路径
+ * @param path
+ */
+function pathCompile(path: string) {
+  const toPath = compile(path)
+  return toPath(route.params)
+}
+
+/**
+ * 处理面包屑导航点击事件
+ * @param item
+ */
+function handleLink(item: RouteLocationMatched) {
+  const { redirect, path } = item
+  if (redirect) return router.push(redirect as string)
+  router.push(pathCompile(path))
+}
+
+// 监听路由变化，更新面包屑导航信息
+listenerRouteChange((route) => {
+  if (route.path.startsWith('/redirect')) return
+  getBreadcrumb()
+}, true)
 </script>
 
 <style lang="scss" scoped>

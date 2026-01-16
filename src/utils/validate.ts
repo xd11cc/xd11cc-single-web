@@ -17,3 +17,12 @@ export function isArray<T>(arg: T) {
 export function isString(str: unknown) {
   return typeof str === 'string' || str instanceof String
 }
+
+/**
+ * 判断是否为外链
+ * @param path
+ */
+export function isExternal(path: string) {
+  const reg = /^(https?:|mailto:|tel:)/
+  return reg.test(path)
+}

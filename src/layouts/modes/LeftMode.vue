@@ -22,15 +22,14 @@
 </template>
 
 <script lang="ts" setup>
-import { computed } from 'vue'
 import Sidebar from '@/layouts/components/Sidebar/index.vue'
+import NavigationBar from '@/layouts/components/NavigationBar/index.vue'
+import TagsView from '@/layouts/components/TagsView/index.vue'
+import AppMain from '@/layouts/components/AppMain/index.vue'
 import { useDevice } from '@/composables/useDevice'
 import { useLayoutMode } from '@/composables/useLayoutMode'
 import { useAppStore } from '@/pinia/stores/app'
 import { useSettingsStore } from '@/pinia/stores/settings'
-import { storeToRefs } from 'pinia'
-import NavigationBar from '@/layouts/components/NavigationBar/index.vue'
-import TagsView from '@/layouts/components/TagsView/index.vue'
 
 const { isMobile } = useDevice()
 
@@ -95,7 +94,7 @@ $transition-time: 0.35;
 .main-container {
   min-height: 100%;
   transition: margin-left $transition-time;
-  margin: var(--v3-sidebar-width);
+  margin-left: var(--v3-sidebar-width);
   position: relative;
 }
 
@@ -117,7 +116,7 @@ $transition-time: 0.35;
 }
 
 .app-main {
-  min-height: calc(100vh -var(--v3-navigationbar-height));
+  min-height: calc(100vh - var(--v3-navigationbar-height));
   position: relative;
   overflow: hidden;
 }
@@ -149,7 +148,7 @@ $transition-time: 0.35;
   }
 }
 
-// 适配mobile端
+// 适配 mobile 端
 .mobile {
   .sidebar-container {
     transition: transform $transition-time;
@@ -169,10 +168,10 @@ $transition-time: 0.35;
     .sidebar-container {
       pointer-events: none;
       transition-duration: 0.3s;
-      transform: translate3d(0px - var(--v3-sidebar-width));
+      transform: translate3d(calc(0px - var(--v3-sidebar-width)), 0, 0);
     }
   }
-  // 即是mobile又是顶部或混合布局模式
+  // 既是 mobile 又是顶部或混合布局模式
   &.noLeft {
     .sidebar-container {
       background-color: var(--el-bg-color);

@@ -25,8 +25,8 @@ export const publicRoutes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: '/403',
-    component: () => import('@/views/error/403.vue'),
+    path: '/401',
+    component: () => import('@/views/error/401.vue'),
     meta: {
       hidden: true,
     },
@@ -34,6 +34,13 @@ export const publicRoutes: RouteRecordRaw[] = [
   {
     path: '/404',
     component: () => import('@/views/error/404.vue'),
+    meta: {
+      hidden: true,
+    },
+  },
+  {
+    path: '/500',
+    component: () => import('@/views/error/500.vue'),
     meta: {
       hidden: true,
     },
@@ -59,6 +66,22 @@ export const publicRoutes: RouteRecordRaw[] = [
           svgIcon: 'dashboard',
           affix: true,
         },
+      },
+    ],
+  },
+  {
+    path: '/user',
+    component: Layouts,
+    redirect: 'noredirect',
+    meta: {
+      hidden: true,
+    },
+    children: [
+      {
+        path: 'profile/:activeTab?',
+        component: () => import('@/views/system/user/profile/index.vue'),
+        name: 'Profile',
+        meta: { title: '个人中心', icon: 'user' },
       },
     ],
   },

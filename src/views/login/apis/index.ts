@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-import type { ResponseVO, UserLoginInfoVO } from '@/types'
+import type { UserLoginInfoVO } from './type'
 
 /**
  *

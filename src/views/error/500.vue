@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <p>欢迎来到xd11cc管理系统</p>
-  </div>
+  <div>500</div>
 </template>
 
 <script lang="ts" setup></script>
