@@ -3,7 +3,6 @@ import { setItem, removeItem, getItem } from '@/utils/storage'
 import { CacheKey } from '@/constants/cache-key'
 import { sidebarOpend, sidebarClosed } from '@/constants/app-key'
 import { TagView } from '@/pinia/stores/tags-view'
-import { ThemeName } from '@/composables/useTheme'
 
 // 系统布局
 export function setLayoutsConfig(settings: LayoutsConfig) {
@@ -25,15 +24,6 @@ export function setSidebarStatus(sidebarStatus: sidebarOpend | sidebarClosed) {
 
 export function getSidebarStatus() {
   return getItem(CacheKey.SIDEBAR_STATUS)
-}
-
-// 正在应用的主题名称
-export function getActiveThemeName() {
-  return localStorage.getItem(CacheKey.ACTIVE_THEME_NAME) as ThemeName | null
-}
-
-export function setActiveThemeName(themeName: ThemeName) {
-  localStorage.setItem(CacheKey.ACTIVE_THEME_NAME, themeName)
 }
 
 // 标签栏

@@ -5,15 +5,13 @@
       <div>欢迎使用本系统</div>
     </div>
     <div class="container-right">
-      <LoginForm></LoginForm>
+      <LoginForm />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import LoginForm from './components/LoginForm.vue'
-
-const title = import.meta.env.VITE_APP_TITLE
 </script>
 
 <style lang="scss" scoped>

@@ -24,6 +24,9 @@ import { useSettingsStore } from '@/pinia/stores/settings'
 import { storeToRefs } from 'pinia'
 import { useDevice } from '@/composables/useDevice'
 import { getCssVar, setCssVar } from '@/utils/css'
+import { useResize } from './composables/useResize'
+
+useResize()
 
 const { isMobile } = useDevice()
 

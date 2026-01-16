@@ -8,8 +8,6 @@ import App from './App.vue'
 import '@/styles/index.scss'
 import 'nprogress/nprogress.css'
 
-// 动态设置标题
-document.title = import.meta.env.VITE_APP_TITLE
 // 创建应用实例
 const app = createApp(App)
 

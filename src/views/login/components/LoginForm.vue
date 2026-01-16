@@ -1,6 +1,5 @@
 <template>
   <div class="login-container">
-    <ThemeSwitch v-if="settingsStore.showThemeSwitch" class="theme-switch" />
     <div class="login-card">
       <div class="title">
         <h3>用户登录</h3>
@@ -57,7 +56,6 @@
 <script lang="ts" setup>
 import { useUserStore } from '@/pinia/stores/user'
 import { Key, Lock, User } from '@element-plus/icons-vue'
-import ThemeSwitch from '@/components/ThemeSwitch/index.vue'
 import { useSettingsStore } from '@/pinia/stores/settings'
 import type { FormRules } from 'element-plus'
 import type { LoginForm } from '../apis/type'
@@ -133,12 +131,6 @@ const showPassword = () => {
   align-items: center;
   width: 100%;
   min-height: 100%;
-  .theme-switch {
-    position: fixed;
-    top: 5%;
-    right: 5%;
-    cursor: pointer;
-  }
   .login-card {
     width: 480px;
     max-width: 90%;

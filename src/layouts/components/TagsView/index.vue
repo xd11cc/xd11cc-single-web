@@ -47,7 +47,7 @@ const permissionStore = usePermissionStore()
 const { listenerRouteChange } = useRouteListener()
 
 // 标签页组件元素的引用数组
-const tagRefs = useTemplateRef<InstanceType<typeof RouterLink>[]>('tagsRefs')
+const tagRefs = useTemplateRef<InstanceType<typeof RouterLink>[]>('tagRefs')
 
 // 右键菜单的状态
 const visiable = ref(false)
@@ -254,8 +254,8 @@ listenerRouteChange((route) => {
         margin-right: 5px;
       }
       &.active {
-        background-color: var(--v3-tagsview-tag-bg-color);
-        color: var(--v3-tagsview-text-color);
+        background-color: var(--v3-tagsview-tag-active-bg-color);
+        color: var(--v3-tagsview-tag-active-text-color);
         border-color: var(--v3-tagsview-tag-active-border-color);
       }
       .el-icon {
@@ -264,7 +264,7 @@ listenerRouteChange((route) => {
         border-radius: 50%;
         &:hover {
           background-color: var(--v3-tagsview-tag-icon-hover-bg-color);
-          color: var(--v3-tagsview-tag-icon-hover-bg-color);
+          color: var(--v3-tagsview-tag-icon-hover-color);
         }
       }
     }

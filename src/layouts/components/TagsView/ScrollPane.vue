@@ -15,7 +15,7 @@
         <ArrowRight />
       </el-icon>
     </el-tooltip>
-    <Screenfull v-if="settingStore.showScreenfull" :content="true" class="screenfull" />
+    <Screenfull v-if="settingsStore.showScreenfull" :content="true" class="screenfull" />
   </div>
 </template>
 
@@ -23,7 +23,7 @@
 import { useRouteListener } from '@/composables/useRouteListener'
 import { useSettingsStore } from '@/pinia/stores/settings'
 import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
-import { RouterLink } from 'vue-router'
+import type { RouterLink } from 'vue-router'
 
 interface Props {
   tagRefs: InstanceType<typeof RouterLink>[] | null
@@ -33,7 +33,7 @@ const props = defineProps<Props>()
 
 const route = useRoute()
 
-const settingStore = useSettingsStore()
+const settingsStore = useSettingsStore()
 
 const { listenerRouteChange } = useRouteListener()
 
@@ -157,7 +157,7 @@ listenerRouteChange(() => {
   }
   .el-scrollbar {
     flex: 1;
-    // 防止换行（超出宽度，显示滚动条）
+    // 防止换行（超出宽度时，显示滚动条）
     white-space: nowrap;
     .scrollbar-content {
       display: inline-block;
