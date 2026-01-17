@@ -1,19 +1,25 @@
 <template>
-  <div class="handle-button" @click="show = true">
-    <el-icon :size="18">
-      <Setting />
-    </el-icon>
+  <div>
+    <el-tooltip effect="dark" content="布局设置" placement="bottom">
+      <Setting @click="show = true" class="el-icon" />
+    </el-tooltip>
+    <el-drawer v-model="show" size="300px" :with-header="false">
+      <slot />
+    </el-drawer>
   </div>
-  <el-drawer v-model="show" size="300px" :width-header="false">
-    <slot />
-  </el-drawer>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
 import { Setting } from '@element-plus/icons-vue'
 
-const show = ref(false)
+const show = ref<boolean>(false)
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.el-icon {
+  font-size: 20px;
+  &:focus {
+    outline: none;
+  }
+}
+</style>

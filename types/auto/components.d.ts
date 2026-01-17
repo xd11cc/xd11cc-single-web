@@ -63,6 +63,9 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     Screenfull: typeof import('./../../src/components/Screenfull/index.vue')['default']
     SearchMenu: typeof import('./../../src/components/SearchMenu/index.vue')['default']
+    Verify: typeof import('./../../src/components/verifition/Verify.vue')['default']
+    VerifyPoints: typeof import('./../../src/components/verifition/Verify/VerifyPoints.vue')['default']
+    VerifySlide: typeof import('./../../src/components/verifition/Verify/VerifySlide.vue')['default']
   }
   export interface GlobalDirectives {
     vLoading: typeof import('element-plus/es')['ElLoadingDirective']

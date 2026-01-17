@@ -2,14 +2,16 @@
   <div class="app-wrapper">
     <!-- 头部导航栏和标签栏 -->
     <div class="fixed-header layout-header">
-      <Logo v-if="showLogo" :collapse="false" class="logo" />
-      <NavigationBar class="navigation-bar" />
+      <div class="content">
+        <Logo v-if="showLogo" :collapse="false" class="logo" />
+        <NavigationBar class="navigation-bar" />
+      </div>
+      <TagsView v-show="showTagsView" />
     </div>
-    <TagsView v-show="showTagsView" />
-  </div>
-  <!-- 主容器 -->
-  <div :class="{ hasTagsView: showTagsView }" class="main-container">
-    <AppMain class="app-main" />
+    <!-- 主容器 -->
+    <div :class="{ hasTagsView: showTagsView }" class="main-container">
+      <AppMain class="app-main" />
+    </div>
   </div>
 </template>
 

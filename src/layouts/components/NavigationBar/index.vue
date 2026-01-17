@@ -11,7 +11,7 @@
     <div class="right-menu">
       <SearchMenu v-if="showSearchMenu" class="right-menu-item" />
       <Screenfull v-if="showScreenfull" class="right-menu-item" />
-      <Notify v-if="showNotify" class="right-menu-item" />
+      <Notify class="right-menu-item" />
       <el-dropdown>
         <div class="right-menu-item user">
           <el-avatar :icon="UserFilled" :size="30" />
@@ -58,7 +58,7 @@ const router = useRouter()
 
 const settingsStore = useSettingsStore()
 
-const { showNotify, showScreenfull, showSearchMenu, showSettings } = storeToRefs(settingsStore)
+const { showScreenfull, showSearchMenu, showSettings } = storeToRefs(settingsStore)
 
 // 切换侧边栏
 const toggleSidebar = () => {
