@@ -8,6 +8,8 @@
 </template>
 
 <script lang="ts" setup>
+import { Fold, Expand } from '@element-plus/icons-vue'
+
 interface Props {
   isActive?: boolean
 }
@@ -23,4 +25,9 @@ const toggleClick = () => {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.icon {
+  vertical-align: middle;
+  color: var(--v3-hamburger-text-color);
+}
+</style>

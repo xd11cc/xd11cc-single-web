@@ -37,8 +37,8 @@
   --v3-sidebar-menu-text-color: #cfd3dc;
   --v3-sidebar-menu-active-text-color: #fff;
   --v3-sidebar-menu-hover-bg-color: #409eff10;
-  /* RightPanel组件 */
-  --v3-rightpanel-button-bg-color: #001428;
+  /* Hamburger 组件 */
+  --v3-hamburger-text-color: var(--el-text-color-primary);
 }
 
 /* 内容区放大时，将不需要的组件隐藏 */

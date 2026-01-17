@@ -6,10 +6,6 @@
     <TopMode v-if="isTop" />
     <!-- 混合布局模式 -->
     <LeftTopMode v-if="isLeftTop" />
-    <!-- 右侧设置面板 -->
-    <RightPanel v-if="showSettings">
-      <Settings />
-    </RightPanel>
   </div>
 </template>
 
@@ -17,8 +13,6 @@
 import LeftMode from './modes/LeftMode.vue'
 import TopMode from './modes/TopMode.vue'
 import LeftTopMode from './modes/LeftTopMode.vue'
-import RightPanel from './components/RightPanel/index.vue'
-import Settings from './components/Settings/index.vue'
 import { useLayoutMode } from '@/composables/useLayoutMode'
 import { useSettingsStore } from '@/pinia/stores/settings'
 import { storeToRefs } from 'pinia'
@@ -40,7 +34,7 @@ const { isLeft, isTop, isLeftTop } = useLayoutMode()
 
 const settingsStore = useSettingsStore()
 
-const { showSettings, showTagsView, showWatermark } = storeToRefs(settingsStore)
+const { showTagsView, showWatermark } = storeToRefs(settingsStore)
 
 // 隐藏标签栏时删除其高度，是为了让 Logo 组件高度和 Header 区域高度始终一致
 const cssVarname = '--v3-tagsview-height'

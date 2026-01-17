@@ -26,9 +26,9 @@
           </el-dropdown-menu>
         </template>
       </el-dropdown>
-      <el-icon :size="18">
-        <Setting />
-      </el-icon>
+      <Panel v-if="showSettings" class="right-menu-item">
+        <Settings />
+      </Panel>
     </div>
   </div>
 </template>
@@ -37,11 +37,13 @@
 import Hamburger from '@/layouts/components/Hamburger/index.vue'
 import Breadcrumb from '@/layouts/components/Breadcrumb/index.vue'
 import Sidebar from '@/layouts/components/Sidebar/index.vue'
+import Panel from '@/layouts/components/Panel/index.vue'
+import Settings from '@/layouts/components/Settings/index.vue'
 import { useAppStore } from '@/pinia/stores/app'
 import { useLayoutMode } from '@/composables/useLayoutMode'
 import { useDevice } from '@/composables/useDevice'
 import { useSettingsStore } from '@/pinia/stores/settings'
-import { Setting, UserFilled } from '@element-plus/icons-vue'
+import { UserFilled } from '@element-plus/icons-vue'
 import { useUserStore } from '@/pinia/stores/user'
 
 const appStore = useAppStore()
@@ -56,7 +58,7 @@ const router = useRouter()
 
 const settingsStore = useSettingsStore()
 
-const { showNotify, showScreenfull, showSearchMenu } = storeToRefs(settingsStore)
+const { showNotify, showScreenfull, showSearchMenu, showSettings } = storeToRefs(settingsStore)
 
 // 切换侧边栏
 const toggleSidebar = () => {
