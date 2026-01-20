@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia'
-import { ref, watch, type Ref } from 'vue'
+import { pinia } from '@/pinia'
+import type { Ref } from 'vue'
 import type { LayoutsConfig } from '@/layouts/config'
 import { layoutsConfig } from '@/layouts/config'
 import { setLayoutsConfig } from '@@/utils/cache/local-storage'
@@ -40,3 +40,11 @@ export const useSettingsStore = defineStore('settings', () => {
   }
   return state
 })
+
+/**
+ * @description 在 SPA 应用中可用于在 pinia 实例被激活前使用 store
+ * @description 在 SSR 应用中可用于在 setup 外使用 store
+ */
+export function useSettingsStoreOutside() {
+  return useSettingsStore(pinia)
+}

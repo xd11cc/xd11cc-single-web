@@ -26,8 +26,8 @@ export default defineConfig(({ mode }) => {
       vue(),
       // 自动生成 SvgIcon 组件和 SVG 雪碧图
       SvgComponent({
-        iconDir: [resolve(__dirname, 'src/assets/icons')],
-        preserveColor: resolve(__dirname, 'src/assets/icons/preserve-color'),
+        iconDir: [resolve(__dirname, 'src/common/assets/icons')],
+        preserveColor: resolve(__dirname, 'src/common/assets/icons/preserve-color'),
         dts: true,
         dtsDir: resolve(__dirname, 'types/auto'),
       }),

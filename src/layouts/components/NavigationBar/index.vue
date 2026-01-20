@@ -34,6 +34,9 @@
 </template>
 
 <script lang="ts" setup>
+import SearchMenu from '@@/components/SearchMenu/index.vue'
+import Screenfull from '@@/components/Screenfull/index.vue'
+import Notify from '@@/components/Notify/index.vue'
 import Hamburger from '@/layouts/components/Hamburger/index.vue'
 import Breadcrumb from '@/layouts/components/Breadcrumb/index.vue'
 import Sidebar from '@/layouts/components/Sidebar/index.vue'
