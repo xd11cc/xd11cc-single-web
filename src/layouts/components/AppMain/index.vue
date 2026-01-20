@@ -29,7 +29,7 @@ const settingsStore = useSettingsStore()
 </script>
 
 <style lang="scss" scoped>
-@use '@/styles/mixins.scss';
+@use '@@/assets/styles/mixins.scss';
 
 .app-main {
   width: 100%;

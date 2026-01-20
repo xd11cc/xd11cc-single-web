@@ -69,7 +69,7 @@ const resetLayoutConfig = () => {
 </script>
 
 <style lang="scss" scoped>
-@use '@/styles/mixins.scss';
+@use '@@/assets/styles/mixins.scss';
 
 .setting-container {
   padding: 20px;
