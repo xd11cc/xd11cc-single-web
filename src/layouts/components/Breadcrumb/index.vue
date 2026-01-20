@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useRouteListener } from '@/composables/useRouteListener'
+import { useRouteListener } from '@@/composables/useRouteListener'
 import type { RouteLocationMatched } from 'vue-router'
 import { compile } from 'path-to-regexp'
 

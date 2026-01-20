@@ -5,7 +5,7 @@ import { installPlugins } from './plugins'
 import App from './App.vue'
 
 // css
-import '@/styles/index.scss'
+import '@@/assets/styles/index.scss'
 import 'nprogress/nprogress.css'
 import 'kite-captcha-vue/dist/index.css'
 

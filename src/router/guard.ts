@@ -1,10 +1,10 @@
-import { useTitle } from '@/composables/useTitle'
+import { useTitle } from '@@/composables/useTitle'
 import type { Router } from 'vue-router'
 import { useUserStore } from '@/pinia/stores/user'
 import { usePermissionStore } from '@/pinia/stores/permission'
 import { isWhiteList } from '@/router/whitelist'
 import NProgress from 'nprogress'
-import { setRouteChange } from '@/composables/useRouteListener'
+import { setRouteChange } from '@@/composables/useRouteListener'
 import { routerConfig } from './config'
 
 NProgress.configure({ showSpinner: false })

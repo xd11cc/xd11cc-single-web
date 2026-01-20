@@ -13,13 +13,13 @@
 import LeftMode from './modes/LeftMode.vue'
 import TopMode from './modes/TopMode.vue'
 import LeftTopMode from './modes/LeftTopMode.vue'
-import { useLayoutMode } from '@/composables/useLayoutMode'
+import { useLayoutMode } from '@@/composables/useLayoutMode'
 import { useSettingsStore } from '@/pinia/stores/settings'
 import { storeToRefs } from 'pinia'
-import { useDevice } from '@/composables/useDevice'
-import { getCssVar, setCssVar } from '@/utils/css'
+import { useDevice } from '@@/composables/useDevice'
+import { getCssVar, setCssVar } from '@@/utils/css'
 import { useResize } from './composables/useResize'
-import { useWatermark } from '@/composables/useWatermark'
+import { useWatermark } from '@@/composables/useWatermark'
 import { useUserStore } from '@/pinia/stores/user'
 
 useResize()

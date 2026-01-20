@@ -20,7 +20,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useRouteListener } from '@/composables/useRouteListener'
+import { useRouteListener } from '@@/composables/useRouteListener'
 import { useSettingsStore } from '@/pinia/stores/settings'
 import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
 import type { RouterLink } from 'vue-router'

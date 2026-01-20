@@ -30,7 +30,7 @@
 import type { RouteLocationNormalizedGeneric, RouteRecordRaw, RouterLink } from 'vue-router'
 import type { TagView } from '@/pinia/stores/tags-view'
 import { usePermissionStore } from '@/pinia/stores/permission'
-import { useRouteListener } from '@/composables/useRouteListener'
+import { useRouteListener } from '@@/composables/useRouteListener'
 import { useTagsViewStore } from '@/pinia/stores/tags-view'
 import { Close } from '@element-plus/icons-vue'
 import path from 'path-browserify'

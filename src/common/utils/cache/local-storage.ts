@@ -1,7 +1,7 @@
 import type { LayoutsConfig } from '@/layouts/config'
-import { setItem, removeItem, getItem } from '@/utils/storage'
-import { CacheKey } from '@/constants/cache-key'
-import { sidebarOpend, sidebarClosed } from '@/constants/app-key'
+import { setItem, removeItem, getItem } from '@@/utils/storage'
+import { CacheKey } from '@@/constants/cache-key'
+import { sidebarOpend, sidebarClosed } from '@@/constants/app-key'
 import { TagView } from '@/pinia/stores/tags-view'
 
 // 系统布局

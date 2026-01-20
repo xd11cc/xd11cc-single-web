@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { getToken } from '@/utils/cache/cookies'
+import { getToken } from '@@/utils/cache/cookies'
 
 // 创建axios实例
 const BASE_URL = import.meta.env.VITE_BASE_URL + import.meta.env.VITE_PUBLIC_PATH

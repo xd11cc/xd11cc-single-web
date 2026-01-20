@@ -1,4 +1,4 @@
-import { DeviceEnum } from '@/constants/app-key'
+import { DeviceEnum } from '@@/constants/app-key'
 import { useAppStore } from '@/pinia/stores/app'
 import { computed } from 'vue'
 

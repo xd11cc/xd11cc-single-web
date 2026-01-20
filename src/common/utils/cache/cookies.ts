@@ -1,5 +1,5 @@
 // 统一处理 Cookie
-import { CacheKey } from '@/constants/cache-key'
+import { CacheKey } from '@@/constants/cache-key'
 import Cookies from 'js-cookie'
 
 export function getToken() {

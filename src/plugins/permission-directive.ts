@@ -1,5 +1,5 @@
 import type { App, Directive } from 'vue'
-import { isArray } from '@/utils/validate'
+import { isArray } from '@@/utils/validate'
 import { useUserStore } from '@/pinia/stores/user'
 
 /**

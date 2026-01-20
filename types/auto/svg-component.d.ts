@@ -7,20 +7,20 @@
 declare module '~virtual/svg-component' {
   const SvgIcon: import("vue").DefineComponent<{
       name: {
-          type: import("vue").PropType<"dashboard" | "fullscreen-exit" | "fullscreen" | "login-bg" | "login-box-bg" | "search">;
+          type: import("vue").PropType<"">;
           default: string;
           required: true;
       };
   }, {}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
       name: {
-          type: import("vue").PropType<"dashboard" | "fullscreen-exit" | "fullscreen" | "login-bg" | "login-box-bg" | "search">;
+          type: import("vue").PropType<"">;
           default: string;
           required: true;
       };
   }>>, {
-      name: "dashboard" | "fullscreen-exit" | "fullscreen" | "login-bg" | "login-box-bg" | "search";
+      name: "";
   }>;
-  export const svgNames: ["dashboard", "fullscreen-exit", "fullscreen", "login-bg", "login-box-bg", "search"];
-  export type SvgName = "dashboard" | "fullscreen-exit" | "fullscreen" | "login-bg" | "login-box-bg" | "search";
+  export const svgNames: [""];
+  export type SvgName = "";
   export default SvgIcon;
 }

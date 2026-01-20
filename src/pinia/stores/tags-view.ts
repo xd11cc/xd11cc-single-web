@@ -6,7 +6,7 @@ import {
   getCachedViews,
   setVisitedViews,
   setCachedViews,
-} from '@/utils/cache/local-storage'
+} from '@@/utils/cache/local-storage'
 
 export type TagView = Partial<RouteLocationNormalizedGeneric>
 

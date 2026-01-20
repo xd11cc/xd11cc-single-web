@@ -1,5 +1,5 @@
-import request from '@/utils/request'
-import type { UserLoginInfoVO, ImageCaptchaVO } from './type'
+import request from '@@/utils/request'
+import type { UserLoginInfoVO } from './type'
 import { ResponseVO } from 'types/api'
 
 /**

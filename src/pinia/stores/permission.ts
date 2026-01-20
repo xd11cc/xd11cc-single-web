@@ -1,13 +1,9 @@
 import type { RouteRecordRaw } from 'vue-router'
-import auth from '@/utils/auth'
+import auth from '@@/utils/auth'
 import { publicRoutes, dynamicRoutes } from '@/router/index'
 import { flatMultiLevelRoutes } from '@/router/helper'
-import { createPinia } from 'pinia'
+import { pinia } from '@/pinia'
 import { routerConfig } from '@/router/config'
-
-// vite批量导入views目录下所有.vue组件（支持懒加载）
-const modules = import.meta.glob('@/pages/**/*.vue')
-const pinia = createPinia()
 
 /**
  * 权限判断：校验用户角色/权限是否拥有路由访问权限

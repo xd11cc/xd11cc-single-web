@@ -1,11 +1,12 @@
 import { loginByPassword, getUserInfo, logout as _logout } from '@/views/login/apis/index.js'
-import { getToken, setToken as _setToken, removeToken } from '@/utils/cache/cookies'
-import type { LoginForm } from '@/types'
+import { getToken, setToken as _setToken, removeToken } from '@@/utils/cache/cookies'
+import type { LoginForm } from '@/views/login/apis/type'
 import { routerConfig } from '@/router/config'
 import { resetRouter } from '@/router'
 import { useSettingsStore } from './settings'
 import { useTagsViewStore } from './tags-view'
 import { pinia } from '..'
+import { RouteRecordRaw } from 'vue-router'
 
 export const useUserStore = defineStore('user', () => {
   const token = ref<string>(getToken() || '')
@@ -13,6 +14,8 @@ export const useUserStore = defineStore('user', () => {
   const roles = ref<string[]>([])
 
   const permissions = ref<string[]>([])
+
+  const routes = ref<RouteRecordRaw[]>([])
 
   const username = ref<string>('')
 

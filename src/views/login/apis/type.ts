@@ -21,17 +21,21 @@ export interface LoginForm {
   code: string
 }
 
-// 生成验证码信息
-export interface ImageCaptchaVO {
-  id: string
-  type: string
-  backgroundImage: string
-  templateImage: string
-  backgroundImageTag: string
-  templateImageTag: string
-  backgroundImageWidth: number
-  backgroundImageHeight: number
-  templateImageWidth: number
-  templateImageHeight: number
-  data: object
+// 路由参数
+export interface RouteVO {
+  name: string
+  path: string
+  component: string
+  redirect: string
+  meta: MetaVO
+  children: RouteVO[]
+}
+
+// 其他元素
+export interface MetaVO {
+  title: string
+  elIcon: string
+  query: string
+  hidden: boolean
+  permission: string
 }

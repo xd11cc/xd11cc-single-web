@@ -39,8 +39,8 @@
 </template>
 
 <script lang="ts" setup>
-import { LayoutModeEnum } from '@/constants/app-key'
-import { useLayoutMode } from '@/composables/useLayoutMode'
+import { LayoutModeEnum } from '@@/constants/app-key'
+import { useLayoutMode } from '@@/composables/useLayoutMode'
 
 const { isLeft, isTop, isLeftTop, setLayoutMode } = useLayoutMode()
 </script>

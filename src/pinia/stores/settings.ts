@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, watch, type Ref } from 'vue'
 import type { LayoutsConfig } from '@/layouts/config'
 import { layoutsConfig } from '@/layouts/config'
-import { setLayoutsConfig } from '@/utils/cache/local-storage'
+import { setLayoutsConfig } from '@@/utils/cache/local-storage'
 
 type SettingsStore = {
   // 使用映射类型来便利LayoutsConfig对象的键

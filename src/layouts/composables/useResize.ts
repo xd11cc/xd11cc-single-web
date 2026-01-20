@@ -1,5 +1,5 @@
-import { useRouteListener } from '@/composables/useRouteListener'
-import { DeviceEnum } from '@/constants/app-key'
+import { useRouteListener } from '@@/composables/useRouteListener'
+import { DeviceEnum } from '@@/constants/app-key'
 import { useAppStore } from '@/pinia/stores/app'
 
 // 参考 Bootstrap 的响应式设计奖最大移动端宽度设置为 992

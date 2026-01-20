@@ -40,7 +40,7 @@ import { computed } from 'vue'
 import Link from './Link.vue'
 import { RouteRecordRaw } from 'vue-router'
 import path from 'path-browserify'
-import { isExternal } from '@/utils/validate'
+import { isExternal } from '@@/utils/validate'
 
 interface Props {
   item: RouteRecordRaw

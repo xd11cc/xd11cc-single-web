@@ -2,7 +2,8 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "@@/*": ["src/common/*"]
     },
     // 将 module 设置为支持 import.meta 的值
     "module": "esnext", // 或 "es2020"、"es2022"、"bundler"（TypeScript 5.0+）

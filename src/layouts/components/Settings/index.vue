@@ -19,8 +19,8 @@
 <script lang="ts" setup>
 import { useSettingsStore } from '@/pinia/stores/settings'
 import { storeToRefs } from 'pinia'
-import { removeLayoutsConfig } from '@/utils/cache/local-storage'
-import { useLayoutMode } from '@/composables/useLayoutMode'
+import { removeLayoutsConfig } from '@@/utils/cache/local-storage'
+import { useLayoutMode } from '@@/composables/useLayoutMode'
 import { watchEffect } from 'vue'
 import SelectLayoutMode from './SelectLayoutMode.vue'
 import { Refresh } from '@element-plus/icons-vue'

@@ -12,10 +12,10 @@
 </template>
 
 <script lang="ts" setup>
-import logo from '@/assets/imgs/logo.jpg?url'
-import logoText1 from '@/assets/imgs/logo-text-1.png?url'
-import logoText2 from '@/assets/imgs/logo-text-2.png?url'
-import { useLayoutMode } from '@/composables/useLayoutMode'
+import logo from '@@/assets/imgs/logo.jpg?url'
+import logoText1 from '@@/assets/imgs/logo-text-1.png?url'
+import logoText2 from '@@/assets/imgs/logo-text-2.png?url'
+import { useLayoutMode } from '@@/composables/useLayoutMode'
 
 interface Props {
   collapse?: boolean
