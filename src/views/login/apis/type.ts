@@ -20,3 +20,18 @@ export interface LoginForm {
   app: number
   code: string
 }
+
+// 生成验证码信息
+export interface ImageCaptchaVO {
+  id: string
+  type: string
+  backgroundImage: string
+  templateImage: string
+  backgroundImageTag: string
+  templateImageTag: string
+  backgroundImageWidth: number
+  backgroundImageHeight: number
+  templateImageWidth: number
+  templateImageHeight: number
+  data: object
+}

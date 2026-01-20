@@ -1,5 +1,6 @@
 import request from '@/utils/request'
-import type { UserLoginInfoVO } from './type'
+import type { UserLoginInfoVO, ImageCaptchaVO } from './type'
+import { ResponseVO } from 'types/api'
 
 /**
  *
@@ -8,7 +9,7 @@ import type { UserLoginInfoVO } from './type'
  */
 export function loginByPassword<T>(data: T): Promise<ResponseVO<string>> {
   return request({
-    url: '/user/loginByPassword',
+    url: '/login/loginByPassword',
     method: 'POST',
     data: data,
   })
@@ -18,7 +19,7 @@ export function loginByPassword<T>(data: T): Promise<ResponseVO<string>> {
  * 退出登录
  * @returns
  */
-export function logout(): Promise<ResponseVO> {
+export function logout(): Promise<ResponseVO<string>> {
   return request({
     url: '/logout',
     method: 'GET',
@@ -31,7 +32,7 @@ export function logout(): Promise<ResponseVO> {
  */
 export function getUserInfo(): Promise<ResponseVO<UserLoginInfoVO>> {
   return request({
-    url: '/user/getUserInfo',
+    url: '/login/getUserInfo',
     method: 'GET',
   })
 }

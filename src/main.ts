@@ -7,6 +7,7 @@ import App from './App.vue'
 // css
 import '@/styles/index.scss'
 import 'nprogress/nprogress.css'
+import 'kite-captcha-vue/dist/index.css'
 
 // 创建应用实例
 const app = createApp(App)

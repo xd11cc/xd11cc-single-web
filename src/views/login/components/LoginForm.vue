@@ -32,18 +32,6 @@
               show-password
             />
           </el-form-item>
-          <el-form-item prop="code">
-            <el-input
-              v-model.trim="loginFormData.code"
-              placeholder="验证码"
-              type="text"
-              :prefix-icon="Key"
-              tabindex="3"
-              maxLength="7"
-              size="large"
-            >
-            </el-input>
-          </el-form-item>
           <el-button type="primary" size="large" @click.prevent="handleLogin" :loading="loading"
             >登录</el-button
           >
@@ -55,8 +43,7 @@
 
 <script lang="ts" setup>
 import { useUserStore } from '@/pinia/stores/user'
-import { Key, Lock, User } from '@element-plus/icons-vue'
-import { useSettingsStore } from '@/pinia/stores/settings'
+import { Lock, User } from '@element-plus/icons-vue'
 import type { FormRules } from 'element-plus'
 import type { LoginForm } from '../apis/type'
 
@@ -65,8 +52,6 @@ const useStore = useUserStore()
 const router = useRouter()
 
 const route = useRoute()
-
-const settingsStore = useSettingsStore()
 
 // 登录参数
 const loginFormData: LoginForm = reactive({
@@ -101,10 +86,10 @@ const handleLogin = () => {
       .userLogin(loginFormData)
       .then(() => {
         router.push(route.query.redirect ? decodeURIComponent(route.query.redirect as string) : '/')
-        ElMessage.success('登录成功')
+        ElMessage.success('登录成功！')
       })
       .catch(() => {
-        ElMessage.error('登录失败')
+        ElMessage.error('登录失败！')
       })
     loading.value = false
   })
