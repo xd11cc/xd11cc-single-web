@@ -5,8 +5,9 @@ import { pinia } from '@/pinia'
 import { routerConfig } from '@/router/config'
 import { getRoutes } from '@/views/login/apis'
 import type { RouteVO } from '@/views/login/apis/type'
-import type { ComponentMap } from '@/common/assets/styles'
 
+const Layouts = () => import('@/layouts/index.vue')
+const Error404 = () => import('@/views/error/404.vue')
 /**
  * 权限判断：校验用户角色/权限是否拥有路由访问权限
  * @param roles
@@ -53,7 +54,11 @@ const transformBackendRoutes = (backendRoutes: RouteVO[]): RouteRecordRaw[] => {
     }
 
     if (route.component) {
-      baseRoute.component = resolveComponent(route.component)
+      if (route.component === 'Layout') {
+        baseRoute.component = Layouts
+      } else {
+        baseRoute.component = loadView(route.component)
+      }
     }
 
     if (route.children && route.children.length > 0) {
@@ -64,54 +69,19 @@ const transformBackendRoutes = (backendRoutes: RouteVO[]): RouteRecordRaw[] => {
   })
 }
 
-/**
- * 基础组件映射
- */
-const baseComponentMap: ComponentMap = {
-  // 布局组件
-  Layout: () => import('@/layouts/index.vue'),
-  // 通用组件
-  '404': () => import('@/views/error/404.vue'),
-}
+// 在模块顶部定义视图模块的映射
+const viewModules = import.meta.glob('@/views/**/*.vue', { eager: false })
 
-// 动态组件映射
-const getDynamicComponentMap = (): ComponentMap => {
-  const modules = import.meta.glob('@/views/**/*.vue', { eager: false })
-  const componentMap: ComponentMap = {}
+const loadView = (view: string): RouteComponent => {
+  const fullPath = `/src/views/${view}.vue`
+  const indexPath = `/src/views/${view}/index.vue`
 
-  Object.keys(modules).forEach((key) => {
-    // 将路径转换为组件名，例如 @/views/system/user/index.vue => system/user/index
-    const componentName = key
-      .replace(/^(\/src|@)\/views\//, '') // 匹配 /src/views/ 或 @/views/ 开头并替换为空
-      .replace(/\.vue$/, '') // 去掉.vue后缀
-    componentMap[componentName] = modules[key] as () => Promise<RouteComponent>
-  })
-  return componentMap
-}
-
-/**
- * 解析组件
- * @param componentPath
- * @returns
- */
-const resolveComponent = (componentPath: string): RouteComponent => {
-  if (!componentPath) {
-    console.warn('组件路径为空，使用404页面兜底')
-    return baseComponentMap['404']
+  const importFn = viewModules[fullPath] || viewModules[indexPath]
+  if (importFn) {
+    return importFn
   }
 
-  // 合并基础组件和动态组件映射
-  const allComponentMap = { ...baseComponentMap, ...getDynamicComponentMap() }
-
-  // 查找匹配的组件
-  if (allComponentMap[componentPath]) {
-    // 使用defineAsyncComponent确保返回类型符合RouteComponent要求
-    return allComponentMap[componentPath]
-  }
-
-  // 组件未找到时的兜底处理
-  console.warn(`组件 "${componentPath}" 未找到，使用404页面兜底`)
-  return baseComponentMap['404']
+  return Error404
 }
 
 export const usePermissionStore = defineStore('permission', () => {

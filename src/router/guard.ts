@@ -36,7 +36,9 @@ export function registerNavigationGuard(router: Router) {
       // 注意：角色必须是一个数组！例如：["admin"] 或 ["developer", "editor"]
       const roles = userStore.roles
       // 生成可访问的 Routes
-      routerConfig.dynamic ? permissionStore.generateRoutes(roles) : permissionStore.setAllRoutes()
+      routerConfig.dynamic
+        ? await permissionStore.generateRoutes(roles)
+        : permissionStore.setAllRoutes()
       // 将 “有访问权限的动态路由” 添加到 Router 中
       permissionStore.addRoutes.forEach((route) => router.addRoute(route))
       // 设置 replace: true，因此导航将不会留下历史记录

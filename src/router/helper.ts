@@ -1,6 +1,6 @@
 import type { Router, RouteRecordNormalized, RouteRecordRaw } from 'vue-router'
 import { createRouter } from 'vue-router'
-import { add, cloneDeep, omit } from 'lodash-es'
+import { cloneDeep, omit } from 'lodash-es'
 import { routerConfig } from './config'
 
 /**

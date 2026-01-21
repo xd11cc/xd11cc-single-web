@@ -43,5 +43,5 @@ export const routerConfig: RouterConfig = {
       : createWebHistory(VITE_PUBLIC_PATH),
   dynamic: true,
   defaultRoles: ['DEFAULT_ROLE'],
-  thirdLevelRouteCache: true,
+  thirdLevelRouteCache: false,
 }
