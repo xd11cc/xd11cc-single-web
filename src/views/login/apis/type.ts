@@ -1,3 +1,5 @@
+import type { RouteMeta } from 'vue-router'
+
 // 用户信息
 export interface UserLoginInfoVO {
   id: number
@@ -23,19 +25,13 @@ export interface LoginForm {
 
 // 路由参数
 export interface RouteVO {
+  id: number
+  parentId: number
   name: string
   path: string
   component: string
   redirect: string
-  meta: MetaVO
-  children: RouteVO[]
-}
-
-// 其他元素
-export interface MetaVO {
-  title: string
-  elIcon: string
-  query: string
-  hidden: boolean
-  permission: string
+  meta: RouteMeta
+  sort: number
+  children: []
 }

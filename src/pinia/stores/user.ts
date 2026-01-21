@@ -70,7 +70,7 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 
-  return { token, roles, username, setToken, userLogin, getInfo, logout, resetToken }
+  return { token, roles, routes, username, setToken, userLogin, getInfo, logout, resetToken }
 })
 
 export function useUserStoreOutside() {

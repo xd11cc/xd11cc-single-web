@@ -46,7 +46,9 @@ const permissionStore = usePermissionStore()
 
 const activeMenu = computed(() => route.meta.activeMenu || route.path)
 
-const noHiddenRoutes = computed(() => permissionStore.routes.filter((item) => !item.meta?.hidden))
+const noHiddenRoutes = computed(() =>
+  permissionStore.routes.filter((item) => !item.meta?.hidden && (item.children?.length ?? 0) > 0),
+)
 
 const v3SidebarMenuBgColor = getCssVar('--v3-sidebar-menu-bg-color')
 

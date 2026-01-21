@@ -1,5 +1,5 @@
 import request from '@@/utils/request'
-import type { UserLoginInfoVO } from './type'
+import type { UserLoginInfoVO, RouteVO } from './type'
 import { ResponseVO } from 'types/api'
 
 /**
@@ -33,6 +33,17 @@ export function logout(): Promise<ResponseVO<string>> {
 export function getUserInfo(): Promise<ResponseVO<UserLoginInfoVO>> {
   return request({
     url: '/login/getUserInfo',
+    method: 'GET',
+  })
+}
+
+/**
+ * 获取路由信息
+ * @returns
+ */
+export function getRoutes(): Promise<ResponseVO<RouteVO[]>> {
+  return request({
+    url: '/login/getRoutes',
     method: 'GET',
   })
 }
