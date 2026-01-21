@@ -8,7 +8,7 @@
           class="svg-icon"
         />
         <component
-          v-else-if="theOnlyOneChild.meta.svgIcon"
+          v-else-if="theOnlyOneChild.meta.elIcon"
           :is="theOnlyOneChild.meta?.elIcon"
           class="el-icon"
         />
