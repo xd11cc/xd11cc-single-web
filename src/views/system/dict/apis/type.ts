@@ -1,12 +1,12 @@
 export interface SystemDictTypeQueryVO {
-  name?: string
-  type?: string
+  dictName?: string
+  dictType?: string
 }
 
 export interface SystemDictTypeDO {
   id?: number
-  name?: string
-  type?: string
+  dictName?: string
+  dictType?: string
   remark?: string
   createTime?: string
 }

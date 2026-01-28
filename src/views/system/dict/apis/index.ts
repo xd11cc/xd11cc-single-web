@@ -10,7 +10,7 @@ export function page(data: SystemDictTypeQueryVO): Promise<ResponseVO<PageData<S
   })
 }
 
-export function add(data: SystemDictTypeDO) {
+export function add(data: SystemDictTypeDO): Promise<ResponseVO<number>> {
   return request({
     url: '/dict/type/add',
     method: 'POST',
@@ -18,7 +18,7 @@ export function add(data: SystemDictTypeDO) {
   })
 }
 
-export function modifyById(data: SystemDictTypeDO) {
+export function modifyById(data: SystemDictTypeDO): Promise<ResponseVO<boolean>> {
   return request({
     url: '/dict/type/modifyById',
     method: 'POST',
@@ -26,7 +26,7 @@ export function modifyById(data: SystemDictTypeDO) {
   })
 }
 
-export function removeByIds(ids: string) {
+export function removeByIds(ids: string): Promise<ResponseVO<number>> {
   return request({
     url: `/dict/type/removeByIds/${ids}`,
     method: 'GET',

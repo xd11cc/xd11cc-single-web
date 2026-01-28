@@ -2,11 +2,11 @@
   <div class="app-container">
     <el-card shadow="never" class="search-wrapper">
       <el-form ref="searchFormRef" :inline="true" :model="searchData">
-        <el-form-item prop="name" label="字典名称">
-          <el-input v-model="searchData.name" placeholder="请输入字典名称" />
+        <el-form-item prop="dictName" label="字典名称">
+          <el-input v-model="searchData.dictName" placeholder="请输入字典名称" />
         </el-form-item>
-        <el-form-item prop="type" label="字典类型">
-          <el-input v-model="searchData.type" placeholder="请输入字典类型" />
+        <el-form-item prop="dictType" label="字典类型">
+          <el-input v-model="searchData.dictType" placeholder="请输入字典类型" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" :icon="Search" @click="handleSearch"> 查询 </el-button>
@@ -31,8 +31,8 @@
       <div class="table-wrapper">
         <el-table ref="tableRef" :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column prop="name" label="字典名称" align="center" />
-          <el-table-column prop="type" label="字典类型" align="center" />
+          <el-table-column prop="dictName" label="字典名称" align="center" />
+          <el-table-column prop="dictType" label="字典类型" align="center" />
           <el-table-column prop="remark" label="备注" align="center" />
           <el-table-column prop="createTime" label="创建时间" align="center" />
           <el-table-column fixed="right" label="操作" width="150" align="center">
@@ -74,11 +74,11 @@
         label-width="100px"
         label-position="left"
       >
-        <el-form-item prop="name" label="字典名称">
-          <el-input v-model="formData.name" placeholder="请输入菜单名称" />
+        <el-form-item prop="dictName" label="字典名称">
+          <el-input v-model="formData.dictName" placeholder="请输入菜单名称" />
         </el-form-item>
-        <el-form-item prop="type" label="字典类型">
-          <el-input v-model="formData.type" placeholder="请输入菜单类型" />
+        <el-form-item prop="dictType" label="字典类型">
+          <el-input v-model="formData.dictType" placeholder="请输入菜单类型" />
         </el-form-item>
         <el-form-item prop="remark" label="备注">
           <el-input type="textarea" v-model="formData.remark" placeholder="请输入内容" />
@@ -121,8 +121,8 @@ const searchFormRef = useTemplateRef('searchFormRef')
 const tableRef = useTemplateRef('tableRef')
 
 const formRules: FormRules<SystemDictTypeDO> = {
-  name: [{ required: true, trigger: 'blur', message: '请输入字典名称' }],
-  type: [{ required: true, trigger: 'blur', message: '请输入字典类型' }],
+  dictName: [{ required: true, trigger: 'blur', message: '请输入字典名称' }],
+  dictType: [{ required: true, trigger: 'blur', message: '请输入字典类型' }],
 }
 
 function handleSearch() {
@@ -143,8 +143,8 @@ function handleCreateOrUpdate() {
     loading.value = true
     const api = formData.value.id === undefined ? add : modifyById
     api(formData.value)
-      .then(async () => {
-        ElMessage.success('操作成功')
+      .then(async (data) => {
+        ElMessage.success(data.msg || '操作成功')
         dialogVisible.value = false
         getTableData()
       })
@@ -165,14 +165,14 @@ function handleModify(row: SystemDictTypeDO) {
 }
 
 function handleRemove(row: SystemDictTypeDO) {
-  ElMessageBox.confirm(`正在删除${row.name}字典类型，确认删除？`, '提示', {
+  ElMessageBox.confirm(`正在删除${row.dictName}字典类型，确认删除？`, '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning',
   }).then(async () => {
     if (row.id) {
-      removeByIds(String(row.id)).then(() => {
-        ElMessage.success('删除成功')
+      removeByIds(String(row.id)).then((data) => {
+        ElMessage.success(data.msg || '删除成功')
         getTableData()
       })
     }
