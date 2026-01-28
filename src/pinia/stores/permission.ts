@@ -114,7 +114,14 @@ export const usePermissionStore = defineStore('permission', () => {
       : accessedRoutes
   }
 
-  return { routes, addRoutes, generateRoutes, setAllRoutes }
+  // 新增：重置权限路由状态
+  const reset = () => {
+    routes.value = publicRoutes // 恢复为仅公共路由
+    addRoutes.value = [] // 清空动态路由列表
+    dynamicRoutes.length = 0 // 清空全局动态路由数组
+  }
+
+  return { routes, addRoutes, generateRoutes, setAllRoutes, reset }
 })
 
 export function usePermissionStoreOutside() {

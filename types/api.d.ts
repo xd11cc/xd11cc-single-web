@@ -4,3 +4,8 @@ export interface ResponseVO<T> {
   data: T
   msg: string
 }
+
+export interface PageData<T> {
+  rows: T[]
+  total: number
+}

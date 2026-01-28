@@ -55,6 +55,7 @@ service.interceptors.response.use(
           console.error('服务器内部异常')
           break
       }
+      ElMessage.error(res.msg)
       return Promise.reject(new Error(res.msg))
     }
     return res

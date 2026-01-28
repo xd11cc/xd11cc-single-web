@@ -71,7 +71,7 @@ const toggleSidebar = () => {
 function logout() {
   userStore.logout().then(() => {
     router.push('/login')
-    ElMessage.success('退出成功！')
+    ElMessage.success('退出成功')
   })
 }
 </script>

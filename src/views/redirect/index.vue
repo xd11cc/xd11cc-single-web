@@ -1,5 +1,10 @@
-<template></template>
+<template>
+  <div />
+</template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+const route = useRoute()
+const router = useRouter()
 
-<style lang="scss" scoped></style>
+router.replace({ path: `/${route.params.path}`, query: route.query })
+</script>

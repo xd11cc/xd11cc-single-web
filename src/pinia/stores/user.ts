@@ -7,6 +7,7 @@ import { useSettingsStore } from './settings'
 import { useTagsViewStore } from './tags-view'
 import { pinia } from '..'
 import { RouteRecordRaw } from 'vue-router'
+import { usePermissionStore } from './permission'
 
 export const useUserStore = defineStore('user', () => {
   const token = ref<string>(getToken() || '')
@@ -22,6 +23,8 @@ export const useUserStore = defineStore('user', () => {
   const tagsViewStore = useTagsViewStore()
 
   const settingsStore = useSettingsStore()
+
+  const permissionStore = usePermissionStore()
 
   // 设置 Token
   const setToken = (value: string) => {
@@ -52,6 +55,7 @@ export const useUserStore = defineStore('user', () => {
     roles.value = []
     permissions.value = []
     resetRouter()
+    permissionStore.reset()
     resetTagsView()
   }
 

@@ -8,6 +8,7 @@ import App from './App.vue'
 import '@@/assets/styles/index.scss'
 import 'nprogress/nprogress.css'
 import 'kite-captcha-vue/dist/index.css'
+import 'vxe-table/lib/style.css'
 
 // 创建应用实例
 const app = createApp(App)
