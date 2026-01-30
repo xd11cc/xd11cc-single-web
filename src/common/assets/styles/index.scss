@@ -53,3 +53,13 @@ a:hover {
 div:focus {
   outline: none;
 }
+
+.link-type,
+.link-type:focus {
+  color: #337ab7;
+  cursor: pointer;
+
+  &:hover {
+    color: rgb(32, 160, 255);
+  }
+}

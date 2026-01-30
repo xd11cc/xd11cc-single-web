@@ -6,7 +6,7 @@ import { resetRouter } from '@/router'
 import { useSettingsStore } from './settings'
 import { useTagsViewStore } from './tags-view'
 import { pinia } from '..'
-import { RouteRecordRaw } from 'vue-router'
+import type { RouteRecordRaw } from 'vue-router'
 import { usePermissionStore } from './permission'
 
 export const useUserStore = defineStore('user', () => {

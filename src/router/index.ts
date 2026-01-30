@@ -81,7 +81,7 @@ export const publicRoutes: RouteRecordRaw[] = [
         path: 'profile/:activeTab?',
         component: () => import('@/views/system/user/profile/index.vue'),
         name: 'Profile',
-        meta: { title: '个人中心', icon: 'user' },
+        meta: { title: '个人中心' },
       },
     ],
   },

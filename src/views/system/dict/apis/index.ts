@@ -1,8 +1,15 @@
 import request from '@@/utils/request'
-import type { SystemDictTypeQueryVO, SystemDictTypeDO } from './type'
+import type {
+  SystemDictTypeQueryVO,
+  SystemDictTypeVO,
+  SystemDictDataVO,
+  SystemDictDataQueryVO,
+} from './type'
 import { PageData, ResponseVO } from 'types/api'
 
-export function page(data: SystemDictTypeQueryVO): Promise<ResponseVO<PageData<SystemDictTypeDO>>> {
+export function dictTypePage(
+  data: SystemDictTypeQueryVO,
+): Promise<ResponseVO<PageData<SystemDictTypeVO>>> {
   return request({
     url: '/dict/type/page',
     method: 'POST',
@@ -10,7 +17,7 @@ export function page(data: SystemDictTypeQueryVO): Promise<ResponseVO<PageData<S
   })
 }
 
-export function add(data: SystemDictTypeDO): Promise<ResponseVO<number>> {
+export function addDictType(data: SystemDictTypeVO): Promise<ResponseVO<number>> {
   return request({
     url: '/dict/type/add',
     method: 'POST',
@@ -18,7 +25,7 @@ export function add(data: SystemDictTypeDO): Promise<ResponseVO<number>> {
   })
 }
 
-export function modifyById(data: SystemDictTypeDO): Promise<ResponseVO<boolean>> {
+export function modifyDictTypeById(data: SystemDictTypeVO): Promise<ResponseVO<boolean>> {
   return request({
     url: '/dict/type/modifyById',
     method: 'POST',
@@ -26,9 +33,42 @@ export function modifyById(data: SystemDictTypeDO): Promise<ResponseVO<boolean>>
   })
 }
 
-export function removeByIds(ids: string): Promise<ResponseVO<number>> {
+export function removeDictTypeByIds(ids: string): Promise<ResponseVO<number>> {
   return request({
     url: `/dict/type/removeByIds/${ids}`,
     method: 'GET',
+  })
+}
+
+export function addDictData(data: SystemDictDataVO): Promise<ResponseVO<number>> {
+  return request({
+    url: '/dict/data/add',
+    method: 'POST',
+    data: data,
+  })
+}
+
+export function removeDictDataByIds(ids: string): Promise<ResponseVO<number>> {
+  return request({
+    url: `/dict/data/removeByIds/${ids}`,
+    method: 'GET',
+  })
+}
+
+export function modifyDictDataById(data: SystemDictDataVO): Promise<ResponseVO<number>> {
+  return request({
+    url: '/dict/data/modifyById',
+    method: 'POST',
+    data: data,
+  })
+}
+
+export function dictDataPage(
+  data: SystemDictDataQueryVO,
+): Promise<ResponseVO<PageData<SystemDictDataVO>>> {
+  return request({
+    url: '/dict/data/page',
+    method: 'POST',
+    data: data,
   })
 }
