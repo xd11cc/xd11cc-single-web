@@ -3,7 +3,12 @@
     <el-card shadow="never" class="search-wrapper">
       <el-form ref="searchFormRef" :inline="true" :model="searchData">
         <el-form-item prop="dictType" label="字典类型">
-          <el-select v-model="searchData.dictType" placeholder="字典类型" style="width: 200px">
+          <el-select
+            v-model="searchData.dictType"
+            placeholder="字典类型"
+            style="width: 200px"
+            @change="getTableData"
+          >
             <el-option
               v-for="item in dictTypeOptions"
               :key="item.id"
@@ -24,6 +29,7 @@
             placeholder="数据状态"
             clearable
             style="width: 200px"
+            @change="getTableData"
           >
             <el-option
               v-for="item in getDictOptions('system_status')"
