@@ -36,6 +36,7 @@ service.interceptors.response.use(
       switch (res.code) {
         case 400:
           console.error('请求参数错误')
+          ElMessage.error('请求参数错误')
           break
         case 401:
           console.error('未授权或者token过期')
@@ -44,15 +45,19 @@ service.interceptors.response.use(
           localStorage.removeItem('userInfo')
           // 强制刷新页面，触发导航守卫
           window.location.reload()
+          ElMessage.error('没有授权')
           break
         case 403:
           console.error('没有授权')
+          ElMessage.error('没有授权')
           break
         case 404:
           console.error('接口不存在')
+          ElMessage.error('接口不存在')
           break
         case 500:
           console.error('服务器内部异常')
+          ElMessage.error('服务器内部异常')
           break
       }
       ElMessage.error(res.msg)

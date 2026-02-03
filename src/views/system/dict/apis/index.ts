@@ -40,6 +40,13 @@ export function removeDictTypeByIds(ids: string): Promise<ResponseVO<number>> {
   })
 }
 
+export function dictTypeList(): Promise<ResponseVO<SystemDictTypeVO[]>> {
+  return request({
+    url: '/dict/type/list',
+    method: 'GET',
+  })
+}
+
 export function addDictData(data: SystemDictDataVO): Promise<ResponseVO<number>> {
   return request({
     url: '/dict/data/add',
@@ -70,5 +77,21 @@ export function dictDataPage(
     url: '/dict/data/page',
     method: 'POST',
     data: data,
+  })
+}
+
+export function getCache(dictType: string): Promise<ResponseVO<SystemDictDataVO[]>> {
+  return request({
+    url: `/dict/data/getCache/${dictType}`,
+    method: 'GET',
+  })
+}
+
+export function getCacheGroup(
+  dictTypes: string,
+): Promise<ResponseVO<Record<string, SystemDictDataVO[]>>> {
+  return request({
+    url: `/dict/data/getCacheGroup/${dictTypes}`,
+    method: 'GET',
   })
 }

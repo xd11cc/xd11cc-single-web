@@ -2,11 +2,37 @@
   <div class="app-container">
     <el-card shadow="never" class="search-wrapper">
       <el-form ref="searchFormRef" :inline="true" :model="searchData">
+        <el-form-item prop="dictType" label="字典类型">
+          <el-select v-model="searchData.dictType" placeholder="字典类型" style="width: 200px">
+            <el-option
+              v-for="item in dictTypeOptions"
+              :key="item.id"
+              :label="item.dictName"
+              :value="item.dictType ?? ''"
+            />
+          </el-select>
+        </el-form-item>
         <el-form-item prop="label" label="字典标签">
           <el-input v-model="searchData.label" placeholder="请输入字典标签" />
         </el-form-item>
         <el-form-item prop="value" label="字典键值">
           <el-input v-model="searchData.value" placeholder="请输入字典键值" />
+        </el-form-item>
+        <el-form-item prop="status" label="状态">
+          <el-select
+            v-model="searchData.status"
+            placeholder="数据状态"
+            clearable
+            style="width: 200px"
+          >
+            <el-option
+              v-for="item in getDictOptions('system_status')"
+              :key="item.id"
+              :label="item.value"
+              :value="item.label ?? ''"
+              :class="item.cssClass"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" :icon="Search" @click="handleSearch">查询</el-button>
@@ -34,7 +60,17 @@
           <el-table-column prop="label" label="字典标签" align="center" />
           <el-table-column prop="value" label="字典键值" align="center" />
           <el-table-column prop="sort" label="排序" align="center" />
-          <el-table-column prop="status" label="状态" align="center" />
+          <el-table-column prop="status" label="状态" align="center">
+            <template #default="scope">
+              <el-tag
+                :type="getDictItem('system_status', scope.row.status)?.listClass"
+                effect="plain"
+                disable-transitions
+              >
+                {{ getDictItem('system_status', scope.row.status)?.value }}
+              </el-tag>
+            </template>
+          </el-table-column>
           <el-table-column prop="remark" label="备注" align="center" />
           <el-table-column prop="createTime" label="创建时间" align="center" />
           <el-table-column fixed="right" label="操作" width="150" align="center">
@@ -128,14 +164,23 @@
 <script lang="ts" setup>
 import { CirclePlus, Delete, Download, Refresh, Search } from '@element-plus/icons-vue'
 import { usePagination } from '@/common/composables/usePagination'
-import type { SystemDictDataVO, SystemDictDataQueryVO } from './apis/type'
-import { addDictData, dictDataPage, modifyDictDataById, removeDictDataByIds } from './apis'
+import type { SystemDictDataVO, SystemDictDataQueryVO, SystemDictTypeVO } from './apis/type'
+import {
+  addDictData,
+  dictDataPage,
+  modifyDictDataById,
+  removeDictDataByIds,
+  dictTypeList,
+} from './apis'
 import { cloneDeep } from 'lodash-es'
 import { FormRules } from 'element-plus'
+import { useDict } from '@/common/composables/useDict'
 
 defineOptions({
   name: 'dictData',
 })
+
+const { loading, getDictItem, getDictOptions } = useDict(['system_status', 'system_user_sex'])
 
 const route = useRoute()
 
@@ -149,7 +194,7 @@ const tableRef = useTemplateRef('tableRef')
 
 const formRef = useTemplateRef('formRef')
 
-const loading = ref<boolean>(false)
+// const loading = ref<boolean>(false)
 
 const dialogVisible = ref<boolean>(false)
 
@@ -163,7 +208,10 @@ const formData = ref<SystemDictDataVO>({
   dictType: dictType,
   sort: 0,
   status: '0',
+  listClass: 'primary',
 })
+
+const dictTypeOptions = ref<SystemDictTypeVO[]>([])
 
 const formRules: FormRules<SystemDictDataVO> = {
   label: [{ required: true, trigger: 'blur', message: '请输入字典标签' }],
@@ -171,7 +219,6 @@ const formRules: FormRules<SystemDictDataVO> = {
 }
 
 const listOption = reactive([
-  { value: 'default', label: '默认' },
   { value: 'primary', label: '主要' },
   { value: 'success', label: '成功' },
   { value: 'info', label: '信息' },
@@ -214,6 +261,7 @@ function handleClose() {
     dictType: dictType,
     sort: 0,
     status: '0',
+    listClass: 'primary',
   }
   formRef.value?.clearValidate()
 }
@@ -277,6 +325,20 @@ function getTableData() {
       loading.value = false
     })
 }
+
+function getDictTypeList() {
+  dictTypeList()
+    .then(({ data }) => {
+      dictTypeOptions.value = data
+    })
+    .catch(() => {
+      dictTypeOptions.value = []
+    })
+}
+
+onMounted(() => {
+  getDictTypeList()
+})
 
 watch([() => paginationData.currentPage, () => paginationData.pageSize], getTableData, {
   immediate: true,
