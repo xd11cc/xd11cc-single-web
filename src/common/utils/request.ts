@@ -1,5 +1,6 @@
 import axios from 'axios'
-import { getToken } from '@@/utils/cache/cookies'
+import { getToken, removeToken } from '@@/utils/cache/cookies'
+import { resetRouter } from '@/router'
 
 // 创建axios实例
 const BASE_URL = import.meta.env.VITE_BASE_URL + import.meta.env.VITE_PUBLIC_PATH
@@ -36,20 +37,17 @@ service.interceptors.response.use(
       switch (res.code) {
         case 400:
           console.error('请求参数错误')
-          ElMessage.error('请求参数错误')
           break
         case 401:
           console.error('未授权或者token过期')
           // 清除本地存储的token
-          localStorage.removeItem('token')
-          localStorage.removeItem('userInfo')
+          removeToken()
           // 强制刷新页面，触发导航守卫
-          window.location.reload()
-          ElMessage.error('没有授权')
+          resetRouter()
           break
         case 403:
-          console.error('没有授权')
-          ElMessage.error('没有授权')
+          console.error('未授权')
+          ElMessage.error('未授权')
           break
         case 404:
           console.error('接口不存在')
@@ -57,7 +55,6 @@ service.interceptors.response.use(
           break
         case 500:
           console.error('服务器内部异常')
-          ElMessage.error('服务器内部异常')
           break
       }
       ElMessage.error(res.msg)
@@ -86,7 +83,7 @@ service.interceptors.response.use(
         window.location.reload()
         break
       case 403:
-        console.error('没有授权')
+        console.error('未授权')
         break
       case 404:
         console.error('接口不存在')

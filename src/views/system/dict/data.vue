@@ -13,7 +13,7 @@
               v-for="item in dictTypeOptions"
               :key="item.id"
               :label="item.dictName"
-              :value="item.dictType ?? ''"
+              :value="item.dictType!"
             />
           </el-select>
         </el-form-item>
@@ -32,11 +32,10 @@
             @change="getTableData"
           >
             <el-option
-              v-for="item in getDictOptions('system_status')"
+              v-for="item in getDictList('system_status')"
               :key="item.id"
               :label="item.value"
-              :value="item.label ?? ''"
-              :class="item.cssClass"
+              :value="item.label!"
             />
           </el-select>
         </el-form-item>
@@ -139,7 +138,7 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item prop="sort" label="排序">
+        <el-form-item prop="sort" label="显示排序">
           <el-input-number v-model="formData.sort" :min="0" controls-position="right" />
         </el-form-item>
         <el-form-item prop="status" label="状态">
@@ -179,14 +178,14 @@ import {
   dictTypeList,
 } from './apis'
 import { cloneDeep } from 'lodash-es'
-import { FormRules } from 'element-plus'
+import type { FormRules } from 'element-plus'
 import { useDict } from '@/common/composables/useDict'
 
 defineOptions({
   name: 'dictData',
 })
 
-const { loading, getDictItem, getDictOptions } = useDict(['system_status', 'system_user_sex'])
+const { loading, getDictItem, getDictList } = useDict(['system_status', 'system_user_sex'])
 
 const route = useRoute()
 

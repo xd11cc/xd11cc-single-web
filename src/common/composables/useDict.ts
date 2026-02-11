@@ -60,7 +60,7 @@ export const useDict = (dictTypes: string | string[]) => {
    * @param dictType
    * @returns
    */
-  const getDictOptions = (dictType: string): SystemDictDataVO[] => {
+  const getDictList = (dictType: string): SystemDictDataVO[] => {
     const list = dictData.value[dictType] || []
     return list.map((item) => ({ ...item, listClass: validDataComponentType(item.listClass) }))
   }
@@ -82,5 +82,5 @@ export const useDict = (dictTypes: string | string[]) => {
     loadDictData()
   })
 
-  return { loading, dictData, getDictMap, getDictOptions, getDictItem }
+  return { loading, dictData, getDictMap, getDictList, getDictItem }
 }
