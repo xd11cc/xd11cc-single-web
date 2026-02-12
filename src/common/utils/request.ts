@@ -43,7 +43,7 @@ service.interceptors.response.use(
           // 清除本地存储的token
           removeToken()
           // 强制刷新页面，触发导航守卫
-          resetRouter()
+          window.location.reload()
           break
         case 403:
           console.error('未授权')
@@ -78,7 +78,7 @@ service.interceptors.response.use(
       case 401:
         console.error('未授权或者token过期')
         // 清除本地存储的token
-        localStorage.removeItem('token')
+        removeToken()
         // 强制刷新页面，触发导航守卫
         window.location.reload()
         break

@@ -88,9 +88,6 @@ const handleLogin = () => {
         router.push(route.query.redirect ? decodeURIComponent(route.query.redirect as string) : '/')
         ElMessage.success('登录成功')
       })
-      .catch((error: Error) => {
-        ElMessage.error(error.message || '登录失败')
-      })
       .finally(() => {
         loading.value = false
       })

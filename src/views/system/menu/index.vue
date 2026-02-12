@@ -110,7 +110,7 @@
           </el-col>
           <el-col :span="12" v-show="formData.menuType != 'B'">
             <el-form-item prop="icon" label="菜单图标">
-              <el-input :prefix-icon="Search" v-model="formData.icon" />
+              <icon-select v-model="formData.icon" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -125,7 +125,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item prop="menuName" label="菜单名称">
-              <el-input v-model="formData.menuName" />
+              <el-input v-model="formData.menuName" placeholder="请输入菜单名称" />
             </el-form-item>
           </el-col>
           <el-col :span="12" v-show="formData.menuType != 'B'">
@@ -148,7 +148,7 @@
           </el-col>
           <el-col :span="12" v-show="formData.menuType != 'B'">
             <el-form-item prop="routeName" label="路由名称">
-              <el-input v-model="formData.routeName" />
+              <el-input v-model="formData.routeName" placeholder="请输入路由名称" />
             </el-form-item>
           </el-col>
           <el-col :span="12" v-show="formData.menuType != 'B'">
@@ -164,7 +164,7 @@
                   路由地址
                 </span>
               </template>
-              <el-input v-model="formData.path" />
+              <el-input v-model="formData.path" placeholder="请输入路由地址" />
             </el-form-item>
           </el-col>
           <el-col :span="12" v-show="formData.menuType != 'M'">
@@ -180,7 +180,7 @@
                   权限字符
                 </span>
               </template>
-              <el-input v-model="formData.permission" />
+              <el-input v-model="formData.permission" placeholder="请输入权限字符" />
             </el-form-item>
           </el-col>
           <el-col :span="12" v-show="formData.menuType == 'C'">
@@ -196,7 +196,7 @@
                   路由参数
                 </span>
               </template>
-              <el-input v-model="formData.query" />
+              <el-input v-model="formData.query" placeholder="请输入路由参数" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -242,6 +242,8 @@ import type { FormRules } from 'element-plus'
 import { addMenu, modifyById, removeById, treeList } from './apis'
 import type { SystemMenuVO, SystemMenuQueryVO, SystemMenuTreeVO } from './apis/type'
 import { cloneDeep } from 'lodash-es'
+import IconSelect from '@@/components/IconSelect/index.vue'
+import type { ElIconName } from '@@/components/IconSelect/elIcon'
 
 const { loading, getDictList, getDictItem } = useDict([
   'system_status',
@@ -263,6 +265,7 @@ const formData = ref<SystemMenuVO>({
   menuType: 'M',
   visible: '0',
   status: '0',
+  icon: '',
 })
 
 const formRules: FormRules<SystemMenuVO> = {
@@ -344,6 +347,10 @@ function getTableData() {
 }
 
 getTableData()
+
+const handleIconSelect = (iconName: ElIconName) => {
+  formData.value.icon = iconName
+}
 </script>
 
 <style lang="scss" scoped>
