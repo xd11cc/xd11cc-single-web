@@ -17,7 +17,7 @@
   <div v-else>
     <el-popover
       placement="bottom-start"
-      :width="300"
+      :width="'auto'"
       v-model:visible="popoverVisible"
       trigger="click"
     >
@@ -65,7 +65,9 @@
             <el-icon size="18"><component :is="iconComponentMap[name]" /></el-icon>
             <span>{{ name }}</span>
           </div>
-          <el-empty v-if="filteredIcons.length === 0" description="暂无图标" />
+
+          <!-- 优化点：自定义空状态，移除 ElEmpty，样式更紧凑 -->
+          <div v-if="filteredIcons.length === 0" class="empty-state">暂无匹配图标</div>
         </div>
       </div>
     </el-popover>
@@ -73,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-import { ElIcon, ElPopover, ElInput, ElEmpty } from 'element-plus'
+import { ElIcon, ElPopover, ElInput } from 'element-plus' // 已移除 ElEmpty
 import { Search } from '@element-plus/icons-vue'
 import { iconComponentMap, icons, type ElIconName } from './elIcon'
 import { ref, computed } from 'vue'
@@ -175,7 +177,13 @@ const handleSearch = () => {}
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.el-empty {
+
+/* 优化点：自定义空状态样式，占据整行，文字居中，颜色柔和 */
+.empty-state {
   grid-column: 1 / -1;
+  text-align: center;
+  padding: 20px 0;
+  color: #909399;
+  font-size: 14px;
 }
 </style>

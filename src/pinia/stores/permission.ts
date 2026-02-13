@@ -20,7 +20,7 @@ function hasPermission(roles: string[], route: RouteRecordRaw) {
 }
 
 /**
- * 过滤可访问的动态路由 todo
+ * 过滤可访问的动态路由
  * @param routes
  * @param roles
  * @returns
