@@ -1,5 +1,4 @@
 <template>
-  {{ url }}
   <div>
     <IFrame :src="url" />
   </div>
