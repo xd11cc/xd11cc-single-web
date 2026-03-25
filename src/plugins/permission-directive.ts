@@ -8,13 +8,16 @@ import { useUserStore } from '@/pinia/stores/user'
  */
 const permission: Directive = {
   mounted(el, binding) {
-    const { value: permissionRoles } = binding
-    const { roles } = useUserStore()
-    if (isArray(permissionRoles) && permissionRoles.length > 0) {
-      const hasPermission = roles.some((role) => permissionRoles.includes(role))
+    const { value: permissionFlag } = binding
+    const all_permission = '*:*:*'
+    const { permissions } = useUserStore()
+    if (isArray(permissionFlag) && permissionFlag.length > 0) {
+      const hasPermission = permissions.some(
+        (permission) => all_permission === permission || permissionFlag.includes(permission),
+      )
       hasPermission || el.parentNode?.removeChild(el)
     } else {
-      throw new Error(`参数必须是一个数组且长度大于 0，参考：v-permission="['admin', 'editor']"`)
+      throw new Error(`请设置操作权限标签值`)
     }
   },
 }

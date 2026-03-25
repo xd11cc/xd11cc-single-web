@@ -48,7 +48,12 @@
             </template>
           </el-table-column>
           <el-table-column prop="sort" label="排序" align="center" />
-          <el-table-column prop="permission" label="权限标识" align="center" />
+          <el-table-column
+            prop="permission"
+            label="权限标识"
+            align="center"
+            show-overflow-tooltip
+          />
           <el-table-column prop="component" label="组件路径" align="center" />
           <el-table-column prop="status" label="状态" align="center">
             <template #default="scope">

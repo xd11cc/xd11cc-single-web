@@ -20,6 +20,33 @@ export default defineConfig(({ mode }) => {
         '@@': resolve(__dirname, 'src/common'),
       },
     },
+    // 开发环境配置
+    server: {
+      // 是否监听所有地址
+      host: true,
+      // 端口号
+      port: 20001,
+      // 端口被占用时，是否直接退出
+      strictPort: false,
+      // 是否自动打开浏览器
+      open: true,
+      // 反向代理
+      proxy: {
+        xd11cc: {
+          target: 'http://localhost:10001',
+          // 是否为 WebSocket
+          ws: false,
+          // 是否允许跨域
+          changeOrigin: true,
+        },
+      },
+      // 是否允许跨域
+      cors: true,
+      // 预热常用文件，提高初始页面加载速度
+      warmup: {
+        clientFiles: ['./src/layouts/**/*.*', './src/pinia/**/*.*', './src/router/**/*.*'],
+      },
+    },
     css: {
       // 线程中运行 CSS 预处理器
       preprocessorMaxWorkers: true,

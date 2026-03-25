@@ -17,14 +17,30 @@
     <el-card v-loading="loading" shadow="never">
       <div class="toolbar-wrapper">
         <div>
-          <el-button type="primary" :icon="CirclePlus" @click="dialogVisible = true">
+          <el-button
+            type="primary"
+            :icon="CirclePlus"
+            @click="dialogVisible = true"
+            v-permission="['system:dictType:add']"
+          >
             新增
           </el-button>
-          <el-button type="danger" :icon="Delete" @click="handleBatchRemove">批量删除</el-button>
+          <el-button
+            type="danger"
+            :icon="Delete"
+            @click="handleBatchRemove"
+            v-permission="['system:dictType:delete']"
+            >批量删除</el-button
+          >
         </div>
         <div>
           <el-tooltip content="下载">
-            <el-button type="primary" :icon="Download" circle />
+            <el-button
+              type="primary"
+              :icon="Download"
+              circle
+              v-permission="['system:dictType:export']"
+            />
           </el-tooltip>
         </div>
       </div>
@@ -46,10 +62,22 @@
           <el-table-column prop="createTime" label="创建时间" align="center" />
           <el-table-column fixed="right" label="操作" width="150" align="center">
             <template #default="scope">
-              <el-button type="primary" text bg size="small" @click="handleModify(scope.row)"
+              <el-button
+                type="primary"
+                text
+                bg
+                size="small"
+                @click="handleModify(scope.row)"
+                v-permission="['system:dictType:update']"
                 >修改</el-button
               >
-              <el-button type="danger" text bg size="small" @click="handleRemove(scope.row)"
+              <el-button
+                type="danger"
+                text
+                bg
+                size="small"
+                @click="handleRemove(scope.row)"
+                v-permission="['system:dictType:delete']"
                 >删除</el-button
               >
             </template>
