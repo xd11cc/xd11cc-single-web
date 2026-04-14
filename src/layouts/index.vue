@@ -21,6 +21,8 @@ import { getCssVar, setCssVar } from '@@/utils/css'
 import { useResize } from './composables/useResize'
 import { useWatermark } from '@@/composables/useWatermark'
 import { useUserStore } from '@/pinia/stores/user'
+import { initWebSocketInstance, resetWebSocketInstance } from '@@/utils/webSocket'
+import { getToken } from '@@/utils/cache/cookies'
 
 useResize()
 
@@ -50,5 +52,26 @@ watchEffect(() => {
   showWatermark.value
     ? setWatermark(import.meta.env.VITE_APP_TITLE + '-' + userStore.username)
     : clearWatermark()
+})
+
+onMounted(() => {
+  try {
+    // 重置旧的 WebSocket 实例，避免重复登录导致多个连接
+    resetWebSocketInstance()
+    const tokne = getToken() as string
+    const wsClient = initWebSocketInstance(tokne)
+    if (!wsClient) {
+      return null
+    }
+    // 初始化连接并添加错误捕获
+    wsClient.initConnect()
+    return wsClient
+  } catch (error) {
+    return null
+  }
+})
+
+onUnmounted(() => {
+  resetWebSocketInstance()
 })
 </script>
