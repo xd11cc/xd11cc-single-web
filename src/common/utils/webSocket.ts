@@ -92,20 +92,17 @@ export class WebSocketClient {
 
       // 接收消息回调
       this.ws.onmessage = (event) => {
-        // 处理二进制/控制帧（后端PING/PONG帧）
-        if (event.data instanceof ArrayBuffer || event.data instanceof Blob) {
-          console.debug(' [WebSocket] 收到控制帧，忽略')
+        if (event.data === 'PONG') {
           return
         }
-
         // 处理文本消息
         try {
           const data = JSON.parse(event.data) as NettyMessageDTO
           this.handleMessage(data)
         } catch (error) {
           // 后端PING字符串响应
-          if (event.data === 'PING' || event.data === 'PONG') {
-            console.debug(' [WebSocket] 收到心跳响应', event.data)
+          if (event.data === 'PING') {
+            this.ws?.send('PONG')
             return
           }
           console.error(' [WebSocket] 消息解析失败：', error, '原始数据：', event.data)
