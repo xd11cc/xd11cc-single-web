@@ -21,7 +21,7 @@ declare module 'vue-router' {
     /**
      * @description 设置该路由的图标
      */
-    elIcon?: ElementPlusIconsName
+    icon?: ElementPlusIconsName
 
     /**
      * @description 默认false，设置true的时候路由不会在侧边栏出现

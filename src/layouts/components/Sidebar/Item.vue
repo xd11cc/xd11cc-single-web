@@ -8,8 +8,8 @@
           class="svg-icon"
         />
         <component
-          v-else-if="theOnlyOneChild.meta.elIcon"
-          :is="theOnlyOneChild.meta?.elIcon"
+          v-else-if="theOnlyOneChild.meta.icon"
+          :is="theOnlyOneChild.meta?.icon"
           class="el-icon"
         />
         <template v-if="theOnlyOneChild.meta.title" #title>
@@ -21,7 +21,7 @@
   <el-sub-menu v-else :index="resolvePath(item.path)" teleported>
     <template #title>
       <SvgIcon v-if="item.meta?.svgIcon" :name="item.meta.svgIcon" class="svg-class" />
-      <component v-else-if="item.meta?.elIcon" :is="item.meta.elIcon" class="el-icon" />
+      <component v-else-if="item.meta?.icon" :is="item.meta.icon" class="el-icon" />
       <span v-if="item.meta?.title" class="title">{{ item.meta.title }}</span>
     </template>
     <template v-if="item.children">
