@@ -20,7 +20,8 @@ export interface LoginForm {
   way: number
   device: number
   app: number
-  code: string
+  captcha: string
+  captchaId: string
 }
 
 // 路由参数
@@ -34,4 +35,9 @@ export interface RouteVO {
   meta: RouteMeta
   sort: number
   children: []
+}
+
+export interface CaptchaVO {
+  captchaId: string
+  image: string
 }

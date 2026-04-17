@@ -1,5 +1,5 @@
 import request from '@@/utils/request'
-import type { UserLoginInfoVO, RouteVO } from './type'
+import type { UserLoginInfoVO, RouteVO, CaptchaVO } from './type'
 import { ResponseVO } from 'types/api'
 
 /**
@@ -44,6 +44,17 @@ export function getUserInfo(): Promise<ResponseVO<UserLoginInfoVO>> {
 export function getRoutes(): Promise<ResponseVO<RouteVO[]>> {
   return request({
     url: '/login/getRoutes',
+    method: 'GET',
+  })
+}
+
+/**
+ * 获取验证码
+ * @returns
+ */
+export function getCaptcha(): Promise<ResponseVO<CaptchaVO>> {
+  return request({
+    url: '/login/getCaptcha',
     method: 'GET',
   })
 }
