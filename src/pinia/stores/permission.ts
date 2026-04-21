@@ -54,7 +54,7 @@ const transformBackendRoutes = (backendRoutes: RouteVO[]): RouteRecordRaw[] => {
     }
 
     if (route.component) {
-      if (route.component === 'Layout') {
+      if (route.component === 'Layout' || !route.component) {
         baseRoute.component = Layouts
       } else {
         baseRoute.component = loadView(route.component)

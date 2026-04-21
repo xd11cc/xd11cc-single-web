@@ -50,6 +50,7 @@ export class WebSocketClient {
   private messageCallback: ((data: NettyMessageDTO) => void) | null = null // 消息回调
   private status: WsStatus = WsStatus.DISCONNECTED // 连接状态
   private token: string | null = null // 存储token，重连时复用
+  private visiblityHandler: (() => void) | null = null // 页面可见性监听
 
   constructor(config: Partial<WsConfig>, token: string) {
     // 合并配置
@@ -88,6 +89,7 @@ export class WebSocketClient {
         this.reconnectCount = 0 // 重置重连次数
         this.setStatus(WsStatus.CONNECTED)
         this.startHeartbeat() // 启动心跳检测
+        this.startVisibilityListener()
       }
 
       // 接收消息回调
@@ -179,6 +181,43 @@ export class WebSocketClient {
   }
 
   /**
+   * 启动页面可见性监听
+   */
+  private startVisibilityListener() {
+    this.stopVisibilityListener()
+
+    this.visiblityHandler = () => {
+      // 页面变为可见状态
+      if (!document.hidden) {
+        console.log('[WebSocket] 页面从后台恢复')
+        if (this.ws?.readyState === WebSocket.OPEN) {
+          this.ws.send('PING')
+          this.startHeartbeat()
+        } else if (
+          !this.isManualClose &&
+          (this.status === WsStatus.DISCONNECTED || this.status === WsStatus.RECONNECTING)
+        ) {
+          console.log('[WebSocket] 连接已断开，尝试立即重连')
+          this.reconnectCount = 0
+          this.initConnect()
+        }
+      }
+    }
+
+    document.addEventListener('visibilitychange', this.visiblityHandler)
+  }
+
+  /**
+   * 停止页面可见性监听
+   */
+  private stopVisibilityListener() {
+    if (this.visiblityHandler) {
+      document.removeEventListener('visibilitychange', this.visiblityHandler)
+      this.visiblityHandler = null
+    }
+  }
+
+  /**
    * 自动重连，指数避退重连（避免频繁重连）
    */
   private reconnect() {
@@ -223,6 +262,7 @@ export class WebSocketClient {
   public close() {
     this.isManualClose = true
     this.clearAllTimers()
+    this.stopVisibilityListener()
     if (this.ws) {
       // 发送正常关闭帧
       this.ws.close(WsCloseCode.NORMAL_CLOSURE, '手动关闭连接')

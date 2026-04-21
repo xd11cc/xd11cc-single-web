@@ -25,27 +25,6 @@ export const publicRoutes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: '/401',
-    component: () => import('@/views/error/401.vue'),
-    meta: {
-      hidden: true,
-    },
-  },
-  {
-    path: '/404',
-    component: () => import('@/views/error/404.vue'),
-    meta: {
-      hidden: true,
-    },
-  },
-  {
-    path: '/500',
-    component: () => import('@/views/error/500.vue'),
-    meta: {
-      hidden: true,
-    },
-  },
-  {
     path: '/login',
     component: () => import('@/views/login/Login.vue'),
     meta: {
@@ -65,6 +44,20 @@ export const publicRoutes: RouteRecordRaw[] = [
           title: '首页',
           svgIcon: 'dashboard',
           affix: true,
+        },
+      },
+      {
+        path: '/:pathMatch(.*)*',
+        component: () => import('@/views/error/404.vue'),
+        meta: {
+          hidden: true,
+        },
+      },
+      {
+        path: '/500',
+        component: () => import('@/views/error/500.vue'),
+        meta: {
+          hidden: true,
         },
       },
     ],

@@ -276,6 +276,9 @@ const formData = ref<SystemMenuVO>({
 const formRules: FormRules<SystemMenuVO> = {
   sort: [{ required: true, trigger: 'blur', message: '请选择显示排序' }],
   menuName: [{ required: true, trigger: 'blur', message: '请输入菜单名称' }],
+  component: [{ required: true, trigger: 'blur', message: '请输入组件路径' }],
+  routeName: [{ required: true, trigger: 'blur', message: '请输入路由名称' }],
+  path: [{ required: true, trigger: 'blur', message: '请输入路由地址' }],
 }
 
 const dialogVisible = ref<boolean>(false)
