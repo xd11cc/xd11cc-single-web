@@ -140,7 +140,7 @@
 
 <script lang="ts" setup>
 import { CirclePlus, Delete, Download, Refresh, Search } from '@element-plus/icons-vue'
-import { usePagination } from '@/common/composables/usePagination'
+import { usePagination } from '@@/composables/usePagination'
 import { dictTypePage, addDictType, modifyDictTypeById, removeDictTypeByIds } from './apis/index'
 import type { SystemDictTypeQueryVO, SystemDictTypeVO } from './apis/type'
 import type { FormRules } from 'element-plus'

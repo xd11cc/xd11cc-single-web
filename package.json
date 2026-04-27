@@ -6,15 +6,17 @@
   "scripts": {
     "dev": "vite --mode dev",
     "test": "vite --mode test",
-    "build": "vite build --mode dev",
+    "build": "vite build --mode prod",
+    "build:dev": "vite build --mode dev",
     "build:test": "vite build --mode test",
-    "build:prod": "vite build --mode prod",
     "preview": "vite preview",
     "format": "prettier --write src/"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.2",
+    "@highlightjs/vue-plugin": "^2.1.0",
     "element-plus": "^2.10.2",
+    "highlight.js": "^11.11.1",
     "js-cookie": "^3.0.5",
     "lodash-es": "^4.17.22",
     "mitt": "^3.0.1",
