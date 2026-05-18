@@ -58,3 +58,16 @@ export function getCaptcha(): Promise<ResponseVO<CaptchaVO>> {
     method: 'GET',
   })
 }
+
+/**
+ * 社交授权登录
+ * @param source
+ * @returns
+ */
+export function socialLogin(source: string): Promise<ResponseVO<string>> {
+  return request({
+    url: `/login/authorize/${source}`,
+    method: 'GET',
+    timeout: 30000,
+  })
+}

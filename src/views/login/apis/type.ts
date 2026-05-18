@@ -22,6 +22,7 @@ export interface LoginForm {
   app: number
   captcha: string
   captchaId: string
+  rememberMe: boolean
 }
 
 // 路由参数
@@ -40,4 +41,10 @@ export interface RouteVO {
 export interface CaptchaVO {
   captchaId: string
   image: string
+}
+
+export enum SourceEnum {
+  github = 'GITHUB',
+  wechat = 'WECHAT',
+  qq = 'qq',
 }
