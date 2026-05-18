@@ -5,11 +5,9 @@
       <el-menu
         :default-active="activeMenu"
         :collapse="isCollapse && !isTop"
-        :background-color="backgroudColor"
-        :text-color="textColor"
-        :active-text-color="activeTextColor"
         :collapse-transition="false"
         :mode="isTop && !isMobile ? 'horizontal' : 'vertical'"
+        :class="{ 'sidebar-menu-left': isLeft }"
       >
         <Item
           v-for="noHiddenRoute in noHiddenRoutes"
@@ -27,7 +25,6 @@ import Item from './Item.vue'
 import Logo from '../Logo/index.vue'
 import { useAppStore } from '@/pinia/stores/app'
 import { useLayoutMode } from '@@/composables/useLayoutMode'
-import { getCssVar } from '@@/utils/css'
 import { useDevice } from '@@/composables/useDevice'
 import { useSettingsStore } from '@/pinia/stores/settings'
 import { usePermissionStore } from '@/pinia/stores/permission'
@@ -50,21 +47,9 @@ const noHiddenRoutes = computed(() =>
   permissionStore.routes.filter((item) => !item.meta?.hidden && (item.children?.length ?? 0) > 0),
 )
 
-const v3SidebarMenuBgColor = getCssVar('--v3-sidebar-menu-bg-color')
-
-const v3SidebarMenuTextColor = getCssVar('--v3-sidebar-menu-text-color')
-
-const v3SidebarMenuActiveTextColor = getCssVar('--v3-sidebar-menu-active-text-color')
-
 const isCollapse = computed(() => !appStore.sidebar.opened)
 
 const isLogo = computed(() => isLeft.value && settingsStore.showLogo)
-
-const backgroudColor = computed(() => (isLeft.value ? v3SidebarMenuBgColor : undefined))
-
-const textColor = computed(() => (isLeft.value ? v3SidebarMenuTextColor : undefined))
-
-const activeTextColor = computed(() => (isLeft.value ? v3SidebarMenuActiveTextColor : undefined))
 
 const sidebarMenuItemHeight = computed(() =>
   !isTop.value ? 'var(--v3-sidebar-menu-item-height)' : 'var(--v3-navigationbar-height)',
@@ -115,6 +100,13 @@ const tipLineWidth = computed(() => (!isTop.value ? '2px' : '0px'))
   user-select: none;
   border: none;
   width: 100%;
+
+  &.sidebar-menu-left {
+    --el-menu-bg-color: var(--v3-sidebar-menu-bg-color);
+    --el-menu-text-color: var(--v3-sidebar-menu-text-color);
+    --el-menu-active-color: var(--v3-sidebar-menu-active-text-color);
+    --el-menu-hover-bg-color: var(--v3-sidebar-menu-hover-bg-color);
+  }
 }
 
 .el-menu--horizontal {
@@ -136,7 +128,7 @@ const tipLineWidth = computed(() => (!isTop.value ? '2px' : '0px'))
 :deep(.el-sub-menu) {
   &.is-active {
     > .el-sub-menu__title {
-      color: v-bind(activeTextColor);
+      color: var(--el-menu-active-color);
     }
   }
 }

@@ -1,0 +1,18 @@
+@use '@@/assets/styles/mixins.scss';
+
+$transition-time: 0.35s;
+
+/**
+* LeftMode.vue、TopMode.vue、LeftTopMode.vue公共样式  
+*/
+.app-wrapper {
+  @extend %clearfix;
+  position: relative;
+  width: 100%;
+}
+
+.layout-header {
+  background-color: var(--v3-header-bg-color);
+  box-shadow: var(--v3-header-box-shadow);
+  border-bottom: var(--v3-header-border-bottom);
+}

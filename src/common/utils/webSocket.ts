@@ -51,11 +51,13 @@ export class WebSocketClient {
   private status: WsStatus = WsStatus.DISCONNECTED // 连接状态
   private token: string | null = null // 存储token，重连时复用
   private visiblityHandler: (() => void) | null = null // 页面可见性监听
+  private onStatusChange?: (status: WsStatus) => void // 状态变更回调
 
-  constructor(config: Partial<WsConfig>, token: string) {
+  constructor(config: Partial<WsConfig>, token: string, onStatusChange?: (status: WsStatus) => void) {
     // 合并配置
     this.config = { ...defaultConfig, ...config }
     this.token = token
+    this.onStatusChange = onStatusChange
   }
 
   /**
@@ -303,19 +305,18 @@ export class WebSocketClient {
 
   private setStatus(status: WsStatus) {
     this.status = status
+    this.onStatusChange?.(status)
     console.debug(` [WebSocket] 状态变更：${status}`)
   }
 }
 
-// 导出单例
+// 导出单例（已废弃，请使用 useWebSocket composable）
 let wsClient: WebSocketClient | null = null
 
 const BASE_WS_URL = import.meta.env.VITE_WS_URL + import.meta.env.VITE_WS_PATH
 
 /**
- * 初始化WebSocket实例
- * @param token
- * @returns
+ * @deprecated 请使用 useWebSocket composable
  */
 export const initWebSocketInstance = (token: string) => {
   if (wsClient) {
@@ -335,17 +336,17 @@ export const initWebSocketInstance = (token: string) => {
 }
 
 /**
- * 重置WebSocket实例（登出时调用）
+ * @deprecated 请使用 useWebSocket composable
  */
 export const resetWebSocketInstance = () => {
   if (wsClient) {
-    wsClient.close() // 先关闭连接
-    wsClient = null // 清空实例
+    wsClient.close()
+    wsClient = null
     console.log(' [WebSocket]  实例已重置')
   }
 }
 
 /**
- * 直接获取单例实例的方法
+ * @deprecated 请使用 useWebSocket composable
  */
 export const getWebSocket = () => wsClient

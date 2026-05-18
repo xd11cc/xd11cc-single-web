@@ -81,11 +81,6 @@ export const publicRoutes: RouteRecordRaw[] = [
 ]
 
 /**
- * 动态路由
- */
-export const dynamicRoutes: RouteRecordRaw[] = []
-
-/**
  * 路由实例
  */
 export const router = createRouter({

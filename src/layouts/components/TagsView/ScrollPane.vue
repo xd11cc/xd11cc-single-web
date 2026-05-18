@@ -74,10 +74,11 @@ function wheelScroll({ deltaY }: WheelEvent) {
  * 获取可能需要的宽度
  */
 function getWidth() {
+  if (!scrollbarContentRef.value || !scrollbarRef.value?.wrapRef) return null
   // 可滚动内容的长度
-  const scrollbarContentRefWidth = scrollbarContentRef.value!.clientWidth
+  const scrollbarContentRefWidth = scrollbarContentRef.value.clientWidth
   // 滚动可视区宽度
-  const scrollbarRefWidth = scrollbarRef.value!.wrapRef!.clientWidth
+  const scrollbarRefWidth = scrollbarRef.value.wrapRef.clientWidth
   // 最后剩余可滚动的宽度
   const lastDistance = scrollbarContentRefWidth - scrollbarRefWidth - currentScrollLeft
 
@@ -91,7 +92,9 @@ function getWidth() {
  */
 function scrollTo(direction: 'left' | 'right', distance: number = translateDistance) {
   let scrollLeft = 0
-  const { scrollbarContentRefWidth, scrollbarRefWidth, lastDistance } = getWidth()
+  const widths = getWidth()
+  if (!widths) return
+  const { scrollbarContentRefWidth, scrollbarRefWidth, lastDistance } = widths
   // 没有横向滚动条，直接结束
   if (scrollbarRefWidth > scrollbarContentRefWidth) return
   if (direction === 'left') {
@@ -106,7 +109,10 @@ function scrollTo(direction: 'left' | 'right', distance: number = translateDista
  * 移动到目标位置
  */
 function moveTo() {
-  const tagRefs = props.tagRefs!
+  const tagRefs = props.tagRefs
+  if (!tagRefs) return
+  const widths = getWidth()
+  if (!widths) return
   for (let i = 0; i < tagRefs.length; i++) {
     // @ts-expect-error ignore
     if (route.path === tagRefs[i].$props.to.path) {
@@ -114,7 +120,7 @@ function moveTo() {
       const el: HTMLElement = tagRefs[i].$el
       const offsetWidth = el.offsetWidth
       const offsetLeft = el.offsetLeft
-      const { scrollbarRefWidth } = getWidth()
+      const { scrollbarRefWidth } = widths
       // 当前 tag 在可视区域左边时
       if (offsetLeft < currentScrollLeft) {
         const distance = currentScrollLeft - offsetLeft

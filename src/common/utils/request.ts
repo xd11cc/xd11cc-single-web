@@ -1,4 +1,5 @@
 import axios from 'axios'
+import type { ResponseVO } from 'types/api'
 import { getToken, removeToken } from '@@/utils/cache/cookies'
 import { resetRouter } from '@/router'
 
@@ -95,5 +96,13 @@ service.interceptors.response.use(
     return Promise.reject(error)
   },
 )
+
+export function get<T>(url: string, params?: Record<string, unknown>): Promise<ResponseVO<T>> {
+  return service({ url, method: 'GET', params })
+}
+
+export function post<T>(url: string, data?: unknown): Promise<ResponseVO<T>> {
+  return service({ url, method: 'POST', data })
+}
 
 export default service

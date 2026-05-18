@@ -1,6 +1,5 @@
 import type { RouteMeta } from 'vue-router'
 
-// 用户信息
 export interface UserLoginInfoVO {
   id: number
   username: string
@@ -13,7 +12,6 @@ export interface UserLoginInfoVO {
   permissions: string[]
 }
 
-// 登录参数
 export interface LoginForm {
   username: string
   password: string
@@ -25,7 +23,6 @@ export interface LoginForm {
   rememberMe: boolean
 }
 
-// 路由参数
 export interface RouteVO {
   id: number
   parentId: number
@@ -47,4 +44,50 @@ export enum SourceEnum {
   github = 'GITHUB',
   wechat = 'WECHAT',
   qq = 'qq',
+}
+
+export interface PhoneSmsLoginForm {
+  phone: string
+  smsCode: string
+  way: 1
+  device: number
+  app: number
+  rememberMe: boolean
+}
+
+export interface QrCodeVO {
+  qrCodeId: string
+  qrCodeUrl: string
+  expireSeconds: number
+}
+
+export enum QrCodeStatus {
+  WAITING = 'WAITING',
+  SCANNED = 'SCANNED',
+  CONFIRMED = 'CONFIRMED',
+  EXPIRED = 'EXPIRED',
+}
+
+export interface RegisterForm {
+  username: string
+  password: string
+  confirmPassword: string
+  phone: string
+  smsCode: string
+  email: string
+  captcha: string
+  captchaId: string
+}
+
+export interface ResetPasswordForm {
+  account: string
+  code: string
+  newPassword: string
+  confirmPassword: string
+}
+
+export interface BindUserForm {
+  username: string
+  password: string
+  socialToken: string
 }

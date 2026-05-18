@@ -17,16 +17,16 @@ import { useLayoutMode } from '@@/composables/useLayoutMode'
 import { useSettingsStore } from '@/pinia/stores/settings'
 import { storeToRefs } from 'pinia'
 import { useDevice } from '@@/composables/useDevice'
-import { getCssVar, setCssVar } from '@@/utils/css'
 import { useResize } from './composables/useResize'
 import { useWatermark } from '@@/composables/useWatermark'
 import { useUserStore } from '@/pinia/stores/user'
-import { initWebSocketInstance, resetWebSocketInstance } from '@@/utils/webSocket'
-import { getToken } from '@@/utils/cache/cookies'
+import { useWebSocket } from '@@/composables/useWebSocket'
 
 useResize()
 
 const userStore = useUserStore()
+
+const { connect, close: closeWs } = useWebSocket()
 
 const { setWatermark, clearWatermark } = useWatermark()
 
@@ -38,13 +38,9 @@ const settingsStore = useSettingsStore()
 
 const { showTagsView, showWatermark } = storeToRefs(settingsStore)
 
-// 隐藏标签栏时删除其高度，是为了让 Logo 组件高度和 Header 区域高度始终一致
-const cssVarname = '--v3-tagsview-height'
-
-const v3Tagsviewheight = getCssVar(cssVarname)
-
+// 隐藏标签栏时通过 body class 将 tagsview 高度归零
 watchEffect(() => {
-  showTagsView.value ? setCssVar(cssVarname, v3Tagsviewheight) : setCssVar(cssVarname, '0px')
+  document.body.classList.toggle('hide-tagsview', !showTagsView.value)
 })
 
 // 开启或关闭系统水印
@@ -55,23 +51,10 @@ watchEffect(() => {
 })
 
 onMounted(() => {
-  try {
-    // 重置旧的 WebSocket 实例，避免重复登录导致多个连接
-    resetWebSocketInstance()
-    const tokne = getToken() as string
-    const wsClient = initWebSocketInstance(tokne)
-    if (!wsClient) {
-      return null
-    }
-    // 初始化连接并添加错误捕获
-    wsClient.initConnect()
-    return wsClient
-  } catch (error) {
-    return null
-  }
+  connect()
 })
 
 onUnmounted(() => {
-  resetWebSocketInstance()
+  closeWs()
 })
 </script>

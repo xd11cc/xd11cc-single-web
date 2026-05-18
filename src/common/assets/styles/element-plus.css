@@ -27,6 +27,21 @@
   --business-shadow: rgba(0, 0, 0, 0.06);
 
   /* ============================================================
+     覆盖 Element Plus 主色体系
+     ============================================================ */
+  --el-color-primary: #1a365d;
+  --el-color-primary-light-1: #314b6d;
+  --el-color-primary-light-2: #48617e;
+  --el-color-primary-light-3: #5f768e;
+  --el-color-primary-light-4: #768b9e;
+  --el-color-primary-light-5: #8da1ae;
+  --el-color-primary-light-6: #a4b6bf;
+  --el-color-primary-light-7: #bbcbcf;
+  --el-color-primary-light-8: #d2e0df;
+  --el-color-primary-light-9: #e9f0ef;
+  --el-color-primary-dark-2: #152c4f;
+
+  /* ============================================================
      覆盖 Element Plus 全局变量（默认主题切换为企业商务风）
      ============================================================ */
   --el-box-shadow: 0 2px 12px rgba(26, 54, 93, 0.08);
@@ -48,9 +63,17 @@
   /* 可选：调整其他可能突兀的变量 */
   --el-disabled-bg-color: var(--el-fill-color-light);
   --el-disabled-border-color: var(--el-border-color-lighter);
+
+  /* ----- 全局 body 变量 ----- */
+  --v3-body-bg-color: var(--business-bg);
+  --v3-body-text-color: var(--business-text);
 }
 
-/* 全局背景 */
-body {
-  background-color: var(--business-bg);
+/* Chrome/Edge 自动填充背景色覆盖 */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--el-input-text-color, var(--el-text-color-regular)) !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+  background-color: transparent !important;
 }

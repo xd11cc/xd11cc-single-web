@@ -23,8 +23,14 @@
 
     <!-- 右侧登录表单区 -->
     <div class="container-right">
-      <LoginForm v-if="!needBind" />
-      <BindUserForm v-else />
+      <BindUserForm v-if="needBind" />
+      <ForgetPasswordForm v-else-if="currentForm === 'forget'" @back="currentForm = 'login'" />
+      <RegisterForm v-else-if="currentForm === 'register'" @back="currentForm = 'login'" />
+      <LoginForm
+        v-else
+        @forget-password="currentForm = 'forget'"
+        @register="currentForm = 'register'"
+      />
     </div>
   </div>
 </template>
@@ -32,16 +38,19 @@
 <script lang="ts" setup>
 import BindUserForm from './components/BindUserForm.vue'
 import LoginForm from './components/LoginForm.vue'
+import ForgetPasswordForm from './components/ForgetPasswordForm.vue'
+import RegisterForm from './components/RegisterForm.vue'
 
 const route = useRoute()
 const needBind = computed(() => 'need-bind' in route.query)
+const currentForm = ref<'login' | 'register' | 'forget'>('login')
 </script>
 
 <style lang="scss" scoped>
 .container {
   display: flex;
   position: relative;
-  min-height: 100vh;
+  height: 100vh;
   width: 100%;
   background-color: var(--business-bg);
   overflow: hidden;
@@ -132,6 +141,7 @@ const needBind = computed(() => 'need-bind' in route.query)
     align-items: center;
     padding: 40px 20px;
     box-sizing: border-box;
+    overflow-y: auto;
     background-image:
       linear-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 1px),
       linear-gradient(90deg, rgba(0, 0, 0, 0.02) 1px, transparent 1px);

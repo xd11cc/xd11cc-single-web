@@ -33,10 +33,10 @@
   --v3-sidebar-border-right: 1px solid var(--el-fill-color);
   --v3-sidebar-menu-item-height: 60px;
   --v3-sidebar-menu-tip-line-bg-color: var(--el-color-primary);
-  --v3-sidebar-menu-bg-color: #001428;
-  --v3-sidebar-menu-text-color: #cfd3dc;
-  --v3-sidebar-menu-active-text-color: #fff;
-  --v3-sidebar-menu-hover-bg-color: #409eff10;
+  --v3-sidebar-menu-bg-color: #0f2440;
+  --v3-sidebar-menu-text-color: #a8b5c8;
+  --v3-sidebar-menu-active-text-color: #ffffff;
+  --v3-sidebar-menu-hover-bg-color: rgba(255, 255, 255, 0.06);
   /* Hamburger 组件 */
   --v3-hamburger-text-color: var(--el-text-color-primary);
 }
@@ -51,4 +51,9 @@ body.content-large {
 body.content-full {
   /* Header 区域 */
   --v3-header-height: 0px;
+}
+
+/* 隐藏标签栏时将其高度归零 */
+body.hide-tagsview {
+  --v3-tagsview-height: 0px;
 }

@@ -1,4 +1,4 @@
-import { loginByPassword, getUserInfo, logout as _logout } from '@/views/login/apis/index.js'
+import { loginByPassword, getUserInfo, logout as _logout } from '@/views/login/apis/index'
 import { getToken, setToken as _setToken, removeToken } from '@@/utils/cache/cookies'
 import type { LoginForm } from '@/views/login/apis/type'
 import { routerConfig } from '@/router/config'
@@ -19,12 +19,6 @@ export const useUserStore = defineStore('user', () => {
   const routes = ref<RouteRecordRaw[]>([])
 
   const username = ref<string>('')
-
-  const tagsViewStore = useTagsViewStore()
-
-  const settingsStore = useSettingsStore()
-
-  const permissionStore = usePermissionStore()
 
   // 设置 Token
   const setToken = (value: string) => {
@@ -55,6 +49,7 @@ export const useUserStore = defineStore('user', () => {
     roles.value = []
     permissions.value = []
     resetRouter()
+    const permissionStore = usePermissionStore()
     permissionStore.reset()
     resetTagsView()
   }
@@ -68,7 +63,9 @@ export const useUserStore = defineStore('user', () => {
 
   // 重置 Visited Views 和 Cache Views
   const resetTagsView = () => {
+    const settingsStore = useSettingsStore()
     if (!settingsStore.cacheTagsView) {
+      const tagsViewStore = useTagsViewStore()
       tagsViewStore.delAllVisitedViews()
       tagsViewStore.delAllCachedViews()
     }
