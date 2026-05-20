@@ -57,3 +57,12 @@ body.content-full {
 body.hide-tagsview {
   --v3-tagsview-height: 0px;
 }
+
+/* 移动端变量覆盖 */
+@media (max-width: 991px) {
+  :root {
+    --v3-sidebar-width: 200px;
+    --v3-navigationbar-height: 46px;
+    --v3-sidebar-menu-item-height: 50px;
+  }
+}

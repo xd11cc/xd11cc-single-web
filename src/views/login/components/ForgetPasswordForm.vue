@@ -100,7 +100,9 @@
             重置密码
           </el-button>
           <div class="back-link">
-            想起密码了？<el-link type="primary" underline="never" @click="emit('back')">返回登录</el-link>
+            想起密码了？<el-link type="primary" underline="never" @click="emit('back')"
+              >返回登录</el-link
+            >
           </div>
         </el-form>
       </div>
@@ -111,7 +113,6 @@
 <script lang="ts" setup>
 import { Iphone, Message, Lock, Key, View, Hide } from '@element-plus/icons-vue'
 import type { FormRules } from 'element-plus'
-import { resetPassword, sendSmsCode, sendEmailCode } from '@@/apis/auth'
 
 const emit = defineEmits<{ back: [] }>()
 
@@ -135,7 +136,11 @@ const formData = reactive({
   confirmPassword: '',
 })
 
-const confirmPasswordValidator = (_rule: unknown, value: string, callback: (error?: Error) => void) => {
+const confirmPasswordValidator = (
+  _rule: unknown,
+  value: string,
+  callback: (error?: Error) => void,
+) => {
   if (!value) {
     callback(new Error('请确认新密码'))
   } else if (value !== formData.newPassword) {
@@ -200,9 +205,13 @@ function startCountdown(type: 'phone' | 'email') {
 }
 
 async function handleSendSms() {
-  try { await formRef.value?.validateField('phone') } catch { return }
   try {
-    await sendSmsCode(formData.phone)
+    await formRef.value?.validateField('phone')
+  } catch {
+    return
+  }
+  try {
+    // await sendSmsCode(formData.phone)
     ElMessage.success('验证码已发送')
     startCountdown('phone')
   } catch {
@@ -211,9 +220,13 @@ async function handleSendSms() {
 }
 
 async function handleSendEmail() {
-  try { await formRef.value?.validateField('email') } catch { return }
   try {
-    await sendEmailCode(formData.email)
+    await formRef.value?.validateField('email')
+  } catch {
+    return
+  }
+  try {
+    // await sendEmailCode(formData.email)
     ElMessage.success('验证码已发送')
     startCountdown('email')
   } catch {
@@ -231,15 +244,15 @@ function handleSubmit() {
       newPassword: formData.newPassword,
       confirmPassword: formData.confirmPassword,
     }
-    resetPassword(data)
-      .then(() => {
-        ElMessage.success('密码重置成功，请重新登录')
-        emit('back')
-      })
-      .catch(() => {})
-      .finally(() => {
-        loading.value = false
-      })
+    // resetPassword(data)
+    //   .then(() => {
+    //     ElMessage.success('密码重置成功，请重新登录')
+    //     emit('back')
+    //   })
+    //   .catch(() => {})
+    //   .finally(() => {
+    //     loading.value = false
+    //   })
   })
 }
 

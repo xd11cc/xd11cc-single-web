@@ -7,4 +7,5 @@ export class CacheKey {
   static readonly SIDEBAR_STATUS = `${SYSTEM_NAME}-sidebar-status-key`
   static readonly VISITED_VIEW = `${SYSTEM_NAME}-visited-view-key`
   static readonly CACHED_VIEW = `${SYSTEM_NAME}-cached-view-key`
+  static readonly OSS_URL = `${SYSTEM_NAME}-oss-url-key`
 }

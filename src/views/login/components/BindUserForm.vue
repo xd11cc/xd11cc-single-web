@@ -1,13 +1,18 @@
 <template>
   <div class="form-container">
     <div class="form-card">
-      <div class="title"><h3>关联用户</h3></div>
+      <div class="title"><h3>社交账号绑定</h3></div>
       <div class="content">
         <p class="tip">请绑定已有账号以完成第三方登录</p>
-        <el-form ref="formRef" :model="formData" :rules="formRules" @keyup.enter="handleSubmit">
+        <el-form
+          ref="bindFormRef"
+          :model="bindFormData"
+          :rules="bindFormRules"
+          @keyup.enter="handleBind"
+        >
           <el-form-item prop="username">
             <el-input
-              v-model.trim="formData.username"
+              v-model.trim="bindFormData.username"
               placeholder="请输入用户名"
               :prefix-icon="User"
               size="large"
@@ -15,21 +20,21 @@
           </el-form-item>
           <el-form-item prop="password">
             <el-input
-              v-model.trim="formData.password"
-              :type="pwdVisible ? 'text' : 'password'"
+              v-model.trim="bindFormData.password"
+              :type="bindPwdVisible ? 'text' : 'password'"
               placeholder="请输入密码"
               :prefix-icon="Lock"
               size="large"
             >
               <template #suffix>
-                <el-icon class="password-icon" @click="pwdVisible = !pwdVisible">
-                  <View v-if="pwdVisible" />
+                <el-icon class="password-icon" @click="bindPwdVisible = !bindPwdVisible">
+                  <View v-if="bindPwdVisible" />
                   <Hide v-else />
                 </el-icon>
               </template>
             </el-input>
           </el-form-item>
-          <el-button type="primary" size="large" :loading="loading" @click.prevent="handleSubmit">
+          <el-button type="primary" size="large" :loading="bindLoading" @click.prevent="handleBind">
             关联登录
           </el-button>
         </el-form>
@@ -41,25 +46,26 @@
 <script lang="ts" setup>
 import { User, Lock, View, Hide } from '@element-plus/icons-vue'
 import type { FormRules } from 'element-plus'
-import { bindUser } from '@@/apis/auth'
+import { socialUserBind } from '../apis'
 import { useUserStore } from '@/pinia/stores/user'
 
 const route = useRoute()
 const router = useRouter()
 const userStore = useUserStore()
 
-const formRef = useTemplateRef('formRef')
-const loading = ref(false)
-const pwdVisible = ref(false)
+const source = computed(() => (route.query.source as string) || '')
+const state = computed(() => (route.query.state as string) || '')
 
-const socialToken = computed(() => (route.query['social-token'] as string) || '')
+const bindFormRef = useTemplateRef('bindFormRef')
+const bindLoading = ref(false)
+const bindPwdVisible = ref(false)
 
-const formData = reactive({
+const bindFormData = reactive({
   username: '',
   password: '',
 })
 
-const formRules: FormRules = {
+const bindFormRules: FormRules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },
@@ -67,14 +73,18 @@ const formRules: FormRules = {
   ],
 }
 
-function handleSubmit() {
-  formRef.value?.validate((valid: boolean) => {
+function handleBind() {
+  bindFormRef.value?.validate((valid: boolean) => {
     if (!valid) return
-    loading.value = true
-    bindUser({
-      username: formData.username,
-      password: formData.password,
-      socialToken: socialToken.value,
+    bindLoading.value = true
+    socialUserBind({
+      username: bindFormData.username,
+      password: bindFormData.password,
+      source: source.value,
+      state: state.value,
+      way: 0,
+      device: 0,
+      app: 0,
     })
       .then(({ data }) => {
         userStore.setToken(data)
@@ -83,7 +93,7 @@ function handleSubmit() {
       })
       .catch(() => {})
       .finally(() => {
-        loading.value = false
+        bindLoading.value = false
       })
   })
 }

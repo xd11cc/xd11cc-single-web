@@ -1,11 +1,11 @@
 <template>
   <div>
-    <!-- 左侧布局模式 -->
-    <LeftMode v-if="isLeft || isMobile" />
-    <!-- 顶部布局模式 -->
-    <TopMode v-if="isTop" />
-    <!-- 混合布局模式 -->
-    <LeftTopMode v-if="isLeftTop" />
+    <!-- 移动端统一降级为左侧抽屉模式 -->
+    <LeftMode v-if="isMobile || isLeft" />
+    <!-- 顶部布局模式（仅桌面端） -->
+    <TopMode v-else-if="isTop" />
+    <!-- 混合布局模式（仅桌面端） -->
+    <LeftTopMode v-else-if="isLeftTop" />
   </div>
 </template>
 

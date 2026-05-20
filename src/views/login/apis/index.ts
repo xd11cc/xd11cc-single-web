@@ -4,15 +4,11 @@ import type {
   UserLoginInfoVO,
   RouteVO,
   CaptchaVO,
-  PhoneSmsLoginForm,
-  QrCodeVO,
-  RegisterForm,
-  ResetPasswordForm,
-  BindUserForm,
+  SocialUserBindVO,
+  AuthClientConfigVO,
 } from './type'
-import { type QrCodeStatus } from './type'
 
-export function loginByPassword<T>(data: T): Promise<ResponseVO<string>> {
+export function loginByPassword<LoginForm>(data: LoginForm): Promise<ResponseVO<string>> {
   return request({
     url: '/login/loginByPassword',
     method: 'POST',
@@ -52,71 +48,20 @@ export function socialLogin(source: string): Promise<ResponseVO<string>> {
   return request({
     url: `/login/authorize/${source}`,
     method: 'GET',
-    timeout: 30000,
   })
 }
 
-export function sendSmsCode(phone: string): Promise<ResponseVO<null>> {
+export function socialUserBind(data: SocialUserBindVO): Promise<ResponseVO<string>> {
   return request({
-    url: '/login/sendSmsCode',
+    url: '/login/social-user/bind',
     method: 'POST',
-    data: { phone },
+    data: data,
   })
 }
 
-export function loginByPhone(data: PhoneSmsLoginForm): Promise<ResponseVO<string>> {
+export function getSocialClientConfigList(): Promise<ResponseVO<AuthClientConfigVO[]>> {
   return request({
-    url: '/login/loginByPhone',
-    method: 'POST',
-    data,
-  })
-}
-
-export function getQrCode(): Promise<ResponseVO<QrCodeVO>> {
-  return request({
-    url: '/login/qrCode/generate',
+    url: '/auth/client/config/list',
     method: 'GET',
-  })
-}
-
-export function getQrCodeStatus(
-  qrCodeId: string,
-): Promise<ResponseVO<{ status: QrCodeStatus; token?: string }>> {
-  return request({
-    url: '/login/qrCode/status',
-    method: 'GET',
-    params: { qrCodeId },
-  })
-}
-
-export function register(data: RegisterForm): Promise<ResponseVO<null>> {
-  return request({
-    url: '/login/register',
-    method: 'POST',
-    data,
-  })
-}
-
-export function resetPassword(data: ResetPasswordForm): Promise<ResponseVO<null>> {
-  return request({
-    url: '/login/resetPassword',
-    method: 'POST',
-    data,
-  })
-}
-
-export function sendEmailCode(email: string): Promise<ResponseVO<null>> {
-  return request({
-    url: '/login/sendEmailCode',
-    method: 'POST',
-    data: { email },
-  })
-}
-
-export function bindUser(data: BindUserForm): Promise<ResponseVO<string>> {
-  return request({
-    url: '/login/bindUser',
-    method: 'POST',
-    data,
   })
 }

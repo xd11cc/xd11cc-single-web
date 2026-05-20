@@ -2,138 +2,85 @@
   <div class="login-container">
     <div class="login-card">
       <div class="title">
-        <h3>{{ showQrCode ? '扫码登录' : '用户登录' }}</h3>
-        <div
-          class="qrcode-switch"
-          :title="showQrCode ? '返回账号登录' : '扫码登录'"
-          @click="showQrCode = !showQrCode"
-        >
-          <SvgIcon v-if="!showQrCode" name="qrcode" />
-          <el-icon v-else><Monitor /></el-icon>
-        </div>
+        <h3>用户登录</h3>
       </div>
       <div class="content">
-        <!-- 扫码登录面板 -->
-        <QrCodePanel v-if="showQrCode" />
-
-        <!-- 表单登录区域 -->
-        <template v-else>
-          <!-- 自定义 Tab 切换栏 -->
-          <div class="login-tabs">
-            <span
-              :class="{ active: activeTab === 'account' }"
-              @click="activeTab = 'account'"
+        <el-form
+          ref="loginFormRef"
+          :model="loginFormData"
+          :rules="loginFormRules"
+          @keyup.enter="handleLogin"
+        >
+          <el-form-item prop="username">
+            <el-input
+              v-model.trim="loginFormData.username"
+              placeholder="请输入用户名"
+              type="text"
+              :prefix-icon="User"
+              tabindex="1"
+              size="large"
+            />
+          </el-form-item>
+          <el-form-item prop="password">
+            <el-input
+              v-model.trim="loginFormData.password"
+              :type="passwordVisible ? 'text' : 'password'"
+              placeholder="请输入密码"
+              :prefix-icon="Lock"
+              tabindex="2"
+              size="large"
             >
-              账号登录
-            </span>
-            <span
-              :class="{ active: activeTab === 'phone' }"
-              @click="activeTab = 'phone'"
-            >
-              手机号登录
-            </span>
-          </div>
-
-          <!-- 账号密码登录 -->
-          <div v-if="activeTab === 'account'">
-            <el-form
-              ref="loginFormRef"
-              :model="loginFormData"
-              :rules="loginFormRules"
-              @keyup.enter="handleLogin"
-            >
-              <el-form-item prop="username">
-                <el-input
-                  v-model.trim="loginFormData.username"
-                  placeholder="请输入用户名"
-                  type="text"
-                  :prefix-icon="User"
-                  tabindex="1"
-                  size="large"
-                />
-              </el-form-item>
-              <el-form-item prop="password">
-                <el-input
-                  v-model.trim="loginFormData.password"
-                  :type="passwordVisible ? 'text' : 'password'"
-                  placeholder="请输入密码"
-                  :prefix-icon="Lock"
-                  tabindex="2"
-                  size="large"
-                >
-                  <template #suffix>
-                    <el-icon class="password-icon" @click="passwordVisible = !passwordVisible">
-                      <View v-if="passwordVisible" />
-                      <Hide v-else />
-                    </el-icon>
-                  </template>
-                </el-input>
-              </el-form-item>
-              <el-form-item prop="captcha" class="captcha-form-item">
-                <el-input
-                  v-model.trim="loginFormData.captcha"
-                  placeholder="请输入验证码"
-                  type="text"
-                  :prefix-icon="Key"
-                  tabindex="3"
-                  size="large"
-                />
-                <img
-                  :src="captchaImg"
-                  @click="refreshCaptcha"
-                  alt="验证码"
-                  title="点击刷新"
-                  class="captcha-img"
-                />
-              </el-form-item>
-              <el-form-item>
-                <div class="form-options">
-                  <el-checkbox v-model="loginFormData.rememberMe">记住我</el-checkbox>
-                  <el-link type="primary" underline="never" @click="handleForgetPassword"
-                    >忘记密码？</el-link
-                  >
-                </div>
-              </el-form-item>
-              <el-button
-                type="primary"
-                size="large"
-                @click.prevent="handleLogin"
-                :loading="loading"
-                >登录</el-button
+              <template #suffix>
+                <el-icon class="password-icon" @click="passwordVisible = !passwordVisible">
+                  <View v-if="passwordVisible" />
+                  <Hide v-else />
+                </el-icon>
+              </template>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="captcha" class="captcha-form-item">
+            <el-input
+              v-model.trim="loginFormData.captcha"
+              placeholder="请输入验证码"
+              type="text"
+              :prefix-icon="Key"
+              tabindex="3"
+              size="large"
+            />
+            <img
+              :src="captchaImg"
+              @click="refreshCaptcha"
+              alt="验证码"
+              title="点击刷新"
+              class="captcha-img"
+            />
+          </el-form-item>
+          <el-form-item>
+            <div class="form-options">
+              <el-checkbox v-model="loginFormData.rememberMe">记住我</el-checkbox>
+              <el-link type="primary" underline="never" @click="handleForgetPassword"
+                >忘记密码？</el-link
               >
-              <div class="register-link">
-                还没有账号？<el-link type="primary" underline="never" @click="handleRegister"
-                  >立即注册</el-link
-                >
-              </div>
-            </el-form>
-          </div>
-
-          <!-- 手机号验证码登录 -->
-          <div v-if="activeTab === 'phone'">
-            <PhoneSmsForm @register="emit('register')" />
-          </div>
-
-          <!-- 公共底部：其他登录方式 -->
-          <el-divider>其他登录方式</el-divider>
-          <div class="social-login">
-            <div
-              class="social-item github"
-              @click="handleAuthLogin(SourceEnum.github)"
-              title="GitHub登录"
-            >
-              <SvgIcon name="github" />
             </div>
-            <a href="/xd11cc/login/authorize/GITHUB">
-              <div class="social-item wechat" title="微信登录">
-                <SvgIcon name="wechat" />
-              </div>
-            </a>
-            <div class="social-item qq" @click="handleAuthLogin(SourceEnum.qq)" title="QQ登录">
-              <SvgIcon name="qq" />
-            </div>
+          </el-form-item>
+          <el-button type="primary" size="large" @click.prevent="handleLogin" :loading="loading"
+            >登录</el-button
+          >
+        </el-form>
+
+        <!-- 其他登录方式 -->
+        <el-divider v-if="socialConfigs.length">其他登录方式</el-divider>
+        <div v-if="socialConfigs.length" class="social-login">
+          <div
+            v-for="item in socialConfigs"
+            :key="item.source"
+            class="social-item"
+            :title="item.name"
+            @click="handleAuthLogin(item.source)"
+          >
+            <img :src="ossUrl + item.icon" :alt="item.name" class="social-icon" />
           </div>
-        </template>
+        </div>
       </div>
     </div>
   </div>
@@ -141,17 +88,14 @@
 
 <script lang="ts" setup>
 import { useUserStore } from '@/pinia/stores/user'
-import { Lock, User, Key, View, Hide, Monitor } from '@element-plus/icons-vue'
+import { Lock, User, Key, View, Hide } from '@element-plus/icons-vue'
 import type { FormRules } from 'element-plus'
-import type { LoginForm } from '../apis/type'
-import { SourceEnum } from '../apis/type'
-import { getCaptcha, socialLogin } from '../apis'
-import PhoneSmsForm from './PhoneSmsForm.vue'
-import QrCodePanel from './QrCodePanel.vue'
+import type { LoginForm, AuthClientConfigVO } from '../apis/type'
+import { getCaptcha, socialLogin, getSocialClientConfigList } from '../apis'
+import { useOssUrl } from '@@/composables/useOssUrl'
 
 const emit = defineEmits<{
   'forget-password': []
-  register: []
 }>()
 
 const useStore = useUserStore()
@@ -159,9 +103,6 @@ const useStore = useUserStore()
 const router = useRouter()
 
 const route = useRoute()
-
-const showQrCode = ref(false)
-const activeTab = ref<'account' | 'phone'>('account')
 
 // 登录参数
 const loginFormData: LoginForm = reactive({
@@ -186,6 +127,11 @@ const loading = ref(false)
 
 // 密码可见性
 const passwordVisible = ref(false)
+
+// 社交登录配置
+const socialConfigs = ref<AuthClientConfigVO[]>([])
+
+const { ossUrl } = useOssUrl()
 
 // 登录表单校验规则
 const loginFormRules: FormRules = {
@@ -223,10 +169,6 @@ const refreshCaptcha = async () => {
   captchaImg.value = 'data:image/png;base64,' + res.data.image
 }
 
-/**
- * 处理授权登录
- * @param source
- */
 function handleAuthLogin(source: string) {
   socialLogin(source).then((res) => {
     window.location.href = res.data
@@ -237,18 +179,11 @@ function handleForgetPassword() {
   emit('forget-password')
 }
 
-function handleRegister() {
-  emit('register')
-}
-
 onMounted(() => {
   refreshCaptcha()
-})
-
-watch(activeTab, (tab) => {
-  if (tab === 'account') {
-    refreshCaptcha()
-  }
+  getSocialClientConfigList().then((res) => {
+    socialConfigs.value = res.data
+  })
 })
 </script>
 
@@ -304,84 +239,11 @@ watch(activeTab, (tab) => {
           background-color: var(--business-primary);
         }
       }
-
-      .qrcode-switch {
-        position: absolute;
-        right: 20px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 36px;
-        height: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        border-radius: 8px;
-        color: var(--business-text-secondary);
-        transition: all 0.25s ease;
-
-        :deep(.svg-icon) {
-          width: 22px;
-          height: 22px;
-        }
-
-        .el-icon {
-          font-size: 22px;
-        }
-
-        &:hover {
-          color: var(--business-primary);
-          background-color: rgba(26, 54, 93, 0.06);
-        }
-      }
     }
   }
 
   .content {
     padding: 10px 48px 48px 48px;
-
-    .login-tabs {
-      display: flex;
-      gap: 28px;
-      margin-bottom: 24px;
-      border-bottom: 1px solid var(--business-border);
-      padding-bottom: 0;
-
-      span {
-        position: relative;
-        padding-bottom: 10px;
-        font-size: 15px;
-        color: var(--business-text-secondary);
-        cursor: pointer;
-        transition: color 0.25s;
-        user-select: none;
-
-        &::after {
-          content: '';
-          position: absolute;
-          bottom: -1px;
-          left: 0;
-          width: 100%;
-          height: 2px;
-          border-radius: 1px;
-          background-color: transparent;
-          transition: background-color 0.25s;
-        }
-
-        &.active {
-          color: var(--business-primary);
-          font-weight: 600;
-
-          &::after {
-            background-color: var(--business-primary);
-          }
-        }
-
-        &:hover:not(.active) {
-          color: var(--business-text);
-        }
-      }
-    }
 
     .form-options {
       display: flex;
@@ -467,13 +329,6 @@ watch(activeTab, (tab) => {
       }
     }
 
-    .register-link {
-      text-align: center;
-      margin-top: 18px;
-      font-size: 14px;
-      color: var(--business-text-secondary);
-    }
-
     :deep(.el-divider) {
       margin: 22px 0 16px 0;
     }
@@ -541,27 +396,15 @@ watch(activeTab, (tab) => {
         transition-duration: 0.1s;
       }
 
-      &.github:hover {
-        background-color: #24292e;
-        color: #fff;
-        border-color: #24292e;
-      }
-
-      &.wechat:hover {
-        background-color: #07c160;
-        color: #fff;
-        border-color: #07c160;
-      }
-
-      &.qq:hover {
-        background-color: #12b7f5;
-        color: #fff;
-        border-color: #12b7f5;
-      }
-
       :deep(.svg-icon) {
         width: 22px;
         height: 22px;
+      }
+
+      .social-icon {
+        width: 22px;
+        height: 22px;
+        object-fit: contain;
       }
     }
   }
@@ -593,6 +436,11 @@ watch(activeTab, (tab) => {
         height: 38px;
 
         :deep(.svg-icon) {
+          width: 20px;
+          height: 20px;
+        }
+
+        .social-icon {
           width: 20px;
           height: 20px;
         }

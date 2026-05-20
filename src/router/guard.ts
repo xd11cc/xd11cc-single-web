@@ -21,6 +21,14 @@ export function registerNavigationGuard(router: Router) {
     const permissionStore = usePermissionStore()
     // 如果没有登录
     if (!userStore.token) {
+      // 如果 URL 中携带 token（如社交登录回调），先存入 store
+      const urlToken = to.query.token as string
+      if (urlToken) {
+        userStore.setToken(urlToken)
+        // 去掉 URL 中的 token 参数后继续导航
+        const { token, ...restQuery } = to.query
+        return { path: to.path, query: restQuery, replace: true }
+      }
       // 如果在免登录的白名单中，则直接进入
       if (isWhiteList(to)) return true
       // 其他没有访问权限的页面将被重定向到登录页面

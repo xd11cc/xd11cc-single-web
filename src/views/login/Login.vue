@@ -25,12 +25,7 @@
     <div class="container-right">
       <BindUserForm v-if="needBind" />
       <ForgetPasswordForm v-else-if="currentForm === 'forget'" @back="currentForm = 'login'" />
-      <RegisterForm v-else-if="currentForm === 'register'" @back="currentForm = 'login'" />
-      <LoginForm
-        v-else
-        @forget-password="currentForm = 'forget'"
-        @register="currentForm = 'register'"
-      />
+      <LoginForm v-else @forget-password="currentForm = 'forget'" />
     </div>
   </div>
 </template>
@@ -39,11 +34,10 @@
 import BindUserForm from './components/BindUserForm.vue'
 import LoginForm from './components/LoginForm.vue'
 import ForgetPasswordForm from './components/ForgetPasswordForm.vue'
-import RegisterForm from './components/RegisterForm.vue'
 
 const route = useRoute()
 const needBind = computed(() => 'need-bind' in route.query)
-const currentForm = ref<'login' | 'register' | 'forget'>('login')
+const currentForm = ref<'login' | 'forget'>('login')
 </script>
 
 <style lang="scss" scoped>

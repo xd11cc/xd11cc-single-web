@@ -2,10 +2,14 @@
 @use './variables.css';
 @use './element-plus.css';
 @use './mixins.scss';
+@use './breakpoints.scss';
 
 // 业务页面几乎都应该在根元素上挂载 class="app-container"，以保持页面美观
 .app-container {
   padding: 20px;
+  @media (max-width: 991px) {
+    padding: 12px;
+  }
 }
 
 html {

@@ -46,48 +46,18 @@ export enum SourceEnum {
   qq = 'qq',
 }
 
-export interface PhoneSmsLoginForm {
-  phone: string
-  smsCode: string
-  way: 1
+export interface SocialUserBindVO {
+  username: string
+  password: string
+  source: string
+  state: string
+  way: number
   device: number
   app: number
-  rememberMe: boolean
 }
 
-export interface QrCodeVO {
-  qrCodeId: string
-  qrCodeUrl: string
-  expireSeconds: number
-}
-
-export enum QrCodeStatus {
-  WAITING = 'WAITING',
-  SCANNED = 'SCANNED',
-  CONFIRMED = 'CONFIRMED',
-  EXPIRED = 'EXPIRED',
-}
-
-export interface RegisterForm {
-  username: string
-  password: string
-  confirmPassword: string
-  phone: string
-  smsCode: string
-  email: string
-  captcha: string
-  captchaId: string
-}
-
-export interface ResetPasswordForm {
-  account: string
-  code: string
-  newPassword: string
-  confirmPassword: string
-}
-
-export interface BindUserForm {
-  username: string
-  password: string
-  socialToken: string
+export interface AuthClientConfigVO {
+  icon: string
+  name: string
+  source: string
 }
