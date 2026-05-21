@@ -19,19 +19,21 @@
               <el-input
                 v-model.trim="formData.phone"
                 placeholder="请输入手机号"
-                :prefix-icon="Iphone"
                 size="large"
                 maxlength="11"
-              />
+              >
+                <template #prefix><Icon icon="ep:iphone" /></template>
+              </el-input>
             </el-form-item>
             <el-form-item prop="phoneCode" class="code-form-item">
               <el-input
                 v-model.trim="formData.phoneCode"
                 placeholder="请输入验证码"
-                :prefix-icon="Message"
                 size="large"
                 maxlength="6"
-              />
+              >
+                <template #prefix><Icon icon="ep:message" /></template>
+              </el-input>
               <el-button :disabled="phoneCountdown > 0" class="code-btn" @click="handleSendSms">
                 {{ phoneCountdown > 0 ? `${phoneCountdown}s 后重发` : '获取验证码' }}
               </el-button>
@@ -44,18 +46,20 @@
               <el-input
                 v-model.trim="formData.email"
                 placeholder="请输入邮箱"
-                :prefix-icon="Message"
                 size="large"
-              />
+              >
+                <template #prefix><Icon icon="ep:message" /></template>
+              </el-input>
             </el-form-item>
             <el-form-item prop="emailCode" class="code-form-item">
               <el-input
                 v-model.trim="formData.emailCode"
                 placeholder="请输入验证码"
-                :prefix-icon="Key"
                 size="large"
                 maxlength="6"
-              />
+              >
+                <template #prefix><Icon icon="ep:key" /></template>
+              </el-input>
               <el-button :disabled="emailCountdown > 0" class="code-btn" @click="handleSendEmail">
                 {{ emailCountdown > 0 ? `${emailCountdown}s 后重发` : '获取验证码' }}
               </el-button>
@@ -68,14 +72,15 @@
               v-model.trim="formData.newPassword"
               :type="pwdVisible ? 'text' : 'password'"
               placeholder="请输入新密码"
-              :prefix-icon="Lock"
               size="large"
             >
+              <template #prefix><Icon icon="ep:lock" /></template>
               <template #suffix>
-                <el-icon class="password-icon" @click="pwdVisible = !pwdVisible">
-                  <View v-if="pwdVisible" />
-                  <Hide v-else />
-                </el-icon>
+                <Icon
+                  :icon="pwdVisible ? 'ep:view' : 'ep:hide'"
+                  class="password-icon"
+                  @click="pwdVisible = !pwdVisible"
+                />
               </template>
             </el-input>
           </el-form-item>
@@ -84,14 +89,15 @@
               v-model.trim="formData.confirmPassword"
               :type="confirmPwdVisible ? 'text' : 'password'"
               placeholder="请确认新密码"
-              :prefix-icon="Lock"
               size="large"
             >
+              <template #prefix><Icon icon="ep:lock" /></template>
               <template #suffix>
-                <el-icon class="password-icon" @click="confirmPwdVisible = !confirmPwdVisible">
-                  <View v-if="confirmPwdVisible" />
-                  <Hide v-else />
-                </el-icon>
+                <Icon
+                  :icon="confirmPwdVisible ? 'ep:view' : 'ep:hide'"
+                  class="password-icon"
+                  @click="confirmPwdVisible = !confirmPwdVisible"
+                />
               </template>
             </el-input>
           </el-form-item>
@@ -111,7 +117,7 @@
 </template>
 
 <script lang="ts" setup>
-import { Iphone, Message, Lock, Key, View, Hide } from '@element-plus/icons-vue'
+import { Icon } from '@iconify/vue'
 import type { FormRules } from 'element-plus'
 
 const emit = defineEmits<{ back: [] }>()

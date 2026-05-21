@@ -67,3 +67,39 @@ div:focus {
     color: rgb(32, 160, 255);
   }
 }
+
+// 表格操作列按钮样式优化
+.el-table .el-button--small.is-text.is-has-bg {
+  &.el-button--primary {
+    background-color: rgba(26, 54, 93, 0.08);
+    &:hover {
+      background-color: rgba(26, 54, 93, 0.15);
+    }
+  }
+  &.el-button--danger {
+    background-color: rgba(245, 108, 108, 0.08);
+    &:hover {
+      background-color: rgba(245, 108, 108, 0.15);
+    }
+  }
+  &.el-button--warning {
+    background-color: rgba(230, 162, 60, 0.08);
+    &:hover {
+      background-color: rgba(230, 162, 60, 0.15);
+    }
+  }
+  &.el-button--success {
+    background-color: rgba(103, 194, 58, 0.08);
+    &:hover {
+      background-color: rgba(103, 194, 58, 0.15);
+    }
+  }
+}
+
+// 工具栏新增按钮样式
+.toolbar-wrapper .el-button--primary.is-text.is-has-bg {
+  background-color: rgba(26, 54, 93, 0.12);
+  &:hover {
+    background-color: rgba(26, 54, 93, 0.2);
+  }
+}

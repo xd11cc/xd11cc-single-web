@@ -12,9 +12,7 @@
         @contextmenu.prevent="openMenu(tag, $event)"
       >
         {{ tag.meta?.title }}
-        <el-icon v-if="!isAffix(tag)" :size="12" @click.prevent.stop="closeSelectedTag(tag)">
-          <Close />
-        </el-icon>
+        <Icon v-if="!isAffix(tag)" icon="ep:close" width="12" height="12" @click.prevent.stop="closeSelectedTag(tag)" />
       </router-link>
     </ScrollPane>
     <ul v-show="visiable" class="contextmenu" :style="{ left: `${left}px`, top: `${top}px` }">
@@ -32,7 +30,7 @@ import type { TagView } from '@/pinia/stores/tags-view'
 import { usePermissionStore } from '@/pinia/stores/permission'
 import { useRouteListener } from '@@/composables/useRouteListener'
 import { useTagsViewStore } from '@/pinia/stores/tags-view'
-import { Close } from '@element-plus/icons-vue'
+import { Icon } from '@iconify/vue'
 import path from 'path-browserify'
 import ScrollPane from './ScrollPane.vue'
 

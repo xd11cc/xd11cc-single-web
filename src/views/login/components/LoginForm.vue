@@ -16,25 +16,27 @@
               v-model.trim="loginFormData.username"
               placeholder="请输入用户名"
               type="text"
-              :prefix-icon="User"
               tabindex="1"
               size="large"
-            />
+            >
+              <template #prefix><Icon icon="ep:user" /></template>
+            </el-input>
           </el-form-item>
           <el-form-item prop="password">
             <el-input
               v-model.trim="loginFormData.password"
               :type="passwordVisible ? 'text' : 'password'"
               placeholder="请输入密码"
-              :prefix-icon="Lock"
               tabindex="2"
               size="large"
             >
+              <template #prefix><Icon icon="ep:lock" /></template>
               <template #suffix>
-                <el-icon class="password-icon" @click="passwordVisible = !passwordVisible">
-                  <View v-if="passwordVisible" />
-                  <Hide v-else />
-                </el-icon>
+                <Icon
+                  :icon="passwordVisible ? 'ep:view' : 'ep:hide'"
+                  class="password-icon"
+                  @click="passwordVisible = !passwordVisible"
+                />
               </template>
             </el-input>
           </el-form-item>
@@ -43,10 +45,11 @@
               v-model.trim="loginFormData.captcha"
               placeholder="请输入验证码"
               type="text"
-              :prefix-icon="Key"
               tabindex="3"
               size="large"
-            />
+            >
+              <template #prefix><Icon icon="ep:key" /></template>
+            </el-input>
             <img
               :src="captchaImg"
               @click="refreshCaptcha"
@@ -88,7 +91,7 @@
 
 <script lang="ts" setup>
 import { useUserStore } from '@/pinia/stores/user'
-import { Lock, User, Key, View, Hide } from '@element-plus/icons-vue'
+import { Icon } from '@iconify/vue'
 import type { FormRules } from 'element-plus'
 import type { LoginForm, AuthClientConfigVO } from '../apis/type'
 import { getCaptcha, socialLogin, getSocialClientConfigList } from '../apis'

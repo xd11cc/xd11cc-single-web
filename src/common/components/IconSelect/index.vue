@@ -1,23 +1,19 @@
 <template>
-  <!-- 可编辑模式：仅输入框，无弹窗 -->
+  <!-- 可编辑模式：仅输入框 -->
   <div v-if="allowEdit">
     <el-input v-model="inputValue" :placeholder="placeholder" clearable @clear="handleClear">
       <template #prefix>
-        <el-icon v-if="inputValue && iconComponentMap[inputValue]">
-          <component :is="iconComponentMap[inputValue]" />
-        </el-icon>
-        <el-icon v-else>
-          <Search />
-        </el-icon>
+        <Icon v-if="inputValue" :icon="inputValue" />
+        <Icon v-else icon="ep:search" />
       </template>
     </el-input>
   </div>
 
-  <!-- 选择模式：弹窗图标选择器，输入框只读 -->
+  <!-- 选择模式：弹窗图标选择器 -->
   <div v-else>
     <el-popover
       placement="bottom-start"
-      :width="'auto'"
+      :width="420"
       v-model:visible="popoverVisible"
       trigger="click"
     >
@@ -30,44 +26,71 @@
           @clear="handleClear"
         >
           <template #prefix>
-            <el-icon v-if="inputValue && iconComponentMap[inputValue]">
-              <component :is="iconComponentMap[inputValue]" />
-            </el-icon>
-            <el-icon v-else>
-              <Search />
-            </el-icon>
+            <Icon v-if="inputValue" :icon="inputValue" />
+            <Icon v-else icon="ep:search" />
           </template>
         </el-input>
       </template>
 
-      <!-- 弹窗内容：搜索框 + 图标网格 -->
       <div class="icon-selector-popup">
-        <el-input
-          v-model="searchKeyword"
-          placeholder="搜索图标（如 search）"
-          clearable
-          size="small"
-          @input="handleSearch"
-        >
-          <template #suffix>
-            <el-icon><Search /></el-icon>
-          </template>
-        </el-input>
+        <div class="search-row">
+          <el-input
+            v-model="searchKeyword"
+            placeholder="搜索图标"
+            clearable
+            size="small"
+            @input="handleLocalFilter"
+          >
+            <template #suffix>
+              <Icon icon="ep:search" class="search-btn" />
+            </template>
+          </el-input>
+          <el-button size="small" @click="handleOnlineSearch" :loading="onlineLoading">
+            在线搜索
+          </el-button>
+        </div>
+
+        <div class="tab-row">
+          <span :class="{ active: activeTab === 'local' }" @click="activeTab = 'local'">
+            EP 图标
+          </span>
+          <span
+            v-if="onlineResults.length > 0"
+            :class="{ active: activeTab === 'online' }"
+            @click="activeTab = 'online'"
+          >
+            在线结果
+          </span>
+        </div>
 
         <div class="icon-grid">
-          <div
-            v-for="name in filteredIcons"
-            :key="name"
-            class="icon-item"
-            :class="{ active: modelValue === name }"
-            @click="handleSelect(name)"
-          >
-            <el-icon size="18"><component :is="iconComponentMap[name]" /></el-icon>
-            <span>{{ name }}</span>
-          </div>
-
-          <!-- 优化点：自定义空状态，移除 ElEmpty，样式更紧凑 -->
-          <div v-if="filteredIcons.length === 0" class="empty-state">暂无匹配图标</div>
+          <template v-if="activeTab === 'local'">
+            <div
+              v-for="icon in displayIcons"
+              :key="icon"
+              class="icon-item"
+              :class="{ active: modelValue === icon }"
+              @click="handleSelect(icon)"
+            >
+              <Icon :icon="icon" width="20" height="20" />
+              <span>{{ icon.replace('ep:', '') }}</span>
+            </div>
+            <div v-if="displayIcons.length === 0" class="empty-state">无匹配图标</div>
+          </template>
+          <template v-else>
+            <div
+              v-for="icon in onlineResults"
+              :key="icon"
+              class="icon-item"
+              :class="{ active: modelValue === icon }"
+              @click="handleSelect(icon)"
+            >
+              <Icon :icon="icon" width="20" height="20" />
+              <span>{{ icon }}</span>
+            </div>
+            <div v-if="onlineLoading" class="empty-state">搜索中...</div>
+            <div v-else-if="onlineResults.length === 0" class="empty-state">暂无结果</div>
+          </template>
         </div>
       </div>
     </el-popover>
@@ -75,15 +98,16 @@
 </template>
 
 <script setup lang="ts">
-import { ElIcon, ElPopover, ElInput } from 'element-plus' // 已移除 ElEmpty
-import { Search } from '@element-plus/icons-vue'
-import { iconComponentMap, icons, type ElIconName } from './elIcon'
+import { Icon } from '@iconify/vue'
 import { ref, computed } from 'vue'
+import epIcons from '@iconify-json/ep/icons.json'
+
+const epIconNames = Object.keys(epIcons.icons).map((name) => `ep:${name}`)
 
 interface Props {
-  modelValue?: ElIconName
+  modelValue?: string
   placeholder?: string
-  allowEdit?: boolean // true：手动输入；false：弹窗选择
+  allowEdit?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -93,55 +117,114 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  (e: 'update:modelValue', value: ElIconName): void
-  (e: 'change', value: ElIconName): void
+  (e: 'update:modelValue', value: string): void
+  (e: 'change', value: string): void
 }>()
 
-// ----- 双向绑定值（两种模式共用） -----
 const inputValue = computed({
   get: () => props.modelValue,
   set: (val) => {
     if (props.allowEdit) {
-      // 仅编辑模式允许手动输入时更新
-      emit('update:modelValue', val as ElIconName)
-      emit('change', val as ElIconName)
+      emit('update:modelValue', val)
+      emit('change', val)
     }
   },
 })
 
-// 清空输入
 const handleClear = () => {
-  emit('update:modelValue', '' as ElIconName)
-  emit('change', '' as ElIconName)
+  emit('update:modelValue', '')
+  emit('change', '')
 }
 
-// ----- 选择模式专属状态（allowEdit = false）-----
 const popoverVisible = ref(false)
 const searchKeyword = ref('')
+const activeTab = ref<'local' | 'online'>('local')
+const filteredIcons = ref<string[]>([])
+const onlineResults = ref<string[]>([])
+const onlineLoading = ref(false)
+const hasFiltered = ref(false)
 
-// 过滤图标列表
-const filteredIcons = computed(() => {
-  if (!searchKeyword.value.trim()) return icons
-  const kw = searchKeyword.value.trim().toLowerCase()
-  return icons.filter((name) => name.toLowerCase().includes(kw))
+const displayIcons = computed(() => {
+  if (hasFiltered.value) return filteredIcons.value
+  return epIconNames.slice(0, 48)
 })
 
-// 选中图标
-const handleSelect = (name: ElIconName) => {
-  emit('update:modelValue', name)
-  emit('change', name)
-  popoverVisible.value = false // 关闭弹窗
-  searchKeyword.value = '' // 清空搜索词
+function handleLocalFilter() {
+  const keyword = searchKeyword.value.trim().toLowerCase()
+  if (!keyword) {
+    hasFiltered.value = false
+    return
+  }
+  hasFiltered.value = true
+  filteredIcons.value = epIconNames.filter((name) => name.includes(keyword)).slice(0, 48)
 }
 
-// 搜索输入占位方法（计算属性自动响应）
-const handleSearch = () => {}
+async function handleOnlineSearch() {
+  const keyword = searchKeyword.value.trim()
+  if (!keyword) return
+
+  onlineLoading.value = true
+  activeTab.value = 'online'
+  try {
+    const res = await fetch(
+      `https://api.iconify.design/search?query=${encodeURIComponent(keyword)}&limit=48`,
+    )
+    const data = await res.json()
+    onlineResults.value = data.icons || []
+  } catch {
+    onlineResults.value = []
+  } finally {
+    onlineLoading.value = false
+  }
+}
+
+const handleSelect = (name: string) => {
+  emit('update:modelValue', name)
+  emit('change', name)
+  popoverVisible.value = false
+  searchKeyword.value = ''
+  hasFiltered.value = false
+  onlineResults.value = []
+  activeTab.value = 'local'
+}
 </script>
 
 <style scoped>
 .icon-selector-popup {
-  padding: 8px 4px;
+  padding: 4px;
 }
+
+.search-row {
+  display: flex;
+  gap: 8px;
+}
+
+.tab-row {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #ebeef5;
+  font-size: 13px;
+}
+
+.tab-row span {
+  cursor: pointer;
+  padding-bottom: 4px;
+  color: #909399;
+  transition: color 0.2s;
+}
+
+.tab-row span.active {
+  color: #409eff;
+  font-weight: 500;
+  border-bottom: 2px solid #409eff;
+}
+
+.tab-row span:hover:not(.active) {
+  color: #606266;
+}
+
 .icon-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -150,6 +233,7 @@ const handleSearch = () => {}
   overflow-y: auto;
   margin-top: 8px;
 }
+
 .icon-item {
   display: flex;
   flex-direction: column;
@@ -160,15 +244,18 @@ const handleSearch = () => {}
   cursor: pointer;
   transition: background 0.2s;
 }
+
 .icon-item:hover {
   background-color: #f5f7fa;
 }
+
 .icon-item.active {
   background-color: #ecf5ff;
   color: #409eff;
 }
+
 .icon-item span {
-  font-size: 12px;
+  font-size: 11px;
   margin-top: 4px;
   word-break: break-word;
   text-align: center;
@@ -178,12 +265,15 @@ const handleSearch = () => {}
   white-space: nowrap;
 }
 
-/* 优化点：自定义空状态样式，占据整行，文字居中，颜色柔和 */
 .empty-state {
   grid-column: 1 / -1;
   text-align: center;
   padding: 20px 0;
   color: #909399;
   font-size: 14px;
+}
+
+.search-btn {
+  cursor: pointer;
 }
 </style>

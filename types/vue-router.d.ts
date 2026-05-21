@@ -1,10 +1,7 @@
-import type * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import type { SvgName } from '~virtual/svg-component'
 import 'vue-router'
 
 export {}
-
-type ElementPlusIconsName = keyof typeof ElementPlusIconsVue
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -19,9 +16,9 @@ declare module 'vue-router' {
     svgIcon?: SvgName
 
     /**
-     * @description 设置该路由的图标
+     * @description 设置该路由的图标（Iconify 格式，如 ep:search）
      */
-    icon?: ElementPlusIconsName
+    icon?: string
 
     /**
      * @description 默认false，设置true的时候路由不会在侧边栏出现

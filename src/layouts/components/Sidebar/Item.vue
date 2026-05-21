@@ -7,9 +7,9 @@
           :name="theOnlyOneChild.meta.svgIcon"
           class="svg-icon"
         />
-        <component
+        <MenuIcon
           v-else-if="theOnlyOneChild.meta.icon"
-          :is="theOnlyOneChild.meta?.icon"
+          :name="theOnlyOneChild.meta.icon"
           class="el-icon"
         />
         <template v-if="theOnlyOneChild.meta.title" #title>
@@ -21,7 +21,7 @@
   <el-sub-menu v-else :index="resolvePath(item.path)" teleported>
     <template #title>
       <SvgIcon v-if="item.meta?.svgIcon" :name="item.meta.svgIcon" class="svg-class" />
-      <component v-else-if="item.meta?.icon" :is="item.meta.icon" class="el-icon" />
+      <MenuIcon v-else-if="item.meta?.icon" :name="item.meta.icon" class="el-icon" />
       <span v-if="item.meta?.title" class="title">{{ item.meta.title }}</span>
     </template>
     <template v-if="item.children">
@@ -38,6 +38,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import Link from './Link.vue'
+import MenuIcon from '@@/components/MenuIcon/index.vue'
 import type { RouteRecordRaw } from 'vue-router'
 import path from 'path-browserify'
 import { isExternal } from '@@/utils/validate'

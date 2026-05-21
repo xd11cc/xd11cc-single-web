@@ -40,8 +40,10 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" :icon="Search" @click="handleSearch">查询</el-button>
-          <el-button :icon="Refresh" @click="resetSearch">重置</el-button>
+          <el-button type="primary" @click="handleSearch">
+            <template #icon><Icon icon="ep:search" /></template>查询</el-button>
+          <el-button @click="resetSearch">
+            <template #icon><Icon icon="ep:refresh" /></template>重置</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -50,27 +52,30 @@
         <div>
           <el-button
             type="primary"
-            :icon="CirclePlus"
             @click="dialogVisible = true"
             v-permission="['system:dictData:add']"
-            >新增</el-button
           >
+            <template #icon><Icon icon="ep:circle-plus" /></template>
+            新增
+          </el-button>
           <el-button
             type="danger"
-            :icon="Delete"
             @click="handleBatchRemove"
             v-permission="['system:dictData:delete']"
-            >批量删除</el-button
           >
+            <template #icon><Icon icon="ep:delete" /></template>
+            批量删除
+          </el-button>
         </div>
         <div>
           <el-tooltip content="下载">
             <el-button
               type="primary"
-              :icon="Download"
               circle
               v-permission="['system:dictData:export']"
-            />
+            >
+              <template #icon><Icon icon="ep:download" /></template>
+            </el-button>
           </el-tooltip>
         </div>
       </div>
@@ -83,7 +88,7 @@
           <el-table-column prop="status" label="状态" align="center">
             <template #default="scope">
               <el-tag
-                :type="getDictItem('system_status', scope.row.status)?.listClass"
+                :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
                 effect="plain"
                 disable-transitions
               >
@@ -194,7 +199,7 @@
 </template>
 
 <script lang="ts" setup>
-import { CirclePlus, Delete, Download, Refresh, Search } from '@element-plus/icons-vue'
+import { Icon } from '@iconify/vue'
 import { usePagination } from '@/common/composables/usePagination'
 import type { SystemDictDataVO, SystemDictDataQueryVO, SystemDictTypeVO } from './apis/type'
 import {

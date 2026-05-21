@@ -9,8 +9,12 @@
           <el-input v-model="searchData.tableComment" placeholder="请输入表注释" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" :icon="Search" @click="handleSearch"> 查询 </el-button>
-          <el-button :icon="Refresh" @click="resetSearch"> 重置 </el-button>
+          <el-button type="primary" @click="handleSearch">
+            <template #icon><Icon icon="ep:search" /></template> 查询
+          </el-button>
+          <el-button @click="resetSearch">
+            <template #icon><Icon icon="ep:refresh" /></template> 重置
+          </el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -24,8 +28,8 @@
           <el-table-column fixed="right" label="操作" width="150" align="center">
             <template #default="scope">
               <el-button
-                type="primary"
-                link
+                type="success"
+                text
                 bg
                 size="small"
                 @click="handleGenerateCode(scope.row)"
@@ -65,7 +69,7 @@
 </template>
 
 <script lang="ts" setup>
-import { Search, Refresh } from '@element-plus/icons-vue'
+import { Icon } from '@iconify/vue'
 import { usePagination } from '@@/composables/usePagination'
 import { PreviewCodeVO, type TableInfoQueryVO, type TableInfoVO } from './apis/type'
 import { generateCodePage, generateCode } from './apis'

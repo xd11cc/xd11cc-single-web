@@ -14,23 +14,25 @@
             <el-input
               v-model.trim="bindFormData.username"
               placeholder="请输入用户名"
-              :prefix-icon="User"
               size="large"
-            />
+            >
+              <template #prefix><Icon icon="ep:user" /></template>
+            </el-input>
           </el-form-item>
           <el-form-item prop="password">
             <el-input
               v-model.trim="bindFormData.password"
               :type="bindPwdVisible ? 'text' : 'password'"
               placeholder="请输入密码"
-              :prefix-icon="Lock"
               size="large"
             >
+              <template #prefix><Icon icon="ep:lock" /></template>
               <template #suffix>
-                <el-icon class="password-icon" @click="bindPwdVisible = !bindPwdVisible">
-                  <View v-if="bindPwdVisible" />
-                  <Hide v-else />
-                </el-icon>
+                <Icon
+                  :icon="bindPwdVisible ? 'ep:view' : 'ep:hide'"
+                  class="password-icon"
+                  @click="bindPwdVisible = !bindPwdVisible"
+                />
               </template>
             </el-input>
           </el-form-item>
@@ -44,7 +46,7 @@
 </template>
 
 <script lang="ts" setup>
-import { User, Lock, View, Hide } from '@element-plus/icons-vue'
+import { Icon } from '@iconify/vue'
 import type { FormRules } from 'element-plus'
 import { socialUserBind } from '../apis'
 import { useUserStore } from '@/pinia/stores/user'

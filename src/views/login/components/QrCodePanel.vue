@@ -2,11 +2,9 @@
   <div class="qrcode-panel">
     <div class="qrcode-box">
       <div class="qrcode-placeholder" :class="{ expired: isExpired }">
-        <el-icon v-if="!isExpired" class="qrcode-icon" :size="64">
-          <Monitor />
-        </el-icon>
+        <Icon v-if="!isExpired" icon="ep:monitor" width="64" height="64" class="qrcode-icon" />
         <div v-if="isExpired" class="expired-mask" @click="handleRefresh">
-          <el-icon :size="28"><RefreshRight /></el-icon>
+          <Icon icon="ep:refresh-right" width="28" height="28" />
           <span>点击刷新</span>
         </div>
       </div>
@@ -17,13 +15,12 @@
 </template>
 
 <script lang="ts" setup>
-import { Monitor, RefreshRight } from '@element-plus/icons-vue'
+import { Icon } from '@iconify/vue'
 
 const isExpired = ref(false)
 
 function handleRefresh() {
   isExpired.value = false
-  // TODO: 调用 getQrCode 重新获取二维码
 }
 </script>
 

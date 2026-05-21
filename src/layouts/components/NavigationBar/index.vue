@@ -14,7 +14,9 @@
       <Notify class="right-menu-item" />
       <el-dropdown>
         <div class="right-menu-item user">
-          <el-avatar :icon="UserFilled" :size="30" />
+          <el-avatar :size="30">
+            <Icon icon="ep:user-filled" />
+          </el-avatar>
           <span>{{ userStore.username }}</span>
         </div>
         <template #dropdown>
@@ -46,7 +48,7 @@ import { useAppStore } from '@/pinia/stores/app'
 import { useLayoutMode } from '@@/composables/useLayoutMode'
 import { useDevice } from '@@/composables/useDevice'
 import { useSettingsStore } from '@/pinia/stores/settings'
-import { UserFilled } from '@element-plus/icons-vue'
+import { Icon } from '@iconify/vue'
 import { useUserStore } from '@/pinia/stores/user'
 
 const appStore = useAppStore()

@@ -8,12 +8,15 @@ importers:
 
   .:
     dependencies:
-      '@element-plus/icons-vue':
-        specifier: ^2.3.2
-        version: 2.3.2(vue@3.5.26)
       '@highlightjs/vue-plugin':
         specifier: ^2.1.0
         version: 2.1.0(highlight.js@11.11.1)(vue@3.5.26)
+      '@iconify-json/ep':
+        specifier: ^1.2.4
+        version: 1.2.4
+      '@iconify/vue':
+        specifier: ^5.0.1
+        version: 5.0.1(vue@3.5.26)
       element-plus:
         specifier: ^2.10.2
         version: 2.13.0(vue@3.5.26)
@@ -302,6 +305,17 @@ packages:
     peerDependencies:
       highlight.js: ^11.0.1
       vue: ^3
+
+  '@iconify-json/ep@1.2.4':
+    resolution: {integrity: sha512-dtKOueYp1CRxAUW+GayIiuHqOlELfO0W3QiHOH4NjvKtBn2uxZbByIKQ+7B1Hj+AgZrhWTie3QKYkZn+VQVZrw==}
+
+  '@iconify/types@2.0.0':
+    resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
+
+  '@iconify/vue@5.0.1':
+    resolution: {integrity: sha512-aumwwooJlFJ5H5qYWB6ZTAyM0C8hpfcSVLB9/a3qnH1GGvIJ+FEbpEs4s/HfErYe/M5qZeLjwmESR5fFm3lXEw==}
+    peerDependencies:
+      vue: '>=3.0.0'
 
   '@intlify/core-base@11.2.8':
     resolution: {integrity: sha512-nBq6Y1tVkjIUsLsdOjDSJj4AsjvD0UG3zsg9Fyc+OivwlA/oMHSKooUy9tpKj0HqZ+NWFifweHavdljlBLTwdA==}
@@ -1752,6 +1766,17 @@ snapshots:
   '@highlightjs/vue-plugin@2.1.0(highlight.js@11.11.1)(vue@3.5.26)':
     dependencies:
       highlight.js: 11.11.1
+      vue: 3.5.26
+
+  '@iconify-json/ep@1.2.4':
+    dependencies:
+      '@iconify/types': 2.0.0
+
+  '@iconify/types@2.0.0': {}
+
+  '@iconify/vue@5.0.1(vue@3.5.26)':
+    dependencies:
+      '@iconify/types': 2.0.0
       vue: 3.5.26
 
   '@intlify/core-base@11.2.8':

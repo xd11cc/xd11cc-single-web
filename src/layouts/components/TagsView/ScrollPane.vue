@@ -1,9 +1,9 @@
 <template>
   <div class="scroll-container">
     <el-tooltip content="向左滚动标签（超出最大宽度可点击）">
-      <el-icon class="arrow left" @click="scrollTo('left')">
-        <ArrowLeft />
-      </el-icon>
+      <div class="arrow left" @click="scrollTo('left')">
+        <Icon icon="ep:arrow-left" />
+      </div>
     </el-tooltip>
     <el-scrollbar ref="scrollbarRef" @wheel.passive="wheelScroll" @scroll="scroll">
       <div ref="scrollbarContentRef" class="scrollbar-content">
@@ -11,18 +11,18 @@
       </div>
     </el-scrollbar>
     <el-tooltip content="向右滚动标签（超出最大宽度可点击）">
-      <el-icon class="arrow right" @click="scrollTo('right')">
-        <ArrowRight />
-      </el-icon>
+      <div class="arrow right" @click="scrollTo('right')">
+        <Icon icon="ep:arrow-right" />
+      </div>
     </el-tooltip>
     <Screenfull v-if="settingsStore.showScreenfull" :content="true" class="screenfull" />
   </div>
 </template>
 
 <script lang="ts" setup>
+import { Icon } from '@iconify/vue'
 import { useRouteListener } from '@@/composables/useRouteListener'
 import { useSettingsStore } from '@/pinia/stores/settings'
-import { ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
 import type { RouterLink } from 'vue-router'
 import Screenfull from '@@/components/Screenfull/index.vue'
 
@@ -155,6 +155,9 @@ listenerRouteChange(() => {
     height: 100%;
     font-size: 18px;
     cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     &.left {
       box-shadow: 5px 0 5px -6px var(--el-border-color-darker);
     }

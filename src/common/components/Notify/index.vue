@@ -4,9 +4,7 @@
       <template #reference>
         <el-badge :value="badgeValue" :max="badgeMax" :hidden="badgeValue === 0">
           <el-tooltip effect="dark" content="消息通知" placement="bottom">
-            <el-icon :size="20">
-              <Bell />
-            </el-icon>
+            <Icon icon="ep:bell" width="20" height="20" />
           </el-tooltip>
         </el-badge>
       </template>
@@ -32,7 +30,7 @@
 
 <script lang="ts" setup>
 import type { NotifyItem } from './type'
-import { Bell } from '@element-plus/icons-vue'
+import { Icon } from '@iconify/vue'
 import { notifyData, messageData, todoData } from './data'
 
 type TabName = '通知' | '消息' | '待办'
@@ -82,6 +80,12 @@ function handleHistory() {
 </script>
 
 <style lang="scss" scoped>
+.notify {
+  :deep(svg) {
+    outline: none;
+  }
+}
+
 .notify-history {
   text-align: center;
   padding-top: 12px;

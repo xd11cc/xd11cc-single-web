@@ -21,16 +21,24 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" :icon="Search" @click="handleSearch">查询</el-button>
-          <el-button :icon="Refresh" @click="resetSearch">重置</el-button>
+          <el-button type="primary" @click="handleSearch">
+            <template #icon><Icon icon="ep:search" /></template>查询</el-button
+          >
+          <el-button @click="resetSearch">
+            <template #icon><Icon icon="ep:refresh" /></template>重置</el-button
+          >
         </el-form-item>
       </el-form>
     </el-card>
     <el-card v-loading="loading" shadow="never">
       <div class="toolbar-wrapper">
         <div>
-          <el-button type="primary" :icon="CirclePlus" @click="dialogVisible = true"
-            >新增菜单</el-button
+          <el-button type="primary" @click="dialogVisible = true">
+            <template #icon><Icon icon="ep:circle-plus" /></template>新增菜单</el-button
+          >
+          <el-button @click="toggleExpand">
+            <template #icon><Icon icon="ep:sort" /></template
+            >{{ isExpanded ? '收起全部' : '展开全部' }}</el-button
           >
         </div>
       </div>
@@ -40,25 +48,46 @@
           :data="tableData"
           :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
           row-key="id"
+          @row-click="handleRowClick"
         >
-          <el-table-column prop="menuName" label="菜单名称" align="center" />
-          <el-table-column prop="icon" label="图标" align="center">
+          <el-table-column
+            prop="menuName"
+            label="菜单名称"
+            align="center"
+            min-width="140"
+            show-overflow-tooltip
+          />
+          <el-table-column prop="icon" label="图标" align="center" width="60">
             <template #default="scope">
-              <component :is="scope.row.icon" class="el-icon" />
+              <MenuIcon v-if="scope.row.icon" :name="scope.row.icon" class="el-icon" />
             </template>
           </el-table-column>
-          <el-table-column prop="sort" label="排序" align="center" />
+          <el-table-column prop="menuType" label="类型" align="center" width="80">
+            <template #default="scope">
+              <el-tag
+                :type="menuTypeTag(scope.row.menuType)"
+                effect="plain"
+                size="small"
+                disable-transitions
+              >
+                {{
+                  getDictItem('system_menu_type', scope.row.menuType)?.value || scope.row.menuType
+                }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column prop="sort" label="排序" align="center" width="70" />
           <el-table-column
             prop="permission"
             label="权限标识"
             align="center"
             show-overflow-tooltip
           />
-          <el-table-column prop="component" label="组件路径" align="center" />
+          <el-table-column prop="component" label="组件路径" align="center" show-overflow-tooltip />
           <el-table-column prop="status" label="状态" align="center">
             <template #default="scope">
               <el-tag
-                :type="getDictItem('system_status', scope.row.status)?.listClass"
+                :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
                 effect="plain"
                 disable-transitions
               >
@@ -66,9 +95,24 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="createTime" label="创建时间" align="center" />
-          <el-table-column fixed="right" label="操作" width="150" align="center">
+          <el-table-column
+            prop="createTime"
+            label="创建时间"
+            align="center"
+            min-width="160"
+            show-overflow-tooltip
+          />
+          <el-table-column fixed="right" label="操作" width="200" align="center">
             <template #default="scope">
+              <el-button
+                v-if="scope.row.menuType !== 'B'"
+                type="success"
+                text
+                bg
+                size="small"
+                @click="handleAddChild(scope.row)"
+                >新增</el-button
+              >
               <el-button type="primary" text bg size="small" @click="handleModify(scope.row)"
                 >修改</el-button
               >
@@ -141,9 +185,7 @@
                     content="访问的组件路径，如：`system/user/index`，默认在`views`目录下"
                     placement="top"
                   >
-                    <el-icon>
-                      <question-filled />
-                    </el-icon>
+                    <Icon icon="ep:question-filled" />
                   </el-tooltip>
                   组件路径
                 </span>
@@ -164,7 +206,7 @@
                     content="访问的路由地址，如：`user`，如外网地址需内链访问则以`http(s)://`开头"
                     placement="top"
                   >
-                    <el-icon><question-filled /></el-icon>
+                    <Icon icon="ep:question-filled" />
                   </el-tooltip>
                   路由地址
                 </span>
@@ -180,7 +222,7 @@
                     content="控制器中定义的权限字符，如：@PreAuthorize(`@ss.hasPermi('system:user:list')`)"
                     placement="top"
                   >
-                    <el-icon><question-filled /></el-icon>
+                    <Icon icon="ep:question-filled" />
                   </el-tooltip>
                   权限字符
                 </span>
@@ -196,7 +238,7 @@
                     content='访问路由的默认传递参数，如：`{"id": 1, "name": "ry"}`'
                     placement="top"
                   >
-                    <el-icon><question-filled /></el-icon>
+                    <Icon icon="ep:question-filled" />
                   </el-tooltip>
                   路由参数
                 </span>
@@ -242,13 +284,13 @@
 
 <script lang="ts" setup>
 import { useDict } from '@/common/composables/useDict'
-import { CirclePlus, QuestionFilled, Refresh, Search } from '@element-plus/icons-vue'
+import { Icon } from '@iconify/vue'
 import type { FormRules } from 'element-plus'
 import { addMenu, modifyById, removeById, treeList } from './apis'
 import type { SystemMenuVO, SystemMenuQueryVO, SystemMenuTreeVO } from './apis/type'
 import { cloneDeep } from 'lodash-es'
 import IconSelect from '@@/components/IconSelect/index.vue'
-import type { ElIconName } from '@@/components/IconSelect/elIcon'
+import MenuIcon from '@@/components/MenuIcon/index.vue'
 
 const { loading, getDictList, getDictItem } = useDict([
   'system_status',
@@ -265,6 +307,16 @@ const formRef = useTemplateRef('formRef')
 const searchData: SystemMenuQueryVO = reactive({})
 
 const tableData = ref<SystemMenuTreeVO[]>([])
+
+const menuTypeTagMap: Record<string, 'info' | 'primary' | 'warning'> = {
+  M: 'info',
+  C: 'primary',
+  B: 'warning',
+}
+
+function menuTypeTag(type?: string) {
+  return menuTypeTagMap[type || ''] || 'info'
+}
 
 const formData = ref<SystemMenuVO>({
   menuType: 'M',
@@ -290,6 +342,12 @@ function handleSearch() {
 function resetSearch() {
   searchFormRef.value?.resetFields()
   getTableData()
+}
+
+function handleRowClick(row: SystemMenuTreeVO) {
+  if (row.children?.length) {
+    tableRef.value?.toggleRowExpansion(row)
+  }
 }
 
 function handleModify(row: SystemMenuVO) {
@@ -323,18 +381,18 @@ function handleCreateOrUpdate() {
       ElMessage.error('表单校验不通过')
       return
     }
+    loading.value = true
+    const api = formData.value.id === undefined ? addMenu : modifyById
+    api(formData.value)
+      .then((data) => {
+        ElMessage.success(data.msg || '操作成功')
+        dialogVisible.value = false
+        getTableData()
+      })
+      .finally(() => {
+        loading.value = false
+      })
   })
-  loading.value = true
-  const api = formData.value.id === undefined ? addMenu : modifyById
-  api(formData.value)
-    .then((data) => {
-      ElMessage.success(data.msg || '操作成功')
-      dialogVisible.value = false
-      getTableData()
-    })
-    .finally(() => {
-      loading.value = false
-    })
 }
 
 function getTableData() {
@@ -356,8 +414,32 @@ function getTableData() {
 
 getTableData()
 
-const handleIconSelect = (iconName: ElIconName) => {
-  formData.value.icon = iconName
+const isExpanded = ref(false)
+
+function toggleExpand() {
+  isExpanded.value = !isExpanded.value
+  const table = tableRef.value
+  if (!table) return
+  const toggleRows = (rows: SystemMenuTreeVO[]) => {
+    rows.forEach((row) => {
+      table.toggleRowExpansion(row, isExpanded.value)
+      if (row.children?.length) {
+        toggleRows(row.children)
+      }
+    })
+  }
+  toggleRows(tableData.value)
+}
+
+function handleAddChild(row: SystemMenuVO) {
+  dialogVisible.value = true
+  formData.value = {
+    menuType: row.menuType === 'M' ? 'C' : 'B',
+    visible: '0',
+    status: '0',
+    parentId: row.id,
+    icon: '',
+  }
 }
 </script>
 

@@ -1,14 +1,11 @@
 <template>
   <div @click="toggleClick">
-    <el-icon :size="20" class="icon">
-      <Fold v-if="isActive" />
-      <Expand v-else />
-    </el-icon>
+    <Icon :icon="isActive ? 'ep:fold' : 'ep:expand'" :width="20" :height="20" class="icon" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { Fold, Expand } from '@element-plus/icons-vue'
+import { Icon } from '@iconify/vue'
 
 interface Props {
   isActive?: boolean
