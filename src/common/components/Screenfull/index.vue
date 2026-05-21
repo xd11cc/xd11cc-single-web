@@ -2,18 +2,16 @@
   <div>
     <!-- 全屏 -->
     <el-tooltip v-if="!content" effect="dark" :content="fullscreenTips" placement="bottom">
-      <SvgIcon :name="fullscreenSvgName" @click="handleFullscreenClick" class="svg-icon" />
+      <Icon icon="ep:full-screen" class="action-icon" @click="handleFullscreenClick" />
     </el-tooltip>
     <!-- 内容区 -->
     <el-dropdown v-else :disabled="isFullscreen">
-      <SvgIcon :name="contentLargeSvgName" class="svg-icon" />
+      <Icon icon="ep:full-screen" class="action-icon" />
       <template #dropdown>
         <el-dropdown-menu>
-          <!-- 内容放大区 -->
           <el-dropdown-item @click="handleContentLargeClick">
             {{ contentLargeTips }}
           </el-dropdown-item>
-          <!-- 内容区全屏 -->
           <el-dropdown-item @click="handleContentFullClick"> 内容区全屏 </el-dropdown-item>
         </el-dropdown-menu>
       </template>
@@ -22,16 +20,13 @@
 </template>
 
 <script lang="ts" setup>
+import { Icon } from '@iconify/vue'
 import screenfull from 'screenfull'
 
 interface Props {
-  // 全屏的元素，默认是 html
   element?: string
-  // 打开全屏提示语
   openTips?: string
-  // 关闭全屏提示语
   exitTips?: string
-  // 是否只针对内容区
   content?: boolean
 }
 
@@ -48,14 +43,11 @@ const CONTENT_FULL = 'content-full'
 
 const classList = document.body.classList
 
-// 全屏
 const isEnabled = screenfull.isEnabled
 
 const isFullscreen = ref<boolean>(false)
 
 const fullscreenTips = computed(() => (isFullscreen.value ? exitTips : openTips))
-
-const fullscreenSvgName = computed(() => (isFullscreen.value ? 'fullscreen-exit' : 'fullscreen'))
 
 function handleFullscreenClick() {
   const dom = document.querySelector(element) || undefined
@@ -64,51 +56,38 @@ function handleFullscreenClick() {
 
 function handleFullscreenChange() {
   isFullscreen.value = screenfull.isFullscreen
-  // 退出全屏时清除相关的 class
   isFullscreen.value || classList.remove(CONTENT_LARGE, CONTENT_FULL)
 }
 
 watchEffect(() => {
   if (isEnabled) {
-    // 挂载组件时自动执行
     screenfull.on('change', handleFullscreenChange)
-    // 卸载组件时自动执行
     onWatcherCleanup(() => {
       screenfull.off('change', handleFullscreenChange)
     })
   }
 })
 
-// 内容区
 const isContentLarge = ref<boolean>(false)
 
 const contentLargeTips = computed(() => (isContentLarge.value ? '内容区复原' : '内容区放大'))
 
-const contentLargeSvgName = computed(() =>
-  isContentLarge.value ? 'fullscreen-exit' : 'fullscreen',
-)
-
 function handleContentLargeClick() {
   isContentLarge.value = !isContentLarge.value
-  // 内容区放大时，将不需要的组件隐藏
   classList.toggle(CONTENT_LARGE, isContentLarge.value)
 }
 
 function handleContentFullClick() {
-  // 取消内容区放大
   isContentLarge.value && handleContentLargeClick()
-  // 内容区全屏时，将不需要的组件隐藏
   classList.add(CONTENT_FULL)
-  // 开启全屏
   handleFullscreenClick()
 }
 </script>
 
 <style lang="scss" scoped>
-.svg-icon {
+.action-icon {
   font-size: 20px;
-  &:focus {
-    outline: none;
-  }
+  outline: none;
+  cursor: pointer;
 }
 </style>

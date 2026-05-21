@@ -47,6 +47,10 @@ body.content-large {
   --v3-header-height: var(--v3-tagsview-height);
 }
 
+body.content-large .navigation-bar {
+  display: none;
+}
+
 /* 内容区全屏时，将不需要的组件隐藏 */
 body.content-full {
   /* Header 区域 */

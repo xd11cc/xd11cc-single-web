@@ -1,7 +1,6 @@
 import { resolve } from 'node:path'
 import vue from '@vitejs/plugin-vue'
 import AutoImport from 'unplugin-auto-import/vite'
-import SvgComponent from 'unplugin-svg-component/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
 import { defineConfig, loadEnv } from 'vite'
@@ -53,13 +52,6 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       vue(),
-      // 自动生成 SvgIcon 组件和 SVG 雪碧图
-      SvgComponent({
-        iconDir: [resolve(__dirname, 'src/common/assets/icons')],
-        preserveColor: resolve(__dirname, 'src/common/assets/icons/preserve-color'),
-        dts: true,
-        dtsDir: resolve(__dirname, 'types/auto'),
-      }),
       AutoImport({
         imports: ['vue', 'vue-router', 'pinia'],
         dts: 'types/auto/auto-imports.d.ts',

@@ -1,29 +1,25 @@
 <template>
   <div>
     <el-tooltip effect="dark" content="搜索菜单" placement="bottom">
-      <SvgIcon name="search" @click="handleOpen" class="svg-icon" />
+      <Icon icon="ep:search" class="action-icon" @click="handleOpen" />
     </el-tooltip>
-    <!-- <Modal v-model="visible" /> -->
   </div>
 </template>
 
 <script lang="ts" setup>
-// 控制modal显隐
+import { Icon } from '@iconify/vue'
+
 const visible = ref<boolean>(false)
 
-/**
- * 打开 modal
- */
 function handleOpen() {
   visible.value = true
 }
 </script>
 
 <style lang="scss" scoped>
-.svg-icon {
+.action-icon {
   font-size: 20px;
-  &:focus {
-    outline: none;
-  }
+  outline: none;
+  cursor: pointer;
 }
 </style>

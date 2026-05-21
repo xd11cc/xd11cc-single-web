@@ -2,13 +2,8 @@
   <template v-if="!alwaysShowRootMenu && theOnlyOneChild && !theOnlyOneChild.children">
     <Link v-if="theOnlyOneChild.meta" :to="resolvePath(theOnlyOneChild.path)">
       <el-menu-item :index="resolvePath(theOnlyOneChild.path)">
-        <SvgIcon
-          v-if="theOnlyOneChild.meta.svgIcon"
-          :name="theOnlyOneChild.meta.svgIcon"
-          class="svg-icon"
-        />
         <MenuIcon
-          v-else-if="theOnlyOneChild.meta.icon"
+          v-if="theOnlyOneChild.meta.icon"
           :name="theOnlyOneChild.meta.icon"
           class="el-icon"
         />
@@ -20,8 +15,7 @@
   </template>
   <el-sub-menu v-else :index="resolvePath(item.path)" teleported>
     <template #title>
-      <SvgIcon v-if="item.meta?.svgIcon" :name="item.meta.svgIcon" class="svg-class" />
-      <MenuIcon v-else-if="item.meta?.icon" :name="item.meta.icon" class="el-icon" />
+      <MenuIcon v-if="item.meta?.icon" :name="item.meta.icon" class="el-icon" />
       <span v-if="item.meta?.title" class="title">{{ item.meta.title }}</span>
     </template>
     <template v-if="item.children">
@@ -85,12 +79,6 @@ function resolvePath(routePath: string) {
 
 <style lang="scss" scoped>
 @use '@@/assets/styles/mixins.scss';
-
-.svg-icon {
-  min-width: 1em;
-  margin-right: 12px;
-  font-size: 18px;
-}
 
 .el-icon {
   width: 1em !important;
