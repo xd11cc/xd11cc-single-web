@@ -1,3 +1,4 @@
+import { ref } from 'vue'
 import { getItem, setItem } from '@@/utils/storage'
 import { CacheKey } from '@@/constants/cache-key'
 import request from '@@/utils/request'
@@ -13,10 +14,15 @@ function fetchOssUrl(): Promise<string> {
     ossUrlPromise = request({
       url: '/system/config/getConfig/minio-domain',
       method: 'GET',
-    }).then((res: ResponseVO<string>) => {
-      setItem(CacheKey.OSS_URL, res.data)
-      return res.data
     })
+      .then((res: ResponseVO<string>) => {
+        setItem(CacheKey.OSS_URL, res.data)
+        return res.data
+      })
+      .catch(() => {
+        ossUrlPromise = null
+        return ''
+      })
   }
   return ossUrlPromise
 }

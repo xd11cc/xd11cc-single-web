@@ -7,20 +7,20 @@
 declare module '~virtual/svg-component' {
   const SvgIcon: import("vue").DefineComponent<{
       name: {
-          type: import("vue").PropType<"dashboard" | "fullscreen-exit" | "fullscreen" | "github" | "login-bg" | "login-box-bg" | "qq" | "qrcode" | "search" | "wechat">;
+          type: import("vue").PropType<"dashboard" | "fullscreen-exit" | "fullscreen" | "search">;
           default: string;
           required: true;
       };
   }, {}, unknown, {}, {}, import("vue").ComponentOptionsMixin, import("vue").ComponentOptionsMixin, {}, string, import("vue").VNodeProps & import("vue").AllowedComponentProps & import("vue").ComponentCustomProps, Readonly<import("vue").ExtractPropTypes<{
       name: {
-          type: import("vue").PropType<"dashboard" | "fullscreen-exit" | "fullscreen" | "github" | "login-bg" | "login-box-bg" | "qq" | "qrcode" | "search" | "wechat">;
+          type: import("vue").PropType<"dashboard" | "fullscreen-exit" | "fullscreen" | "search">;
           default: string;
           required: true;
       };
   }>>, {
-      name: "dashboard" | "fullscreen-exit" | "fullscreen" | "github" | "login-bg" | "login-box-bg" | "qq" | "qrcode" | "search" | "wechat";
+      name: "dashboard" | "fullscreen-exit" | "fullscreen" | "search";
   }>;
-  export const svgNames: ["dashboard", "fullscreen-exit", "fullscreen", "github", "login-bg", "login-box-bg", "qq", "qrcode", "search", "wechat"];
-  export type SvgName = "dashboard" | "fullscreen-exit" | "fullscreen" | "github" | "login-bg" | "login-box-bg" | "qq" | "qrcode" | "search" | "wechat";
+  export const svgNames: ["dashboard", "fullscreen-exit", "fullscreen", "search"];
+  export type SvgName = "dashboard" | "fullscreen-exit" | "fullscreen" | "search";
   export default SvgIcon;
 }

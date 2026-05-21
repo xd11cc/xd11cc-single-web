@@ -69,8 +69,8 @@
         </el-form>
 
         <!-- 其他登录方式 -->
-        <el-divider v-if="socialConfigs.length">其他登录方式</el-divider>
-        <div v-if="socialConfigs.length" class="social-login">
+        <el-divider v-if="socialConfigs.length && ossUrl">其他登录方式</el-divider>
+        <div v-if="socialConfigs.length && ossUrl" class="social-login">
           <div
             v-for="item in socialConfigs"
             :key="item.source"
@@ -182,6 +182,8 @@ function handleForgetPassword() {
 onMounted(() => {
   refreshCaptcha()
   getSocialClientConfigList().then((res) => {
+    console.log(res.data)
+
     socialConfigs.value = res.data
   })
 })
