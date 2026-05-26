@@ -1,20 +1,16 @@
 <template>
   <div class="layout-logo-container" :class="{ collapse: collapse, 'layout-mode-top': isTop }">
-    <transition name="layout-logo-fade">
-      <router-link v-if="collapse" key="collapse" to="/">
-        <img :src="logo" class="layout-logo" />
-      </router-link>
-      <router-link v-else key="expand" to="/">
-        <img :src="!isLeft ? logoText2 : logoText1" class="layout-logo-text" />
-      </router-link>
-    </transition>
+    <router-link to="/" class="logo-link">
+      <div class="logo-icon">
+        <Icon icon="lucide:hexagon" class="icon" />
+      </div>
+      <span v-if="!collapse" class="logo-text">XD11CC</span>
+    </router-link>
   </div>
 </template>
 
 <script lang="ts" setup>
-import logo from '@@/assets/imgs/logo.jpg?url'
-import logoText1 from '@@/assets/imgs/logo-text-1.png?url'
-import logoText2 from '@@/assets/imgs/logo-text-2.png?url'
+import { Icon } from '@iconify/vue'
 import { useLayoutMode } from '@@/composables/useLayoutMode'
 
 interface Props {
@@ -23,7 +19,7 @@ interface Props {
 
 const { collapse = true } = defineProps<Props>()
 
-const { isLeft, isTop } = useLayoutMode()
+const { isTop } = useLayoutMode()
 </script>
 
 <style lang="scss" scoped>
@@ -31,31 +27,48 @@ const { isLeft, isTop } = useLayoutMode()
   position: relative;
   width: 100%;
   height: var(--v3-header-height);
-  line-height: var(--v3-header-height);
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
-  .layout-logo {
-    display: none;
-  }
-  .layout-logo-text {
-    height: 100%;
-    vertical-align: middle;
-  }
+  border-bottom: 1px solid var(--theme-border-light);
+  transition: border-color 0.3s ease;
 }
 
 .layout-mode-top {
   height: var(--v3-navigationbar-height);
-  line-height: var(--v3-navigationbar-height);
+}
+
+.logo-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.logo-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+
+  .icon {
+    font-size: 24px;
+    color: var(--theme-accent);
+  }
+}
+
+.logo-text {
+  font-family: var(--p-font-display);
+  font-size: var(--p-text-md);
+  font-weight: var(--p-weight-bold);
+  letter-spacing: -0.3px;
+  color: var(--theme-text-primary);
 }
 
 .collapse {
-  .layout-logo {
-    width: 32px;
-    height: 32px;
-    vertical-align: middle;
-    display: inline-block;
-  }
-  .layout-logo-text {
+  .logo-text {
     display: none;
   }
 }

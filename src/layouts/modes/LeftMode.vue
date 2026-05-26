@@ -73,7 +73,7 @@ $transition-time: 0.35s;
 
 .sidebar-container {
   background-color: var(--v3-sidebar-menu-bg-color);
-  transition: width $transition-time;
+  transition: width $transition-time, background-color 0.3s ease;
   width: var(--v3-sidebar-width);
   height: 100%;
   position: fixed;
@@ -87,9 +87,10 @@ $transition-time: 0.35s;
 
 .main-container {
   min-height: 100%;
-  transition: margin-left $transition-time;
+  transition: margin-left $transition-time, background-color 0.3s ease;
   margin-left: var(--v3-sidebar-width);
   position: relative;
+  background-color: var(--theme-bg-page);
 }
 
 .fixed-header {

@@ -22,7 +22,7 @@
                 size="large"
                 maxlength="11"
               >
-                <template #prefix><Icon icon="ep:iphone" /></template>
+                <template #prefix><Icon icon="lucide:smartphone" /></template>
               </el-input>
             </el-form-item>
             <el-form-item prop="phoneCode" class="code-form-item">
@@ -32,7 +32,7 @@
                 size="large"
                 maxlength="6"
               >
-                <template #prefix><Icon icon="ep:message" /></template>
+                <template #prefix><Icon icon="lucide:mail" /></template>
               </el-input>
               <el-button :disabled="phoneCountdown > 0" class="code-btn" @click="handleSendSms">
                 {{ phoneCountdown > 0 ? `${phoneCountdown}s 后重发` : '获取验证码' }}
@@ -48,7 +48,7 @@
                 placeholder="请输入邮箱"
                 size="large"
               >
-                <template #prefix><Icon icon="ep:message" /></template>
+                <template #prefix><Icon icon="lucide:mail" /></template>
               </el-input>
             </el-form-item>
             <el-form-item prop="emailCode" class="code-form-item">
@@ -58,7 +58,7 @@
                 size="large"
                 maxlength="6"
               >
-                <template #prefix><Icon icon="ep:key" /></template>
+                <template #prefix><Icon icon="lucide:key-round" /></template>
               </el-input>
               <el-button :disabled="emailCountdown > 0" class="code-btn" @click="handleSendEmail">
                 {{ emailCountdown > 0 ? `${emailCountdown}s 后重发` : '获取验证码' }}
@@ -74,10 +74,10 @@
               placeholder="请输入新密码"
               size="large"
             >
-              <template #prefix><Icon icon="ep:lock" /></template>
+              <template #prefix><Icon icon="lucide:lock" /></template>
               <template #suffix>
                 <Icon
-                  :icon="pwdVisible ? 'ep:view' : 'ep:hide'"
+                  :icon="pwdVisible ? 'lucide:eye' : 'lucide:eye-off'"
                   class="password-icon"
                   @click="pwdVisible = !pwdVisible"
                 />
@@ -91,10 +91,10 @@
               placeholder="请确认新密码"
               size="large"
             >
-              <template #prefix><Icon icon="ep:lock" /></template>
+              <template #prefix><Icon icon="lucide:lock" /></template>
               <template #suffix>
                 <Icon
-                  :icon="confirmPwdVisible ? 'ep:view' : 'ep:hide'"
+                  :icon="confirmPwdVisible ? 'lucide:eye' : 'lucide:eye-off'"
                   class="password-icon"
                   @click="confirmPwdVisible = !confirmPwdVisible"
                 />
@@ -276,74 +276,38 @@ onBeforeUnmount(() => {
 
 <style lang="scss" scoped>
 .form-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   width: 100%;
 
   .form-card {
-    width: 460px;
-    max-width: 92%;
-    border-radius: 12px;
-    box-shadow:
-      0 1px 3px rgba(0, 0, 0, 0.04),
-      0 6px 24px rgba(0, 0, 0, 0.06),
-      0 12px 40px rgba(0, 0, 0, 0.04);
-    background-color: var(--business-card-bg);
-    overflow: hidden;
-    border-top: 4px solid var(--business-primary);
-
     .title {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 120px;
-      background: linear-gradient(
-        180deg,
-        rgba(26, 54, 93, 0.03) 0%,
-        rgba(26, 54, 93, 0.005) 60%,
-        transparent 100%
-      );
+      text-align: center;
+      margin-bottom: var(--p-space-6);
 
       h3 {
         margin: 0;
-        font-size: 26px;
-        font-weight: 600;
-        letter-spacing: 2px;
-        color: var(--business-text);
-        position: relative;
-
-        &::after {
-          content: '';
-          position: absolute;
-          bottom: -12px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 40px;
-          height: 3px;
-          border-radius: 2px;
-          background-color: var(--business-primary);
-        }
+        font-family: var(--p-font-display);
+        font-size: var(--p-text-lg);
+        font-weight: var(--p-weight-semibold);
+        color: var(--theme-text-primary);
       }
     }
   }
 
   .content {
-    padding: 10px 48px 48px;
-
     .login-tabs {
       display: flex;
-      gap: 28px;
-      margin-bottom: 24px;
-      border-bottom: 1px solid var(--business-border);
+      gap: var(--p-space-6);
+      margin-bottom: var(--p-space-6);
+      border-bottom: 1px solid var(--theme-border);
 
       span {
         position: relative;
         padding-bottom: 10px;
-        font-size: 15px;
-        color: var(--business-text-secondary);
+        font-size: var(--p-text-sm);
+        font-weight: var(--p-weight-medium);
+        color: var(--theme-text-muted);
         cursor: pointer;
-        transition: color 0.25s;
+        transition: color var(--p-duration-fast);
         user-select: none;
 
         &::after {
@@ -355,19 +319,19 @@ onBeforeUnmount(() => {
           height: 2px;
           border-radius: 1px;
           background-color: transparent;
-          transition: background-color 0.25s;
+          transition: background-color var(--p-duration-fast);
         }
 
         &.active {
-          color: var(--business-primary);
-          font-weight: 600;
+          color: var(--theme-accent);
+          font-weight: var(--p-weight-semibold);
           &::after {
-            background-color: var(--business-primary);
+            background-color: var(--theme-accent);
           }
         }
 
         &:hover:not(.active) {
-          color: var(--business-text);
+          color: var(--theme-text-primary);
         }
       }
     }
@@ -376,84 +340,93 @@ onBeforeUnmount(() => {
       :deep(.el-form-item__content) {
         display: flex;
         flex-wrap: nowrap;
-        gap: 12px;
+        gap: 10px;
       }
     }
 
     .code-btn {
       flex-shrink: 0;
       min-width: 110px;
-      border-radius: 8px;
-      font-size: 13px;
-    }
+      border-radius: var(--input-radius);
+      font-size: var(--p-text-xs);
+      font-weight: var(--p-weight-medium);
+      border: 1px solid var(--theme-border);
+      background: var(--theme-bg-surface);
+      color: var(--theme-text-secondary);
+      transition: all var(--p-duration-fast) var(--p-ease-out);
 
-    :deep(.el-input) {
-      --el-input-focus-border-color: var(--business-border-focus);
-      --el-input-hover-border-color: var(--business-border-focus);
+      &:hover:not(:disabled) {
+        border-color: var(--theme-accent);
+        color: var(--theme-accent);
+      }
     }
 
     :deep(.el-input__wrapper) {
-      border-radius: 8px;
+      border-radius: var(--input-radius);
+      box-shadow: 0 0 0 1px var(--theme-border) inset;
+      background: var(--theme-bg-elevated);
+      transition: all var(--p-duration-fast) var(--p-ease-out);
+
+      &:hover {
+        box-shadow: 0 0 0 1px var(--theme-text-muted) inset;
+      }
+
+      &.is-focus {
+        box-shadow: 0 0 0 1.5px var(--theme-accent) inset;
+        background: var(--theme-bg-surface);
+      }
+    }
+
+    :deep(.el-form-item) {
+      margin-bottom: 18px;
     }
 
     .password-icon {
       cursor: pointer;
-      color: var(--business-text-placeholder);
-      transition: color 0.2s;
+      color: var(--theme-text-muted);
+      transition: color var(--p-duration-fast);
       &:hover {
-        color: var(--business-primary);
+        color: var(--theme-accent);
       }
     }
 
     :deep(.el-button--primary) {
       width: 100%;
-      margin-top: 8px;
-      font-weight: 500;
-      letter-spacing: 1px;
-      border-radius: 8px;
-      background-color: var(--business-primary);
-      border-color: var(--business-primary);
+      height: var(--btn-height);
+      margin-top: var(--p-space-2);
+      border: none;
+      border-radius: var(--btn-radius);
+      font-family: var(--p-font-display);
+      font-weight: var(--p-weight-semibold);
+      font-size: var(--p-text-md);
+      background: var(--theme-accent);
+      color: #ffffff;
+      transition: all var(--p-duration-fast) var(--p-ease-out);
 
-      &:hover,
-      &:focus {
-        background-color: var(--business-primary-hover);
-        border-color: var(--business-primary-hover);
-        box-shadow: 0 4px 14px rgba(26, 54, 93, 0.3);
+      &:hover {
+        background: var(--theme-accent-hover);
+        box-shadow: 0 4px 12px var(--theme-accent-glow);
       }
 
       &:active {
-        background-color: var(--business-primary-active);
-        border-color: var(--business-primary-active);
+        transform: scale(0.98);
       }
     }
 
     :deep(.el-link--primary) {
-      color: var(--business-primary);
-      font-weight: 500;
+      color: var(--theme-accent);
+      font-weight: var(--p-weight-medium);
       &:hover {
-        color: var(--business-primary-hover);
+        color: var(--theme-accent-hover);
       }
     }
 
     .back-link {
       text-align: center;
       margin-top: 18px;
-      font-size: 14px;
-      color: var(--business-text-secondary);
+      font-size: var(--p-text-sm);
+      color: var(--theme-text-muted);
     }
-  }
-}
-
-@media (max-width: 520px) {
-  .form-container .form-card {
-    width: 100%;
-    max-width: 100%;
-    border-radius: 0;
-    border-top: 3px solid var(--business-primary);
-  }
-
-  .form-container .content {
-    padding: 8px 24px 36px;
   }
 }
 </style>

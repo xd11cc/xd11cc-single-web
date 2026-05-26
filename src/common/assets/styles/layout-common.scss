@@ -3,7 +3,7 @@
 $transition-time: 0.35s;
 
 /**
-* LeftMode.vue、TopMode.vue、LeftTopMode.vue公共样式  
+* LeftMode.vue、TopMode.vue、LeftTopMode.vue公共样式
 */
 .app-wrapper {
   @extend %clearfix;
@@ -15,4 +15,5 @@ $transition-time: 0.35s;
   background-color: var(--v3-header-bg-color);
   box-shadow: var(--v3-header-box-shadow);
   border-bottom: var(--v3-header-border-bottom);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }

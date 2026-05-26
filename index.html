@@ -6,6 +6,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/app-loading.css" />
     <title>%VITE_APP_TITLE%</title>
+    <script>
+      ;(function () {
+        var t = null
+        try {
+          var keys = Object.keys(localStorage)
+          for (var i = 0; i < keys.length; i++) {
+            if (keys[i].endsWith('-theme-key')) {
+              t = localStorage.getItem(keys[i])
+              break
+            }
+          }
+        } catch (e) {}
+        if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme:dark)').matches)) {
+          document.documentElement.dataset.theme = 'dark'
+        } else {
+          document.documentElement.dataset.theme = 'light'
+        }
+      })()
+    </script>
     <script src="/detect-ie.js"></script>
   </head>
   <body>

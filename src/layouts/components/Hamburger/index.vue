@@ -1,6 +1,6 @@
 <template>
   <div @click="toggleClick">
-    <Icon :icon="isActive ? 'ep:fold' : 'ep:expand'" :width="20" :height="20" class="icon" />
+    <Icon :icon="isActive ? 'lucide:panel-left-close' : 'lucide:panel-left-open'" :width="20" :height="20" class="icon" />
   </div>
 </template>
 

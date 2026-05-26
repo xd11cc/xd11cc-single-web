@@ -42,7 +42,7 @@ export const publicRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/dashboard/index.vue'),
         meta: {
           title: '首页',
-          icon: 'ep:home-filled',
+          icon: 'lucide:home',
           affix: true,
         },
       },

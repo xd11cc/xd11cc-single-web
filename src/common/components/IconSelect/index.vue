@@ -4,7 +4,7 @@
     <el-input v-model="inputValue" :placeholder="placeholder" clearable @clear="handleClear">
       <template #prefix>
         <Icon v-if="inputValue" :icon="inputValue" />
-        <Icon v-else icon="ep:search" />
+        <Icon v-else icon="lucide:search" />
       </template>
     </el-input>
   </div>
@@ -27,7 +27,7 @@
         >
           <template #prefix>
             <Icon v-if="inputValue" :icon="inputValue" />
-            <Icon v-else icon="ep:search" />
+            <Icon v-else icon="lucide:search" />
           </template>
         </el-input>
       </template>
@@ -42,7 +42,7 @@
             @input="handleLocalFilter"
           >
             <template #suffix>
-              <Icon icon="ep:search" class="search-btn" />
+              <Icon icon="lucide:search" class="search-btn" />
             </template>
           </el-input>
           <el-button size="small" @click="handleOnlineSearch" :loading="onlineLoading">
@@ -52,7 +52,7 @@
 
         <div class="tab-row">
           <span :class="{ active: activeTab === 'local' }" @click="activeTab = 'local'">
-            EP 图标
+            Lucide 图标
           </span>
           <span
             v-if="onlineResults.length > 0"
@@ -73,7 +73,7 @@
               @click="handleSelect(icon)"
             >
               <Icon :icon="icon" width="20" height="20" />
-              <span>{{ icon.replace('ep:', '') }}</span>
+              <span>{{ icon.replace('lucide:', '') }}</span>
             </div>
             <div v-if="displayIcons.length === 0" class="empty-state">无匹配图标</div>
           </template>
@@ -100,9 +100,9 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
 import { ref, computed } from 'vue'
-import epIcons from '@iconify-json/ep/icons.json'
+import lucideIcons from '@iconify-json/lucide/icons.json'
 
-const epIconNames = Object.keys(epIcons.icons).map((name) => `ep:${name}`)
+const lucideIconNames = Object.keys(lucideIcons.icons).map((name) => `lucide:${name}`)
 
 interface Props {
   modelValue?: string
@@ -146,7 +146,7 @@ const hasFiltered = ref(false)
 
 const displayIcons = computed(() => {
   if (hasFiltered.value) return filteredIcons.value
-  return epIconNames.slice(0, 48)
+  return lucideIconNames.slice(0, 48)
 })
 
 function handleLocalFilter() {
@@ -156,7 +156,7 @@ function handleLocalFilter() {
     return
   }
   hasFiltered.value = true
-  filteredIcons.value = epIconNames.filter((name) => name.includes(keyword)).slice(0, 48)
+  filteredIcons.value = lucideIconNames.filter((name) => name.includes(keyword)).slice(0, 48)
 }
 
 async function handleOnlineSearch() {
@@ -204,25 +204,25 @@ const handleSelect = (name: string) => {
   gap: 16px;
   margin-top: 8px;
   padding-bottom: 6px;
-  border-bottom: 1px solid #ebeef5;
-  font-size: 13px;
+  border-bottom: 1px solid var(--theme-border);
+  font-size: var(--p-text-xs);
 }
 
 .tab-row span {
   cursor: pointer;
   padding-bottom: 4px;
-  color: #909399;
-  transition: color 0.2s;
+  color: var(--theme-text-muted);
+  transition: color var(--p-duration-fast);
 }
 
 .tab-row span.active {
-  color: #409eff;
-  font-weight: 500;
-  border-bottom: 2px solid #409eff;
+  color: var(--theme-accent);
+  font-weight: var(--p-weight-medium);
+  border-bottom: 2px solid var(--theme-accent);
 }
 
 .tab-row span:hover:not(.active) {
-  color: #606266;
+  color: var(--theme-text-primary);
 }
 
 .icon-grid {
@@ -240,18 +240,18 @@ const handleSelect = (name: string) => {
   align-items: center;
   justify-content: center;
   padding: 8px 4px;
-  border-radius: 6px;
+  border-radius: var(--p-radius-md);
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background var(--p-duration-fast);
 }
 
 .icon-item:hover {
-  background-color: #f5f7fa;
+  background-color: var(--theme-bg-elevated);
 }
 
 .icon-item.active {
-  background-color: #ecf5ff;
-  color: #409eff;
+  background-color: var(--theme-accent-light);
+  color: var(--theme-accent);
 }
 
 .icon-item span {
@@ -269,8 +269,8 @@ const handleSelect = (name: string) => {
   grid-column: 1 / -1;
   text-align: center;
   padding: 20px 0;
-  color: #909399;
-  font-size: 14px;
+  color: var(--theme-text-muted);
+  font-size: var(--p-text-sm);
 }
 
 .search-btn {

@@ -1,9 +1,446 @@
 <template>
-  <div>
-    <p>欢迎来到xd11cc管理系统</p>
+  <div class="dashboard">
+    <!-- 欢迎区 -->
+    <section class="greeting" style="--delay: 0">
+      <div>
+        <h1 class="greeting-title">{{ greetingText }}，{{ username }}</h1>
+        <p class="greeting-sub">{{ currentDate }}</p>
+      </div>
+    </section>
+
+    <!-- 统计卡片 -->
+    <section class="stats-grid">
+      <div
+        v-for="(stat, i) in stats"
+        :key="stat.label"
+        class="stat-card"
+        :style="{ '--delay': i + 1 }"
+      >
+        <div class="stat-header">
+          <span class="stat-label">{{ stat.label }}</span>
+          <span class="stat-trend" :class="stat.trendType">{{ stat.trend }}</span>
+        </div>
+        <div class="stat-value">{{ stat.value }}</div>
+        <div class="stat-bar">
+          <div class="stat-bar-fill" :style="{ width: stat.percent + '%' }"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 主内容区 -->
+    <section class="main-grid">
+      <!-- 图表卡片 -->
+      <div class="chart-card" style="--delay: 5">
+        <div class="card-header">
+          <h3>Weekly Overview</h3>
+          <div class="card-actions">
+            <span class="period active">W</span>
+            <span class="period">M</span>
+            <span class="period">Y</span>
+          </div>
+        </div>
+        <div class="chart-area">
+          <div class="chart-bars">
+            <div v-for="(h, i) in chartData" :key="i" class="bar-col">
+              <div class="bar" :style="{ height: h + '%' }"></div>
+              <span class="bar-label">{{ weekDays[i] }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 最近活动 -->
+      <div class="activity-card" style="--delay: 6">
+        <div class="card-header">
+          <h3>Recent Activity</h3>
+          <el-link type="primary" underline="never">View All</el-link>
+        </div>
+        <div class="activity-list">
+          <div v-for="activity in activities" :key="activity.id" class="activity-item">
+            <div class="activity-indicator" :style="{ background: activity.color }"></div>
+            <div class="activity-content">
+              <p class="activity-text">{{ activity.text }}</p>
+              <span class="activity-time">{{ activity.time }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 快捷入口 -->
+    <section class="quick-grid" style="--delay: 7">
+      <div
+        v-for="action in quickActions"
+        :key="action.label"
+        class="quick-card"
+        @click="handleQuickAction(action.path)"
+      >
+        <Icon :icon="action.icon" class="quick-icon" />
+        <span class="quick-label">{{ action.label }}</span>
+      </div>
+    </section>
   </div>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import { Icon } from '@iconify/vue'
+import { useUserStore } from '@/pinia/stores/user'
 
-<style lang="scss" scoped></style>
+const router = useRouter()
+const userStore = useUserStore()
+const username = computed(() => userStore.username || 'Admin')
+
+const now = new Date()
+const hour = now.getHours()
+const greetingText = computed(() => {
+  if (hour < 6) return '夜深了'
+  if (hour < 12) return '早上好'
+  if (hour < 14) return '中午好'
+  if (hour < 18) return '下午好'
+  return '晚上好'
+})
+
+const currentDate = computed(() => {
+  const d = new Date()
+  const weekDays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
+  return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日 ${weekDays[d.getDay()]}`
+})
+
+const stats = [
+  { label: '总用户', value: '12,845', trend: '+12.5%', trendType: 'up', percent: 78 },
+  { label: '今日活跃', value: '1,024', trend: '+3.2%', trendType: 'up', percent: 62 },
+  { label: '系统运行', value: '99.9%', trend: '稳定', trendType: 'stable', percent: 99 },
+  { label: '待处理', value: '23', trend: '-5.1%', trendType: 'down', percent: 15 },
+]
+
+const chartData = [65, 80, 45, 90, 70, 85, 60]
+const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+
+const activities = [
+  { id: 1, text: '用户 张三 完成了注册', time: '5 分钟前', color: 'var(--theme-accent)' },
+  { id: 2, text: '系统配置已更新', time: '12 分钟前', color: 'var(--theme-warning)' },
+  { id: 3, text: '新增菜单「数据分析」', time: '1 小时前', color: 'var(--theme-info)' },
+  { id: 4, text: '角色权限已调整', time: '2 小时前', color: 'var(--theme-accent)' },
+  { id: 5, text: '数据库备份完成', time: '3 小时前', color: 'var(--theme-success)' },
+]
+
+const quickActions = [
+  { label: '用户管理', icon: 'lucide:users', path: '/system/user' },
+  { label: '角色管理', icon: 'lucide:shield', path: '/system/role' },
+  { label: '菜单管理', icon: 'lucide:layout-grid', path: '/system/menu' },
+  { label: '系统配置', icon: 'lucide:settings', path: '/system/config' },
+]
+
+function handleQuickAction(path: string) {
+  router.push(path)
+}
+</script>
+
+<style lang="scss" scoped>
+/* 入场动画 */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.greeting,
+.stat-card,
+.chart-card,
+.activity-card,
+.quick-grid {
+  animation: fade-up 0.5s var(--p-ease-out) both;
+  animation-delay: calc(var(--delay, 0) * 80ms);
+}
+
+.dashboard {
+  padding: var(--p-space-6);
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* 欢迎区 */
+.greeting {
+  margin-bottom: var(--p-space-6);
+
+  .greeting-title {
+    margin: 0;
+    font-family: var(--p-font-display);
+    font-size: var(--p-text-2xl);
+    font-weight: var(--p-weight-bold);
+    color: var(--theme-text-primary);
+    letter-spacing: -0.5px;
+  }
+
+  .greeting-sub {
+    margin: var(--p-space-1) 0 0;
+    font-size: var(--p-text-sm);
+    color: var(--theme-text-muted);
+  }
+}
+
+/* 统计卡片 */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--p-space-4);
+  margin-bottom: var(--p-space-6);
+
+  @media (max-width: 991px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.stat-card {
+  padding: var(--card-padding);
+  border-radius: var(--card-radius);
+  background: var(--theme-bg-surface);
+  border: 1px solid var(--theme-border);
+  transition: border-color var(--p-duration-fast);
+
+  &:hover {
+    border-color: var(--theme-accent);
+  }
+
+  .stat-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--p-space-2);
+  }
+
+  .stat-label {
+    font-size: var(--p-text-sm);
+    color: var(--theme-text-muted);
+    font-weight: var(--p-weight-medium);
+  }
+
+  .stat-trend {
+    font-size: var(--p-text-xs);
+    font-weight: var(--p-weight-medium);
+
+    &.up { color: var(--theme-success); }
+    &.down { color: var(--theme-danger); }
+    &.stable { color: var(--theme-text-muted); }
+  }
+
+  .stat-value {
+    font-family: var(--p-font-display);
+    font-size: var(--p-text-xl);
+    font-weight: var(--p-weight-bold);
+    color: var(--theme-text-primary);
+    margin-bottom: var(--p-space-3);
+  }
+
+  .stat-bar {
+    height: 3px;
+    border-radius: var(--p-radius-full);
+    background: var(--theme-bg-elevated);
+    overflow: hidden;
+
+    .stat-bar-fill {
+      height: 100%;
+      border-radius: var(--p-radius-full);
+      background: var(--theme-accent);
+      transition: width 0.8s var(--p-ease-out);
+    }
+  }
+}
+
+/* 主内容区 */
+.main-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: var(--p-space-4);
+  margin-bottom: var(--p-space-6);
+
+  @media (max-width: 991px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--p-space-5);
+
+  h3 {
+    margin: 0;
+    font-family: var(--p-font-display);
+    font-size: var(--p-text-md);
+    font-weight: var(--p-weight-semibold);
+    color: var(--theme-text-primary);
+  }
+
+  .card-actions {
+    display: flex;
+    gap: 2px;
+    background: var(--theme-bg-elevated);
+    border-radius: var(--p-radius-md);
+    padding: 2px;
+
+    .period {
+      padding: 3px 8px;
+      font-size: var(--p-text-xs);
+      font-weight: var(--p-weight-medium);
+      border-radius: var(--p-radius-sm);
+      cursor: pointer;
+      color: var(--theme-text-muted);
+      transition: all var(--p-duration-fast);
+
+      &.active {
+        background: var(--theme-accent);
+        color: #fff;
+      }
+
+      &:hover:not(.active) {
+        color: var(--theme-text-primary);
+      }
+    }
+  }
+}
+
+.chart-card {
+  padding: var(--card-padding);
+  border-radius: var(--card-radius);
+  background: var(--theme-bg-surface);
+  border: 1px solid var(--theme-border);
+}
+
+.chart-area {
+  .chart-bars {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--p-space-3);
+    height: 160px;
+  }
+
+  .bar-col {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    justify-content: flex-end;
+    gap: var(--p-space-2);
+
+    .bar {
+      width: 100%;
+      border-radius: var(--p-radius-sm);
+      background: var(--theme-accent);
+      opacity: 0.75;
+      transition: opacity var(--p-duration-fast);
+
+      &:hover {
+        opacity: 1;
+      }
+    }
+
+    .bar-label {
+      font-size: 10px;
+      color: var(--theme-text-muted);
+      font-weight: var(--p-weight-medium);
+    }
+  }
+}
+
+.activity-card {
+  padding: var(--card-padding);
+  border-radius: var(--card-radius);
+  background: var(--theme-bg-surface);
+  border: 1px solid var(--theme-border);
+}
+
+.activity-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-space-4);
+}
+
+.activity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--p-space-3);
+
+  .activity-indicator {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 7px;
+  }
+
+  .activity-content {
+    flex: 1;
+    min-width: 0;
+
+    .activity-text {
+      margin: 0;
+      font-size: var(--p-text-base);
+      color: var(--theme-text-primary);
+      line-height: 1.4;
+    }
+
+    .activity-time {
+      font-size: var(--p-text-xs);
+      color: var(--theme-text-muted);
+    }
+  }
+}
+
+/* 快捷入口 */
+.quick-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--p-space-3);
+
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.quick-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--p-space-2);
+  padding: var(--p-space-5) var(--p-space-4);
+  border-radius: var(--card-radius);
+  background: var(--theme-bg-surface);
+  border: 1px solid var(--theme-border);
+  cursor: pointer;
+  transition: all var(--p-duration-fast) var(--p-ease-out);
+
+  &:hover {
+    border-color: var(--theme-accent);
+    background: var(--theme-accent-light);
+    transform: translateY(-2px);
+  }
+
+  .quick-icon {
+    font-size: 20px;
+    color: var(--theme-accent);
+  }
+
+  .quick-label {
+    font-size: var(--p-text-sm);
+    font-weight: var(--p-weight-medium);
+    color: var(--theme-text-primary);
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    padding: var(--p-space-4);
+  }
+}
+</style>

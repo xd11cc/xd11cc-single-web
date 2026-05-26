@@ -2,11 +2,11 @@
   <div>
     <!-- 全屏 -->
     <el-tooltip v-if="!content" effect="dark" :content="fullscreenTips" placement="bottom">
-      <Icon icon="ep:full-screen" class="action-icon" @click="handleFullscreenClick" />
+      <Icon icon="lucide:maximize" class="action-icon" @click="handleFullscreenClick" />
     </el-tooltip>
     <!-- 内容区 -->
     <el-dropdown v-else :disabled="isFullscreen">
-      <Icon icon="ep:full-screen" class="action-icon" />
+      <Icon icon="lucide:maximize" class="action-icon" />
       <template #dropdown>
         <el-dropdown-menu>
           <el-dropdown-item @click="handleContentLargeClick">
@@ -86,8 +86,10 @@ function handleContentFullClick() {
 
 <style lang="scss" scoped>
 .action-icon {
-  font-size: 20px;
+  font-size: 18px;
   outline: none;
   cursor: pointer;
+  color: var(--theme-text-secondary);
+  transition: color var(--p-duration-fast);
 }
 </style>

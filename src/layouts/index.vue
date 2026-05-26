@@ -21,6 +21,7 @@ import { useResize } from './composables/useResize'
 import { useWatermark } from '@@/composables/useWatermark'
 import { useUserStore } from '@/pinia/stores/user'
 import { useWebSocket } from '@@/composables/useWebSocket'
+import { useTheme } from '@@/composables/useTheme'
 
 useResize()
 
@@ -48,6 +49,15 @@ watchEffect(() => {
   showWatermark.value
     ? setWatermark(import.meta.env.VITE_APP_TITLE + '-' + userStore.username)
     : clearWatermark()
+})
+
+// 主题切换时刷新水印颜色
+const { theme } = useTheme()
+watch(theme, () => {
+  if (showWatermark.value) {
+    clearWatermark()
+    setWatermark(import.meta.env.VITE_APP_TITLE + '-' + userStore.username)
+  }
 })
 
 onMounted(() => {

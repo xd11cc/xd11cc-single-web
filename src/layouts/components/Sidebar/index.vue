@@ -58,23 +58,9 @@ const sidebarMenuItemHeight = computed(() =>
 const sidebarMenuHoverBgColor = computed(() =>
   !isTop.value ? 'var(--v3-sidebar-menu-hover-bg-color)' : 'transparent',
 )
-
-const tipLineWidth = computed(() => (!isTop.value ? '2px' : '0px'))
 </script>
 
 <style lang="scss" scoped>
-%tip-line {
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: v-bind(tipLineWidth);
-    height: 100%;
-    background-color: var(--v3-sidebar-menu-tip-line-bg-color);
-  }
-}
-
 .has-logo {
   .el-scrollbar {
     height: calc(100% - var(--v3-header-height));
@@ -84,13 +70,10 @@ const tipLineWidth = computed(() => (!isTop.value ? '2px' : '0px'))
 .el-scrollbar {
   height: 100%;
   :deep(.scrollbar-wrapper) {
-    // 限制水平高度
     overflow-x: hidden;
   }
-  // 滚动条
   :deep(.el-scrollbar__bar) {
     &.is-horizontal {
-      // 隐藏水平滚动条
       display: none;
     }
   }
@@ -119,6 +102,9 @@ const tipLineWidth = computed(() => (!isTop.value ? '2px' : '0px'))
 :deep(.el-menu--horizontal .el-menu-item) {
   height: v-bind(sidebarMenuItemHeight);
   line-height: v-bind(sidebarMenuItemHeight);
+  border-radius: var(--sidebar-item-radius);
+  margin: 2px 8px;
+  width: calc(100% - 16px);
   &.is-active,
   &:hover {
     background-color: v-bind(sidebarMenuHoverBgColor);
@@ -134,14 +120,20 @@ const tipLineWidth = computed(() => (!isTop.value ? '2px' : '0px'))
 }
 
 :deep(.el-menu-item.is-active) {
-  @extend %tip-line;
+  background-color: var(--theme-accent-light);
+  color: var(--theme-accent);
+  font-weight: var(--p-weight-semibold);
 }
 
 .el-menu--collapse {
+  :deep(.el-menu-item),
+  :deep(.el-sub-menu__title) {
+    margin: 2px 4px;
+    width: calc(100% - 8px);
+  }
   :deep(.el-sub-menu.is-active) {
     .el-sub-menu__title {
-      @extend %tip-line;
-      background-color: v-bind(sidebarMenuHoverBgColor);
+      background-color: var(--theme-accent-light);
     }
   }
 }

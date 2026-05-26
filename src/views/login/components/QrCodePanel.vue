@@ -2,9 +2,9 @@
   <div class="qrcode-panel">
     <div class="qrcode-box">
       <div class="qrcode-placeholder" :class="{ expired: isExpired }">
-        <Icon v-if="!isExpired" icon="ep:monitor" width="64" height="64" class="qrcode-icon" />
+        <Icon v-if="!isExpired" icon="lucide:monitor" width="64" height="64" class="qrcode-icon" />
         <div v-if="isExpired" class="expired-mask" @click="handleRefresh">
-          <Icon icon="ep:refresh-right" width="28" height="28" />
+          <Icon icon="lucide:refresh-cw" width="28" height="28" />
           <span>点击刷新</span>
         </div>
       </div>
@@ -29,32 +29,32 @@ function handleRefresh() {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px 0 10px;
+  padding: var(--p-space-5) 0 var(--p-space-2);
 }
 
 .qrcode-box {
-  margin-bottom: 24px;
+  margin-bottom: var(--p-space-6);
 }
 
 .qrcode-placeholder {
   width: 200px;
   height: 200px;
-  border-radius: 12px;
-  border: 1px solid var(--business-border);
+  border-radius: var(--p-radius-xl);
+  border: 1px solid var(--theme-border);
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #fafbfc;
+  background-color: var(--theme-bg-elevated);
   position: relative;
   overflow: hidden;
-  transition: border-color 0.25s;
+  transition: border-color var(--p-duration-fast);
 
   &:hover {
-    border-color: var(--business-primary);
+    border-color: var(--theme-accent);
   }
 
   .qrcode-icon {
-    color: var(--business-text-placeholder);
+    color: var(--theme-text-muted);
   }
 
   &.expired {
@@ -68,33 +68,34 @@ function handleRefresh() {
 .expired-mask {
   position: absolute;
   inset: 0;
-  background-color: rgba(255, 255, 255, 0.85);
+  background-color: var(--theme-bg-surface);
+  opacity: 0.9;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: var(--p-space-2);
   cursor: pointer;
-  color: var(--business-primary);
-  font-size: 14px;
-  font-weight: 500;
-  transition: background-color 0.2s;
+  color: var(--theme-accent);
+  font-size: var(--p-text-sm);
+  font-weight: var(--p-weight-medium);
+  transition: opacity var(--p-duration-fast);
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.92);
+    opacity: 0.95;
   }
 }
 
 .tip-text {
   margin: 0 0 6px;
-  font-size: 15px;
-  color: var(--business-text);
-  font-weight: 500;
+  font-size: var(--p-text-md);
+  color: var(--theme-text-primary);
+  font-weight: var(--p-weight-medium);
 }
 
 .tip-sub {
   margin: 0;
-  font-size: 13px;
-  color: var(--business-text-placeholder);
+  font-size: var(--p-text-xs);
+  color: var(--theme-text-muted);
 }
 </style>

@@ -1,89 +1,84 @@
 <template>
-  <div class="login-container">
-    <div class="login-card">
-      <div class="title">
-        <h3>用户登录</h3>
-      </div>
-      <div class="content">
-        <el-form
-          ref="loginFormRef"
-          :model="loginFormData"
-          :rules="loginFormRules"
-          @keyup.enter="handleLogin"
+  <div class="login-form">
+    <el-form
+      ref="loginFormRef"
+      :model="loginFormData"
+      :rules="loginFormRules"
+      @keyup.enter="handleLogin"
+    >
+      <el-form-item prop="username">
+        <el-input
+          v-model.trim="loginFormData.username"
+          placeholder="请输入用户名"
+          type="text"
+          tabindex="1"
+          size="large"
         >
-          <el-form-item prop="username">
-            <el-input
-              v-model.trim="loginFormData.username"
-              placeholder="请输入用户名"
-              type="text"
-              tabindex="1"
-              size="large"
-            >
-              <template #prefix><Icon icon="ep:user" /></template>
-            </el-input>
-          </el-form-item>
-          <el-form-item prop="password">
-            <el-input
-              v-model.trim="loginFormData.password"
-              :type="passwordVisible ? 'text' : 'password'"
-              placeholder="请输入密码"
-              tabindex="2"
-              size="large"
-            >
-              <template #prefix><Icon icon="ep:lock" /></template>
-              <template #suffix>
-                <Icon
-                  :icon="passwordVisible ? 'ep:view' : 'ep:hide'"
-                  class="password-icon"
-                  @click="passwordVisible = !passwordVisible"
-                />
-              </template>
-            </el-input>
-          </el-form-item>
-          <el-form-item prop="captcha" class="captcha-form-item">
-            <el-input
-              v-model.trim="loginFormData.captcha"
-              placeholder="请输入验证码"
-              type="text"
-              tabindex="3"
-              size="large"
-            >
-              <template #prefix><Icon icon="ep:key" /></template>
-            </el-input>
-            <img
-              :src="captchaImg"
-              @click="refreshCaptcha"
-              alt="验证码"
-              title="点击刷新"
-              class="captcha-img"
+          <template #prefix><Icon icon="lucide:user" /></template>
+        </el-input>
+      </el-form-item>
+      <el-form-item prop="password">
+        <el-input
+          v-model.trim="loginFormData.password"
+          :type="passwordVisible ? 'text' : 'password'"
+          placeholder="请输入密码"
+          tabindex="2"
+          size="large"
+        >
+          <template #prefix><Icon icon="lucide:lock" /></template>
+          <template #suffix>
+            <Icon
+              :icon="passwordVisible ? 'lucide:eye' : 'lucide:eye-off'"
+              class="password-icon"
+              @click="passwordVisible = !passwordVisible"
             />
-          </el-form-item>
-          <el-form-item>
-            <div class="form-options">
-              <el-checkbox v-model="loginFormData.rememberMe">记住我</el-checkbox>
-              <el-link type="primary" underline="never" @click="handleForgetPassword"
-                >忘记密码？</el-link
-              >
-            </div>
-          </el-form-item>
-          <el-button type="primary" size="large" @click.prevent="handleLogin" :loading="loading"
-            >登录</el-button
+          </template>
+        </el-input>
+      </el-form-item>
+      <el-form-item prop="captcha">
+        <div class="captcha-row">
+          <el-input
+            v-model.trim="loginFormData.captcha"
+            placeholder="请输入验证码"
+            type="text"
+            tabindex="3"
+            size="large"
           >
-        </el-form>
-
-        <!-- 其他登录方式 -->
-        <el-divider v-if="socialConfigs.length && ossUrl">其他登录方式</el-divider>
-        <div v-if="socialConfigs.length && ossUrl" class="social-login">
-          <div
-            v-for="item in socialConfigs"
-            :key="item.source"
-            class="social-item"
-            :title="item.name"
-            @click="handleAuthLogin(item.source)"
-          >
-            <img :src="ossUrl + item.icon" :alt="item.name" class="social-icon" />
-          </div>
+            <template #prefix><Icon icon="lucide:key-round" /></template>
+          </el-input>
+          <img
+            :src="captchaImg"
+            @click="refreshCaptcha"
+            alt="验证码"
+            title="点击刷新"
+            class="captcha-img"
+          />
         </div>
+      </el-form-item>
+      <el-form-item>
+        <div class="form-options">
+          <el-checkbox v-model="loginFormData.rememberMe">记住我</el-checkbox>
+          <el-link type="primary" underline="never" @click="handleForgetPassword">
+            忘记密码？
+          </el-link>
+        </div>
+      </el-form-item>
+      <el-button class="login-btn" size="large" @click.prevent="handleLogin" :loading="loading">
+        登录
+      </el-button>
+    </el-form>
+
+    <!-- 其他登录方式 -->
+    <el-divider v-if="socialConfigs.length && ossUrl">其他登录方式</el-divider>
+    <div v-if="socialConfigs.length && ossUrl" class="social-login">
+      <div
+        v-for="item in socialConfigs"
+        :key="item.source"
+        class="social-item"
+        :title="item.name"
+        @click="handleAuthLogin(item.source)"
+      >
+        <img :src="ossUrl + item.icon" :alt="item.name" class="social-icon" />
       </div>
     </div>
   </div>
@@ -107,7 +102,6 @@ const router = useRouter()
 
 const route = useRoute()
 
-// 登录参数
 const loginFormData: LoginForm = reactive({
   username: '',
   password: '',
@@ -119,24 +113,13 @@ const loginFormData: LoginForm = reactive({
   rememberMe: false,
 })
 
-// 验证码
 const captchaImg = ref('')
-
-// 登录表单元素的引用
 const loginFormRef = useTemplateRef('loginFormRef')
-
-// 登录按钮 Loading
 const loading = ref(false)
-
-// 密码可见性
 const passwordVisible = ref(false)
-
-// 社交登录配置
 const socialConfigs = ref<AuthClientConfigVO[]>([])
-
 const { ossUrl } = useOssUrl()
 
-// 登录表单校验规则
 const loginFormRules: FormRules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   password: [
@@ -185,270 +168,130 @@ function handleForgetPassword() {
 onMounted(() => {
   refreshCaptcha()
   getSocialClientConfigList().then((res) => {
-    console.log(res.data)
-
     socialConfigs.value = res.data
   })
 })
 </script>
 
 <style lang="scss" scoped>
-.login-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.login-form {
   width: 100%;
 
-  .login-card {
-    width: 460px;
-    max-width: 92%;
-    border-radius: 12px;
-    box-shadow:
-      0 1px 3px rgba(0, 0, 0, 0.04),
-      0 6px 24px rgba(0, 0, 0, 0.06),
-      0 12px 40px rgba(0, 0, 0, 0.04);
-    background-color: var(--business-card-bg);
-    overflow: hidden;
-    border-top: 4px solid var(--business-primary);
+  :deep(.el-input__wrapper) {
+    border-radius: var(--input-radius);
+    box-shadow: 0 0 0 1px var(--theme-border) inset;
+    background: var(--theme-bg-elevated);
+    transition: all var(--p-duration-fast) var(--p-ease-out);
 
-    .title {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 120px;
-      position: relative;
-      background: linear-gradient(
-        180deg,
-        rgba(26, 54, 93, 0.03) 0%,
-        rgba(26, 54, 93, 0.005) 60%,
-        transparent 100%
-      );
+    &:hover {
+      box-shadow: 0 0 0 1px var(--theme-text-muted) inset;
+    }
 
-      h3 {
-        margin: 0;
-        font-size: 26px;
-        font-weight: 600;
-        letter-spacing: 2px;
-        color: var(--business-text);
-        position: relative;
-
-        &::after {
-          content: '';
-          position: absolute;
-          bottom: -12px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 40px;
-          height: 3px;
-          border-radius: 2px;
-          background-color: var(--business-primary);
-        }
-      }
+    &.is-focus {
+      box-shadow: 0 0 0 1.5px var(--theme-accent) inset;
+      background: var(--theme-bg-surface);
     }
   }
 
-  .content {
-    padding: 10px 48px 48px 48px;
+  :deep(.el-form-item) {
+    margin-bottom: 18px;
+  }
 
-    .form-options {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      font-size: 13px;
-    }
-
-    .el-button {
-      width: 100%;
-      margin-top: 8px;
-      font-weight: 500;
-      letter-spacing: 1px;
-      border-radius: 8px;
-      transition: all 0.25s ease;
-    }
-
-    :deep(.el-button--primary) {
-      background-color: var(--business-primary);
-      border-color: var(--business-primary);
-
-      &:hover,
-      &:focus {
-        background-color: var(--business-primary-hover);
-        border-color: var(--business-primary-hover);
-        box-shadow: 0 4px 14px rgba(26, 54, 93, 0.3);
-      }
-
-      &:active {
-        background-color: var(--business-primary-active);
-        border-color: var(--business-primary-active);
-      }
-    }
-
-    .captcha-form-item {
-      display: flex;
-      align-items: center;
-    }
-
-    :deep(.el-form-item__content) {
-      display: flex;
-      align-items: center;
-      flex-wrap: nowrap;
-    }
-
-    :deep(.el-input) {
-      flex: 1;
-      margin-right: 14px;
-      --el-input-focus-border-color: var(--business-border-focus);
-      --el-input-hover-border-color: var(--business-border-focus);
-    }
-
-    :deep(.el-input__wrapper) {
-      border-radius: 8px;
-    }
-
-    .password-icon {
-      cursor: pointer;
-      color: var(--business-text-placeholder);
-      transition: color 0.2s;
-
-      &:hover {
-        color: var(--business-primary);
-      }
-    }
-
-    :deep(.el-checkbox__inner) {
-      border-radius: 4px;
-    }
-
-    :deep(.el-checkbox__input.is-checked .el-checkbox__inner) {
-      background-color: var(--business-primary);
-      border-color: var(--business-primary);
-    }
-
-    :deep(.el-link--primary) {
-      color: var(--business-primary);
-      font-weight: 500;
-
-      &:hover {
-        color: var(--business-primary-hover);
-      }
-    }
-
-    :deep(.el-divider) {
-      margin: 22px 0 16px 0;
-    }
-
-    :deep(.el-divider__text) {
-      font-size: 13px;
-      color: var(--business-text-placeholder);
-      letter-spacing: 0.5px;
-      background-color: var(--business-card-bg);
-      padding: 0 16px;
-      font-weight: 400;
-    }
+  .captcha-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
   }
 
   .captcha-img {
-    width: 120px;
-    height: 40px;
-    border-radius: 8px;
-    border: 1px solid var(--business-border);
+    width: 100px;
+    height: 36px;
+    border-radius: var(--input-radius);
+    border: 1px solid var(--theme-border);
     cursor: pointer;
-    box-sizing: border-box;
-    transition: all 0.25s ease;
-    user-select: none;
     flex-shrink: 0;
     object-fit: cover;
+    transition: border-color var(--p-duration-fast);
 
     &:hover {
-      border-color: var(--business-primary);
-      box-shadow: 0 0 0 3px rgba(26, 54, 93, 0.06);
+      border-color: var(--theme-text-muted);
+    }
+  }
+
+  .form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    font-size: var(--p-text-sm);
+  }
+
+  .password-icon {
+    cursor: pointer;
+    color: var(--theme-text-muted);
+    transition: color var(--p-duration-fast);
+
+    &:hover {
+      color: var(--theme-accent);
+    }
+  }
+
+  .login-btn {
+    width: 100%;
+    height: var(--btn-height);
+    border: none;
+    border-radius: var(--btn-radius);
+    font-family: var(--p-font-display);
+    font-weight: var(--p-weight-semibold);
+    font-size: var(--p-text-md);
+    background: var(--theme-accent);
+    color: #ffffff;
+    transition: all var(--p-duration-fast) var(--p-ease-out);
+
+    &:hover {
+      background: var(--theme-accent-hover);
+      box-shadow: 0 4px 12px var(--theme-accent-glow);
     }
 
     &:active {
-      transform: scale(0.97);
+      transform: scale(0.98);
     }
+  }
+
+  :deep(.el-divider__text) {
+    font-size: var(--p-text-xs);
+    color: var(--theme-text-muted);
+    background-color: var(--theme-bg-surface);
+    padding: 0 10px;
   }
 
   .social-login {
     display: flex;
     justify-content: center;
-    align-items: center;
-    gap: 20px;
-    margin-top: 8px;
+    gap: 10px;
 
     .social-item {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
+      width: 34px;
+      height: 34px;
+      border-radius: var(--p-radius-md);
       display: flex;
       justify-content: center;
       align-items: center;
       cursor: pointer;
-      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1.2);
-      border: 1px solid var(--business-border);
-      background-color: #fafbfc;
-      color: #555;
-      user-select: none;
+      border: 1px solid var(--theme-border);
+      background: var(--theme-bg-surface);
+      transition: all var(--p-duration-fast) var(--p-ease-out);
 
       &:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-      }
-
-      &:active {
-        transform: translateY(0) scale(0.95);
-        transition-duration: 0.1s;
-      }
-
-      :deep(.svg-icon) {
-        width: 22px;
-        height: 22px;
+        border-color: var(--theme-accent);
+        background: var(--theme-accent-light);
       }
 
       .social-icon {
-        width: 22px;
-        height: 22px;
+        width: 16px;
+        height: 16px;
         object-fit: contain;
-      }
-    }
-  }
-}
-
-@media (max-width: 520px) {
-  .login-container {
-    .login-card {
-      width: 100%;
-      max-width: 100%;
-      border-radius: 0;
-      border-top: 3px solid var(--business-primary);
-    }
-
-    .content {
-      padding: 8px 24px 36px 24px;
-    }
-
-    .captcha-img {
-      width: 100px;
-      height: 36px;
-    }
-
-    .social-login {
-      gap: 16px;
-
-      .social-item {
-        width: 38px;
-        height: 38px;
-
-        :deep(.svg-icon) {
-          width: 20px;
-          height: 20px;
-        }
-
-        .social-icon {
-          width: 20px;
-          height: 20px;
-        }
       }
     }
   }

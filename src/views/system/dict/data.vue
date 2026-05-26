@@ -41,9 +41,9 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            <template #icon><Icon icon="ep:search" /></template>查询</el-button>
+            <template #icon><Icon icon="lucide:search" /></template>查询</el-button>
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="ep:refresh" /></template>重置</el-button>
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template>重置</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -55,7 +55,7 @@
             @click="dialogVisible = true"
             v-permission="['system:dictData:add']"
           >
-            <template #icon><Icon icon="ep:circle-plus" /></template>
+            <template #icon><Icon icon="lucide:plus-circle" /></template>
             新增
           </el-button>
           <el-button
@@ -63,7 +63,7 @@
             @click="handleBatchRemove"
             v-permission="['system:dictData:delete']"
           >
-            <template #icon><Icon icon="ep:delete" /></template>
+            <template #icon><Icon icon="lucide:trash-2" /></template>
             批量删除
           </el-button>
         </div>
@@ -74,7 +74,7 @@
               circle
               v-permission="['system:dictData:export']"
             >
-              <template #icon><Icon icon="ep:download" /></template>
+              <template #icon><Icon icon="lucide:download" /></template>
             </el-button>
           </el-tooltip>
         </div>

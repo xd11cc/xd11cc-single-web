@@ -1,7 +1,7 @@
 <template>
   <div class="code-block-container">
     <el-button type="primary" link class="copy-btn" @click="handleCopy">
-      <template #icon><Icon icon="ep:document-copy" /></template>
+      <template #icon><Icon icon="lucide:copy" /></template>
     </el-button>
     <highlightjs :language="language" :code="code" />
   </div>

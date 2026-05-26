@@ -2,7 +2,7 @@
   <div class="scroll-container">
     <el-tooltip content="向左滚动标签（超出最大宽度可点击）">
       <div class="arrow left" @click="scrollTo('left')">
-        <Icon icon="ep:arrow-left" />
+        <Icon icon="lucide:chevron-left" />
       </div>
     </el-tooltip>
     <el-scrollbar ref="scrollbarRef" @wheel.passive="wheelScroll" @scroll="scroll">
@@ -12,7 +12,7 @@
     </el-scrollbar>
     <el-tooltip content="向右滚动标签（超出最大宽度可点击）">
       <div class="arrow right" @click="scrollTo('right')">
-        <Icon icon="ep:arrow-right" />
+        <Icon icon="lucide:chevron-right" />
       </div>
     </el-tooltip>
     <Screenfull v-if="settingsStore.showScreenfull" :content="true" class="screenfull" />

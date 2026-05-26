@@ -6,9 +6,9 @@ const DEFAULT_CONFIG = {
   // 防御（默认开启，能防御水印被删除或隐藏，但可能会有性能损耗）
   defense: true,
   // 文本颜色
-  color: '#c0c4cc',
+  color: '',
   // 文本透明度
-  opacity: 0.5,
+  opacity: 0.15,
   // 文本字体大小
   size: 16,
   // 文本字体
@@ -19,6 +19,11 @@ const DEFAULT_CONFIG = {
   width: 300,
   // 一处水印所占宽度（数值越大水印密度越低）
   height: 200,
+}
+
+function getThemeWatermarkColor(): string {
+  const theme = document.documentElement.dataset.theme
+  return theme === 'dark' ? 'rgba(255, 255, 255, 0.12)' : 'rgba(0, 0, 0, 0.08)'
 }
 
 type DefaultConfig = typeof DEFAULT_CONFIG
@@ -103,8 +108,9 @@ export function useWatermark(parentEl: Ref<HTMLElement | null> = bodyEl) {
     canvasEl.height = height
     const ctx = canvasEl.getContext('2d')
     if (ctx) {
-      ctx.fillStyle = color
-      ctx.globalAlpha = opacity
+      const useAutoColor = !color
+      ctx.fillStyle = useAutoColor ? getThemeWatermarkColor() : color
+      if (!useAutoColor) ctx.globalAlpha = opacity
       ctx.font = `${size}px ${family}`
       ctx.rotate((Math.PI / 180) * angle)
       ctx.fillText(backupText, 0, height / 2)

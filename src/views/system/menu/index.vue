@@ -22,10 +22,10 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            <template #icon><Icon icon="ep:search" /></template>查询</el-button
+            <template #icon><Icon icon="lucide:search" /></template>查询</el-button
           >
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="ep:refresh" /></template>重置</el-button
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template>重置</el-button
           >
         </el-form-item>
       </el-form>
@@ -34,10 +34,10 @@
       <div class="toolbar-wrapper">
         <div>
           <el-button type="primary" @click="dialogVisible = true">
-            <template #icon><Icon icon="ep:circle-plus" /></template>新增菜单</el-button
+            <template #icon><Icon icon="lucide:plus-circle" /></template>新增菜单</el-button
           >
           <el-button @click="toggleExpand">
-            <template #icon><Icon icon="ep:sort" /></template
+            <template #icon><Icon icon="lucide:arrow-up-down" /></template
             >{{ isExpanded ? '收起全部' : '展开全部' }}</el-button
           >
         </div>
@@ -185,7 +185,7 @@
                     content="访问的组件路径，如：`system/user/index`，默认在`views`目录下"
                     placement="top"
                   >
-                    <Icon icon="ep:question-filled" />
+                    <Icon icon="lucide:help-circle" />
                   </el-tooltip>
                   组件路径
                 </span>
@@ -206,7 +206,7 @@
                     content="访问的路由地址，如：`user`，如外网地址需内链访问则以`http(s)://`开头"
                     placement="top"
                   >
-                    <Icon icon="ep:question-filled" />
+                    <Icon icon="lucide:help-circle" />
                   </el-tooltip>
                   路由地址
                 </span>
@@ -222,7 +222,7 @@
                     content="控制器中定义的权限字符，如：@PreAuthorize(`@ss.hasPermi('system:user:list')`)"
                     placement="top"
                   >
-                    <Icon icon="ep:question-filled" />
+                    <Icon icon="lucide:help-circle" />
                   </el-tooltip>
                   权限字符
                 </span>
@@ -238,7 +238,7 @@
                     content='访问路由的默认传递参数，如：`{"id": 1, "name": "ry"}`'
                     placement="top"
                   >
-                    <Icon icon="ep:question-filled" />
+                    <Icon icon="lucide:help-circle" />
                   </el-tooltip>
                   路由参数
                 </span>

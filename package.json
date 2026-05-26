@@ -14,8 +14,9 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@fontsource/dm-sans": "^5.2.8",
+    "@fontsource/outfit": "^5.2.8",
     "@highlightjs/vue-plugin": "^2.1.0",
-    "@iconify-json/ep": "^1.2.4",
     "@iconify/vue": "^5.0.1",
     "element-plus": "^2.10.2",
     "highlight.js": "^11.11.1",
@@ -32,6 +33,7 @@
     "vue-router": "^4.5.1"
   },
   "devDependencies": {
+    "@iconify-json/lucide": "^1.2.109",
     "@types/js-cookie": "^3.0.6",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^25.0.7",

@@ -10,10 +10,10 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            <template #icon><Icon icon="ep:search" /></template> 查询
+            <template #icon><Icon icon="lucide:search" /></template> 查询
           </el-button>
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="ep:refresh" /></template> 重置
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template> 重置
           </el-button>
         </el-form-item>
       </el-form>

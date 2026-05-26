@@ -16,7 +16,7 @@
               placeholder="请输入用户名"
               size="large"
             >
-              <template #prefix><Icon icon="ep:user" /></template>
+              <template #prefix><Icon icon="lucide:user" /></template>
             </el-input>
           </el-form-item>
           <el-form-item prop="password">
@@ -26,10 +26,10 @@
               placeholder="请输入密码"
               size="large"
             >
-              <template #prefix><Icon icon="ep:lock" /></template>
+              <template #prefix><Icon icon="lucide:lock" /></template>
               <template #suffix>
                 <Icon
-                  :icon="bindPwdVisible ? 'ep:view' : 'ep:hide'"
+                  :icon="bindPwdVisible ? 'lucide:eye' : 'lucide:eye-off'"
                   class="password-icon"
                   @click="bindPwdVisible = !bindPwdVisible"
                 />
@@ -103,120 +103,82 @@ function handleBind() {
 
 <style lang="scss" scoped>
 .form-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   width: 100%;
 
   .form-card {
-    width: 460px;
-    max-width: 92%;
-    border-radius: 12px;
-    box-shadow:
-      0 1px 3px rgba(0, 0, 0, 0.04),
-      0 6px 24px rgba(0, 0, 0, 0.06),
-      0 12px 40px rgba(0, 0, 0, 0.04);
-    background-color: var(--business-card-bg);
-    overflow: hidden;
-    border-top: 4px solid var(--business-primary);
-
     .title {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 120px;
-      background: linear-gradient(
-        180deg,
-        rgba(26, 54, 93, 0.03) 0%,
-        rgba(26, 54, 93, 0.005) 60%,
-        transparent 100%
-      );
+      text-align: center;
+      margin-bottom: var(--p-space-6);
 
       h3 {
         margin: 0;
-        font-size: 26px;
-        font-weight: 600;
-        letter-spacing: 2px;
-        color: var(--business-text);
-        position: relative;
-
-        &::after {
-          content: '';
-          position: absolute;
-          bottom: -12px;
-          left: 50%;
-          transform: translateX(-50%);
-          width: 40px;
-          height: 3px;
-          border-radius: 2px;
-          background-color: var(--business-primary);
-        }
+        font-family: var(--p-font-display);
+        font-size: var(--p-text-lg);
+        font-weight: var(--p-weight-semibold);
+        color: var(--theme-text-primary);
       }
     }
   }
 
   .content {
-    padding: 10px 48px 48px;
-
     .tip {
-      margin: 0 0 20px;
-      font-size: 14px;
-      color: var(--business-text-secondary);
+      margin: 0 0 var(--p-space-5);
+      font-size: var(--p-text-sm);
+      color: var(--theme-text-muted);
       text-align: center;
     }
 
-    :deep(.el-input) {
-      --el-input-focus-border-color: var(--business-border-focus);
-      --el-input-hover-border-color: var(--business-border-focus);
+    :deep(.el-input__wrapper) {
+      border-radius: var(--input-radius);
+      box-shadow: 0 0 0 1px var(--theme-border) inset;
+      background: var(--theme-bg-elevated);
+      transition: all var(--p-duration-fast) var(--p-ease-out);
+
+      &:hover {
+        box-shadow: 0 0 0 1px var(--theme-text-muted) inset;
+      }
+
+      &.is-focus {
+        box-shadow: 0 0 0 1.5px var(--theme-accent) inset;
+        background: var(--theme-bg-surface);
+      }
     }
 
-    :deep(.el-input__wrapper) {
-      border-radius: 8px;
+    :deep(.el-form-item) {
+      margin-bottom: 18px;
     }
 
     .password-icon {
       cursor: pointer;
-      color: var(--business-text-placeholder);
-      transition: color 0.2s;
+      color: var(--theme-text-muted);
+      transition: color var(--p-duration-fast);
       &:hover {
-        color: var(--business-primary);
+        color: var(--theme-accent);
       }
     }
 
     :deep(.el-button--primary) {
       width: 100%;
-      margin-top: 8px;
-      font-weight: 500;
-      letter-spacing: 1px;
-      border-radius: 8px;
-      background-color: var(--business-primary);
-      border-color: var(--business-primary);
+      height: var(--btn-height);
+      margin-top: var(--p-space-2);
+      border: none;
+      border-radius: var(--btn-radius);
+      font-family: var(--p-font-display);
+      font-weight: var(--p-weight-semibold);
+      font-size: var(--p-text-md);
+      background: var(--theme-accent);
+      color: #ffffff;
+      transition: all var(--p-duration-fast) var(--p-ease-out);
 
-      &:hover,
-      &:focus {
-        background-color: var(--business-primary-hover);
-        border-color: var(--business-primary-hover);
-        box-shadow: 0 4px 14px rgba(26, 54, 93, 0.3);
+      &:hover {
+        background: var(--theme-accent-hover);
+        box-shadow: 0 4px 12px var(--theme-accent-glow);
       }
 
       &:active {
-        background-color: var(--business-primary-active);
-        border-color: var(--business-primary-active);
+        transform: scale(0.98);
       }
     }
-  }
-}
-
-@media (max-width: 520px) {
-  .form-container .form-card {
-    width: 100%;
-    max-width: 100%;
-    border-radius: 0;
-    border-top: 3px solid var(--business-primary);
-  }
-
-  .form-container .content {
-    padding: 8px 24px 36px;
   }
 }
 </style>
