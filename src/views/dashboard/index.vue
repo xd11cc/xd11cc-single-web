@@ -27,33 +27,47 @@
       </div>
     </section>
 
-    <!-- 主内容区 -->
-    <section class="main-grid">
-      <!-- 图表卡片 -->
+    <!-- 图表区 -->
+    <section class="charts-grid">
       <div class="chart-card" style="--delay: 5">
         <div class="card-header">
-          <h3>Weekly Overview</h3>
+          <h3>访问趋势</h3>
           <div class="card-actions">
-            <span class="period active">W</span>
-            <span class="period">M</span>
-            <span class="period">Y</span>
+            <span
+              v-for="p in periods"
+              :key="p.value"
+              class="period"
+              :class="{ active: activePeriod === p.value }"
+              @click="activePeriod = p.value"
+            >{{ p.label }}</span>
           </div>
         </div>
-        <div class="chart-area">
-          <div class="chart-bars">
-            <div v-for="(h, i) in chartData" :key="i" class="bar-col">
-              <div class="bar" :style="{ height: h + '%' }"></div>
-              <span class="bar-label">{{ weekDays[i] }}</span>
-            </div>
-          </div>
+        <v-chart :option="lineOption" autoresize class="chart" />
+      </div>
+
+      <div class="chart-card chart-card-small" style="--delay: 6">
+        <div class="card-header">
+          <h3>流量来源</h3>
         </div>
+        <v-chart :option="pieOption" autoresize class="chart" />
+      </div>
+    </section>
+
+    <!-- 主内容区 -->
+    <section class="main-grid">
+      <!-- 周概览柱图 -->
+      <div class="chart-card" style="--delay: 7">
+        <div class="card-header">
+          <h3>本周概览</h3>
+        </div>
+        <v-chart :option="barOption" autoresize class="chart" />
       </div>
 
       <!-- 最近活动 -->
-      <div class="activity-card" style="--delay: 6">
+      <div class="activity-card" style="--delay: 8">
         <div class="card-header">
-          <h3>Recent Activity</h3>
-          <el-link type="primary" underline="never">View All</el-link>
+          <h3>最近活动</h3>
+          <el-link type="primary" underline="never">查看全部</el-link>
         </div>
         <div class="activity-list">
           <div v-for="activity in activities" :key="activity.id" class="activity-item">
@@ -68,7 +82,7 @@
     </section>
 
     <!-- 快捷入口 -->
-    <section class="quick-grid" style="--delay: 7">
+    <section class="quick-grid" style="--delay: 9">
       <div
         v-for="action in quickActions"
         :key="action.label"
@@ -84,10 +98,24 @@
 
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
+import VChart from 'vue-echarts'
+import { use } from 'echarts/core'
+import { CanvasRenderer } from 'echarts/renderers'
+import { LineChart, BarChart, PieChart } from 'echarts/charts'
+import {
+  TitleComponent,
+  TooltipComponent,
+  GridComponent,
+  LegendComponent,
+} from 'echarts/components'
 import { useUserStore } from '@/pinia/stores/user'
+import { useTheme } from '@@/composables/useTheme'
+
+use([CanvasRenderer, LineChart, BarChart, PieChart, TitleComponent, TooltipComponent, GridComponent, LegendComponent])
 
 const router = useRouter()
 const userStore = useUserStore()
+const { isDark } = useTheme()
 const username = computed(() => userStore.username || 'Admin')
 
 const now = new Date()
@@ -113,8 +141,151 @@ const stats = [
   { label: '待处理', value: '23', trend: '-5.1%', trendType: 'down', percent: 15 },
 ]
 
-const chartData = [65, 80, 45, 90, 70, 85, 60]
-const weekDays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+const periods = [
+  { label: '周', value: 'week' },
+  { label: '月', value: 'month' },
+  { label: '年', value: 'year' },
+]
+const activePeriod = ref('week')
+
+const textColor = computed(() => isDark.value ? '#a1a1aa' : '#71717a')
+const borderColor = computed(() => isDark.value ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)')
+
+const lineOption = computed(() => ({
+  tooltip: {
+    trigger: 'axis',
+    backgroundColor: isDark.value ? '#27272a' : '#fff',
+    borderColor: borderColor.value,
+    textStyle: { color: isDark.value ? '#e4e4e7' : '#18181b' },
+  },
+  grid: { top: 20, right: 20, bottom: 30, left: 50 },
+  xAxis: {
+    type: 'category',
+    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    axisLine: { lineStyle: { color: borderColor.value } },
+    axisLabel: { color: textColor.value },
+  },
+  yAxis: {
+    type: 'value',
+    splitLine: { lineStyle: { color: borderColor.value } },
+    axisLabel: { color: textColor.value },
+  },
+  series: [
+    {
+      name: '访问量',
+      type: 'line',
+      smooth: true,
+      data: [820, 932, 901, 1234, 1290, 1330, 1120],
+      areaStyle: {
+        color: {
+          type: 'linear',
+          x: 0, y: 0, x2: 0, y2: 1,
+          colorStops: [
+            { offset: 0, color: 'rgba(124, 58, 237, 0.25)' },
+            { offset: 1, color: 'rgba(124, 58, 237, 0)' },
+          ],
+        },
+      },
+      lineStyle: { color: '#7c3aed', width: 2 },
+      itemStyle: { color: '#7c3aed' },
+      symbol: 'circle',
+      symbolSize: 6,
+    },
+    {
+      name: '独立访客',
+      type: 'line',
+      smooth: true,
+      data: [420, 532, 601, 834, 790, 930, 820],
+      areaStyle: {
+        color: {
+          type: 'linear',
+          x: 0, y: 0, x2: 0, y2: 1,
+          colorStops: [
+            { offset: 0, color: 'rgba(16, 185, 129, 0.2)' },
+            { offset: 1, color: 'rgba(16, 185, 129, 0)' },
+          ],
+        },
+      },
+      lineStyle: { color: '#10b981', width: 2 },
+      itemStyle: { color: '#10b981' },
+      symbol: 'circle',
+      symbolSize: 6,
+    },
+  ],
+}))
+
+const pieOption = computed(() => ({
+  tooltip: {
+    trigger: 'item',
+    backgroundColor: isDark.value ? '#27272a' : '#fff',
+    borderColor: borderColor.value,
+    textStyle: { color: isDark.value ? '#e4e4e7' : '#18181b' },
+  },
+  legend: {
+    orient: 'vertical',
+    right: 20,
+    top: 'center',
+    textStyle: { color: textColor.value },
+  },
+  series: [
+    {
+      type: 'pie',
+      radius: ['45%', '70%'],
+      center: ['35%', '50%'],
+      avoidLabelOverlap: false,
+      label: { show: false },
+      emphasis: {
+        label: { show: true, fontSize: 14, fontWeight: 'bold' },
+      },
+      data: [
+        { value: 1048, name: '直接访问', itemStyle: { color: '#7c3aed' } },
+        { value: 735, name: '搜索引擎', itemStyle: { color: '#10b981' } },
+        { value: 580, name: '社交媒体', itemStyle: { color: '#f59e0b' } },
+        { value: 484, name: '外部链接', itemStyle: { color: '#06b6d4' } },
+        { value: 300, name: '其他', itemStyle: { color: '#6b7280' } },
+      ],
+    },
+  ],
+}))
+
+const barOption = computed(() => ({
+  tooltip: {
+    trigger: 'axis',
+    backgroundColor: isDark.value ? '#27272a' : '#fff',
+    borderColor: borderColor.value,
+    textStyle: { color: isDark.value ? '#e4e4e7' : '#18181b' },
+  },
+  grid: { top: 20, right: 20, bottom: 30, left: 50 },
+  xAxis: {
+    type: 'category',
+    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    axisLine: { lineStyle: { color: borderColor.value } },
+    axisLabel: { color: textColor.value },
+  },
+  yAxis: {
+    type: 'value',
+    splitLine: { lineStyle: { color: borderColor.value } },
+    axisLabel: { color: textColor.value },
+  },
+  series: [
+    {
+      type: 'bar',
+      data: [650, 800, 450, 900, 700, 850, 600],
+      itemStyle: {
+        color: {
+          type: 'linear',
+          x: 0, y: 0, x2: 0, y2: 1,
+          colorStops: [
+            { offset: 0, color: '#7c3aed' },
+            { offset: 1, color: 'rgba(124, 58, 237, 0.4)' },
+          ],
+        },
+        borderRadius: [4, 4, 0, 0],
+      },
+      barWidth: '50%',
+    },
+  ],
+}))
 
 const activities = [
   { id: 1, text: '用户 张三 完成了注册', time: '5 分钟前', color: 'var(--theme-accent)' },
@@ -137,7 +308,6 @@ function handleQuickAction(path: string) {
 </script>
 
 <style lang="scss" scoped>
-/* 入场动画 */
 @keyframes fade-up {
   from {
     opacity: 0;
@@ -164,7 +334,6 @@ function handleQuickAction(path: string) {
   margin: 0 auto;
 }
 
-/* 欢迎区 */
 .greeting {
   margin-bottom: var(--p-space-6);
 
@@ -184,7 +353,6 @@ function handleQuickAction(path: string) {
   }
 }
 
-/* 统计卡片 */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -255,7 +423,17 @@ function handleQuickAction(path: string) {
   }
 }
 
-/* 主内容区 */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: var(--p-space-4);
+  margin-bottom: var(--p-space-6);
+
+  @media (max-width: 991px) {
+    grid-template-columns: 1fr;
+  }
+}
+
 .main-grid {
   display: grid;
   grid-template-columns: 1.6fr 1fr;
@@ -271,7 +449,7 @@ function handleQuickAction(path: string) {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--p-space-5);
+  margin-bottom: var(--p-space-4);
 
   h3 {
     margin: 0;
@@ -314,42 +492,10 @@ function handleQuickAction(path: string) {
   border-radius: var(--card-radius);
   background: var(--theme-bg-surface);
   border: 1px solid var(--theme-border);
-}
 
-.chart-area {
-  .chart-bars {
-    display: flex;
-    align-items: flex-end;
-    gap: var(--p-space-3);
-    height: 160px;
-  }
-
-  .bar-col {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 100%;
-    justify-content: flex-end;
-    gap: var(--p-space-2);
-
-    .bar {
-      width: 100%;
-      border-radius: var(--p-radius-sm);
-      background: var(--theme-accent);
-      opacity: 0.75;
-      transition: opacity var(--p-duration-fast);
-
-      &:hover {
-        opacity: 1;
-      }
-    }
-
-    .bar-label {
-      font-size: 10px;
-      color: var(--theme-text-muted);
-      font-weight: var(--p-weight-medium);
-    }
+  .chart {
+    width: 100%;
+    height: 240px;
   }
 }
 
@@ -397,7 +543,6 @@ function handleQuickAction(path: string) {
   }
 }
 
-/* 快捷入口 */
 .quick-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

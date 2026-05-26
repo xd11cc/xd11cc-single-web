@@ -10,4 +10,5 @@ export class CacheKey {
   static readonly VISITED_VIEW = `${SYSTEM_NAME}-${ENV}-visited-view-key`
   static readonly CACHED_VIEW = `${SYSTEM_NAME}-${ENV}-cached-view-key`
   static readonly OSS_URL = `${SYSTEM_NAME}-${ENV}-oss-url-key`
+  static readonly TABLE_COLUMNS = `${SYSTEM_NAME}-${ENV}-table-columns`
 }

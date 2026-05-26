@@ -83,15 +83,21 @@
                 批量删除
               </el-button>
             </div>
+            <TableColumnSetting
+              :columns="tableColumns.columns.value"
+              @toggle="tableColumns.toggleColumn"
+              @reorder="tableColumns.reorderColumns"
+              @reset="tableColumns.resetColumns"
+            />
           </div>
           <div class="table-wrapper">
             <el-table ref="tableRef" :data="tableData">
               <el-table-column type="selection" width="50" align="center" />
-              <el-table-column prop="username" label="用户名" align="center" show-overflow-tooltip />
-              <el-table-column prop="nickname" label="昵称" align="center" show-overflow-tooltip />
-              <el-table-column prop="deptName" label="部门" align="center" show-overflow-tooltip />
-              <el-table-column prop="phone" label="手机号" align="center" />
-              <el-table-column prop="status" label="状态" align="center" width="80">
+              <el-table-column v-if="isColumnVisible('username')" prop="username" label="用户名" align="center" show-overflow-tooltip />
+              <el-table-column v-if="isColumnVisible('nickname')" prop="nickname" label="昵称" align="center" show-overflow-tooltip />
+              <el-table-column v-if="isColumnVisible('deptName')" prop="deptName" label="部门" align="center" show-overflow-tooltip />
+              <el-table-column v-if="isColumnVisible('phone')" prop="phone" label="手机号" align="center" />
+              <el-table-column v-if="isColumnVisible('status')" prop="status" label="状态" align="center" width="80">
                 <template #default="scope">
                   <el-tag
                     :type="scope.row.status === '0' ? 'success' : 'danger'"
@@ -103,7 +109,7 @@
                   </el-tag>
                 </template>
               </el-table-column>
-              <el-table-column prop="createTime" label="创建时间" align="center" min-width="160" show-overflow-tooltip />
+              <el-table-column v-if="isColumnVisible('createTime')" prop="createTime" label="创建时间" align="center" min-width="160" show-overflow-tooltip />
               <el-table-column fixed="right" label="操作" width="200" align="center">
                 <template #default="scope">
                   <el-button
@@ -244,6 +250,8 @@
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
 import { usePagination } from '@@/composables/usePagination'
+import { useTableColumns } from '@@/composables/useTableColumns'
+import TableColumnSetting from '@@/components/TableColumnSetting/index.vue'
 import type { FormRules } from 'element-plus'
 import { cloneDeep } from 'lodash-es'
 
@@ -252,6 +260,22 @@ defineOptions({
 })
 
 const { paginationData, handleCurrentChange, handleSizeChange } = usePagination()
+
+const tableColumns = useTableColumns({
+  key: 'system-user',
+  defaultColumns: [
+    { prop: 'username', label: '用户名' },
+    { prop: 'nickname', label: '昵称' },
+    { prop: 'deptName', label: '部门' },
+    { prop: 'phone', label: '手机号' },
+    { prop: 'status', label: '状态', width: 80 },
+    { prop: 'createTime', label: '创建时间' },
+  ],
+})
+
+function isColumnVisible(prop: string) {
+  return tableColumns.visibleColumns.value.some((c) => c.prop === prop)
+}
 
 const loading = ref<boolean>(false)
 const dialogVisible = ref<boolean>(false)
