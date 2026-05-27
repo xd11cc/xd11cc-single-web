@@ -88,14 +88,14 @@
           </el-table-column>
         </el-table>
       </div>
-      <div class="dictTypePage-wrapper">
+      <div class="page-wrapper">
         <el-pagination
           background
           :layout="paginationData.layout"
-          :dictTypePage-sizes="paginationData.pageSizes"
+          :page-sizes="paginationData.pageSizes"
           :total="paginationData.total"
-          :dictTypePage-size="paginationData.pageSize"
-          :current-dictTypePage="paginationData.currentPage"
+          :page-size="paginationData.pageSize"
+          :current-page="paginationData.currentPage"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
         />
@@ -282,7 +282,7 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
 .search-wrapper {
   margin-bottom: 20px;
   :deep(.el-card__body) {
-    paddicttypeing-bottom: 2px;
+    padding-bottom: 2px;
   }
 }
 
@@ -296,7 +296,7 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
   margin-bottom: 20px;
 }
 
-.dictTypePage-wrapper {
+.page-wrapper {
   display: flex;
   justify-content: flex-end;
 }

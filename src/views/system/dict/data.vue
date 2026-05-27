@@ -222,7 +222,7 @@ defineOptions({
   name: 'dictData',
 })
 
-const { loading, getDictItem, getDictList } = useDict(['system_status', 'system_user_sex'])
+const { loading, getDictItem, getDictList } = useDict(['system_status'])
 
 const route = useRoute()
 
