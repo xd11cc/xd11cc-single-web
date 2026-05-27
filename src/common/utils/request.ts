@@ -88,6 +88,7 @@ service.interceptors.response.use(
         break
       case 404:
         console.error('接口不存在')
+        ElMessage.error('接口不存在')
         break
       case 500:
         console.error('服务器内部异常', error)

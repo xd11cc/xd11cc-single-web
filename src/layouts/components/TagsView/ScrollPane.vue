@@ -1,20 +1,16 @@
 <template>
   <div class="scroll-container">
-    <el-tooltip content="向左滚动标签（超出最大宽度可点击）">
-      <div class="arrow left" @click="scrollTo('left')">
-        <Icon icon="lucide:chevron-left" />
-      </div>
-    </el-tooltip>
+    <div class="arrow left" title="向左滚动" @click="scrollTo('left')">
+      <Icon icon="lucide:chevron-left" />
+    </div>
     <el-scrollbar ref="scrollbarRef" @wheel.passive="wheelScroll" @scroll="scroll">
       <div ref="scrollbarContentRef" class="scrollbar-content">
         <slot />
       </div>
     </el-scrollbar>
-    <el-tooltip content="向右滚动标签（超出最大宽度可点击）">
-      <div class="arrow right" @click="scrollTo('right')">
-        <Icon icon="lucide:chevron-right" />
-      </div>
-    </el-tooltip>
+    <div class="arrow right" title="向右滚动" @click="scrollTo('right')">
+      <Icon icon="lucide:chevron-right" />
+    </div>
     <Screenfull v-if="settingsStore.showScreenfull" :content="true" class="screenfull" />
   </div>
 </template>

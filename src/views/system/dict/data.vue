@@ -175,8 +175,13 @@
         </el-form-item>
         <el-form-item prop="status" label="状态">
           <el-radio-group v-model="formData.status">
-            <el-radio value="0">正常</el-radio>
-            <el-radio value="1">停用</el-radio>
+            <el-radio
+              v-for="item in getDictList('system_status')"
+              :key="item.id"
+              :value="item.label"
+            >
+              {{ item.value }}
+            </el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item prop="remark" label="备注">
