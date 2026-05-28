@@ -111,6 +111,14 @@ const sidebarMenuHoverBgColor = computed(() =>
   }
 }
 
+:deep(.el-sub-menu__title) {
+  position: relative;
+
+  .el-sub-menu__icon-arrow {
+    width: auto !important;
+  }
+}
+
 :deep(.el-sub-menu) {
   &.is-active {
     > .el-sub-menu__title {

@@ -18,7 +18,18 @@ export const useUserStore = defineStore('user', () => {
 
   const routes = ref<RouteRecordRaw[]>([])
 
+  const userId = ref<number>(0)
   const username = ref<string>('')
+  const nickname = ref<string>('')
+  const sex = ref<string>('')
+  const phone = ref<string>('')
+  const email = ref<string>('')
+  const headUrl = ref<string>('')
+  const deptId = ref<number>(0)
+  const deptName = ref<string>('')
+  const postId = ref<number>(0)
+  const postName = ref<string>('')
+  const roleNames = ref<string[]>([])
 
   // 设置 Token
   const setToken = (value: string) => {
@@ -35,7 +46,18 @@ export const useUserStore = defineStore('user', () => {
   // 获取用户详情
   const getInfo = async () => {
     const { data } = await getUserInfo()
+    userId.value = data.id
     username.value = data.username
+    nickname.value = data.nickname || ''
+    sex.value = data.sex || ''
+    phone.value = data.phone || ''
+    email.value = data.email || ''
+    headUrl.value = data.headUrl || ''
+    deptId.value = data.deptId || 0
+    deptName.value = data.deptName || ''
+    postId.value = data.postId || 0
+    postName.value = data.postName || ''
+    roleNames.value = data.roleNames || []
     permissions.value = data.permissions
     // 验证返回的 roles 是否为一个非空数组，否则塞入一个没有任何作用的默认角色
     roles.value = data.roles?.length > 0 ? data.roles : routerConfig.defaultRoles
@@ -76,7 +98,18 @@ export const useUserStore = defineStore('user', () => {
     roles,
     permissions,
     routes,
+    userId,
     username,
+    nickname,
+    sex,
+    phone,
+    email,
+    headUrl,
+    deptId,
+    deptName,
+    postId,
+    postName,
+    roleNames,
     setToken,
     userLogin,
     getInfo,

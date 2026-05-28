@@ -76,7 +76,7 @@
           <el-table-column fixed="right" label="操作" width="150" align="center">
             <template #default="scope">
               <el-button
-                type="primary"
+                type="warning"
                 text
                 bg
                 size="small"
@@ -156,6 +156,7 @@
                 :props="{ label: 'menuName', children: 'children' }"
                 node-key="id"
                 show-checkbox
+                check-strictly
                 default-expand-all
                 class="menu-tree"
               />

@@ -89,7 +89,7 @@
                 >新增</el-button
               >
               <el-button
-                type="primary"
+                type="warning"
                 text
                 bg
                 size="small"

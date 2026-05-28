@@ -95,7 +95,7 @@
           <el-table-column fixed="right" label="操作" width="200" align="center">
             <template #default="scope">
               <el-button
-                type="primary"
+                type="warning"
                 text
                 bg
                 size="small"
@@ -177,7 +177,6 @@
                 check-strictly
                 style="width: 100%"
                 @change="handleDeptChange"
-                @node-click="handleDeptNodeClick"
               />
             </el-form-item>
           </el-col>
@@ -445,13 +444,20 @@ function handleDeptChange(deptId: number | undefined) {
   if (!deptId) {
     formData.value.deptName = undefined
     postList.value = []
+    return
   }
+  const node = findDeptNode(deptTreeData.value, deptId)
+  formData.value.deptName = node?.deptName
+  loadPostList(deptId)
 }
 
-function handleDeptNodeClick(node: any) {
-  formData.value.deptName = node.deptName
-  if (node.id) {
-    loadPostList(node.id)
+function findDeptNode(tree: any[], id: number): any | undefined {
+  for (const node of tree) {
+    if (node.id === id) return node
+    if (node.children?.length) {
+      const found = findDeptNode(node.children, id)
+      if (found) return found
+    }
   }
 }
 

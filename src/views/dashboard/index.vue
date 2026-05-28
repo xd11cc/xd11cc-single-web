@@ -135,10 +135,10 @@ const currentDate = computed(() => {
 })
 
 const stats = [
-  { label: '总用户', value: '12,845', trend: '+12.5%', trendType: 'up', percent: 78 },
-  { label: '今日活跃', value: '1,024', trend: '+3.2%', trendType: 'up', percent: 62 },
-  { label: '系统运行', value: '99.9%', trend: '稳定', trendType: 'stable', percent: 99 },
-  { label: '待处理', value: '23', trend: '-5.1%', trendType: 'down', percent: 15 },
+  { label: '用户总数', value: '286', trend: '+8', trendType: 'up', percent: 58 },
+  { label: '在线用户', value: '34', trend: '+5', trendType: 'up', percent: 42 },
+  { label: '今日登录', value: '67', trend: '+12', trendType: 'up', percent: 35 },
+  { label: '待办事项', value: '5', trend: '-2', trendType: 'down', percent: 10 },
 ]
 
 const periods = [
@@ -161,7 +161,7 @@ const lineOption = computed(() => ({
   grid: { top: 20, right: 20, bottom: 30, left: 50 },
   xAxis: {
     type: 'category',
-    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
     axisLine: { lineStyle: { color: borderColor.value } },
     axisLabel: { color: textColor.value },
   },
@@ -175,7 +175,7 @@ const lineOption = computed(() => ({
       name: '访问量',
       type: 'line',
       smooth: true,
-      data: [820, 932, 901, 1234, 1290, 1330, 1120],
+      data: [120, 156, 142, 178, 165, 58, 42],
       areaStyle: {
         color: {
           type: 'linear',
@@ -195,7 +195,7 @@ const lineOption = computed(() => ({
       name: '独立访客',
       type: 'line',
       smooth: true,
-      data: [420, 532, 601, 834, 790, 930, 820],
+      data: [85, 102, 98, 130, 112, 36, 28],
       areaStyle: {
         color: {
           type: 'linear',
@@ -238,11 +238,10 @@ const pieOption = computed(() => ({
         label: { show: true, fontSize: 14, fontWeight: 'bold' },
       },
       data: [
-        { value: 1048, name: '直接访问', itemStyle: { color: '#7c3aed' } },
-        { value: 735, name: '搜索引擎', itemStyle: { color: '#10b981' } },
-        { value: 580, name: '社交媒体', itemStyle: { color: '#f59e0b' } },
-        { value: 484, name: '外部链接', itemStyle: { color: '#06b6d4' } },
-        { value: 300, name: '其他', itemStyle: { color: '#6b7280' } },
+        { value: 148, name: '直接访问', itemStyle: { color: '#7c3aed' } },
+        { value: 86, name: '搜索引擎', itemStyle: { color: '#10b981' } },
+        { value: 53, name: '外部链接', itemStyle: { color: '#f59e0b' } },
+        { value: 42, name: '收藏夹', itemStyle: { color: '#06b6d4' } },
       ],
     },
   ],
@@ -258,7 +257,7 @@ const barOption = computed(() => ({
   grid: { top: 20, right: 20, bottom: 30, left: 50 },
   xAxis: {
     type: 'category',
-    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
     axisLine: { lineStyle: { color: borderColor.value } },
     axisLabel: { color: textColor.value },
   },
@@ -270,7 +269,7 @@ const barOption = computed(() => ({
   series: [
     {
       type: 'bar',
-      data: [650, 800, 450, 900, 700, 850, 600],
+      data: [45, 62, 38, 71, 56, 24, 18],
       itemStyle: {
         color: {
           type: 'linear',
@@ -330,8 +329,6 @@ function handleQuickAction(path: string) {
 
 .dashboard {
   padding: var(--p-space-6);
-  max-width: 1200px;
-  margin: 0 auto;
 }
 
 .greeting {

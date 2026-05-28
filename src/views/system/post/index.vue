@@ -65,7 +65,7 @@
           <el-table-column fixed="right" label="操作" width="150" align="center">
             <template #default="scope">
               <el-button
-                type="primary"
+                type="warning"
                 text
                 bg
                 size="small"

@@ -33,7 +33,7 @@
     <el-card v-loading="loading" shadow="never">
       <div class="toolbar-wrapper">
         <div>
-          <el-button type="primary" @click="dialogVisible = true">
+          <el-button type="primary" @click="handleAdd" v-permission="['system:menu:add']">
             <template #icon><Icon icon="lucide:plus-circle" /></template>新增菜单</el-button
           >
           <el-button @click="toggleExpand">
@@ -53,8 +53,7 @@
           <el-table-column
             prop="menuName"
             label="菜单名称"
-            align="center"
-            min-width="140"
+            min-width="180"
             show-overflow-tooltip
           />
           <el-table-column prop="icon" label="图标" align="center" width="60">
@@ -111,12 +110,13 @@
                 bg
                 size="small"
                 @click="handleAddChild(scope.row)"
+                v-permission="['system:menu:add']"
                 >新增</el-button
               >
-              <el-button type="primary" text bg size="small" @click="handleModify(scope.row)"
+              <el-button type="warning" text bg size="small" @click="handleModify(scope.row)" v-permission="['system:menu:update']"
                 >修改</el-button
               >
-              <el-button type="danger" text bg size="small" @click="handleRemove(scope.row)"
+              <el-button type="danger" text bg size="small" @click="handleRemove(scope.row)" v-permission="['system:menu:delete']"
                 >删除</el-button
               >
             </template>
@@ -128,6 +128,7 @@
       v-model="dialogVisible"
       :title="formData.id === undefined ? '新增菜单' : '修改菜单'"
       width="40%"
+      destroy-on-close
       @close="handleClose"
     >
       <el-form ref="formRef" :model="formData" :rules="formRules" label-width="100px">
@@ -325,13 +326,16 @@ const formData = ref<SystemMenuVO>({
   icon: '',
 })
 
-const formRules: FormRules<SystemMenuVO> = {
-  sort: [{ required: true, trigger: 'blur', message: '请选择显示排序' }],
-  menuName: [{ required: true, trigger: 'blur', message: '请输入菜单名称' }],
-  component: [{ required: true, trigger: 'blur', message: '请输入组件路径' }],
-  routeName: [{ required: true, trigger: 'blur', message: '请输入路由名称' }],
-  path: [{ required: true, trigger: 'blur', message: '请输入路由地址' }],
-}
+const formRules = computed<FormRules<SystemMenuVO>>(() => {
+  const isButton = formData.value.menuType === 'B'
+  return {
+    sort: [{ required: true, trigger: 'blur', message: '请选择显示排序' }],
+    menuName: [{ required: true, trigger: 'blur', message: '请输入菜单名称' }],
+    component: isButton ? [] : [{ required: true, trigger: 'blur', message: '请输入组件路径' }],
+    routeName: isButton ? [] : [{ required: true, trigger: 'blur', message: '请输入路由名称' }],
+    path: isButton ? [] : [{ required: true, trigger: 'blur', message: '请输入路由地址' }],
+  }
+})
 
 const dialogVisible = ref<boolean>(false)
 
@@ -344,7 +348,16 @@ function resetSearch() {
   getTableData()
 }
 
-function handleRowClick(row: SystemMenuTreeVO) {
+function handleAdd() {
+  formData.value = { menuType: 'M', visible: '0', status: '0', icon: '' }
+  dialogVisible.value = true
+  nextTick(() => {
+    formRef.value?.clearValidate()
+  })
+}
+
+function handleRowClick(row: SystemMenuTreeVO, _column: any, event: Event) {
+  if ((event.target as HTMLElement).closest('.el-button')) return
   if (row.children?.length) {
     tableRef.value?.toggleRowExpansion(row)
   }
