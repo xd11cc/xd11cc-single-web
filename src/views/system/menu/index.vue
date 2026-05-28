@@ -54,7 +54,7 @@
             prop="menuName"
             label="菜单名称"
             min-width="180"
-            show-overflow-tooltip
+           
           />
           <el-table-column prop="icon" label="图标" align="center" width="60">
             <template #default="scope">
@@ -80,9 +80,9 @@
             prop="permission"
             label="权限标识"
             align="center"
-            show-overflow-tooltip
+           
           />
-          <el-table-column prop="component" label="组件路径" align="center" show-overflow-tooltip />
+          <el-table-column prop="component" label="组件路径" align="center" />
           <el-table-column prop="status" label="状态" align="center">
             <template #default="scope">
               <el-tag
@@ -99,7 +99,7 @@
             label="创建时间"
             align="center"
             min-width="160"
-            show-overflow-tooltip
+           
           />
           <el-table-column fixed="right" label="操作" width="200" align="center">
             <template #default="scope">

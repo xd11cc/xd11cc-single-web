@@ -46,8 +46,8 @@
       <div class="table-wrapper">
         <el-table ref="tableRef" :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column prop="postCode" label="岗位编码" align="center" show-overflow-tooltip />
-          <el-table-column prop="postName" label="岗位名称" align="center" show-overflow-tooltip />
+          <el-table-column prop="postCode" label="岗位编码" align="center" />
+          <el-table-column prop="postName" label="岗位名称" align="center" />
           <el-table-column prop="status" label="状态" align="center" width="80">
             <template #default="scope">
               <el-tag
@@ -60,8 +60,8 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="remark" label="备注" align="center" show-overflow-tooltip />
-          <el-table-column prop="createTime" label="创建时间" align="center" min-width="160" show-overflow-tooltip />
+          <el-table-column prop="remark" label="备注" align="center" />
+          <el-table-column prop="createTime" label="创建时间" align="center" min-width="160" />
           <el-table-column fixed="right" label="操作" width="150" align="center">
             <template #default="scope">
               <el-button
@@ -145,6 +145,7 @@
                 :props="{ label: 'deptName', children: 'children' }"
                 node-key="id"
                 show-checkbox
+                check-strictly
                 default-expand-all
                 class="dept-tree"
               />

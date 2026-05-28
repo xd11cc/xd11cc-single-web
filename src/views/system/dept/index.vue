@@ -54,8 +54,8 @@
           default-expand-all
           @row-click="handleRowClick"
         >
-          <el-table-column prop="deptName" label="部门名称" min-width="180" show-overflow-tooltip />
-          <el-table-column prop="deptCode" label="部门编码" align="center" show-overflow-tooltip />
+          <el-table-column prop="deptName" label="部门名称" min-width="180" />
+          <el-table-column prop="deptCode" label="部门编码" align="center" />
           <el-table-column prop="sort" label="排序" align="center" width="80" />
           <el-table-column prop="status" label="状态" align="center" width="80">
             <template #default="scope">
@@ -69,13 +69,13 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="remark" label="备注" align="center" show-overflow-tooltip />
+          <el-table-column prop="remark" label="备注" align="center" />
           <el-table-column
             prop="createTime"
             label="创建时间"
             align="center"
             min-width="160"
-            show-overflow-tooltip
+           
           />
           <el-table-column fixed="right" label="操作" width="200" align="center">
             <template #default="scope">

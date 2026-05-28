@@ -46,22 +46,22 @@
             prop="configName"
             label="配置名称"
             align="center"
-            show-overflow-tooltip
+           
           />
-          <el-table-column prop="configKey" label="配置键名" align="center" show-overflow-tooltip />
+          <el-table-column prop="configKey" label="配置键名" align="center" />
           <el-table-column
             prop="configValue"
             label="配置键值"
             align="center"
-            show-overflow-tooltip
+           
           />
-          <el-table-column prop="remark" label="备注" align="center" show-overflow-tooltip />
+          <el-table-column prop="remark" label="备注" align="center" />
           <el-table-column
             prop="createTime"
             label="创建时间"
             align="center"
             min-width="160"
-            show-overflow-tooltip
+           
           />
           <el-table-column fixed="right" label="操作" width="150" align="center">
             <template #default="scope">

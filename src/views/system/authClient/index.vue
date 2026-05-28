@@ -46,14 +46,14 @@
       <div class="table-wrapper">
         <el-table ref="tableRef" :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column prop="name" label="应用名称" align="center" show-overflow-tooltip />
-          <el-table-column prop="source" label="应用类型" align="center" show-overflow-tooltip />
+          <el-table-column prop="name" label="应用名称" align="center" />
+          <el-table-column prop="source" label="应用类型" align="center" />
           <el-table-column prop="icon" label="图标" align="center" width="80">
             <template #default="scope">
               <img v-if="scope.row.icon" :src="ossUrl + scope.row.icon" class="table-icon" />
             </template>
           </el-table-column>
-          <el-table-column prop="clientId" label="应用ID" align="center" show-overflow-tooltip />
+          <el-table-column prop="clientId" label="应用ID" align="center" />
           <el-table-column prop="sort" label="排序" align="center" width="80" />
           <el-table-column prop="status" label="状态" align="center" width="80">
             <template #default="scope">
@@ -67,8 +67,8 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="remark" label="备注" align="center" show-overflow-tooltip />
-          <el-table-column prop="createTime" label="创建时间" align="center" min-width="160" show-overflow-tooltip />
+          <el-table-column prop="remark" label="备注" align="center" />
+          <el-table-column prop="createTime" label="创建时间" align="center" min-width="160" />
           <el-table-column fixed="right" label="操作" width="150" align="center">
             <template #default="scope">
               <el-button

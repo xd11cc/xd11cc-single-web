@@ -69,6 +69,13 @@ div:focus {
   }
 }
 
+// 表格单元格全局不换行，超出省略
+.el-table .el-table__cell .cell {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 // 表格操作列按钮样式优化
 .el-table .el-button--small.is-text.is-has-bg {
   &.el-button--primary {

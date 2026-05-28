@@ -74,10 +74,10 @@
       <div class="table-wrapper">
         <el-table ref="tableRef" :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column v-if="isColumnVisible('username')" prop="username" label="用户名" align="center" show-overflow-tooltip />
-          <el-table-column v-if="isColumnVisible('nickname')" prop="nickname" label="昵称" align="center" show-overflow-tooltip />
-          <el-table-column v-if="isColumnVisible('deptName')" prop="deptName" label="部门" align="center" show-overflow-tooltip />
-          <el-table-column v-if="isColumnVisible('postName')" prop="postName" label="岗位" align="center" show-overflow-tooltip />
+          <el-table-column v-if="isColumnVisible('username')" prop="username" label="用户名" align="center" />
+          <el-table-column v-if="isColumnVisible('nickname')" prop="nickname" label="昵称" align="center" />
+          <el-table-column v-if="isColumnVisible('deptName')" prop="deptName" label="部门" align="center" />
+          <el-table-column v-if="isColumnVisible('postName')" prop="postName" label="岗位" align="center" />
           <el-table-column v-if="isColumnVisible('phone')" prop="phone" label="手机号" align="center" />
           <el-table-column v-if="isColumnVisible('status')" prop="status" label="状态" align="center" width="80">
             <template #default="scope">
@@ -91,7 +91,7 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column v-if="isColumnVisible('createTime')" prop="createTime" label="创建时间" align="center" min-width="160" show-overflow-tooltip />
+          <el-table-column v-if="isColumnVisible('createTime')" prop="createTime" label="创建时间" align="center" min-width="160" />
           <el-table-column fixed="right" label="操作" width="200" align="center">
             <template #default="scope">
               <el-button
