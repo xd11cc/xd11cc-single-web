@@ -6,6 +6,8 @@
     <TopMode v-else-if="isTop" />
     <!-- 混合布局模式（仅桌面端） -->
     <LeftTopMode v-else-if="isLeftTop" />
+    <!-- 全局聊天面板 -->
+    <Chat />
   </div>
 </template>
 
@@ -13,6 +15,7 @@
 import LeftMode from './modes/LeftMode.vue'
 import TopMode from './modes/TopMode.vue'
 import LeftTopMode from './modes/LeftTopMode.vue'
+import Chat from '@@/components/Chat/index.vue'
 import { useLayoutMode } from '@@/composables/useLayoutMode'
 import { useSettingsStore } from '@/pinia/stores/settings'
 import { storeToRefs } from 'pinia'

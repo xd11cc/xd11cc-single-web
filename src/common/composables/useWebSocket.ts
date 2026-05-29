@@ -1,11 +1,11 @@
 import { WebSocketClient, WsStatus } from '@@/utils/webSocket'
-import type { NettyMessageDTO } from '@@/utils/webSocket'
+import type { WsPushMessage, NettyMessageDTO } from '@@/utils/webSocket'
 import { getToken } from '@@/utils/cache/cookies'
 
 const BASE_WS_URL = import.meta.env.VITE_WS_URL + import.meta.env.VITE_WS_PATH
 
 const status = ref<WsStatus>(WsStatus.DISCONNECTED)
-const lastMessage = ref<NettyMessageDTO | null>(null)
+const lastMessage = ref<WsPushMessage | null>(null)
 let wsClient: WebSocketClient | null = null
 
 export function useWebSocket() {
@@ -35,16 +35,26 @@ export function useWebSocket() {
       },
     )
 
-    wsClient.onMessage((data: NettyMessageDTO) => {
-      lastMessage.value = data
-      ElMessageBox.alert(data.content, '新消息提醒', {
-        confirmButtonText: '确认',
-        type: 'info',
-        dangerouslyUseHTMLString: true,
-      })
+    // 全局消息监听（记录最后一条消息）
+    wsClient.on('*', (message: WsPushMessage) => {
+      lastMessage.value = message
     })
 
     wsClient.initConnect()
+  }
+
+  /**
+   * 订阅指定 action 的消息
+   */
+  const on = (action: string, callback: (data: any) => void) => {
+    wsClient?.on(action, callback)
+  }
+
+  /**
+   * 取消订阅
+   */
+  const off = (action: string, callback?: (data: any) => void) => {
+    wsClient?.off(action, callback)
   }
 
   const sendMessage = (data: NettyMessageDTO): boolean => {
@@ -60,11 +70,16 @@ export function useWebSocket() {
     status.value = WsStatus.DISCONNECTED
   }
 
+  const getClient = () => wsClient
+
   return {
     status: readonly(status),
     lastMessage: readonly(lastMessage),
     connect,
     close,
     sendMessage,
+    on,
+    off,
+    getClient,
   }
 }
