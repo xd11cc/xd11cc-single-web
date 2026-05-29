@@ -11,6 +11,7 @@ export interface SystemRoleVO {
   roleCode?: string
   roleName?: string
   status?: string
+  dataScope?: string
   remark?: string
   createTime?: string
 }
@@ -19,7 +20,9 @@ export interface SystemRoleAddVO {
   roleCode: string
   roleName: string
   status?: string
+  dataScope?: string
   menuIds: number[]
+  deptIds?: number[]
   remark?: string
 }
 
@@ -28,6 +31,8 @@ export interface SystemRoleUpdateVO {
   roleCode: string
   roleName: string
   status?: string
+  dataScope?: string
   menuIds: number[]
+  deptIds?: number[]
   remark?: string
 }

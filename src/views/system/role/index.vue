@@ -163,6 +163,32 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
+            <el-form-item prop="dataScope" label="数据权限">
+              <el-select v-model="formData.dataScope" placeholder="请选择数据范围" style="width: 100%">
+                <el-option
+                  v-for="item in dataScopeOptions"
+                  :key="item.label"
+                  :label="item.value"
+                  :value="item.label"
+                />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="24" v-if="formData.dataScope === '5'">
+            <el-form-item label="部门权限">
+              <el-tree
+                ref="deptTreeRef"
+                :data="deptTreeData"
+                :props="{ label: 'deptName', children: 'children' }"
+                node-key="id"
+                show-checkbox
+                check-strictly
+                default-expand-all
+                class="menu-tree"
+              />
+            </el-form-item>
+          </el-col>
+          <el-col :span="24">
             <el-form-item prop="remark" label="备注">
               <el-input
                 type="textarea"
@@ -190,10 +216,12 @@ import { useDict } from '@/common/composables/useDict'
 import { usePagination } from '@@/composables/usePagination'
 import type { FormRules } from 'element-plus'
 import { cloneDeep } from 'lodash-es'
-import { rolePage, addRole, modifyRoleById, removeRoleByIds, getRoleMenuIds } from './apis'
+import { rolePage, addRole, modifyRoleById, removeRoleByIds, getRoleMenuIds, getRoleDeptIds } from './apis'
 import type { SystemRoleVO, SystemRoleQueryVO } from './apis/type'
 import { treeList } from '@/views/system/menu/apis'
 import type { SystemMenuTreeVO } from '@/views/system/menu/apis/type'
+import { deptTreeList } from '@/views/system/dept/apis'
+import type { SystemDeptTreeVO } from '@/views/system/dept/apis/type'
 
 defineOptions({
   name: 'role',
@@ -215,10 +243,19 @@ const tableData = ref<SystemRoleVO[]>([])
 
 const formRef = useTemplateRef('formRef')
 const menuTreeRef = useTemplateRef('menuTreeRef')
-const formData = ref<any>({ status: '0' })
+const deptTreeRef = useTemplateRef('deptTreeRef')
+const formData = ref<any>({ status: '0', dataScope: '1' })
 
 const menuTreeData = ref<SystemMenuTreeVO[]>([])
+const deptTreeData = ref<SystemDeptTreeVO[]>([])
 
+const dataScopeOptions = [
+  { label: '1', value: '全部数据' },
+  { label: '2', value: '本部门及下级部门' },
+  { label: '3', value: '本部门数据' },
+  { label: '4', value: '仅本人数据' },
+  { label: '5', value: '自定义' },
+]
 const formRules: FormRules = {
   roleName: [{ required: true, trigger: 'blur', message: '请输入角色名称' }],
   roleCode: [{ required: true, trigger: 'blur', message: '请输入角色编码' }],
@@ -237,28 +274,40 @@ function resetSearch() {
 
 function handleAdd() {
   dialogVisible.value = true
-  formData.value = { status: '0' }
+  formData.value = { status: '0', dataScope: '1' }
 }
 
 function handleModify(row: SystemRoleVO) {
   dialogVisible.value = true
   formData.value = cloneDeep(row)
+  if (!formData.value.dataScope) {
+    formData.value.dataScope = '1'
+  }
   nextTick(() => {
     menuTreeRef.value?.setCheckedKeys([])
+    deptTreeRef.value?.setCheckedKeys([])
     if (row.id) {
       getRoleMenuIds(row.id).then(({ data }) => {
         data.forEach((id) => {
           menuTreeRef.value?.setChecked(id, true, false)
         })
       })
+      if (formData.value.dataScope === '5') {
+        getRoleDeptIds(row.id).then(({ data }) => {
+          data.forEach((id) => {
+            deptTreeRef.value?.setChecked(id, true, false)
+          })
+        })
+      }
     }
   })
 }
 
 function handleClose() {
-  formData.value = { status: '0' }
+  formData.value = { status: '0', dataScope: '1' }
   formRef.value?.clearValidate()
   menuTreeRef.value?.setCheckedKeys([])
+  deptTreeRef.value?.setCheckedKeys([])
 }
 
 function handleCreateOrUpdate() {
@@ -269,10 +318,14 @@ function handleCreateOrUpdate() {
     const halfCheckedKeys = menuTreeRef.value?.getHalfCheckedKeys() as number[]
     const menuIds = [...(checkedKeys || []), ...(halfCheckedKeys || [])]
 
+    const deptIds = formData.value.dataScope === '5'
+      ? (deptTreeRef.value?.getCheckedKeys(false) as number[]) || []
+      : []
+
     const isAdd = formData.value.id === undefined
     const api = isAdd
-      ? addRole({ roleCode: formData.value.roleCode, roleName: formData.value.roleName, status: formData.value.status, menuIds, remark: formData.value.remark })
-      : modifyRoleById({ id: formData.value.id, roleCode: formData.value.roleCode, roleName: formData.value.roleName, status: formData.value.status, menuIds, remark: formData.value.remark })
+      ? addRole({ roleCode: formData.value.roleCode, roleName: formData.value.roleName, status: formData.value.status, dataScope: formData.value.dataScope, menuIds, deptIds, remark: formData.value.remark })
+      : modifyRoleById({ id: formData.value.id, roleCode: formData.value.roleCode, roleName: formData.value.roleName, status: formData.value.status, dataScope: formData.value.dataScope, menuIds, deptIds, remark: formData.value.remark })
 
     api
       .then((res) => {
@@ -344,7 +397,30 @@ function getMenuTree() {
   })
 }
 
+function getDeptTree() {
+  deptTreeList({}).then(({ data }) => {
+    deptTreeData.value = data
+  })
+}
+
 getMenuTree()
+getDeptTree()
+
+watch(
+  () => formData.value.dataScope,
+  (val) => {
+    if (val === '5' && formData.value.id && dialogVisible.value) {
+      nextTick(() => {
+        deptTreeRef.value?.setCheckedKeys([])
+        getRoleDeptIds(formData.value.id).then(({ data }) => {
+          data.forEach((id) => {
+            deptTreeRef.value?.setChecked(id, true, false)
+          })
+        })
+      })
+    }
+  },
+)
 
 watch([() => paginationData.currentPage, () => paginationData.pageSize], getTableData, {
   immediate: true,

@@ -40,6 +40,13 @@ export function getRoleMenuIds(roleId: number): Promise<ResponseVO<number[]>> {
   })
 }
 
+export function getRoleDeptIds(roleId: number): Promise<ResponseVO<number[]>> {
+  return request({
+    url: `/system/role/deptIds/${roleId}`,
+    method: 'GET',
+  })
+}
+
 export function roleList(): Promise<ResponseVO<SystemRoleVO[]>> {
   return request({
     url: '/system/role/list',
