@@ -29,7 +29,21 @@
   </head>
   <body>
     <div id="app">
-      <div id="app-loading"></div>
+      <div id="app-loading">
+        <!-- Logo（复用登录页 SVG） -->
+        <div style="position: relative; display: flex; align-items: center; justify-content: center;">
+          <div class="loading-ring"></div>
+          <svg class="loading-logo" width="56" height="56" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="40" height="40" rx="10" fill="url(#lg)"/>
+            <path d="M12 12L18.5 20L12 28H15.5L20 22L24.5 28H28L21.5 20L28 12H24.5L20 18L15.5 12H12Z" fill="white"/>
+            <defs><linearGradient id="lg" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse"><stop stop-color="#059669"/><stop offset="1" stop-color="#34D399"/></linearGradient></defs>
+          </svg>
+        </div>
+        <!-- 进度条 -->
+        <div class="loading-track"><div class="loading-bar"></div></div>
+        <!-- 文字 -->
+        <span class="loading-text">Loading</span>
+      </div>
     </div>
     <script type="module" src="/src/main.js"></script>
   </body>

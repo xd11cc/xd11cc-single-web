@@ -1,44 +1,124 @@
-/* 白屏阶段会执行css加载动画 */
+/* ── App Loading Screen ── */
+/* 白屏阶段加载动画，与项目 Obsidian 设计体系保持一致 */
+
 #app-loading {
-  position: relative;
-  top: 45vh;
-  margin: 0 auto;
-  color: #409eff;
-  font-size: 12px;
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  background: #F7F7F8;
+  font-family: 'Outfit', 'DM Sans', -apple-system, BlinkMacSystemFont, 'PingFang SC', sans-serif;
+  z-index: 9999;
 }
 
-#app-loading,
-#app-loading::before,
-#app-loading::after {
-  width: 2em;
-  height: 2em;
-  border-radius: 50%;
-  animation: 2s ease-in-out infinite app-loading-animation;
+[data-theme='dark'] #app-loading {
+  background: #09090B;
 }
 
-#app-loading::before,
-#app-loading::after {
-  content: '';
+/* Logo */
+#app-loading .loading-logo {
+  width: 56px;
+  height: 56px;
+  filter: drop-shadow(0 4px 16px rgba(5, 150, 105, 0.25));
+  animation: logo-breathe 2.4s ease-in-out infinite;
+}
+
+[data-theme='dark'] #app-loading .loading-logo {
+  filter: drop-shadow(0 4px 20px rgba(16, 185, 129, 0.35));
+}
+
+/* 脉冲光晕 */
+#app-loading .loading-ring {
   position: absolute;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 2px solid rgba(5, 150, 105, 0.15);
+  animation: ring-pulse 2.4s ease-out infinite;
 }
 
-#app-loading::before {
-  left: -4em;
-  animation-delay: 0.2s;
+[data-theme='dark'] #app-loading .loading-ring {
+  border-color: rgba(16, 185, 129, 0.12);
 }
 
-#app-loading::after {
-  left: 4em;
-  animation-delay: 0.2s;
+/* 进度条轨道 */
+#app-loading .loading-track {
+  width: 180px;
+  height: 3px;
+  background: #E4E4E7;
+  border-radius: 9999px;
+  overflow: hidden;
 }
 
-@keyframes app-loading-animation {
-  0%,
-  80%,
-  100% {
-    box-shadow: 0 2em 0 -2em;
+[data-theme='dark'] #app-loading .loading-track {
+  background: #1A1A1D;
+}
+
+/* 进度条填充 */
+#app-loading .loading-bar {
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(90deg, #059669, #34D399);
+  border-radius: 9999px;
+  animation: bar-slide 1.6s ease-in-out infinite;
+}
+
+[data-theme='dark'] #app-loading .loading-bar {
+  background: linear-gradient(90deg, #10B981, #34D399);
+}
+
+/* 文字 */
+#app-loading .loading-text {
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #A1A1AA;
+}
+
+[data-theme='dark'] #app-loading .loading-text {
+  color: #52525B;
+}
+
+/* ── Animations ── */
+
+@keyframes logo-breathe {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
   }
-  40% {
-    box-shadow: 0 2em 0 0;
+  50% {
+    transform: scale(1.06);
+    opacity: 0.85;
+  }
+}
+
+@keyframes ring-pulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.6;
+  }
+  70% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+@keyframes bar-slide {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(200%);
+  }
+  100% {
+    transform: translateX(200%);
   }
 }
