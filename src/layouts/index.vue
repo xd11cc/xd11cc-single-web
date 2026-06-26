@@ -32,6 +32,9 @@ const userStore = useUserStore()
 
 const { connect, close: closeWs } = useWebSocket()
 
+// 在 setup 阶段建立连接，确保子组件 mount 前 wsClient 已就绪
+connect()
+
 const { setWatermark, clearWatermark } = useWatermark()
 
 const { isMobile } = useDevice()
@@ -61,10 +64,6 @@ watch(theme, () => {
     clearWatermark()
     setWatermark(import.meta.env.VITE_APP_TITLE + '-' + userStore.username)
   }
-})
-
-onMounted(() => {
-  connect()
 })
 
 onUnmounted(() => {

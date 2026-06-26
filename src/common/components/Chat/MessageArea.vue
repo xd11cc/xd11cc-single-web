@@ -24,14 +24,13 @@
     </el-scrollbar>
     <div class="message-input">
       <el-input
+        ref="inputRef"
         v-model="inputText"
         placeholder="输入消息..."
         @keydown.enter.exact.prevent="handleSend"
         maxlength="500"
       />
-      <el-button type="primary" :disabled="!inputText.trim()" @click="handleSend">
-        发送
-      </el-button>
+      <el-button type="primary" :disabled="!inputText.trim()" @click="handleSend"> 发送 </el-button>
     </div>
   </div>
 </template>
@@ -47,6 +46,7 @@ const props = defineProps<{
 const emit = defineEmits<{ send: [text: string] }>()
 
 const inputText = ref('')
+const inputRef = useTemplateRef('inputRef')
 const scrollRef = useTemplateRef('scrollRef')
 const listRef = useTemplateRef('listRef')
 
@@ -73,7 +73,12 @@ watch(
   () => scrollToBottom(),
 )
 
-onMounted(() => scrollToBottom())
+onMounted(() => {
+  scrollToBottom()
+  nextTick(() => {
+    inputRef.value?.focus()
+  })
+})
 </script>
 
 <style lang="scss" scoped>

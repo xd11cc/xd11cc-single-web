@@ -15,13 +15,29 @@
     <div class="login-card">
       <div class="login-header">
         <div class="logo-mark">
-          <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="40" height="40" rx="10" fill="url(#logo-bg)"/>
-            <path d="M12 12L18.5 20L12 28H15.5L20 22L24.5 28H28L21.5 20L28 12H24.5L20 18L15.5 12H12Z" fill="white"/>
+          <svg
+            width="40"
+            height="40"
+            viewBox="0 0 40 40"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <rect width="40" height="40" rx="10" fill="url(#logo-bg)" />
+            <path
+              d="M12 12L18.5 20L12 28H15.5L20 22L24.5 28H28L21.5 20L28 12H24.5L20 18L15.5 12H12Z"
+              fill="white"
+            />
             <defs>
-              <linearGradient id="logo-bg" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-                <stop stop-color="var(--theme-accent)"/>
-                <stop offset="1" stop-color="#34d399"/>
+              <linearGradient
+                id="logo-bg"
+                x1="0"
+                y1="0"
+                x2="40"
+                y2="40"
+                gradientUnits="userSpaceOnUse"
+              >
+                <stop stop-color="var(--theme-accent)" />
+                <stop offset="1" stop-color="#34d399" />
               </linearGradient>
             </defs>
           </svg>
@@ -37,7 +53,7 @@
     </div>
 
     <!-- 底部 -->
-    <p class="login-footer">&copy; 2024 XD11CC. Built with precision.</p>
+    <p class="login-footer">&copy; 2026 XD11CC. Built with precision.</p>
   </div>
 </template>
 
