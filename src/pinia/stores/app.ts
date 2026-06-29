@@ -1,8 +1,9 @@
 import { SIDEBAR_OPENED, SIDEBAR_CLOSED } from '@@/constants/app-key'
 import { setSidebarStatus, getSidebarStatus } from '@@/utils/cache/local-storage'
-import { defineStore, createPinia } from 'pinia'
+import { defineStore } from 'pinia'
 import { reactive, ref, watch } from 'vue'
 import { DeviceEnum } from '@@/constants/app-key'
+import { pinia } from '@/pinia'
 
 interface Sidebar {
   opened: boolean
@@ -58,5 +59,5 @@ export const useAppStore = defineStore('app', () => {
  * @returns
  */
 export function useAppStoreOutside() {
-  return useAppStore(createPinia())
+  return useAppStore(pinia)
 }

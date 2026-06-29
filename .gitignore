@@ -32,5 +32,6 @@ yarn.lock
 *.sln
 *.sw?
 .env.prod
+.claude
 
 *.tsbuildinfo

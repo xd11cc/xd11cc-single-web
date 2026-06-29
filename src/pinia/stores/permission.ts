@@ -98,6 +98,7 @@ export const usePermissionStore = defineStore('permission', () => {
   const generateRoutes = async (roles: string[]) => {
     const { data } = await getRoutes()
     const backendRoutes = transformBackendRoutes(data)
+    dynamicRoutes.value = []
     backendRoutes.forEach((route) => {
       dynamicRoutes.value.push(route)
     })

@@ -64,11 +64,9 @@ service.interceptors.response.use(
           return Promise.reject(new Error(res.msg))
         case 403:
           console.error('未授权')
-          ElMessage.error('未授权')
           break
         case 404:
           console.error('接口不存在')
-          ElMessage.error('接口不存在')
           break
         case 500:
           console.error('服务器内部异常')

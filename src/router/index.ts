@@ -80,6 +80,11 @@ export const publicRoutes: RouteRecordRaw[] = [
   },
 ]
 
+// 收集公开路由的 name，用于 resetRouter 时区分公开/动态路由
+const publicRouteNames = new Set(
+  publicRoutes.flatMap((r) => [r.name, ...(r.children?.map((c) => c.name) || [])]).filter(Boolean),
+)
+
 /**
  * 路由实例
  */
@@ -93,15 +98,13 @@ export const router = createRouter({
  */
 export function resetRouter() {
   try {
-    // 注意：所有动态路由必须带有Name属性，否则可能会不能完全重置干净
     router.getRoutes().forEach((route) => {
-      const { name, meta } = route
-      if (name && meta.roles?.length) {
+      const { name } = route
+      if (name && !publicRouteNames.has(name)) {
         router.hasRoute(name) && router.removeRoute(name)
       }
     })
   } catch {
-    // 强制刷新浏览器（兜底）
     location.reload()
   }
 }
