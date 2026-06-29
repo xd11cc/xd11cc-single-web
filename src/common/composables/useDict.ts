@@ -74,6 +74,7 @@ export const useDict = (dictTypes: string | string[]) => {
   const getDictItem = (dictType: string, label: string | number): SystemDictDataVO | undefined => {
     const list = dictData.value[dictType] || []
     const item = list.find((item) => String(item.label) === String(label))
+    if (!item) return undefined
     return { ...item, listClass: validDataComponentType(item?.listClass) }
   }
 
