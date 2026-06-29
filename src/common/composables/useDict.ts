@@ -1,4 +1,4 @@
-import { getCache, getCacheGroup } from '@/views/system/dict/apis'
+import { getCache, getCacheGroup } from '@/views/system/dict/apis/index'
 import type { SystemDictDataVO, DictMap, ElComponentType } from '@/views/system/dict/apis/type'
 
 // 定义合法的Element组件类型列表（用于校验）

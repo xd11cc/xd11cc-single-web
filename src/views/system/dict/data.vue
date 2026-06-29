@@ -40,8 +40,10 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" :icon="Search" @click="handleSearch">查询</el-button>
-          <el-button :icon="Refresh" @click="resetSearch">重置</el-button>
+          <el-button type="primary" @click="handleSearch">
+            <template #icon><Icon icon="lucide:search" /></template>查询</el-button>
+          <el-button @click="resetSearch">
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template>重置</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -50,27 +52,30 @@
         <div>
           <el-button
             type="primary"
-            :icon="CirclePlus"
             @click="dialogVisible = true"
             v-permission="['system:dictData:add']"
-            >新增</el-button
           >
+            <template #icon><Icon icon="lucide:plus-circle" /></template>
+            新增
+          </el-button>
           <el-button
             type="danger"
-            :icon="Delete"
             @click="handleBatchRemove"
             v-permission="['system:dictData:delete']"
-            >批量删除</el-button
           >
+            <template #icon><Icon icon="lucide:trash-2" /></template>
+            批量删除
+          </el-button>
         </div>
         <div>
           <el-tooltip content="下载">
             <el-button
               type="primary"
-              :icon="Download"
               circle
               v-permission="['system:dictData:export']"
-            />
+            >
+              <template #icon><Icon icon="lucide:download" /></template>
+            </el-button>
           </el-tooltip>
         </div>
       </div>
@@ -83,7 +88,7 @@
           <el-table-column prop="status" label="状态" align="center">
             <template #default="scope">
               <el-tag
-                :type="getDictItem('system_status', scope.row.status)?.listClass"
+                :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
                 effect="plain"
                 disable-transitions
               >
@@ -92,11 +97,11 @@
             </template>
           </el-table-column>
           <el-table-column prop="remark" label="备注" align="center" />
-          <el-table-column prop="createTime" label="创建时间" align="center" />
+          <el-table-column prop="createTime" label="创建时间" align="center" min-width="160" />
           <el-table-column fixed="right" label="操作" width="150" align="center">
             <template #default="scope">
               <el-button
-                type="primary"
+                type="warning"
                 text
                 bg
                 size="small"
@@ -170,8 +175,13 @@
         </el-form-item>
         <el-form-item prop="status" label="状态">
           <el-radio-group v-model="formData.status">
-            <el-radio value="0">正常</el-radio>
-            <el-radio value="1">停用</el-radio>
+            <el-radio
+              v-for="item in getDictList('system_status')"
+              :key="item.id"
+              :value="item.label"
+            >
+              {{ item.value }}
+            </el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item prop="remark" label="备注">
@@ -194,7 +204,7 @@
 </template>
 
 <script lang="ts" setup>
-import { CirclePlus, Delete, Download, Refresh, Search } from '@element-plus/icons-vue'
+import { Icon } from '@iconify/vue'
 import { usePagination } from '@/common/composables/usePagination'
 import type { SystemDictDataVO, SystemDictDataQueryVO, SystemDictTypeVO } from './apis/type'
 import {
@@ -212,7 +222,7 @@ defineOptions({
   name: 'dictData',
 })
 
-const { loading, getDictItem, getDictList } = useDict(['system_status', 'system_user_sex'])
+const { loading, getDictItem, getDictList } = useDict(['system_status'])
 
 const route = useRoute()
 

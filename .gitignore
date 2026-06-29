@@ -30,5 +30,6 @@ yarn.lock
 *.njsproj
 *.sln
 *.sw?
+.env.prod
 
 *.tsbuildinfo

@@ -1,21 +1,16 @@
 <template>
   <section class="app-main">
     <div class="app-scrollbar">
-      <!-- key 采用 route.path 和 route.fullPath 有着不同的效果，大多数的时候 path 更通用 -->
       <router-view v-slot="{ Component, route }">
-        <transition name="el-fade-in" mode="out-in">
+        <transition name="page-slide" mode="out-in">
           <keep-alive :include="tagsViewStore.cachedViews">
             <component :is="Component" :key="route.path" class="app-container-grow" />
           </keep-alive>
         </transition>
       </router-view>
-      <!-- 页脚 -->
       <Footer v-if="settingsStore.showFooter" />
     </div>
-    <!-- 返回顶部 -->
-    <el-backtop />
-    <!-- 返回顶部（固定 Header 情况下） -->
-    <el-backtop target=".app-scrollbar" />
+    <el-backtop :target="settingsStore.fixedHeader ? '.app-scrollbar' : undefined" />
   </section>
 </template>
 
@@ -46,5 +41,23 @@ const settingsStore = useSettingsStore()
   .app-container-grow {
     flex-grow: 1;
   }
+}
+
+.page-slide-enter-active {
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.page-slide-leave-active {
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.page-slide-enter-from {
+  opacity: 0;
+  transform: translateX(12px);
+}
+
+.page-slide-leave-to {
+  opacity: 0;
+  transform: translateX(-6px);
 }
 </style>

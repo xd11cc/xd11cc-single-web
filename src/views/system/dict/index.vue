@@ -9,8 +9,10 @@
           <el-input v-model="searchData.dictType" placeholder="请输入字典类型" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" :icon="Search" @click="handleSearch"> 查询 </el-button>
-          <el-button :icon="Refresh" @click="resetSearch"> 重置 </el-button>
+          <el-button type="primary" @click="handleSearch">
+            <template #icon><Icon icon="lucide:search" /></template> 查询 </el-button>
+          <el-button @click="resetSearch">
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template> 重置 </el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -19,28 +21,30 @@
         <div>
           <el-button
             type="primary"
-            :icon="CirclePlus"
             @click="dialogVisible = true"
             v-permission="['system:dictType:add']"
           >
+            <template #icon><Icon icon="lucide:plus-circle" /></template>
             新增
           </el-button>
           <el-button
             type="danger"
-            :icon="Delete"
             @click="handleBatchRemove"
             v-permission="['system:dictType:delete']"
-            >批量删除</el-button
           >
+            <template #icon><Icon icon="lucide:trash-2" /></template>
+            批量删除
+          </el-button>
         </div>
         <div>
           <el-tooltip content="下载">
             <el-button
               type="primary"
-              :icon="Download"
               circle
               v-permission="['system:dictType:export']"
-            />
+            >
+              <template #icon><Icon icon="lucide:download" /></template>
+            </el-button>
           </el-tooltip>
         </div>
       </div>
@@ -63,7 +67,7 @@
           <el-table-column fixed="right" label="操作" width="150" align="center">
             <template #default="scope">
               <el-button
-                type="primary"
+                type="warning"
                 text
                 bg
                 size="small"
@@ -84,14 +88,14 @@
           </el-table-column>
         </el-table>
       </div>
-      <div class="dictTypePage-wrapper">
+      <div class="page-wrapper">
         <el-pagination
           background
           :layout="paginationData.layout"
-          :dictTypePage-sizes="paginationData.pageSizes"
+          :page-sizes="paginationData.pageSizes"
           :total="paginationData.total"
-          :dictTypePage-size="paginationData.pageSize"
-          :current-dictTypePage="paginationData.currentPage"
+          :page-size="paginationData.pageSize"
+          :current-page="paginationData.currentPage"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
         />
@@ -139,7 +143,7 @@
 </template>
 
 <script lang="ts" setup>
-import { CirclePlus, Delete, Download, Refresh, Search } from '@element-plus/icons-vue'
+import { Icon } from '@iconify/vue'
 import { usePagination } from '@@/composables/usePagination'
 import { dictTypePage, addDictType, modifyDictTypeById, removeDictTypeByIds } from './apis/index'
 import type { SystemDictTypeQueryVO, SystemDictTypeVO } from './apis/type'
@@ -278,7 +282,7 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
 .search-wrapper {
   margin-bottom: 20px;
   :deep(.el-card__body) {
-    paddicttypeing-bottom: 2px;
+    padding-bottom: 2px;
   }
 }
 
@@ -292,7 +296,7 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
   margin-bottom: 20px;
 }
 
-.dictTypePage-wrapper {
+.page-wrapper {
   display: flex;
   justify-content: flex-end;
 }

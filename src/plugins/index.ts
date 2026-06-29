@@ -1,12 +1,10 @@
 import type { App } from 'vue'
-import { installElementPlusIcons } from './element-plus-icons'
 import { installPermissionDirective } from './permission-directive'
-import { installSvgIcon } from './svg-icon'
 import { installHljs } from './hljs'
+import { installIconify } from './iconify'
 
 export function installPlugins(app: App) {
-  installElementPlusIcons(app)
+  installIconify()
   installPermissionDirective(app)
-  installSvgIcon(app)
   installHljs(app)
 }

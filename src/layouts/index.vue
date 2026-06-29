@@ -1,11 +1,13 @@
 <template>
   <div>
-    <!-- 左侧布局模式 -->
-    <LeftMode v-if="isLeft || isMobile" />
-    <!-- 顶部布局模式 -->
-    <TopMode v-if="isTop" />
-    <!-- 混合布局模式 -->
-    <LeftTopMode v-if="isLeftTop" />
+    <!-- 移动端统一降级为左侧抽屉模式 -->
+    <LeftMode v-if="isMobile || isLeft" />
+    <!-- 顶部布局模式（仅桌面端） -->
+    <TopMode v-else-if="isTop" />
+    <!-- 混合布局模式（仅桌面端） -->
+    <LeftTopMode v-else-if="isLeftTop" />
+    <!-- 全局聊天面板 -->
+    <Chat />
   </div>
 </template>
 
@@ -13,20 +15,25 @@
 import LeftMode from './modes/LeftMode.vue'
 import TopMode from './modes/TopMode.vue'
 import LeftTopMode from './modes/LeftTopMode.vue'
+import Chat from '@@/components/Chat/index.vue'
 import { useLayoutMode } from '@@/composables/useLayoutMode'
 import { useSettingsStore } from '@/pinia/stores/settings'
 import { storeToRefs } from 'pinia'
 import { useDevice } from '@@/composables/useDevice'
-import { getCssVar, setCssVar } from '@@/utils/css'
 import { useResize } from './composables/useResize'
 import { useWatermark } from '@@/composables/useWatermark'
 import { useUserStore } from '@/pinia/stores/user'
-import { initWebSocketInstance, resetWebSocketInstance } from '@@/utils/webSocket'
-import { getToken } from '@@/utils/cache/cookies'
+import { useWebSocket } from '@@/composables/useWebSocket'
+import { useTheme } from '@@/composables/useTheme'
 
 useResize()
 
 const userStore = useUserStore()
+
+const { connect, close: closeWs } = useWebSocket()
+
+// 在 setup 阶段建立连接，确保子组件 mount 前 wsClient 已就绪
+connect()
 
 const { setWatermark, clearWatermark } = useWatermark()
 
@@ -38,13 +45,9 @@ const settingsStore = useSettingsStore()
 
 const { showTagsView, showWatermark } = storeToRefs(settingsStore)
 
-// 隐藏标签栏时删除其高度，是为了让 Logo 组件高度和 Header 区域高度始终一致
-const cssVarname = '--v3-tagsview-height'
-
-const v3Tagsviewheight = getCssVar(cssVarname)
-
+// 隐藏标签栏时通过 body class 将 tagsview 高度归零
 watchEffect(() => {
-  showTagsView.value ? setCssVar(cssVarname, v3Tagsviewheight) : setCssVar(cssVarname, '0px')
+  document.body.classList.toggle('hide-tagsview', !showTagsView.value)
 })
 
 // 开启或关闭系统水印
@@ -54,24 +57,16 @@ watchEffect(() => {
     : clearWatermark()
 })
 
-onMounted(() => {
-  try {
-    // 重置旧的 WebSocket 实例，避免重复登录导致多个连接
-    resetWebSocketInstance()
-    const tokne = getToken() as string
-    const wsClient = initWebSocketInstance(tokne)
-    if (!wsClient) {
-      return null
-    }
-    // 初始化连接并添加错误捕获
-    wsClient.initConnect()
-    return wsClient
-  } catch (error) {
-    return null
+// 主题切换时刷新水印颜色
+const { theme } = useTheme()
+watch(theme, () => {
+  if (showWatermark.value) {
+    clearWatermark()
+    setWatermark(import.meta.env.VITE_APP_TITLE + '-' + userStore.username)
   }
 })
 
 onUnmounted(() => {
-  resetWebSocketInstance()
+  closeWs()
 })
 </script>

@@ -12,9 +12,7 @@
         @contextmenu.prevent="openMenu(tag, $event)"
       >
         {{ tag.meta?.title }}
-        <el-icon v-if="!isAffix(tag)" :size="12" @click.prevent.stop="closeSelectedTag(tag)">
-          <Close />
-        </el-icon>
+        <Icon v-if="!isAffix(tag)" icon="lucide:x" width="12" height="12" @click.prevent.stop="closeSelectedTag(tag)" />
       </router-link>
     </ScrollPane>
     <ul v-show="visiable" class="contextmenu" :style="{ left: `${left}px`, top: `${top}px` }">
@@ -32,7 +30,7 @@ import type { TagView } from '@/pinia/stores/tags-view'
 import { usePermissionStore } from '@/pinia/stores/permission'
 import { useRouteListener } from '@@/composables/useRouteListener'
 import { useTagsViewStore } from '@/pinia/stores/tags-view'
-import { Close } from '@element-plus/icons-vue'
+import { Icon } from '@iconify/vue'
 import path from 'path-browserify'
 import ScrollPane from './ScrollPane.vue'
 
@@ -240,18 +238,24 @@ listenerRouteChange((route) => {
       cursor: pointer;
       height: 26px;
       line-height: 26px;
-      border: 1px solid var(--v3-tagsview-tag-border-color);
-      border-radius: var(--v3-tagsview-tag-border-radius);
+      border: none;
+      border-radius: var(--p-radius-md);
       background-color: var(--v3-tagsview-tag-bg-color);
-      padding: 0 8px;
-      font-size: 12px;
-      margin-left: 5px;
+      padding: 0 10px;
+      font-size: var(--p-text-xs);
+      font-weight: var(--p-weight-medium);
+      margin-left: 4px;
       margin-top: 4px;
+      transition: all var(--p-duration-fast) var(--p-ease-out);
       &:first-of-type {
         margin-left: 5px;
       }
       &:last-of-type {
         margin-right: 5px;
+      }
+      &:hover {
+        background-color: var(--theme-accent-light);
+        color: var(--theme-accent);
       }
       &.active {
         background-color: var(--v3-tagsview-tag-active-bg-color);
@@ -264,7 +268,6 @@ listenerRouteChange((route) => {
         border-radius: 50%;
         &:hover {
           background-color: var(--v3-tagsview-tag-icon-hover-bg-color);
-          color: var(--v3-tagsview-tag-icon-hover-color);
         }
       }
     }
@@ -274,16 +277,18 @@ listenerRouteChange((route) => {
     z-index: 3000;
     position: fixed;
     list-style-type: none;
-    padding: 5px 0;
-    border-radius: 4px;
-    font-size: 12px;
+    padding: 4px;
+    border-radius: var(--p-radius-lg);
+    font-size: var(--p-text-xs);
     color: var(--v3-tagsview-contextmenu-text-color);
     background-color: var(--v3-tagsview-contextmenu-bg-color);
     box-shadow: var(--v3-tagsview-contextmenu-box-shadow);
+    border: 1px solid var(--theme-border);
     li {
       margin: 0;
-      padding: 7px 16px;
+      padding: 6px 12px;
       cursor: pointer;
+      border-radius: var(--p-radius-sm);
       &:hover {
         color: var(--v3-tagsview-contextmenu-hover-text-color);
         background-color: var(--v3-tagsview-contextmenu-hover-bg-color);

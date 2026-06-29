@@ -1,12 +1,14 @@
 <template>
   <div class="code-block-container">
-    <el-button type="primary" link :icon="DocumentCopy" class="copy-btn" @click="handleCopy" />
+    <el-button type="primary" link class="copy-btn" @click="handleCopy">
+      <template #icon><Icon icon="lucide:copy" /></template>
+    </el-button>
     <highlightjs :language="language" :code="code" />
   </div>
 </template>
 
 <script lang="ts" setup>
-import { DocumentCopy } from '@element-plus/icons-vue'
+import { Icon } from '@iconify/vue'
 
 // 组件 Props 定义
 const props = defineProps({

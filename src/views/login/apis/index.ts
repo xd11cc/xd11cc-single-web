@@ -1,13 +1,14 @@
 import request from '@@/utils/request'
-import type { UserLoginInfoVO, RouteVO, CaptchaVO } from './type'
-import { ResponseVO } from 'types/api'
+import type { ResponseVO } from 'types/api'
+import type {
+  UserLoginInfoVO,
+  RouteVO,
+  CaptchaVO,
+  SocialUserBindVO,
+  AuthClientConfigVO,
+} from './type'
 
-/**
- *
- * @param data 账号密码登录
- * @returns
- */
-export function loginByPassword<T>(data: T): Promise<ResponseVO<string>> {
+export function loginByPassword<LoginForm>(data: LoginForm): Promise<ResponseVO<string>> {
   return request({
     url: '/login/loginByPassword',
     method: 'POST',
@@ -15,10 +16,6 @@ export function loginByPassword<T>(data: T): Promise<ResponseVO<string>> {
   })
 }
 
-/**
- * 退出登录
- * @returns
- */
 export function logout(): Promise<ResponseVO<string>> {
   return request({
     url: '/logout',
@@ -26,10 +23,6 @@ export function logout(): Promise<ResponseVO<string>> {
   })
 }
 
-/**
- * 获取用户登录信息
- * @returns
- */
 export function getUserInfo(): Promise<ResponseVO<UserLoginInfoVO>> {
   return request({
     url: '/login/getUserInfo',
@@ -37,10 +30,6 @@ export function getUserInfo(): Promise<ResponseVO<UserLoginInfoVO>> {
   })
 }
 
-/**
- * 获取路由信息
- * @returns
- */
 export function getRoutes(): Promise<ResponseVO<RouteVO[]>> {
   return request({
     url: '/login/getRoutes',
@@ -48,10 +37,6 @@ export function getRoutes(): Promise<ResponseVO<RouteVO[]>> {
   })
 }
 
-/**
- * 获取验证码
- * @returns
- */
 export function getCaptcha(): Promise<ResponseVO<CaptchaVO>> {
   return request({
     url: '/login/getCaptcha',
@@ -59,15 +44,24 @@ export function getCaptcha(): Promise<ResponseVO<CaptchaVO>> {
   })
 }
 
-/**
- * 社交授权登录
- * @param source
- * @returns
- */
 export function socialLogin(source: string): Promise<ResponseVO<string>> {
   return request({
     url: `/login/authorize/${source}`,
     method: 'GET',
-    timeout: 30000,
+  })
+}
+
+export function socialUserBind(data: SocialUserBindVO): Promise<ResponseVO<string>> {
+  return request({
+    url: '/login/social-user/bind',
+    method: 'POST',
+    data: data,
+  })
+}
+
+export function getSocialClientConfigList(): Promise<ResponseVO<AuthClientConfigVO[]>> {
+  return request({
+    url: '/auth/client/config/list',
+    method: 'GET',
   })
 }

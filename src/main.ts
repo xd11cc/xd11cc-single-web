@@ -5,6 +5,12 @@ import { installPlugins } from './plugins'
 import App from './App.vue'
 
 // css
+import '@fontsource/outfit/latin-500.css'
+import '@fontsource/outfit/latin-600.css'
+import '@fontsource/outfit/latin-700.css'
+import '@fontsource/dm-sans/latin-400.css'
+import '@fontsource/dm-sans/latin-500.css'
+import '@fontsource/dm-sans/latin-600.css'
 import '@@/assets/styles/index.scss'
 import 'nprogress/nprogress.css'
 

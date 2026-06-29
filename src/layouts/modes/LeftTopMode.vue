@@ -36,19 +36,14 @@ const { showTagsView, showLogo } = storeToRefs(settingsStore)
 // 定义计算属性 layoutClasses，用于控制布局的类名
 const layoutClasses = computed(() => {
   return {
-    hidenSidebar: !appStore.sidebar.opened,
+    hideSidebar: !appStore.sidebar.opened,
   }
 })
 </script>
 
 <style lang="scss" scoped>
-@use '@@/assets/styles/mixins.scss';
-$transition-time: 0.35;
-
-.app-wrapper {
-  @extend %clearfix;
-  width: 100%;
-}
+@use '@@/assets/styles/layout-common.scss';
+$transition-time: 0.35s;
 
 .fixed-header {
   position: fixed;
@@ -66,12 +61,6 @@ $transition-time: 0.35;
   }
 }
 
-.layout-header {
-  background-color: var(--v3-header-bg-color);
-  box-shadow: var(--v3-header-box-shadow);
-  border-bottom: var(--v3-header-border-bottom);
-}
-
 .main-container {
   min-height: 100%;
 }
@@ -85,7 +74,7 @@ $transition-time: 0.35;
   left: 0;
   z-index: 1001;
   overflow: hidden;
-  border-right: var(--v3-sidebar-boder-right);
+  border-right: var(--v3-sidebar-border-right);
   padding-top: var(--v3-navigationbar-height);
 }
 

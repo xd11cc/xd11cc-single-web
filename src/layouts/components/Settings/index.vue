@@ -12,7 +12,10 @@
       <span class="setting-name">{{ settingName }}</span>
       <el-switch v-model="settingValue.value" :disable="!isLeft && settingName === '固定 Header'" />
     </div>
-    <el-button type="danger" :icon="Refresh" @click="resetLayoutConfig"> 重置 </el-button>
+    <el-button type="danger" @click="resetLayoutConfig">
+      <template #icon><Icon icon="lucide:rotate-ccw" /></template>
+      重置
+    </el-button>
   </div>
 </template>
 
@@ -23,8 +26,7 @@ import { removeLayoutsConfig } from '@@/utils/cache/local-storage'
 import { useLayoutMode } from '@@/composables/useLayoutMode'
 import { watchEffect } from 'vue'
 import SelectLayoutMode from './SelectLayoutMode.vue'
-import { Refresh } from '@element-plus/icons-vue'
-
+import { Icon } from '@iconify/vue'
 const settingsStore = useSettingsStore()
 
 const { isLeft } = useLayoutMode()
@@ -74,7 +76,7 @@ const resetLayoutConfig = () => {
 .setting-container {
   padding: 20px;
   .setting-item {
-    font-size: 14px;
+    font-size: var(--p-text-sm);
     color: var(--el-text-color-regular);
     padding: 5px 0;
     display: flex;

@@ -42,7 +42,7 @@ export const publicRoutes: RouteRecordRaw[] = [
         component: () => import('@/views/dashboard/index.vue'),
         meta: {
           title: '首页',
-          svgIcon: 'dashboard',
+          icon: 'lucide:home',
           affix: true,
         },
       },
@@ -79,11 +79,6 @@ export const publicRoutes: RouteRecordRaw[] = [
     ],
   },
 ]
-
-/**
- * 动态路由
- */
-export const dynamicRoutes: RouteRecordRaw[] = []
 
 /**
  * 路由实例

@@ -2,14 +2,9 @@
   <template v-if="!alwaysShowRootMenu && theOnlyOneChild && !theOnlyOneChild.children">
     <Link v-if="theOnlyOneChild.meta" :to="resolvePath(theOnlyOneChild.path)">
       <el-menu-item :index="resolvePath(theOnlyOneChild.path)">
-        <SvgIcon
-          v-if="theOnlyOneChild.meta.svgIcon"
-          :name="theOnlyOneChild.meta.svgIcon"
-          class="svg-icon"
-        />
-        <component
-          v-else-if="theOnlyOneChild.meta.icon"
-          :is="theOnlyOneChild.meta?.icon"
+        <MenuIcon
+          v-if="theOnlyOneChild.meta.icon"
+          :name="theOnlyOneChild.meta.icon"
           class="el-icon"
         />
         <template v-if="theOnlyOneChild.meta.title" #title>
@@ -20,8 +15,7 @@
   </template>
   <el-sub-menu v-else :index="resolvePath(item.path)" teleported>
     <template #title>
-      <SvgIcon v-if="item.meta?.svgIcon" :name="item.meta.svgIcon" class="svg-class" />
-      <component v-else-if="item.meta?.icon" :is="item.meta.icon" class="el-icon" />
+      <MenuIcon v-if="item.meta?.icon" :name="item.meta.icon" class="el-icon" />
       <span v-if="item.meta?.title" class="title">{{ item.meta.title }}</span>
     </template>
     <template v-if="item.children">
@@ -38,6 +32,7 @@
 <script lang="ts" setup>
 import { computed } from 'vue'
 import Link from './Link.vue'
+import MenuIcon from '@@/components/MenuIcon/index.vue'
 import type { RouteRecordRaw } from 'vue-router'
 import path from 'path-browserify'
 import { isExternal } from '@@/utils/validate'
@@ -84,12 +79,6 @@ function resolvePath(routePath: string) {
 
 <style lang="scss" scoped>
 @use '@@/assets/styles/mixins.scss';
-
-.svg-icon {
-  min-width: 1em;
-  margin-right: 12px;
-  font-size: 18px;
-}
 
 .el-icon {
   width: 1em !important;

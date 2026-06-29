@@ -59,14 +59,8 @@ function handleClickOutside() {
 </script>
 
 <style lang="scss" scoped>
-@use '@@/assets/styles/mixins.scss';
-$transition-time: 0.35;
-
-.app-wrapper {
-  @extend %clearfix;
-  position: relative;
-  width: 100%;
-}
+@use '@@/assets/styles/layout-common.scss';
+$transition-time: 0.35s;
 
 .drawer-bg {
   background-color: rgba(0, 0, 0, 0.3);
@@ -79,7 +73,7 @@ $transition-time: 0.35;
 
 .sidebar-container {
   background-color: var(--v3-sidebar-menu-bg-color);
-  transition: width $transition-time;
+  transition: width $transition-time, background-color 0.3s ease;
   width: var(--v3-sidebar-width);
   height: 100%;
   position: fixed;
@@ -93,9 +87,10 @@ $transition-time: 0.35;
 
 .main-container {
   min-height: 100%;
-  transition: margin-left $transition-time;
+  transition: margin-left $transition-time, background-color 0.3s ease;
   margin-left: var(--v3-sidebar-width);
   position: relative;
+  background-color: var(--theme-bg-page);
 }
 
 .fixed-header {
@@ -110,9 +105,6 @@ $transition-time: 0.35;
 .layout-header {
   position: relative;
   z-index: 9;
-  background-color: var(--v3-header-bg-color);
-  box-shadow: var(--v3-header-box-shadow);
-  border-bottom: var(--v3-header-border-bottom);
 }
 
 .app-main {

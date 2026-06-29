@@ -55,7 +55,7 @@ const { isLeft, isTop, isLeftTop, setLayoutMode } = useLayoutMode()
   flex-grow: 0;
   overflow: hidden;
   cursor: pointer;
-  border-radius: 6px;
+  border-radius: var(--p-radius-md);
   border: 2px solid transparent;
   &:hover {
     border: 2px solid var(--el-color-primary);

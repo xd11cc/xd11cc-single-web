@@ -1,11 +1,16 @@
 // 全局css变量
 @use './variables.css';
 @use './element-plus.css';
+@use './themes.css';
 @use './mixins.scss';
+@use './breakpoints.scss';
 
 // 业务页面几乎都应该在根元素上挂载 class="app-container"，以保持页面美观
 .app-container {
   padding: 20px;
+  @media (max-width: 991px) {
+    padding: 12px;
+  }
 }
 
 html {
@@ -22,13 +27,13 @@ html {
 
 body {
   height: 100%;
-  color: var(--v3-body-text-color);
-  background-color: var(--v3-body-bg-color);
+  color: var(--theme-text-primary);
+  background-color: var(--theme-bg-page);
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   font-family:
-    Inter, 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
-    '微软雅黑', Arial, sans-serif;
+    'DM Sans', -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', sans-serif;
   @extend %scrollbar;
 }
 
@@ -56,10 +61,53 @@ div:focus {
 
 .link-type,
 .link-type:focus {
-  color: #337ab7;
+  color: var(--theme-accent);
   cursor: pointer;
 
   &:hover {
-    color: rgb(32, 160, 255);
+    color: var(--theme-accent-hover);
+  }
+}
+
+// 表格单元格全局不换行，超出省略
+.el-table .el-table__cell .cell {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// 表格操作列按钮样式优化
+.el-table .el-button--small.is-text.is-has-bg {
+  &.el-button--primary {
+    background-color: var(--theme-accent-light);
+    &:hover {
+      background-color: var(--theme-accent-glow);
+    }
+  }
+  &.el-button--danger {
+    background-color: rgba(239, 68, 68, 0.08);
+    &:hover {
+      background-color: rgba(239, 68, 68, 0.15);
+    }
+  }
+  &.el-button--warning {
+    background-color: rgba(245, 158, 11, 0.08);
+    &:hover {
+      background-color: rgba(245, 158, 11, 0.15);
+    }
+  }
+  &.el-button--success {
+    background-color: rgba(16, 185, 129, 0.08);
+    &:hover {
+      background-color: rgba(16, 185, 129, 0.15);
+    }
+  }
+}
+
+// 工具栏新增按钮样式
+.toolbar-wrapper .el-button--primary.is-text.is-has-bg {
+  background-color: var(--theme-accent-light);
+  &:hover {
+    background-color: var(--theme-accent-glow);
   }
 }

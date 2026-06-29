@@ -1,6 +1,8 @@
 import axios from 'axios'
+import type { ResponseVO } from 'types/api'
 import { getToken, removeToken } from '@@/utils/cache/cookies'
-import { resetRouter } from '@/router'
+import { resetRouter, router } from '@/router'
+import { useUserStore } from '@/pinia/stores/user'
 
 // 创建axios实例
 const BASE_URL = import.meta.env.VITE_BASE_URL + import.meta.env.VITE_PUBLIC_PATH
@@ -12,11 +14,15 @@ const service = axios.create({
   },
 })
 
+// 防止 token 过期时多个并发请求同时触发 401 导致重复跳转
+let isHandlingUnauthorized = false
+
 // 请求拦截器
 service.interceptors.request.use(
   (config) => {
     const token = getToken()
     if (token) {
+      isHandlingUnauthorized = false
       config.headers['Authorization'] = `Bearer ${token}`
     }
     return config
@@ -27,6 +33,20 @@ service.interceptors.request.use(
     return Promise.reject(error)
   },
 )
+
+function handleUnauthorized() {
+  if (isHandlingUnauthorized) return
+  isHandlingUnauthorized = true
+  ElMessage.warning('登录已过期，请重新登录')
+  removeToken()
+  resetRouter()
+  const userStore = useUserStore()
+  userStore.resetToken()
+  const fullPath = router.currentRoute.value.fullPath
+  if (fullPath !== '/login') {
+    router.push(`/login?redirect=${encodeURIComponent(fullPath)}`)
+  }
+}
 
 // 响应拦截器
 service.interceptors.response.use(
@@ -40,11 +60,8 @@ service.interceptors.response.use(
           break
         case 401:
           console.error('未授权或者token过期')
-          // 清除本地存储的token
-          removeToken()
-          // 强制刷新页面，触发导航守卫
-          window.location.reload()
-          break
+          handleUnauthorized()
+          return Promise.reject(new Error(res.msg))
         case 403:
           console.error('未授权')
           ElMessage.error('未授权')
@@ -64,10 +81,9 @@ service.interceptors.response.use(
   },
   (error) => {
     if (error.code === 'ECONNABORTED' && error.message.includes('timeout')) {
-      // 方式2：UI 库提示（推荐，更美观，以 Element Plus 为例）
       ElMessage.error({
         message: '请求超时啦～ 请检查网络或稍后重试',
-        duration: 3000, // 提示显示3秒后自动关闭
+        duration: 3000,
       })
     }
     const status = error.response?.status
@@ -77,16 +93,14 @@ service.interceptors.response.use(
         break
       case 401:
         console.error('未授权或者token过期')
-        // 清除本地存储的token
-        removeToken()
-        // 强制刷新页面，触发导航守卫
-        window.location.reload()
+        handleUnauthorized()
         break
       case 403:
         console.error('未授权')
         break
       case 404:
         console.error('接口不存在')
+        ElMessage.error('接口不存在')
         break
       case 500:
         console.error('服务器内部异常', error)
@@ -95,5 +109,13 @@ service.interceptors.response.use(
     return Promise.reject(error)
   },
 )
+
+export function get<T>(url: string, params?: Record<string, unknown>): Promise<ResponseVO<T>> {
+  return service({ url, method: 'GET', params })
+}
+
+export function post<T>(url: string, data?: unknown): Promise<ResponseVO<T>> {
+  return service({ url, method: 'POST', data })
+}
 
 export default service

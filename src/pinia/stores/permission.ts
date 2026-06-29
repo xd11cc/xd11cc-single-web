@@ -1,5 +1,5 @@
 import type { RouteRecordRaw, RouteComponent } from 'vue-router'
-import { publicRoutes, dynamicRoutes } from '@/router/index'
+import { publicRoutes } from '@/router/index'
 import { flatMultiLevelRoutes } from '@/router/helper'
 import { pinia } from '@/pinia'
 import { routerConfig } from '@/router/config'
@@ -91,19 +91,22 @@ export const usePermissionStore = defineStore('permission', () => {
   // 有访问权限的动态路由
   const addRoutes = ref<RouteRecordRaw[]>([])
 
+  // 后端返回的动态路由（内部状态）
+  const dynamicRoutes = ref<RouteRecordRaw[]>([])
+
   // 生成可访问的 Routes
   const generateRoutes = async (roles: string[]) => {
     const { data } = await getRoutes()
-    const routes = transformBackendRoutes(data)
-    routes.forEach((route) => {
-      dynamicRoutes.push(route)
+    const backendRoutes = transformBackendRoutes(data)
+    backendRoutes.forEach((route) => {
+      dynamicRoutes.value.push(route)
     })
-    const accessedRoutes = filterDynamicRoutes(dynamicRoutes, roles)
+    const accessedRoutes = filterDynamicRoutes(dynamicRoutes.value, roles)
     set(accessedRoutes)
   }
 
   const setAllRoutes = () => {
-    set(dynamicRoutes)
+    set(dynamicRoutes.value)
   }
 
   // 统一设置
@@ -114,11 +117,10 @@ export const usePermissionStore = defineStore('permission', () => {
       : accessedRoutes
   }
 
-  // 新增：重置权限路由状态
   const reset = () => {
-    routes.value = publicRoutes // 恢复为仅公共路由
-    addRoutes.value = [] // 清空动态路由列表
-    dynamicRoutes.length = 0 // 清空全局动态路由数组
+    routes.value = publicRoutes
+    addRoutes.value = []
+    dynamicRoutes.value = []
   }
 
   return { routes, addRoutes, generateRoutes, setAllRoutes, reset }
