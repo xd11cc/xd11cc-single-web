@@ -104,7 +104,7 @@ function resetSearch() {
   getTableData()
 }
 
-function handleGenerateCode(row: TableInfoVO) {
+function handleGenerateCode(row: any) {
   dialogVisible.value = true
   generateCode(row.tableName).then((res) => {
     previewCodeData.value = res.data
