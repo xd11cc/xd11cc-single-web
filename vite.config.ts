@@ -4,10 +4,35 @@ import AutoImport from 'unplugin-auto-import/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
 import { defineConfig, loadEnv } from 'vite'
+import { VitePWA } from 'vite-plugin-pwa'
+import compression from 'vite-plugin-compression'
+import { visualizer } from 'rollup-plugin-visualizer'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const { VITE_PUBLIC_PATH } = loadEnv(mode, process.cwd(), '') as ImportMetaEnv
+  const isProd = mode === 'prod'
+  // PWA 离线缓存配置（仅生产环境注入）
+  const pwaPlugin = isProd
+    ? VitePWA({
+        registerType: 'autoUpdate',
+        includeAssets: ['favicon.svg', 'robots.txt'],
+        workbox: {
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+          runtimeCaching: [
+            {
+              urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'google-fonts-cache',
+                expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              },
+            },
+          ],
+        },
+      })
+    : null
+
   return {
     // 开发或打包构建时用到的公共基础路径
     base: VITE_PUBLIC_PATH,
@@ -46,6 +71,28 @@ export default defineConfig(({ mode }) => {
         clientFiles: ['./src/layouts/**/*.*', './src/pinia/**/*.*', './src/router/**/*.*'],
       },
     },
+    // 生产环境构建配置
+    build: {
+      // chunk 大小预警阈值（KB）
+      chunkSizeWarningLimit: 500,
+      // sourcemap：生产用 hidden 保留错误定位但不暴露完整源码
+      sourcemap: isProd ? 'hidden' : 'inline',
+      // rollup 输出配置
+      rollupOptions: {
+        output: {
+          // 手动分包：vendor 与 Element Plus 独立，避免主 chunk 过大
+          manualChunks: {
+            'vendor': ['vue', 'vue-router', 'pinia'],
+            'element-plus': ['element-plus'],
+            'echarts': ['echarts', 'vue-echarts'],
+          },
+          // chunk 命名
+          chunkFileNames: 'assets/js/[name]-[hash].js',
+          entryFileNames: 'assets/js/[name]-[hash].js',
+          assetFileNames: 'assets/[ext]/[name]-[hash].[ext]',
+        },
+      },
+    },
     css: {
       // 线程中运行 CSS 预处理器
       preprocessorMaxWorkers: true,
@@ -61,6 +108,21 @@ export default defineConfig(({ mode }) => {
         dts: 'types/auto/components.d.ts',
         resolvers: [ElementPlusResolver()],
       }),
+      // gzip 压缩：生产构建时生成 .gz 产物（Nginx 开启 gzip_static 直接返回）
+      compression({
+        algorithm: 'gzip',
+        threshold: 1024, // 大于 1KB 才压缩
+        ext: '.gz',
+      }),
+      // 打包产物可视化（npx vite build --report）
+      visualizer({
+        filename: 'stats.html',
+        gzipSize: true,
+        brotliSize: true,
+        open: false,
+      }),
+      // PWA 离线缓存支持（可选，生产构建时自动生成 Service Worker）
+      ...(pwaPlugin ? [pwaPlugin] : []),
     ],
   }
 })
