@@ -147,6 +147,7 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
 
   function handleClose() {
     formData.value = options.defaultForm?.() || {}
+    dialogVisible.value = false
   }
 
   // ─── 单条删除 ──────────────────────────────────────────
@@ -235,6 +236,7 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
     handleSizeChange,
     get formData() { return formData.value },
     get dialogVisible() { return dialogVisible.value },
+    set dialogVisible(val: boolean) { dialogVisible.value = val },
     handleAdd,
     handleEdit,
     handleRemove,

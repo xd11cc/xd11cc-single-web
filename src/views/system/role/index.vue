@@ -278,14 +278,6 @@ watch(
   },
 )
 
-// ─── 弹窗关闭时清除树选中状态（模块特有逻辑） ──────────────
-const originalHandleClose = crud.methods.handleClose
-crud.methods.handleClose = () => {
-  originalHandleClose()
-  menuTreeRef.value?.setCheckedKeys([])
-  deptTreeRef.value?.setCheckedKeys([])
-}
-
 // ─── 自定义单条删除（保留角色名称提示文案） ──────────────────
 const originalHandleRemove = crud.methods.handleRemove
 crud.methods.handleRemove = (row: SystemRoleVO) => {
