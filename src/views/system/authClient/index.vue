@@ -3,13 +3,24 @@
     <el-card shadow="never" class="search-wrapper">
       <el-form ref="searchFormRef" :inline="true" :model="searchData">
         <el-form-item prop="name" :label="$t('system.authClient.search.name')">
-          <el-input v-model="searchData.name" :placeholder="$t('system.authClient.formPlaceholder.name')" />
+          <el-input
+            v-model="searchData.name"
+            :placeholder="$t('system.authClient.formPlaceholder.name')"
+          />
         </el-form-item>
         <el-form-item prop="source" :label="$t('system.authClient.search.source')">
-          <el-input v-model="searchData.source" :placeholder="$t('system.authClient.formPlaceholder.source')" />
+          <el-input
+            v-model="searchData.source"
+            :placeholder="$t('system.authClient.formPlaceholder.source')"
+          />
         </el-form-item>
         <el-form-item prop="status" :label="$t('system.authClient.search.status')">
-          <el-select v-model="searchData.status" :placeholder="$t('system.authClient.search.statusPlaceholder')" clearable style="width: 150px">
+          <el-select
+            v-model="searchData.status"
+            :placeholder="$t('system.authClient.search.statusPlaceholder')"
+            clearable
+            style="width: 150px"
+          >
             <el-option
               v-for="item in getDictList('system_status')"
               :key="item.id"
@@ -20,10 +31,12 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            <template #icon><Icon icon="lucide:search" /></template>{{ $t('system.authClient.actions.query') }}
+            <template #icon><Icon icon="lucide:search" /></template
+            >{{ $t('system.authClient.actions.query') }}
           </el-button>
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('system.authClient.actions.reset') }}
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template
+            >{{ $t('system.authClient.actions.reset') }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -36,7 +49,11 @@
             <template #icon><Icon icon="lucide:plus-circle" /></template>
             {{ $t('system.authClient.actions.add') }}
           </el-button>
-          <el-button type="danger" @click="handleBatchRemove" v-permission="['auth:clientConfig:delete']">
+          <el-button
+            type="danger"
+            @click="handleBatchRemove"
+            v-permission="['auth:clientConfig:delete']"
+          >
             <template #icon><Icon icon="lucide:trash-2" /></template>
             {{ $t('system.authClient.actions.batchDelete') }}
           </el-button>
@@ -46,16 +63,43 @@
       <div class="table-wrapper">
         <el-table ref="tableRef" :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column prop="name" :label="$t('system.authClient.columns.name')" align="center" />
-          <el-table-column prop="source" :label="$t('system.authClient.columns.source')" align="center" />
-          <el-table-column prop="icon" :label="$t('system.authClient.columns.icon')" align="center" width="80">
+          <el-table-column
+            prop="name"
+            :label="$t('system.authClient.columns.name')"
+            align="center"
+          />
+          <el-table-column
+            prop="source"
+            :label="$t('system.authClient.columns.source')"
+            align="center"
+          />
+          <el-table-column
+            prop="icon"
+            :label="$t('system.authClient.columns.icon')"
+            align="center"
+            width="80"
+          >
             <template #default="scope">
               <img v-if="scope.row.icon" :src="ossUrl + scope.row.icon" class="table-icon" />
             </template>
           </el-table-column>
-          <el-table-column prop="clientId" :label="$t('system.authClient.columns.clientId')" align="center" />
-          <el-table-column prop="sort" :label="$t('system.authClient.columns.sort')" align="center" width="80" />
-          <el-table-column prop="status" :label="$t('system.authClient.columns.status')" align="center" width="80">
+          <el-table-column
+            prop="clientId"
+            :label="$t('system.authClient.columns.clientId')"
+            align="center"
+          />
+          <el-table-column
+            prop="sort"
+            :label="$t('system.authClient.columns.sort')"
+            align="center"
+            width="80"
+          />
+          <el-table-column
+            prop="status"
+            :label="$t('system.authClient.columns.status')"
+            align="center"
+            width="80"
+          >
             <template #default="scope">
               <el-tag
                 :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
@@ -67,9 +111,23 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="remark" :label="$t('system.authClient.columns.remark')" align="center" />
-          <el-table-column prop="createTime" :label="$t('system.authClient.columns.createTime')" align="center" min-width="160" />
-          <el-table-column fixed="right" :label="$t('system.authClient.columns.action')" width="90" align="center">
+          <el-table-column
+            prop="remark"
+            :label="$t('system.authClient.columns.remark')"
+            align="center"
+          />
+          <el-table-column
+            prop="createTime"
+            :label="$t('system.authClient.columns.createTime')"
+            align="center"
+            min-width="160"
+          />
+          <el-table-column
+            fixed="right"
+            :label="$t('system.authClient.columns.action')"
+            width="90"
+            align="center"
+          >
             <template #default="scope">
               <el-tooltip :content="$t('system.authClient.actions.edit')" placement="top">
                 <el-button
@@ -117,7 +175,11 @@
     <!-- 新增、修改弹窗 -->
     <el-dialog
       v-model="dialogVisible"
-      :title="formData.id === undefined ? $t('system.authClient.dialogs.add') : $t('system.authClient.dialogs.edit')"
+      :title="
+        formData.id === undefined
+          ? $t('system.authClient.dialogs.add')
+          : $t('system.authClient.dialogs.edit')
+      "
       width="40%"
       @close="handleClose"
     >
@@ -131,37 +193,62 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item prop="name" :label="$t('system.authClient.search.name')">
-              <el-input v-model="formData.name" :placeholder="$t('system.authClient.formPlaceholder.name')" />
+              <el-input
+                v-model="formData.name"
+                :placeholder="$t('system.authClient.formPlaceholder.name')"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item prop="source" :label="$t('system.authClient.search.source')">
-              <el-input v-model="formData.source" :placeholder="$t('system.authClient.formPlaceholder.source')" maxlength="32" />
+              <el-input
+                v-model="formData.source"
+                :placeholder="$t('system.authClient.formPlaceholder.source')"
+                maxlength="32"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item prop="clientId" :label="$t('system.authClient.form.clientId')">
-              <el-input v-model="formData.clientId" :placeholder="$t('system.authClient.formPlaceholder.clientId')" />
+              <el-input
+                v-model="formData.clientId"
+                :placeholder="$t('system.authClient.formPlaceholder.clientId')"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item prop="clientSecret" :label="$t('system.authClient.form.clientSecret')">
-              <el-input v-model="formData.clientSecret" :placeholder="$t('system.authClient.formPlaceholder.clientSecret')" show-password />
+              <el-input
+                v-model="formData.clientSecret"
+                :placeholder="$t('system.authClient.formPlaceholder.clientSecret')"
+                show-password
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item prop="icon" :label="$t('system.authClient.form.icon')">
-              <el-input v-model="formData.icon" :placeholder="$t('system.authClient.formPlaceholder.icon')" />
+              <el-input
+                v-model="formData.icon"
+                :placeholder="$t('system.authClient.formPlaceholder.icon')"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item prop="sort" :label="$t('system.authClient.form.sort')">
-              <el-input-number v-model="formData.sort" :min="0" controls-position="right" style="width: 100%" />
+              <el-input-number
+                v-model="formData.sort"
+                :min="0"
+                controls-position="right"
+                style="width: 100%"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="24">
             <el-form-item prop="redirectUri" :label="$t('system.authClient.form.redirectUri')">
-              <el-input v-model="formData.redirectUri" :placeholder="$t('system.authClient.formPlaceholder.redirectUri')" />
+              <el-input
+                v-model="formData.redirectUri"
+                :placeholder="$t('system.authClient.formPlaceholder.redirectUri')"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -193,14 +280,16 @@
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-        <el-button type="primary" :loading="submitLoading" @click="handleCreateOrUpdate">{{ $t('common.confirm') }}</el-button>
+        <el-button type="primary" :loading="submitLoading" @click="handleCreateOrUpdate">{{
+          $t('common.confirm')
+        }}</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { useI18n } from "vue-i18n"
+import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import { useDict } from '@/common/composables/useDict'
 import { useOssUrl } from '@@/composables/useOssUrl'
@@ -215,7 +304,8 @@ import {
 } from './apis'
 import type { AuthClientConfigVO, AuthClientConfigQueryVO } from './apis/type'
 
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 
 defineOptions({
   name: 'authClient',
@@ -240,11 +330,41 @@ const formRef = useTemplateRef('formRef')
 const formData = ref<any>({ status: '0', sort: 0 })
 
 const formRules: FormRules = {
-  source: [{ required: true, trigger: 'blur', message: () => $t('system.authClient.formPlaceholder.source') }],
-  clientId: [{ required: true, trigger: 'blur', message: () => $t('system.authClient.formPlaceholder.clientId') }],
-  clientSecret: [{ required: true, trigger: 'blur', message: () => $t('system.authClient.formPlaceholder.clientSecret') }],
-  icon: [{ required: true, trigger: 'blur', message: () => $t('system.authClient.formPlaceholder.icon') }],
-  status: [{ required: true, trigger: 'change', message: () => $t('system.authClient.formPlaceholder.status') }],
+  source: [
+    {
+      required: true,
+      trigger: 'blur',
+      message: () => $t('system.authClient.formPlaceholder.source'),
+    },
+  ],
+  clientId: [
+    {
+      required: true,
+      trigger: 'blur',
+      message: () => $t('system.authClient.formPlaceholder.clientId'),
+    },
+  ],
+  clientSecret: [
+    {
+      required: true,
+      trigger: 'blur',
+      message: () => $t('system.authClient.formPlaceholder.clientSecret'),
+    },
+  ],
+  icon: [
+    {
+      required: true,
+      trigger: 'blur',
+      message: () => $t('system.authClient.formPlaceholder.icon'),
+    },
+  ],
+  status: [
+    {
+      required: true,
+      trigger: 'change',
+      message: () => $t('system.authClient.formPlaceholder.status'),
+    },
+  ],
 }
 
 function handleSearch() {
@@ -278,7 +398,9 @@ function handleCreateOrUpdate() {
     if (!valid) return
     submitLoading.value = true
     const isAdd = formData.value.id === undefined
-    const api = isAdd ? addAuthClientConfig(formData.value) : modifyAuthClientConfigById(formData.value)
+    const api = isAdd
+      ? addAuthClientConfig(formData.value)
+      : modifyAuthClientConfigById(formData.value)
     api
       .then((res) => {
         ElMessage.success(res.msg || $t('system.authClient.messages.operationSuccess'))
@@ -292,11 +414,15 @@ function handleCreateOrUpdate() {
 }
 
 function handleRemove(row: AuthClientConfigVO) {
-  ElMessageBox.confirm($t('system.authClient.messages.deleteConfirm', { name: row.name || row.source }), $t('common.messages.confirmTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'warning',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.authClient.messages.deleteConfirm', { name: row.name || row.source }),
+    $t('common.messages.confirmTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'warning',
+    },
+  ).then(() => {
     removeAuthClientConfigByIds(String(row.id)).then((res) => {
       ElMessage.success(res.msg || $t('system.authClient.messages.deleteSuccess'))
       getTableData()
@@ -311,11 +437,15 @@ function handleBatchRemove() {
     return
   }
   const ids = selectedRows.map((row) => row.id).join(',')
-  ElMessageBox.confirm($t('system.authClient.messages.batchDeleteConfirm', { count: selectedRows.length }), $t('common.messages.confirmTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'warning',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.authClient.messages.batchDeleteConfirm', { count: selectedRows.length }),
+    $t('common.messages.confirmTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'warning',
+    },
+  ).then(() => {
     removeAuthClientConfigByIds(ids).then((res) => {
       ElMessage.success(res.msg || $t('system.authClient.messages.deleteSuccess'))
       getTableData()

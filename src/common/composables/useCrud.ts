@@ -176,11 +176,15 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
       ElMessage.warning(t('common.messages.selectFirst'))
       return
     }
-    ElMessageBox.confirm(t('common.messages.deleteSelected', { count: tableSelection.value.length }), t('common.messages.confirmTitle'), {
-      confirmButtonText: t('common.confirm'),
-      cancelButtonText: t('common.cancel'),
-      type: 'warning',
-    }).then(() => {
+    ElMessageBox.confirm(
+      t('common.messages.deleteSelected', { count: tableSelection.value.length }),
+      t('common.messages.confirmTitle'),
+      {
+        confirmButtonText: t('common.confirm'),
+        cancelButtonText: t('common.cancel'),
+        type: 'warning',
+      },
+    ).then(() => {
       options
         .removeApi?.(ids)
         .then((res) => {
@@ -229,23 +233,37 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
     searchData,
     handleSearch,
     resetSearch,
-    get tableData() { return tableData.value },
-    get tableLoading() { return tableLoading.value },
-    get tableSelection() { return tableSelection.value },
+    get tableData() {
+      return tableData.value
+    },
+    get tableLoading() {
+      return tableLoading.value
+    },
+    get tableSelection() {
+      return tableSelection.value
+    },
     handleSelectionChange,
     paginationData,
     handleCurrentChange,
     handleSizeChange,
-    get formData() { return formData.value },
-    get dialogVisible() { return dialogVisible.value },
-    set dialogVisible(val: boolean) { dialogVisible.value = val },
+    get formData() {
+      return formData.value
+    },
+    get dialogVisible() {
+      return dialogVisible.value
+    },
+    set dialogVisible(val: boolean) {
+      dialogVisible.value = val
+    },
     handleAdd,
     handleEdit,
     handleRemove,
     handleBatchRemove,
     handleClose,
     handleSubmit,
-    get rowSelection() { return tableSelection.value },
+    get rowSelection() {
+      return tableSelection.value
+    },
   } as UseCrudSlotProps)
 
   return {

@@ -167,7 +167,8 @@ export function useChat() {
         }
       })
       contacts.value = contacts.value.filter(
-        (c) => onlineIds.has(c.userId) || (messagesMap[c.userId] && messagesMap[c.userId].length > 0),
+        (c) =>
+          onlineIds.has(c.userId) || (messagesMap[c.userId] && messagesMap[c.userId].length > 0),
       )
     } catch {
       // silent

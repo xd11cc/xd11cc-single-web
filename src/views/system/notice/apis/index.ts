@@ -1,8 +1,15 @@
 import request from '@@/utils/request'
 import type { PageData, ResponseVO } from 'types/api'
-import type { SystemNoticeQueryVO, SystemNoticeVO, SystemNoticeAddVO, SystemNoticeUpdateVO } from './type'
+import type {
+  SystemNoticeQueryVO,
+  SystemNoticeVO,
+  SystemNoticeAddVO,
+  SystemNoticeUpdateVO,
+} from './type'
 
-export function noticePage(data: SystemNoticeQueryVO): Promise<ResponseVO<PageData<SystemNoticeVO>>> {
+export function noticePage(
+  data: SystemNoticeQueryVO,
+): Promise<ResponseVO<PageData<SystemNoticeVO>>> {
   return request({
     url: '/system/notice/page',
     method: 'POST',

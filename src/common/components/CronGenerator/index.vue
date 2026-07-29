@@ -6,27 +6,43 @@
         <el-form label-position="left" size="small">
           <el-form-item>
             <el-radio v-model="secondRadio" :value="1" @change="onTabChange('second')">
-              {{ $t("tool.cronGenerator.second.perSecond") }}
+              {{ $t('tool.cronGenerator.second.perSecond') }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="secondRadio" :value="2" @change="onTabChange('second')">
-              {{ $t("tool.cronGenerator.second.cycleFrom") }}
+              {{ $t('tool.cronGenerator.second.cycleFrom') }}
               <el-input-number v-model="secondCycle01" :min="0" :max="58" size="small" /> -
-              <el-input-number v-model="secondCycle02" :min="secondCycle01 + 1" :max="59" size="small" /> {{ $t("tool.cronGenerator.unit.second") }}
+              <el-input-number
+                v-model="secondCycle02"
+                :min="secondCycle01 + 1"
+                :max="59"
+                size="small"
+              />
+              {{ $t('tool.cronGenerator.unit.second') }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="secondRadio" :value="3" @change="onTabChange('second')">
-              {{ $t("tool.cronGenerator.second.from") }}
-              <el-input-number v-model="secondAvg01" :min="0" :max="58" size="small" /> {{ $t("tool.cronGenerator.unit.second") }}{{ $t("tool.cronGenerator.second.fromSuffix") }}
-              <el-input-number v-model="secondAvg02" :min="1" :max="59" size="small" /> {{ $t("tool.cronGenerator.unit.second") }}{{ $t("tool.cronGenerator.second.everySuffix") }}
+              {{ $t('tool.cronGenerator.second.from') }}
+              <el-input-number v-model="secondAvg01" :min="0" :max="58" size="small" />
+              {{ $t('tool.cronGenerator.unit.second')
+              }}{{ $t('tool.cronGenerator.second.fromSuffix') }}
+              <el-input-number v-model="secondAvg02" :min="1" :max="59" size="small" />
+              {{ $t('tool.cronGenerator.unit.second')
+              }}{{ $t('tool.cronGenerator.second.everySuffix') }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="secondRadio" :value="4" @change="onTabChange('second')">
-              {{ $t("tool.cronGenerator.second.specify") }}
-              <el-select v-model="secondCheckList" multiple clearable :placeholder="$t('tool.cronGenerator.placeholder.multiSelect')" style="width: 100%">
+              {{ $t('tool.cronGenerator.second.specify') }}
+              <el-select
+                v-model="secondCheckList"
+                multiple
+                clearable
+                :placeholder="$t('tool.cronGenerator.placeholder.multiSelect')"
+                style="width: 100%"
+              >
                 <el-option v-for="i in 60" :key="i - 1" :label="i - 1" :value="i - 1" />
               </el-select>
             </el-radio>
@@ -39,27 +55,36 @@
         <el-form label-position="left" size="small">
           <el-form-item>
             <el-radio v-model="minRadio" :value="1" @change="onTabChange('min')">
-              {{ $t("tool.cronGenerator.min.perMin") }}
+              {{ $t('tool.cronGenerator.min.perMin') }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="minRadio" :value="2" @change="onTabChange('min')">
-              {{ $t("tool.cronGenerator.min.cycleFrom") }}
+              {{ $t('tool.cronGenerator.min.cycleFrom') }}
               <el-input-number v-model="minCycle01" :min="0" :max="58" size="small" /> -
-              <el-input-number v-model="minCycle02" :min="minCycle01 + 1" :max="59" size="small" /> {{ $t("tool.cronGenerator.unit.min") }}
+              <el-input-number v-model="minCycle02" :min="minCycle01 + 1" :max="59" size="small" />
+              {{ $t('tool.cronGenerator.unit.min') }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="minRadio" :value="3" @change="onTabChange('min')">
-              {{ $t("tool.cronGenerator.min.from") }}
-              <el-input-number v-model="minAvg01" :min="0" :max="58" size="small" /> {{ $t("tool.cronGenerator.unit.min") }}{{ $t("tool.cronGenerator.min.fromSuffix") }}
-              <el-input-number v-model="minAvg02" :min="1" :max="59" size="small" /> {{ $t("tool.cronGenerator.unit.min") }}{{ $t("tool.cronGenerator.min.everySuffix") }}
+              {{ $t('tool.cronGenerator.min.from') }}
+              <el-input-number v-model="minAvg01" :min="0" :max="58" size="small" />
+              {{ $t('tool.cronGenerator.unit.min') }}{{ $t('tool.cronGenerator.min.fromSuffix') }}
+              <el-input-number v-model="minAvg02" :min="1" :max="59" size="small" />
+              {{ $t('tool.cronGenerator.unit.min') }}{{ $t('tool.cronGenerator.min.everySuffix') }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="minRadio" :value="4" @change="onTabChange('min')">
-              {{ $t("tool.cronGenerator.min.specify") }}
-              <el-select v-model="minCheckList" multiple clearable :placeholder="$t('tool.cronGenerator.placeholder.multiSelect')" style="width: 100%">
+              {{ $t('tool.cronGenerator.min.specify') }}
+              <el-select
+                v-model="minCheckList"
+                multiple
+                clearable
+                :placeholder="$t('tool.cronGenerator.placeholder.multiSelect')"
+                style="width: 100%"
+              >
                 <el-option v-for="i in 60" :key="i - 1" :label="i - 1" :value="i - 1" />
               </el-select>
             </el-radio>
@@ -72,27 +97,43 @@
         <el-form label-position="left" size="small">
           <el-form-item>
             <el-radio v-model="hourRadio" :value="1" @change="onTabChange('hour')">
-              {{ $t("tool.cronGenerator.hour.perHour") }}
+              {{ $t('tool.cronGenerator.hour.perHour') }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="hourRadio" :value="2" @change="onTabChange('hour')">
-              {{ $t("tool.cronGenerator.hour.cycleFrom") }}
+              {{ $t('tool.cronGenerator.hour.cycleFrom') }}
               <el-input-number v-model="hourCycle01" :min="0" :max="22" size="small" /> -
-              <el-input-number v-model="hourCycle02" :min="hourCycle01 + 1" :max="23" size="small" /> {{ $t("tool.cronGenerator.unit.hour") }}
+              <el-input-number
+                v-model="hourCycle02"
+                :min="hourCycle01 + 1"
+                :max="23"
+                size="small"
+              />
+              {{ $t('tool.cronGenerator.unit.hour') }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="hourRadio" :value="3" @change="onTabChange('hour')">
-              {{ $t("tool.cronGenerator.hour.from") }}
-              <el-input-number v-model="hourAvg01" :min="0" :max="22" size="small" /> {{ $t("tool.cronGenerator.unit.hour") }}{{ $t("tool.cronGenerator.hour.fromSuffix") }}
-              <el-input-number v-model="hourAvg02" :min="1" :max="23" size="small" /> {{ $t("tool.cronGenerator.unit.hour") }}{{ $t("tool.cronGenerator.hour.everySuffix") }}
+              {{ $t('tool.cronGenerator.hour.from') }}
+              <el-input-number v-model="hourAvg01" :min="0" :max="22" size="small" />
+              {{ $t('tool.cronGenerator.unit.hour')
+              }}{{ $t('tool.cronGenerator.hour.fromSuffix') }}
+              <el-input-number v-model="hourAvg02" :min="1" :max="23" size="small" />
+              {{ $t('tool.cronGenerator.unit.hour')
+              }}{{ $t('tool.cronGenerator.hour.everySuffix') }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="hourRadio" :value="4" @change="onTabChange('hour')">
-              {{ $t("tool.cronGenerator.hour.specify") }}
-              <el-select v-model="hourCheckList" multiple clearable :placeholder="$t('tool.cronGenerator.placeholder.multiSelect')" style="width: 100%">
+              {{ $t('tool.cronGenerator.hour.specify') }}
+              <el-select
+                v-model="hourCheckList"
+                multiple
+                clearable
+                :placeholder="$t('tool.cronGenerator.placeholder.multiSelect')"
+                style="width: 100%"
+              >
                 <el-option v-for="i in 24" :key="i - 1" :label="i - 1" :value="i - 1" />
               </el-select>
             </el-radio>
@@ -105,43 +146,54 @@
         <el-form label-position="left" size="small">
           <el-form-item>
             <el-radio v-model="dayRadio" :value="1" @change="onTabChange('day')">
-              {{ $t("tool.cronGenerator.day.perDay") }}
+              {{ $t('tool.cronGenerator.day.perDay') }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="dayRadio" :value="2" @change="onTabChange('day')">
-              {{ $t("tool.cronGenerator.day.notSpecified") }}
+              {{ $t('tool.cronGenerator.day.notSpecified') }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="dayRadio" :value="3" @change="onTabChange('day')">
-              {{ $t("tool.cronGenerator.day.cycleFrom") }}
+              {{ $t('tool.cronGenerator.day.cycleFrom') }}
               <el-input-number v-model="dayCycle01" :min="1" :max="30" size="small" /> -
-              <el-input-number v-model="dayCycle02" :min="dayCycle01 + 1" :max="31" size="small" /> {{ $t("tool.cronGenerator.unit.day") }}
+              <el-input-number v-model="dayCycle02" :min="dayCycle01 + 1" :max="31" size="small" />
+              {{ $t('tool.cronGenerator.unit.day') }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="dayRadio" :value="4" @change="onTabChange('day')">
-              {{ $t("tool.cronGenerator.day.from") }}
-              <el-input-number v-model="dayAvg01" :min="1" :max="30" size="small" /> {{ $t("tool.cronGenerator.unit.dayOrdinal") }}{{ $t("tool.cronGenerator.day.fromSuffix") }}
-              <el-input-number v-model="dayAvg02" :min="1" :max="31" size="small" /> {{ $t("tool.cronGenerator.unit.day") }}{{ $t("tool.cronGenerator.day.everySuffix") }}
+              {{ $t('tool.cronGenerator.day.from') }}
+              <el-input-number v-model="dayAvg01" :min="1" :max="30" size="small" />
+              {{ $t('tool.cronGenerator.unit.dayOrdinal')
+              }}{{ $t('tool.cronGenerator.day.fromSuffix') }}
+              <el-input-number v-model="dayAvg02" :min="1" :max="31" size="small" />
+              {{ $t('tool.cronGenerator.unit.day') }}{{ $t('tool.cronGenerator.day.everySuffix') }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="dayRadio" :value="5" @change="onTabChange('day')">
-              {{ $t("tool.cronGenerator.day.nearestWeekday") }}
-              <el-input-number v-model="dayWorkday" :min="1" :max="31" size="small" /> {{ $t("tool.cronGenerator.unit.dayOrdinal") }}
+              {{ $t('tool.cronGenerator.day.nearestWeekday') }}
+              <el-input-number v-model="dayWorkday" :min="1" :max="31" size="small" />
+              {{ $t('tool.cronGenerator.unit.dayOrdinal') }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="dayRadio" :value="6" @change="onTabChange('day')">
-              {{ $t("tool.cronGenerator.day.lastDayOfMonth") }}
+              {{ $t('tool.cronGenerator.day.lastDayOfMonth') }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="dayRadio" :value="7" @change="onTabChange('day')">
-              {{ $t("tool.cronGenerator.day.specify") }}
-              <el-select v-model="dayCheckList" multiple clearable :placeholder="$t('tool.cronGenerator.placeholder.multiSelect')" style="width: 100%">
+              {{ $t('tool.cronGenerator.day.specify') }}
+              <el-select
+                v-model="dayCheckList"
+                multiple
+                clearable
+                :placeholder="$t('tool.cronGenerator.placeholder.multiSelect')"
+                style="width: 100%"
+              >
                 <el-option v-for="i in 31" :key="i" :label="i" :value="i" />
               </el-select>
             </el-radio>
@@ -154,27 +206,43 @@
         <el-form label-position="left" size="small">
           <el-form-item>
             <el-radio v-model="monthRadio" :value="1" @change="onTabChange('month')">
-              {{ $t("tool.cronGenerator.month.perMonth") }}
+              {{ $t('tool.cronGenerator.month.perMonth') }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="monthRadio" :value="2" @change="onTabChange('month')">
-              {{ $t("tool.cronGenerator.month.cycleFrom") }}
+              {{ $t('tool.cronGenerator.month.cycleFrom') }}
               <el-input-number v-model="monthCycle01" :min="1" :max="11" size="small" /> -
-              <el-input-number v-model="monthCycle02" :min="monthCycle01 + 1" :max="12" size="small" /> {{ $t("tool.cronGenerator.unit.month") }}
+              <el-input-number
+                v-model="monthCycle02"
+                :min="monthCycle01 + 1"
+                :max="12"
+                size="small"
+              />
+              {{ $t('tool.cronGenerator.unit.month') }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="monthRadio" :value="3" @change="onTabChange('month')">
-              {{ $t("tool.cronGenerator.month.from") }}
-              <el-input-number v-model="monthAvg01" :min="1" :max="11" size="small" /> {{ $t("tool.cronGenerator.unit.month") }}{{ $t("tool.cronGenerator.month.fromSuffix") }}
-              <el-input-number v-model="monthAvg02" :min="1" :max="12" size="small" /> {{ $t("tool.cronGenerator.unit.month") }}{{ $t("tool.cronGenerator.month.everySuffix") }}
+              {{ $t('tool.cronGenerator.month.from') }}
+              <el-input-number v-model="monthAvg01" :min="1" :max="11" size="small" />
+              {{ $t('tool.cronGenerator.unit.month')
+              }}{{ $t('tool.cronGenerator.month.fromSuffix') }}
+              <el-input-number v-model="monthAvg02" :min="1" :max="12" size="small" />
+              {{ $t('tool.cronGenerator.unit.month')
+              }}{{ $t('tool.cronGenerator.month.everySuffix') }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="monthRadio" :value="4" @change="onTabChange('month')">
-              {{ $t("tool.cronGenerator.month.specify") }}
-              <el-select v-model="monthCheckList" multiple clearable :placeholder="$t('tool.cronGenerator.placeholder.multiSelect')" style="width: 100%">
+              {{ $t('tool.cronGenerator.month.specify') }}
+              <el-select
+                v-model="monthCheckList"
+                multiple
+                clearable
+                :placeholder="$t('tool.cronGenerator.placeholder.multiSelect')"
+                style="width: 100%"
+              >
                 <el-option v-for="i in 12" :key="i" :label="i" :value="i" />
               </el-select>
             </el-radio>
@@ -187,18 +255,23 @@
         <el-form label-position="left" size="small">
           <el-form-item>
             <el-radio v-model="weekRadio" :value="1" @change="onTabChange('week')">
-              {{ $t("tool.cronGenerator.week.perWeek") }}
+              {{ $t('tool.cronGenerator.week.perWeek') }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="weekRadio" :value="2" @change="onTabChange('week')">
-              {{ $t("tool.cronGenerator.week.notSpecified") }}
+              {{ $t('tool.cronGenerator.week.notSpecified') }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="weekRadio" :value="3" @change="onTabChange('week')">
-              {{ $t("tool.cronGenerator.week.cycleFrom") }}
-              <el-select v-model="weekCycle01" :placeholder="$t('tool.cronGenerator.placeholder.start')" size="small" style="width: 100px">
+              {{ $t('tool.cronGenerator.week.cycleFrom') }}
+              <el-select
+                v-model="weekCycle01"
+                :placeholder="$t('tool.cronGenerator.placeholder.start')"
+                size="small"
+                style="width: 100px"
+              >
                 <el-option
                   v-for="w in weekList"
                   :key="w.key"
@@ -208,53 +281,55 @@
                 />
               </el-select>
               -
-              <el-select v-model="weekCycle02" :placeholder="$t('tool.cronGenerator.placeholder.end')" size="small" style="width: 100px">
-                <el-option
-                  v-for="w in weekList"
-                  :key="w.key"
-                  :label="w.label"
-                  :value="w.key"
-                />
+              <el-select
+                v-model="weekCycle02"
+                :placeholder="$t('tool.cronGenerator.placeholder.end')"
+                size="small"
+                style="width: 100px"
+              >
+                <el-option v-for="w in weekList" :key="w.key" :label="w.label" :value="w.key" />
               </el-select>
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="weekRadio" :value="4" @change="onTabChange('week')">
-              {{ $t("tool.cronGenerator.week.nthWeek") }}
-              <el-input-number v-model="weekAvg01" :min="1" :max="4" size="small" /> {{ $t("tool.cronGenerator.week.weekOf") }}
-              <el-select v-model="weekAvg02" :placeholder="$t('tool.cronGenerator.placeholder.weekday')" size="small" style="width: 110px">
-                <el-option
-                  v-for="w in weekList"
-                  :key="w.key"
-                  :label="w.label"
-                  :value="w.key"
-                />
+              {{ $t('tool.cronGenerator.week.nthWeek') }}
+              <el-input-number v-model="weekAvg01" :min="1" :max="4" size="small" />
+              {{ $t('tool.cronGenerator.week.weekOf') }}
+              <el-select
+                v-model="weekAvg02"
+                :placeholder="$t('tool.cronGenerator.placeholder.weekday')"
+                size="small"
+                style="width: 110px"
+              >
+                <el-option v-for="w in weekList" :key="w.key" :label="w.label" :value="w.key" />
               </el-select>
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="weekRadio" :value="5" @change="onTabChange('week')">
-              {{ $t("tool.cronGenerator.week.lastWeekdayOfMonth") }}
-              <el-select v-model="weekLastDay" :placeholder="$t('tool.cronGenerator.placeholder.weekday')" size="small" style="width: 110px">
-                <el-option
-                  v-for="w in weekList"
-                  :key="w.key"
-                  :label="w.label"
-                  :value="w.key"
-                />
+              {{ $t('tool.cronGenerator.week.lastWeekdayOfMonth') }}
+              <el-select
+                v-model="weekLastDay"
+                :placeholder="$t('tool.cronGenerator.placeholder.weekday')"
+                size="small"
+                style="width: 110px"
+              >
+                <el-option v-for="w in weekList" :key="w.key" :label="w.label" :value="w.key" />
               </el-select>
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="weekRadio" :value="6" @change="onTabChange('week')">
-              {{ $t("tool.cronGenerator.week.specify") }}
-              <el-select v-model="weekCheckList" multiple clearable :placeholder="$t('tool.cronGenerator.placeholder.multiSelect')" style="width: 100%">
-                <el-option
-                  v-for="w in weekList"
-                  :key="w.key"
-                  :label="w.label"
-                  :value="w.key"
-                />
+              {{ $t('tool.cronGenerator.week.specify') }}
+              <el-select
+                v-model="weekCheckList"
+                multiple
+                clearable
+                :placeholder="$t('tool.cronGenerator.placeholder.multiSelect')"
+                style="width: 100%"
+              >
+                <el-option v-for="w in weekList" :key="w.key" :label="w.label" :value="w.key" />
               </el-select>
             </el-radio>
           </el-form-item>
@@ -266,32 +341,48 @@
         <el-form label-position="left" size="small">
           <el-form-item>
             <el-radio v-model="yearRadio" :value="1" @change="onTabChange('year')">
-              {{ $t("tool.cronGenerator.year.noSpecify") }}
+              {{ $t('tool.cronGenerator.year.noSpecify') }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="yearRadio" :value="2" @change="onTabChange('year')">
-              {{ $t("tool.cronGenerator.year.perYear") }}
+              {{ $t('tool.cronGenerator.year.perYear') }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="yearRadio" :value="3" @change="onTabChange('year')">
-              {{ $t("tool.cronGenerator.year.cycleFrom") }}
-              <el-input-number v-model="yearCycle01" :min="currentYear" :max="2098" size="small" /> -
-              <el-input-number v-model="yearCycle02" :min="yearCycle01 + 1" :max="2099" size="small" />
+              {{ $t('tool.cronGenerator.year.cycleFrom') }}
+              <el-input-number v-model="yearCycle01" :min="currentYear" :max="2098" size="small" />
+              -
+              <el-input-number
+                v-model="yearCycle02"
+                :min="yearCycle01 + 1"
+                :max="2099"
+                size="small"
+              />
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="yearRadio" :value="4" @change="onTabChange('year')">
-              {{ $t("tool.cronGenerator.year.from") }}
-              <el-input-number v-model="yearAvg01" :min="currentYear" :max="2098" size="small" /> {{ $t("tool.cronGenerator.unit.year") }}{{ $t("tool.cronGenerator.year.fromSuffix") }}
-              <el-input-number v-model="yearAvg02" :min="1" :max="100" size="small" /> {{ $t("tool.cronGenerator.unit.year") }}{{ $t("tool.cronGenerator.year.everySuffix") }}
+              {{ $t('tool.cronGenerator.year.from') }}
+              <el-input-number v-model="yearAvg01" :min="currentYear" :max="2098" size="small" />
+              {{ $t('tool.cronGenerator.unit.year')
+              }}{{ $t('tool.cronGenerator.year.fromSuffix') }}
+              <el-input-number v-model="yearAvg02" :min="1" :max="100" size="small" />
+              {{ $t('tool.cronGenerator.unit.year')
+              }}{{ $t('tool.cronGenerator.year.everySuffix') }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="yearRadio" :value="5" @change="onTabChange('year')">
-              {{ $t("tool.cronGenerator.year.specify") }}
-              <el-select v-model="yearCheckList" multiple clearable :placeholder="$t('tool.cronGenerator.placeholder.multiSelect')" style="width: 100%">
+              {{ $t('tool.cronGenerator.year.specify') }}
+              <el-select
+                v-model="yearCheckList"
+                multiple
+                clearable
+                :placeholder="$t('tool.cronGenerator.placeholder.multiSelect')"
+                style="width: 100%"
+              >
                 <el-option
                   v-for="i in 9"
                   :key="i - 1 + currentYear"
@@ -308,7 +399,7 @@
     <!-- tool.cronGenerator.preview.title -->
     <div class="cron-expr-panel">
       <div class="cron-expr-header">
-        <span class="cron-expr-label">{{ $t("tool.cronGenerator.preview.cronLabel") }}</span>
+        <span class="cron-expr-label">{{ $t('tool.cronGenerator.preview.cronLabel') }}</span>
       </div>
       <div class="cron-expr-body">
         <div class="cron-fields">
@@ -326,7 +417,7 @@
 
     <!-- tool.cronGenerator.preview.recentTitle -->
     <div class="cron-run-panel">
-      <div class="cron-run-header">{{ $t("tool.cronGenerator.preview.recentTitle") }}</div>
+      <div class="cron-run-header">{{ $t('tool.cronGenerator.preview.recentTitle') }}</div>
       <ul class="cron-run-list">
         <li v-for="(time, idx) in runTimes" :key="idx" class="cron-run-item">
           <span class="cron-run-index">{{ idx + 1 }}</span>
@@ -340,15 +431,19 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 
 // ==================== Props & Emits ====================
 
-const props = withDefaults(defineProps<{
-  modelValue?: string
-}>(), {
-  modelValue: '',
-})
+const props = withDefaults(
+  defineProps<{
+    modelValue?: string
+  }>(),
+  {
+    modelValue: '',
+  },
+)
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
@@ -389,11 +484,18 @@ const secondCheckList = ref<number[]>([])
 
 const secondValue = computed(() => {
   switch (secondRadio.value) {
-    case 1: return '*'
-    case 2: return `${checkNum(secondCycle01.value, 0, 58)}-${checkNum(secondCycle02.value, secondCycle01.value + 1, 59)}`
-    case 3: return `${checkNum(secondAvg01.value, 0, 58)}/${checkNum(secondAvg02.value, 1, 59)}`
-    case 4: return secondCheckList.value.length ? secondCheckList.value.sort((a, b) => a - b).join(',') : '*'
-    default: return '*'
+    case 1:
+      return '*'
+    case 2:
+      return `${checkNum(secondCycle01.value, 0, 58)}-${checkNum(secondCycle02.value, secondCycle01.value + 1, 59)}`
+    case 3:
+      return `${checkNum(secondAvg01.value, 0, 58)}/${checkNum(secondAvg02.value, 1, 59)}`
+    case 4:
+      return secondCheckList.value.length
+        ? secondCheckList.value.sort((a, b) => a - b).join(',')
+        : '*'
+    default:
+      return '*'
   }
 })
 
@@ -407,11 +509,16 @@ const minCheckList = ref<number[]>([])
 
 const minValue = computed(() => {
   switch (minRadio.value) {
-    case 1: return '*'
-    case 2: return `${checkNum(minCycle01.value, 0, 58)}-${checkNum(minCycle02.value, minCycle01.value + 1, 59)}`
-    case 3: return `${checkNum(minAvg01.value, 0, 58)}/${checkNum(minAvg02.value, 1, 59)}`
-    case 4: return minCheckList.value.length ? minCheckList.value.sort((a, b) => a - b).join(',') : '*'
-    default: return '*'
+    case 1:
+      return '*'
+    case 2:
+      return `${checkNum(minCycle01.value, 0, 58)}-${checkNum(minCycle02.value, minCycle01.value + 1, 59)}`
+    case 3:
+      return `${checkNum(minAvg01.value, 0, 58)}/${checkNum(minAvg02.value, 1, 59)}`
+    case 4:
+      return minCheckList.value.length ? minCheckList.value.sort((a, b) => a - b).join(',') : '*'
+    default:
+      return '*'
   }
 })
 
@@ -425,11 +532,16 @@ const hourCheckList = ref<number[]>([])
 
 const hourValue = computed(() => {
   switch (hourRadio.value) {
-    case 1: return '*'
-    case 2: return `${checkNum(hourCycle01.value, 0, 22)}-${checkNum(hourCycle02.value, hourCycle01.value + 1, 23)}`
-    case 3: return `${checkNum(hourAvg01.value, 0, 22)}/${checkNum(hourAvg02.value, 1, 23)}`
-    case 4: return hourCheckList.value.length ? hourCheckList.value.sort((a, b) => a - b).join(',') : '*'
-    default: return '*'
+    case 1:
+      return '*'
+    case 2:
+      return `${checkNum(hourCycle01.value, 0, 22)}-${checkNum(hourCycle02.value, hourCycle01.value + 1, 23)}`
+    case 3:
+      return `${checkNum(hourAvg01.value, 0, 22)}/${checkNum(hourAvg02.value, 1, 23)}`
+    case 4:
+      return hourCheckList.value.length ? hourCheckList.value.sort((a, b) => a - b).join(',') : '*'
+    default:
+      return '*'
   }
 })
 
@@ -444,14 +556,22 @@ const dayCheckList = ref<number[]>([])
 
 const dayValue = computed(() => {
   switch (dayRadio.value) {
-    case 1: return '*'
-    case 2: return '?'
-    case 3: return `${checkNum(dayCycle01.value, 1, 30)}-${checkNum(dayCycle02.value, dayCycle01.value + 1, 31)}`
-    case 4: return `${checkNum(dayAvg01.value, 1, 30)}/${checkNum(dayAvg02.value, 1, 31)}`
-    case 5: return `${checkNum(dayWorkday.value, 1, 31)}W`
-    case 6: return 'L'
-    case 7: return dayCheckList.value.length ? dayCheckList.value.sort((a, b) => a - b).join(',') : '*'
-    default: return '*'
+    case 1:
+      return '*'
+    case 2:
+      return '?'
+    case 3:
+      return `${checkNum(dayCycle01.value, 1, 30)}-${checkNum(dayCycle02.value, dayCycle01.value + 1, 31)}`
+    case 4:
+      return `${checkNum(dayAvg01.value, 1, 30)}/${checkNum(dayAvg02.value, 1, 31)}`
+    case 5:
+      return `${checkNum(dayWorkday.value, 1, 31)}W`
+    case 6:
+      return 'L'
+    case 7:
+      return dayCheckList.value.length ? dayCheckList.value.sort((a, b) => a - b).join(',') : '*'
+    default:
+      return '*'
   }
 })
 
@@ -465,11 +585,18 @@ const monthCheckList = ref<number[]>([])
 
 const monthValue = computed(() => {
   switch (monthRadio.value) {
-    case 1: return '*'
-    case 2: return `${checkNum(monthCycle01.value, 1, 11)}-${checkNum(monthCycle02.value, monthCycle01.value + 1, 12)}`
-    case 3: return `${checkNum(monthAvg01.value, 1, 11)}/${checkNum(monthAvg02.value, 1, 12)}`
-    case 4: return monthCheckList.value.length ? monthCheckList.value.sort((a, b) => a - b).join(',') : '*'
-    default: return '*'
+    case 1:
+      return '*'
+    case 2:
+      return `${checkNum(monthCycle01.value, 1, 11)}-${checkNum(monthCycle02.value, monthCycle01.value + 1, 12)}`
+    case 3:
+      return `${checkNum(monthAvg01.value, 1, 11)}/${checkNum(monthAvg02.value, 1, 12)}`
+    case 4:
+      return monthCheckList.value.length
+        ? monthCheckList.value.sort((a, b) => a - b).join(',')
+        : '*'
+    default:
+      return '*'
   }
 })
 
@@ -484,17 +611,23 @@ const weekCheckList = ref<number[]>([])
 
 const weekValue = computed(() => {
   switch (weekRadio.value) {
-    case 1: return '*'
-    case 2: return '?'
+    case 1:
+      return '*'
+    case 2:
+      return '?'
     case 3: {
       const c1 = checkNum(weekCycle01.value, 1, 7)
       const c2 = checkNum(weekCycle02.value, 1, 7)
       return `${c1}-${c2}`
     }
-    case 4: return `${checkNum(weekAvg02.value, 1, 7)}#${checkNum(weekAvg01.value, 1, 4)}`
-    case 5: return `${checkNum(weekLastDay.value, 1, 7)}L`
-    case 6: return weekCheckList.value.length ? weekCheckList.value.sort((a, b) => a - b).join(',') : '*'
-    default: return '?'
+    case 4:
+      return `${checkNum(weekAvg02.value, 1, 7)}#${checkNum(weekAvg01.value, 1, 4)}`
+    case 5:
+      return `${checkNum(weekLastDay.value, 1, 7)}L`
+    case 6:
+      return weekCheckList.value.length ? weekCheckList.value.sort((a, b) => a - b).join(',') : '*'
+    default:
+      return '?'
   }
 })
 
@@ -508,12 +641,18 @@ const yearCheckList = ref<number[]>([])
 
 const yearValue = computed(() => {
   switch (yearRadio.value) {
-    case 1: return ''
-    case 2: return '*'
-    case 3: return `${checkNum(yearCycle01.value, currentYear, 2098)}-${checkNum(yearCycle02.value, yearCycle01.value + 1, 2099)}`
-    case 4: return `${checkNum(yearAvg01.value, currentYear, 2098)}/${checkNum(yearAvg02.value, 1, 100)}`
-    case 5: return yearCheckList.value.length ? yearCheckList.value.sort((a, b) => a - b).join(',') : ''
-    default: return ''
+    case 1:
+      return ''
+    case 2:
+      return '*'
+    case 3:
+      return `${checkNum(yearCycle01.value, currentYear, 2098)}-${checkNum(yearCycle02.value, yearCycle01.value + 1, 2099)}`
+    case 4:
+      return `${checkNum(yearAvg01.value, currentYear, 2098)}/${checkNum(yearAvg02.value, 1, 100)}`
+    case 5:
+      return yearCheckList.value.length ? yearCheckList.value.sort((a, b) => a - b).join(',') : ''
+    default:
+      return ''
   }
 })
 
@@ -546,9 +685,13 @@ const cronParts = computed(() => ({
 
 // ==================== v-model 同步 ====================
 
-watch(cronExpression, (val) => {
-  emit('update:modelValue', val)
-}, { immediate: true })
+watch(
+  cronExpression,
+  (val) => {
+    emit('update:modelValue', val)
+  },
+  { immediate: true },
+)
 
 // ==================== 交叉校验：日/周互斥 ====================
 
@@ -621,49 +764,119 @@ function setTabValue(tab: string, value: string) {
   } else if (tab === 'day') {
     if (value === '*') setRadio(tab, 1)
     else if (value === '?') setRadio(tab, 2)
-    else if (value.includes('-')) { const [a, b] = value.split('-').map(Number); setRange(tab, a, b); setRadio(tab, 3) }
-    else if (value.includes('/')) { const [a, b] = value.split('/').map(Number); setAvg(tab, a, b); setRadio(tab, 4) }
-    else if (value.includes('W')) { dayWorkday.value = parseInt(value); setRadio(tab, 5) }
-    else if (value === 'L') setRadio(tab, 6)
-    else { setCheckList(tab, value.split(',').map(Number)); setRadio(tab, 7) }
+    else if (value.includes('-')) {
+      const [a, b] = value.split('-').map(Number)
+      setRange(tab, a, b)
+      setRadio(tab, 3)
+    } else if (value.includes('/')) {
+      const [a, b] = value.split('/').map(Number)
+      setAvg(tab, a, b)
+      setRadio(tab, 4)
+    } else if (value.includes('W')) {
+      dayWorkday.value = parseInt(value)
+      setRadio(tab, 5)
+    } else if (value === 'L') setRadio(tab, 6)
+    else {
+      setCheckList(tab, value.split(',').map(Number))
+      setRadio(tab, 7)
+    }
   } else if (tab === 'week') {
     if (value === '*') setRadio(tab, 1)
     else if (value === '?') setRadio(tab, 2)
-    else if (value.includes('-')) { const [a, b] = value.split('-').map(Number); weekCycle01.value = a; weekCycle02.value = b; setRadio(tab, 3) }
-    else if (value.includes('#')) { const [b, a] = value.split('#').map(Number); weekAvg01.value = a; weekAvg02.value = b; setRadio(tab, 4) }
-    else if (value.includes('L')) { weekLastDay.value = parseInt(value); setRadio(tab, 5) }
-    else { setCheckList(tab, value.split(',').map(Number)); setRadio(tab, 6) }
+    else if (value.includes('-')) {
+      const [a, b] = value.split('-').map(Number)
+      weekCycle01.value = a
+      weekCycle02.value = b
+      setRadio(tab, 3)
+    } else if (value.includes('#')) {
+      const [b, a] = value.split('#').map(Number)
+      weekAvg01.value = a
+      weekAvg02.value = b
+      setRadio(tab, 4)
+    } else if (value.includes('L')) {
+      weekLastDay.value = parseInt(value)
+      setRadio(tab, 5)
+    } else {
+      setCheckList(tab, value.split(',').map(Number))
+      setRadio(tab, 6)
+    }
   } else if (tab === 'year') {
     if (value === '') setRadio(tab, 1)
     else if (value === '*') setRadio(tab, 2)
-    else if (value.includes('-')) { const [a, b] = value.split('-').map(Number); yearCycle01.value = a; yearCycle02.value = b; setRadio(tab, 3) }
-    else if (value.includes('/')) { const [a, b] = value.split('/').map(Number); yearAvg01.value = a; yearAvg02.value = b; setRadio(tab, 4) }
-    else { yearCheckList.value = value.split(',').map(Number); setRadio(tab, 5) }
+    else if (value.includes('-')) {
+      const [a, b] = value.split('-').map(Number)
+      yearCycle01.value = a
+      yearCycle02.value = b
+      setRadio(tab, 3)
+    } else if (value.includes('/')) {
+      const [a, b] = value.split('/').map(Number)
+      yearAvg01.value = a
+      yearAvg02.value = b
+      setRadio(tab, 4)
+    } else {
+      yearCheckList.value = value.split(',').map(Number)
+      setRadio(tab, 5)
+    }
   }
 }
 
 function setRadio(tab: string, val: number) {
   const map: Record<string, Ref<number>> = {
-    second: secondRadio, min: minRadio, hour: hourRadio,
-    day: dayRadio, month: monthRadio, week: weekRadio, year: yearRadio,
+    second: secondRadio,
+    min: minRadio,
+    hour: hourRadio,
+    day: dayRadio,
+    month: monthRadio,
+    week: weekRadio,
+    year: yearRadio,
   }
   if (map[tab]) map[tab].value = val
 }
 
 function setRange(tab: string, a: number, b: number) {
-  if (tab === 'second') { secondCycle01.value = a; secondCycle02.value = b }
-  if (tab === 'min') { minCycle01.value = a; minCycle02.value = b }
-  if (tab === 'hour') { hourCycle01.value = a; hourCycle02.value = b }
-  if (tab === 'day') { dayCycle01.value = a; dayCycle02.value = b }
-  if (tab === 'month') { monthCycle01.value = a; monthCycle02.value = b }
+  if (tab === 'second') {
+    secondCycle01.value = a
+    secondCycle02.value = b
+  }
+  if (tab === 'min') {
+    minCycle01.value = a
+    minCycle02.value = b
+  }
+  if (tab === 'hour') {
+    hourCycle01.value = a
+    hourCycle02.value = b
+  }
+  if (tab === 'day') {
+    dayCycle01.value = a
+    dayCycle02.value = b
+  }
+  if (tab === 'month') {
+    monthCycle01.value = a
+    monthCycle02.value = b
+  }
 }
 
 function setAvg(tab: string, a: number, b: number) {
-  if (tab === 'second') { secondAvg01.value = a; secondAvg02.value = b }
-  if (tab === 'min') { minAvg01.value = a; minAvg02.value = b }
-  if (tab === 'hour') { hourAvg01.value = a; hourAvg02.value = b }
-  if (tab === 'day') { dayAvg01.value = a; dayAvg02.value = b }
-  if (tab === 'month') { monthAvg01.value = a; monthAvg02.value = b }
+  if (tab === 'second') {
+    secondAvg01.value = a
+    secondAvg02.value = b
+  }
+  if (tab === 'min') {
+    minAvg01.value = a
+    minAvg02.value = b
+  }
+  if (tab === 'hour') {
+    hourAvg01.value = a
+    hourAvg02.value = b
+  }
+  if (tab === 'day') {
+    dayAvg01.value = a
+    dayAvg02.value = b
+  }
+  if (tab === 'month') {
+    monthAvg01.value = a
+    monthAvg02.value = b
+  }
 }
 
 function setCheckList(tab: string, arr: number[]) {
@@ -679,12 +892,16 @@ function setCheckList(tab: string, arr: number[]) {
 // ==================== 初始解析 ====================
 
 let initialized = false
-watch(() => props.modelValue, (val) => {
-  if (val && !initialized) {
-    resolveExp(val)
-    initialized = true
-  }
-}, { immediate: true })
+watch(
+  () => props.modelValue,
+  (val) => {
+    if (val && !initialized) {
+      resolveExp(val)
+      initialized = true
+    }
+  },
+  { immediate: true },
+)
 
 // ==================== recent ====================
 
@@ -692,7 +909,10 @@ const runTimes = ref<string[]>([])
 
 function calcRunTimes() {
   const cron = cronExpression.value
-  if (!cron) { runTimes.value = []; return }
+  if (!cron) {
+    runTimes.value = []
+    return
+  }
 
   runTimes.value = [] // "计算中..."
   try {
@@ -715,7 +935,14 @@ function calcRunTimes() {
 function computeNextRuns(rules: Record<string, string>, count: number): string[] {
   const results: string[] = []
   const now = new Date()
-  let cursor = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds())
+  let cursor = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+    now.getHours(),
+    now.getMinutes(),
+    now.getSeconds(),
+  )
 
   const secs = expandField(rules.second, 0, 59)
   const mins = expandField(rules.min, 0, 59)
@@ -723,9 +950,10 @@ function computeNextRuns(rules: Record<string, string>, count: number): string[]
   const days = expandField(rules.day, 1, 31)
   const months = expandField(rules.month, 1, 12)
   const weeks = expandField(rules.week, 1, 7)
-  const years = rules.year && rules.year !== '' && rules.year !== '*'
-    ? expandField(rules.year, currentYear, currentYear + 100)
-    : null
+  const years =
+    rules.year && rules.year !== '' && rules.year !== '*'
+      ? expandField(rules.year, currentYear, currentYear + 100)
+      : null
 
   const hasDaySpecified = rules.day !== '?'
   const hasWeekSpecified = rules.week !== '?'

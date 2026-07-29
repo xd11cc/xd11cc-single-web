@@ -1,15 +1,31 @@
 <template>
-  <UseCrudView :slotProps="crud.slotProps" :formRules="formRules" :add-title="$t('system.post.dialogs.add')" :edit-title="$t('system.post.dialogs.edit')">
+  <UseCrudView
+    :slotProps="crud.slotProps"
+    :formRules="formRules"
+    :add-title="$t('system.post.dialogs.add')"
+    :edit-title="$t('system.post.dialogs.edit')"
+  >
     <!-- 搜索区字段 -->
     <template #search-form="{ searchData }">
       <el-form-item prop="postCode" :label="$t('system.post.columns.postCode')">
-        <el-input v-model="searchData.postCode" :placeholder="$t('system.post.formPlaceholder.postCode')" />
+        <el-input
+          v-model="searchData.postCode"
+          :placeholder="$t('system.post.formPlaceholder.postCode')"
+        />
       </el-form-item>
       <el-form-item prop="postName" :label="$t('system.post.columns.postName')">
-        <el-input v-model="searchData.postName" :placeholder="$t('system.post.formPlaceholder.postName')" />
+        <el-input
+          v-model="searchData.postName"
+          :placeholder="$t('system.post.formPlaceholder.postName')"
+        />
       </el-form-item>
       <el-form-item prop="status" :label="$t('system.post.form.status')">
-        <el-select v-model="searchData.status" :placeholder="$t('system.post.formPlaceholder.status')" clearable style="width: 150px">
+        <el-select
+          v-model="searchData.status"
+          :placeholder="$t('system.post.formPlaceholder.status')"
+          clearable
+          style="width: 150px"
+        >
           <el-option
             v-for="item in getDictList('system_status')"
             :key="item.id"
@@ -23,10 +39,12 @@
     <!-- 工具栏按钮 -->
     <template #actions>
       <el-button type="primary" @click="crud.methods.handleAdd" v-permission="['system:post:add']">
-        <template #icon><Icon icon="lucide:plus-circle" /></template>{{ $t('system.post.actions.add') }}
+        <template #icon><Icon icon="lucide:plus-circle" /></template
+        >{{ $t('system.post.actions.add') }}
       </el-button>
       <el-button type="danger" @click="handleBatchRemove" v-permission="['system:post:delete']">
-        <template #icon><Icon icon="lucide:trash-2" /></template>{{ $t('system.post.actions.batchDelete') }}
+        <template #icon><Icon icon="lucide:trash-2" /></template
+        >{{ $t('system.post.actions.batchDelete') }}
       </el-button>
     </template>
 
@@ -35,7 +53,12 @@
       <el-table-column type="selection" width="50" align="center" />
       <el-table-column prop="postCode" :label="$t('system.post.columns.postCode')" align="center" />
       <el-table-column prop="postName" :label="$t('system.post.columns.postName')" align="center" />
-      <el-table-column prop="status" :label="$t('system.post.columns.status')" align="center" width="80">
+      <el-table-column
+        prop="status"
+        :label="$t('system.post.columns.status')"
+        align="center"
+        width="80"
+      >
         <template #default="scope">
           <el-tag
             :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
@@ -48,7 +71,12 @@
         </template>
       </el-table-column>
       <el-table-column prop="remark" :label="$t('system.post.columns.remark')" align="center" />
-      <el-table-column prop="createTime" :label="$t('system.post.columns.createTime')" align="center" min-width="160" />
+      <el-table-column
+        prop="createTime"
+        :label="$t('system.post.columns.createTime')"
+        align="center"
+        min-width="160"
+      />
       <el-table-column fixed="right" :label="$t('common.action')" width="90" align="center">
         <template #default="scope">
           <el-tooltip :content="$t('system.post.actions.edit')" placement="top">
@@ -83,12 +111,18 @@
     <template #form-fields="{ formData }">
       <el-col :span="12">
         <el-form-item prop="postName" :label="$t('system.post.form.postName')">
-          <el-input v-model="formData.postName" :placeholder="$t('system.post.formPlaceholder.postName')" />
+          <el-input
+            v-model="formData.postName"
+            :placeholder="$t('system.post.formPlaceholder.postName')"
+          />
         </el-form-item>
       </el-col>
       <el-col :span="12">
         <el-form-item prop="postCode" :label="$t('system.post.columns.postCode')">
-          <el-input v-model="formData.postCode" :placeholder="$t('system.post.formPlaceholder.postCode')" />
+          <el-input
+            v-model="formData.postCode"
+            :placeholder="$t('system.post.formPlaceholder.postCode')"
+          />
         </el-form-item>
       </el-col>
       <el-col :span="12">
@@ -135,7 +169,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useI18n } from "vue-i18n"
+import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import { ref, nextTick } from 'vue'
 import type { FormRules } from 'element-plus'
@@ -148,7 +182,8 @@ import type { SystemPostVO, SystemPostQueryVO } from './apis/type'
 import { deptTreeList } from '@/views/system/dept/apis'
 import type { SystemDeptTreeVO } from '@/views/system/dept/apis/type'
 
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 
 defineOptions({ name: 'post' })
 
@@ -187,11 +222,15 @@ const deptTreeRef = ref<any>(null)
 const formRules: FormRules = {
   postCode: [{ required: true, trigger: 'blur', message: () => $t('system.post.form.postCode') }],
   postName: [{ required: true, trigger: 'blur', message: () => $t('system.post.form.postName') }],
-  status: [{ required: true, trigger: 'change', message: () => $t('system.post.formPlaceholder.status') }],
+  status: [
+    { required: true, trigger: 'change', message: () => $t('system.post.formPlaceholder.status') },
+  ],
 }
 
 function getDeptTree() {
-  deptTreeList({}).then(({ data }) => { deptTreeData.value = data })
+  deptTreeList({}).then(({ data }) => {
+    deptTreeData.value = data
+  })
 }
 
 // ─── 编辑时回填部门选中状态（模块特有逻辑） ───────────────
@@ -213,11 +252,15 @@ crud.methods.handleEdit = (row: SystemPostVO) => {
 // ─── 自定义单条删除（保留岗位名称提示文案） ──────────────────
 const originalHandleRemove = crud.methods.handleRemove
 crud.methods.handleRemove = (row: SystemPostVO) => {
-  ElMessageBox.confirm($t('system.post.messages.deleteConfirm', { postName: row.postName }), $t('common.messages.confirmTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'warning',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.post.messages.deleteConfirm', { postName: row.postName }),
+    $t('common.messages.confirmTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'warning',
+    },
+  ).then(() => {
     removePostByIds(String(row.id)).then((res) => {
       ElMessage.success(res.msg || $t('common.messages.operationSuccess'))
       crud.methods.getTableData()
@@ -233,11 +276,15 @@ function handleBatchRemove() {
     return
   }
   const ids = selectedRows.map((r: any) => r.id).join(',')
-  ElMessageBox.confirm($t('system.post.messages.batchDeleteConfirm', { count: selectedRows.length }), $t('common.messages.confirmTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'warning',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.post.messages.batchDeleteConfirm', { count: selectedRows.length }),
+    $t('common.messages.confirmTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'warning',
+    },
+  ).then(() => {
     removePostByIds(ids).then((res) => {
       ElMessage.success(res.msg || $t('common.messages.operationSuccess'))
       crud.methods.getTableData()

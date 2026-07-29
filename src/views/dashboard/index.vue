@@ -3,7 +3,9 @@
     <!-- 欢迎区 -->
     <section class="greeting" style="--delay: 0">
       <div>
-        <h1 class="greeting-title">{{ greetingText }}{{ t('dashboard.greeting.userPrefix') }}{{ username }}</h1>
+        <h1 class="greeting-title">
+          {{ greetingText }}{{ t('dashboard.greeting.userPrefix') }}{{ username }}
+        </h1>
         <p class="greeting-sub">{{ currentDate }}</p>
       </div>
     </section>
@@ -39,7 +41,8 @@
               class="period"
               :class="{ active: activePeriod === p.value }"
               @click="activePeriod = p.value"
-            >{{ p.label }}</span>
+              >{{ p.label }}</span
+            >
           </div>
         </div>
         <v-chart :option="lineOption" autoresize class="chart" />
@@ -112,7 +115,16 @@ import { useUserStore } from '@/pinia/stores/user'
 import { useTheme } from '@@/composables/useTheme'
 import { useI18n } from 'vue-i18n'
 
-use([CanvasRenderer, LineChart, BarChart, PieChart, TitleComponent, TooltipComponent, GridComponent, LegendComponent])
+use([
+  CanvasRenderer,
+  LineChart,
+  BarChart,
+  PieChart,
+  TitleComponent,
+  TooltipComponent,
+  GridComponent,
+  LegendComponent,
+])
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -136,8 +148,20 @@ const currentDate = computed(() => {
 
 const stats = computed(() => [
   { label: t('dashboard.stats.users'), value: '286', trend: '+8', trendType: 'up', percent: 58 },
-  { label: t('dashboard.stats.onlineUsers'), value: '34', trend: '+5', trendType: 'up', percent: 42 },
-  { label: t('dashboard.stats.todayLogins'), value: '67', trend: '+12', trendType: 'up', percent: 35 },
+  {
+    label: t('dashboard.stats.onlineUsers'),
+    value: '34',
+    trend: '+5',
+    trendType: 'up',
+    percent: 42,
+  },
+  {
+    label: t('dashboard.stats.todayLogins'),
+    value: '67',
+    trend: '+12',
+    trendType: 'up',
+    percent: 35,
+  },
   { label: t('dashboard.stats.todos'), value: '5', trend: '-2', trendType: 'down', percent: 10 },
 ])
 
@@ -150,11 +174,13 @@ const activePeriod = ref('week')
 
 const weekDays = computed(() => {
   const formatter = new Intl.DateTimeFormat(locale.value, { weekday: 'short', timeZone: 'UTC' })
-  return Array.from({ length: 7 }, (_, index) => formatter.format(new Date(Date.UTC(2024, 0, index + 1))))
+  return Array.from({ length: 7 }, (_, index) =>
+    formatter.format(new Date(Date.UTC(2024, 0, index + 1))),
+  )
 })
 
-const textColor = computed(() => isDark.value ? '#a1a1aa' : '#71717a')
-const borderColor = computed(() => isDark.value ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)')
+const textColor = computed(() => (isDark.value ? '#a1a1aa' : '#71717a'))
+const borderColor = computed(() => (isDark.value ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'))
 
 const lineOption = computed(() => ({
   tooltip: {
@@ -184,7 +210,10 @@ const lineOption = computed(() => ({
       areaStyle: {
         color: {
           type: 'linear',
-          x: 0, y: 0, x2: 0, y2: 1,
+          x: 0,
+          y: 0,
+          x2: 0,
+          y2: 1,
           colorStops: [
             { offset: 0, color: 'rgba(124, 58, 237, 0.25)' },
             { offset: 1, color: 'rgba(124, 58, 237, 0)' },
@@ -204,7 +233,10 @@ const lineOption = computed(() => ({
       areaStyle: {
         color: {
           type: 'linear',
-          x: 0, y: 0, x2: 0, y2: 1,
+          x: 0,
+          y: 0,
+          x2: 0,
+          y2: 1,
           colorStops: [
             { offset: 0, color: 'rgba(16, 185, 129, 0.2)' },
             { offset: 1, color: 'rgba(16, 185, 129, 0)' },
@@ -245,8 +277,16 @@ const pieOption = computed(() => ({
       data: [
         { value: 148, name: t('dashboard.charts.sources.direct'), itemStyle: { color: '#7c3aed' } },
         { value: 86, name: t('dashboard.charts.sources.search'), itemStyle: { color: '#10b981' } },
-        { value: 53, name: t('dashboard.charts.sources.referral'), itemStyle: { color: '#f59e0b' } },
-        { value: 42, name: t('dashboard.charts.sources.favorites'), itemStyle: { color: '#06b6d4' } },
+        {
+          value: 53,
+          name: t('dashboard.charts.sources.referral'),
+          itemStyle: { color: '#f59e0b' },
+        },
+        {
+          value: 42,
+          name: t('dashboard.charts.sources.favorites'),
+          itemStyle: { color: '#06b6d4' },
+        },
       ],
     },
   ],
@@ -278,7 +318,10 @@ const barOption = computed(() => ({
       itemStyle: {
         color: {
           type: 'linear',
-          x: 0, y: 0, x2: 0, y2: 1,
+          x: 0,
+          y: 0,
+          x2: 0,
+          y2: 1,
           colorStops: [
             { offset: 0, color: '#7c3aed' },
             { offset: 1, color: 'rgba(124, 58, 237, 0.4)' },
@@ -294,11 +337,36 @@ const barOption = computed(() => ({
 const activities = computed(() => {
   const relativeTime = new Intl.RelativeTimeFormat(locale.value, { numeric: 'always' })
   return [
-    { id: 1, text: t('dashboard.activity.userRegistered', { name: t('dashboard.activity.sampleUser') }), time: relativeTime.format(-5, 'minute'), color: 'var(--theme-accent)' },
-    { id: 2, text: t('dashboard.activity.configUpdated'), time: relativeTime.format(-12, 'minute'), color: 'var(--theme-warning)' },
-    { id: 3, text: t('dashboard.activity.menuAdded', { name: t('dashboard.activity.sampleMenu') }), time: relativeTime.format(-1, 'hour'), color: 'var(--theme-info)' },
-    { id: 4, text: t('dashboard.activity.rolePermissionsUpdated'), time: relativeTime.format(-2, 'hour'), color: 'var(--theme-accent)' },
-    { id: 5, text: t('dashboard.activity.backupCompleted'), time: relativeTime.format(-3, 'hour'), color: 'var(--theme-success)' },
+    {
+      id: 1,
+      text: t('dashboard.activity.userRegistered', { name: t('dashboard.activity.sampleUser') }),
+      time: relativeTime.format(-5, 'minute'),
+      color: 'var(--theme-accent)',
+    },
+    {
+      id: 2,
+      text: t('dashboard.activity.configUpdated'),
+      time: relativeTime.format(-12, 'minute'),
+      color: 'var(--theme-warning)',
+    },
+    {
+      id: 3,
+      text: t('dashboard.activity.menuAdded', { name: t('dashboard.activity.sampleMenu') }),
+      time: relativeTime.format(-1, 'hour'),
+      color: 'var(--theme-info)',
+    },
+    {
+      id: 4,
+      text: t('dashboard.activity.rolePermissionsUpdated'),
+      time: relativeTime.format(-2, 'hour'),
+      color: 'var(--theme-accent)',
+    },
+    {
+      id: 5,
+      text: t('dashboard.activity.backupCompleted'),
+      time: relativeTime.format(-3, 'hour'),
+      color: 'var(--theme-success)',
+    },
   ]
 })
 
@@ -400,9 +468,15 @@ function handleQuickAction(path: string) {
     font-size: var(--p-text-xs);
     font-weight: var(--p-weight-medium);
 
-    &.up { color: var(--theme-success); }
-    &.down { color: var(--theme-danger); }
-    &.stable { color: var(--theme-text-muted); }
+    &.up {
+      color: var(--theme-success);
+    }
+    &.down {
+      color: var(--theme-danger);
+    }
+    &.stable {
+      color: var(--theme-text-muted);
+    }
   }
 
   .stat-value {

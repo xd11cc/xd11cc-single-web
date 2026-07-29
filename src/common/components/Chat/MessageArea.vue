@@ -5,7 +5,9 @@
     </div>
     <el-scrollbar ref="scrollRef" class="message-list">
       <div ref="listRef" class="message-list-inner">
-        <div v-if="!messages.length" class="no-messages">{{ $t("chat.messageArea.noMessages") }}</div>
+        <div v-if="!messages.length" class="no-messages">
+          {{ $t('chat.messageArea.noMessages') }}
+        </div>
         <div
           v-for="msg in messages"
           :key="msg.id"
@@ -30,7 +32,9 @@
         @keydown.enter.exact.prevent="handleSend"
         maxlength="500"
       />
-      <el-button type="primary" :disabled="!inputText.trim()" @click="handleSend">{{ $t("chat.messageArea.send") }}</el-button>
+      <el-button type="primary" :disabled="!inputText.trim()" @click="handleSend">{{
+        $t('chat.messageArea.send')
+      }}</el-button>
     </div>
   </div>
 </template>
@@ -39,7 +43,8 @@
 import type { ChatMessage } from '@@/composables/useChat'
 import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 
 const props = defineProps<{
   messages: ChatMessage[]

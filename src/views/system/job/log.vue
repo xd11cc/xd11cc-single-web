@@ -3,7 +3,10 @@
     <el-card shadow="never" class="search-wrapper">
       <el-form ref="searchFormRef" :inline="true" :model="searchData">
         <el-form-item prop="jobName" :label="$t('system.job.log.search.jobName')">
-          <el-input v-model="searchData.jobName" :placeholder="$t('system.job.log.searchPlaceholder.jobName')" />
+          <el-input
+            v-model="searchData.jobName"
+            :placeholder="$t('system.job.log.searchPlaceholder.jobName')"
+          />
         </el-form-item>
         <el-form-item prop="jobGroup" :label="$t('system.job.log.search.jobGroup')">
           <el-select
@@ -37,10 +40,12 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            <template #icon><Icon icon="lucide:search" /></template>{{ $t('system.job.actions.query') }}
+            <template #icon><Icon icon="lucide:search" /></template
+            >{{ $t('system.job.actions.query') }}
           </el-button>
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('system.job.actions.reset') }}
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template
+            >{{ $t('system.job.actions.reset') }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -59,8 +64,18 @@
       <div class="table-wrapper">
         <el-table ref="tableRef" :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column prop="jobName" :label="$t('system.job.log.columns.jobName')" align="center" min-width="120" />
-          <el-table-column prop="jobGroup" :label="$t('system.job.log.columns.jobGroup')" align="center" width="120" />
+          <el-table-column
+            prop="jobName"
+            :label="$t('system.job.log.columns.jobName')"
+            align="center"
+            min-width="120"
+          />
+          <el-table-column
+            prop="jobGroup"
+            :label="$t('system.job.log.columns.jobGroup')"
+            align="center"
+            width="120"
+          />
           <el-table-column
             prop="invokeTarget"
             :label="$t('system.job.log.columns.invokeTarget')"
@@ -75,7 +90,12 @@
             min-width="200"
             show-overflow-tooltip
           />
-          <el-table-column prop="status" :label="$t('system.job.log.columns.status')" align="center" width="90">
+          <el-table-column
+            prop="status"
+            :label="$t('system.job.log.columns.status')"
+            align="center"
+            width="90"
+          >
             <template #default="scope">
               <el-tag
                 :type="
@@ -99,8 +119,18 @@
             min-width="120"
             show-overflow-tooltip
           />
-          <el-table-column prop="createTime" :label="$t('system.job.log.columns.createTime')" align="center" min-width="160" />
-          <el-table-column fixed="right" :label="$t('system.job.log.columns.action')" width="90" align="center">
+          <el-table-column
+            prop="createTime"
+            :label="$t('system.job.log.columns.createTime')"
+            align="center"
+            min-width="160"
+          />
+          <el-table-column
+            fixed="right"
+            :label="$t('system.job.log.columns.action')"
+            width="90"
+            align="center"
+          >
             <template #default="scope">
               <el-tooltip :content="$t('system.job.log.actions.detail')" placement="top">
                 <el-button type="primary" text bg size="small" @click="handleDetail(scope.row)">
@@ -141,8 +171,12 @@
     <!-- 详情弹窗 -->
     <el-dialog v-model="detailVisible" :title="$t('system.job.log.dialogs.detail')" width="45%">
       <el-descriptions :column="2" border>
-        <el-descriptions-item :label="$t('system.job.log.columns.jobName')">{{ detailData.jobName }}</el-descriptions-item>
-        <el-descriptions-item :label="$t('system.job.log.columns.jobGroup')">{{ detailData.jobGroup }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('system.job.log.columns.jobName')">{{
+          detailData.jobName
+        }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('system.job.log.columns.jobGroup')">{{
+          detailData.jobGroup
+        }}</el-descriptions-item>
         <el-descriptions-item :label="$t('system.job.log.columns.invokeTarget')" :span="2">{{
           detailData.invokeTarget
         }}</el-descriptions-item>
@@ -160,7 +194,9 @@
             }}
           </el-tag>
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('system.job.log.columns.createTime')">{{ detailData.createTime }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('system.job.log.columns.createTime')">{{
+          detailData.createTime
+        }}</el-descriptions-item>
         <el-descriptions-item :label="$t('system.job.log.columns.jobMessage')" :span="2">
           <el-input
             v-if="detailData.jobMessage"
@@ -171,9 +207,12 @@
           />
           <span v-else>-</span>
         </el-descriptions-item>
-        <el-descriptions-item v-if="detailData.remark" :label="$t('system.job.log.columns.remark')" :span="2">{{
-          detailData.remark
-        }}</el-descriptions-item>
+        <el-descriptions-item
+          v-if="detailData.remark"
+          :label="$t('system.job.log.columns.remark')"
+          :span="2"
+          >{{ detailData.remark }}</el-descriptions-item
+        >
       </el-descriptions>
       <template #footer>
         <el-button @click="detailVisible = false">{{ $t('common.close') }}</el-button>
@@ -183,14 +222,15 @@
 </template>
 
 <script lang="ts" setup>
-import { useI18n } from "vue-i18n"
+import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import { useDict } from '@/common/composables/useDict'
 import { usePagination } from '@@/composables/usePagination'
 import { jobLogPage, removeJobLogByIds } from './apis'
 import type { SystemJobLogQueryVO, SystemJobLogVO } from './apis/type'
 
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 
 defineOptions({
   name: 'jobLog',
@@ -228,11 +268,15 @@ function handleDetail(row: SystemJobLogVO) {
 }
 
 function handleRemove(row: SystemJobLogVO) {
-  ElMessageBox.confirm($t('system.job.log.messages.deleteConfirm'), $t('common.messages.confirmTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'warning',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.job.log.messages.deleteConfirm'),
+    $t('common.messages.confirmTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'warning',
+    },
+  ).then(() => {
     if (row.id) {
       removeJobLogByIds(String(row.id)).then((data) => {
         ElMessage.success(data.msg || $t('system.job.log.messages.deleteSuccess'))
@@ -249,11 +293,15 @@ function handleBatchRemove() {
     return
   }
   const ids = selectedRows.map((row) => row.id).join(',')
-  ElMessageBox.confirm($t('system.job.log.messages.batchDeleteConfirm', { count: selectedRows.length }), $t('common.messages.confirmTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'warning',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.job.log.messages.batchDeleteConfirm', { count: selectedRows.length }),
+    $t('common.messages.confirmTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'warning',
+    },
+  ).then(() => {
     removeJobLogByIds(ids).then((data) => {
       ElMessage.success(data.msg || $t('system.job.log.messages.deleteSuccess'))
       getTableData()

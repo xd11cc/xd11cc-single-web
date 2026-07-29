@@ -3,7 +3,10 @@
     <el-card shadow="never" class="search-wrapper">
       <el-form ref="searchFormRef" :inline="true" :model="searchData">
         <el-form-item prop="username" :label="$t('system.onlineUser.search.username')">
-          <el-input v-model="searchData.username" :placeholder="$t('system.onlineUser.formPlaceholder.username')" />
+          <el-input
+            v-model="searchData.username"
+            :placeholder="$t('system.onlineUser.formPlaceholder.username')"
+          />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
@@ -19,13 +22,41 @@
     <el-card v-loading="loading" shadow="never">
       <div class="table-wrapper">
         <el-table :data="tableData">
-          <el-table-column type="index" :label="$t('system.onlineUser.columns.index')" width="60" align="center" />
-          <el-table-column prop="username" :label="$t('system.onlineUser.columns.username')" align="center" />
-          <el-table-column prop="ipAddr" :label="$t('system.onlineUser.columns.ipAddr')" align="center" width="140" />
-          <el-table-column prop="browser" :label="$t('system.onlineUser.columns.browser')" align="center" />
+          <el-table-column
+            type="index"
+            :label="$t('system.onlineUser.columns.index')"
+            width="60"
+            align="center"
+          />
+          <el-table-column
+            prop="username"
+            :label="$t('system.onlineUser.columns.username')"
+            align="center"
+          />
+          <el-table-column
+            prop="ipAddr"
+            :label="$t('system.onlineUser.columns.ipAddr')"
+            align="center"
+            width="140"
+          />
+          <el-table-column
+            prop="browser"
+            :label="$t('system.onlineUser.columns.browser')"
+            align="center"
+          />
           <el-table-column prop="os" :label="$t('system.onlineUser.columns.os')" align="center" />
-          <el-table-column prop="loginTime" :label="$t('system.onlineUser.columns.loginTime')" align="center" min-width="160" />
-          <el-table-column fixed="right" :label="$t('system.onlineUser.columns.action')" width="70" align="center">
+          <el-table-column
+            prop="loginTime"
+            :label="$t('system.onlineUser.columns.loginTime')"
+            align="center"
+            min-width="160"
+          />
+          <el-table-column
+            fixed="right"
+            :label="$t('system.onlineUser.columns.action')"
+            width="70"
+            align="center"
+          >
             <template #default="scope">
               <el-tooltip :content="$t('system.onlineUser.actions.forceLogout')" placement="top">
                 <el-button
@@ -48,12 +79,13 @@
 </template>
 
 <script lang="ts" setup>
-import { useI18n } from "vue-i18n"
+import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import { onlineUserList, forceLogout } from './apis'
 import type { OnlineUserVO } from './apis/type'
 
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 
 defineOptions({
   name: 'onlineUser',
@@ -83,7 +115,7 @@ function handleForceLogout(row: OnlineUserVO) {
       confirmButtonText: $t('common.confirm'),
       cancelButtonText: $t('common.cancel'),
       type: 'warning',
-    }
+    },
   ).then(() => {
     if (row.tokenId) {
       forceLogout(row.tokenId).then(() => {

@@ -4,13 +4,12 @@
     <SelectLayoutMode />
     <el-divider />
     <h4>{{ $t('layout.settings.functional') }}</h4>
-    <div
-      v-for="setting in switchSettings"
-      :key="setting.key"
-      class="setting-item"
-    >
+    <div v-for="setting in switchSettings" :key="setting.key" class="setting-item">
       <span class="setting-name">{{ setting.label }}</span>
-      <el-switch v-model="setting.value.value" :disabled="!isLeft && setting.key === 'fixedHeader'" />
+      <el-switch
+        v-model="setting.value.value"
+        :disabled="!isLeft && setting.key === 'fixedHeader'"
+      />
     </div>
     <el-button type="danger" @click="resetLayoutConfig">
       <template #icon><Icon icon="lucide:rotate-ccw" /></template>
@@ -29,7 +28,8 @@ import SelectLayoutMode from './SelectLayoutMode.vue'
 import { Icon } from '@iconify/vue'
 import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 const settingsStore = useSettingsStore()
 
 const { isLeft } = useLayoutMode()
@@ -58,7 +58,11 @@ const switchSettings = computed(() => [
   { key: 'cacheTagsView', label: $t('layout.settings.cacheTagsView'), value: cacheTagsView },
   { key: 'showWatermark', label: $t('layout.settings.showWatermark'), value: showWatermark },
   { key: 'showGreyMode', label: $t('layout.settings.showGreyMode'), value: showGreyMode },
-  { key: 'showColorWeakness', label: $t('layout.settings.showColorWeakness'), value: showColorWeakness },
+  {
+    key: 'showColorWeakness',
+    label: $t('layout.settings.showColorWeakness'),
+    value: showColorWeakness,
+  },
 ])
 
 // 非左侧模式，Header都是fix布局

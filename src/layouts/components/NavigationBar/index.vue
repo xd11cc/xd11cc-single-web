@@ -17,15 +17,25 @@
         <div class="locale-trigger">
           <Icon icon="lucide:globe" width="18" height="18" />
           <Transition name="locale" mode="out-in">
-            <span :key="i18nLocale">{{ i18nLocale === 'zh-CN' ? t('layout.languageSwitcher.zh') : t('layout.languageSwitcher.en') }}</span>
+            <span :key="i18nLocale">{{
+              i18nLocale === 'zh-CN'
+                ? t('layout.languageSwitcher.zh')
+                : t('layout.languageSwitcher.en')
+            }}</span>
           </Transition>
         </div>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item :disabled="i18nLocale === 'zh-CN'" @click="handleLanguageChange('zh-CN')">
+            <el-dropdown-item
+              :disabled="i18nLocale === 'zh-CN'"
+              @click="handleLanguageChange('zh-CN')"
+            >
               {{ t('layout.languageSwitcher.zh') }}
             </el-dropdown-item>
-            <el-dropdown-item :disabled="i18nLocale === 'en-US'" @click="handleLanguageChange('en-US')">
+            <el-dropdown-item
+              :disabled="i18nLocale === 'en-US'"
+              @click="handleLanguageChange('en-US')"
+            >
               {{ t('layout.languageSwitcher.en') }}
             </el-dropdown-item>
           </el-dropdown-menu>
@@ -44,7 +54,9 @@
             <router-link to="/user/profile">
               <el-dropdown-item>{{ t('layout.navigationBar.profile') }}</el-dropdown-item>
             </router-link>
-            <el-dropdown-item divided @click="logout">{{ t('layout.navigationBar.logout') }}</el-dropdown-item>
+            <el-dropdown-item divided @click="logout">{{
+              t('layout.navigationBar.logout')
+            }}</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>

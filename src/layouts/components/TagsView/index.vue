@@ -12,12 +12,20 @@
         @contextmenu.prevent="openMenu(tag, $event)"
       >
         {{ tag.meta?.title }}
-        <Icon v-if="!isAffix(tag)" icon="lucide:x" width="12" height="12" @click.prevent.stop="closeSelectedTag(tag)" />
+        <Icon
+          v-if="!isAffix(tag)"
+          icon="lucide:x"
+          width="12"
+          height="12"
+          @click.prevent.stop="closeSelectedTag(tag)"
+        />
       </router-link>
     </ScrollPane>
     <ul v-show="visiable" class="contextmenu" :style="{ left: `${left}px`, top: `${top}px` }">
       <li @click="refreshSelectedTag(selectedTag)">{{ t('layout.tagsView.refresh') }}</li>
-      <li v-if="!isAffix(selectedTag)" @click="closeSelectedTag(selectedTag)">{{ t('layout.tagsView.close') }}</li>
+      <li v-if="!isAffix(selectedTag)" @click="closeSelectedTag(selectedTag)">
+        {{ t('layout.tagsView.close') }}
+      </li>
       <li @click="closeOthersTags">{{ t('layout.tagsView.closeOthers') }}</li>
       <li @click="closeAllTags(selectedTag)">{{ t('layout.tagsView.closeAll') }}</li>
     </ul>

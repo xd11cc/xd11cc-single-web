@@ -1,7 +1,9 @@
 <template>
   <div class="form-container">
     <div class="form-card">
-      <div class="title"><h3>{{ $t('login.forgot.title') }}</h3></div>
+      <div class="title">
+        <h3>{{ $t('login.forgot.title') }}</h3>
+      </div>
       <div class="content">
         <div class="login-tabs">
           <span :class="{ active: activeTab === 'phone' }" @click="activeTab = 'phone'">
@@ -35,7 +37,11 @@
                 <template #prefix><Icon icon="lucide:mail" /></template>
               </el-input>
               <el-button :disabled="phoneCountdown > 0" class="code-btn" @click="handleSendSms">
-                {{ phoneCountdown > 0 ? $t('login.forgot.resend', { n: phoneCountdown }) : $t('login.forgot.sendCode') }}
+                {{
+                  phoneCountdown > 0
+                    ? $t('login.forgot.resend', { n: phoneCountdown })
+                    : $t('login.forgot.sendCode')
+                }}
               </el-button>
             </el-form-item>
           </template>
@@ -61,7 +67,11 @@
                 <template #prefix><Icon icon="lucide:key-round" /></template>
               </el-input>
               <el-button :disabled="emailCountdown > 0" class="code-btn" @click="handleSendEmail">
-                {{ emailCountdown > 0 ? $t('login.forgot.resend', { n: emailCountdown }) : $t('login.forgot.sendCode') }}
+                {{
+                  emailCountdown > 0
+                    ? $t('login.forgot.resend', { n: emailCountdown })
+                    : $t('login.forgot.sendCode')
+                }}
               </el-button>
             </el-form-item>
           </template>
@@ -106,9 +116,10 @@
             {{ $t('login.forgot.submit') }}
           </el-button>
           <div class="back-link">
-            {{ $t('login.forgot.backToLogin') }}<el-link type="primary" underline="never" @click="emit('back')"
-              >{{ $t('login.forgot.backLink') }}</el-link
-            >
+            {{ $t('login.forgot.backToLogin')
+            }}<el-link type="primary" underline="never" @click="emit('back')">{{
+              $t('login.forgot.backLink')
+            }}</el-link>
           </div>
         </el-form>
       </div>
@@ -117,11 +128,12 @@
 </template>
 
 <script lang="ts" setup>
-import { useI18n } from "vue-i18n"
+import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import type { FormRules } from 'element-plus'
 
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 
 const emit = defineEmits<{ back: [] }>()
 
@@ -183,7 +195,9 @@ const formRules = computed<FormRules>(() => {
   if (activeTab.value === 'phone') {
     return {
       phone: [{ validator: phoneValidator, trigger: 'blur' }],
-      phoneCode: [{ required: true, message: () => $t('login.rules.captchaRequired'), trigger: 'blur' }],
+      phoneCode: [
+        { required: true, message: () => $t('login.rules.captchaRequired'), trigger: 'blur' },
+      ],
       newPassword: [
         { required: true, message: () => $t('login.forgot.newPassword'), trigger: 'blur' },
         { min: 8, max: 16, message: () => $t('login.validation.passwordLength'), trigger: 'blur' },
@@ -193,7 +207,9 @@ const formRules = computed<FormRules>(() => {
   }
   return {
     email: [{ validator: emailValidator, trigger: 'blur' }],
-    emailCode: [{ required: true, message: () => $t('login.rules.captchaRequired'), trigger: 'blur' }],
+    emailCode: [
+      { required: true, message: () => $t('login.rules.captchaRequired'), trigger: 'blur' },
+    ],
     newPassword: [
       { required: true, message: () => $t('login.forgot.newPassword'), trigger: 'blur' },
       { min: 8, max: 16, message: () => $t('login.validation.passwordLength'), trigger: 'blur' },

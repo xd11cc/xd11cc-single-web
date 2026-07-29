@@ -3,7 +3,10 @@
     <el-card shadow="never" class="search-wrapper">
       <el-form ref="searchFormRef" :inline="true" :model="searchData">
         <el-form-item prop="deptName" :label="$t('system.dept.form.deptName')">
-          <el-input v-model="searchData.deptName" :placeholder="$t('system.dept.formPlaceholder.deptName')" />
+          <el-input
+            v-model="searchData.deptName"
+            :placeholder="$t('system.dept.formPlaceholder.deptName')"
+          />
         </el-form-item>
         <el-form-item prop="status" :label="$t('system.dept.form.status')">
           <el-select
@@ -40,7 +43,11 @@
           </el-button>
           <el-button @click="toggleExpand">
             <template #icon><Icon icon="lucide:arrow-up-down" /></template>
-            {{ isExpanded ? $t('system.dept.actions.collapseAll') : $t('system.dept.actions.expandAll') }}
+            {{
+              isExpanded
+                ? $t('system.dept.actions.collapseAll')
+                : $t('system.dept.actions.expandAll')
+            }}
           </el-button>
         </div>
       </div>
@@ -54,10 +61,28 @@
           default-expand-all
           @row-click="handleRowClick"
         >
-          <el-table-column prop="deptName" :label="$t('system.dept.search.deptName')" min-width="180" />
-          <el-table-column prop="deptCode" :label="$t('system.dept.columns.deptCode')" align="center" />
-          <el-table-column prop="sort" :label="$t('system.dept.columns.sort')" align="center" width="80" />
-          <el-table-column prop="status" :label="$t('system.dept.search.status')" align="center" width="80">
+          <el-table-column
+            prop="deptName"
+            :label="$t('system.dept.search.deptName')"
+            min-width="180"
+          />
+          <el-table-column
+            prop="deptCode"
+            :label="$t('system.dept.columns.deptCode')"
+            align="center"
+          />
+          <el-table-column
+            prop="sort"
+            :label="$t('system.dept.columns.sort')"
+            align="center"
+            width="80"
+          />
+          <el-table-column
+            prop="status"
+            :label="$t('system.dept.search.status')"
+            align="center"
+            width="80"
+          >
             <template #default="scope">
               <el-tag
                 :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
@@ -75,7 +100,6 @@
             :label="$t('system.dept.columns.createTime')"
             align="center"
             min-width="160"
-           
           />
           <el-table-column fixed="right" :label="$t('common.action')" width="120" align="center">
             <template #default="scope">
@@ -124,7 +148,9 @@
     <!-- 新增、修改弹窗 -->
     <el-dialog
       v-model="dialogVisible"
-      :title="formData.id === undefined ? $t('system.dept.dialogs.add') : $t('system.dept.dialogs.edit')"
+      :title="
+        formData.id === undefined ? $t('system.dept.dialogs.add') : $t('system.dept.dialogs.edit')
+      "
       width="35%"
       @close="handleClose"
     >
@@ -150,12 +176,18 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item prop="deptName" :label="$t('system.dept.form.deptName')">
-              <el-input v-model="formData.deptName" :placeholder="$t('system.dept.formPlaceholder.deptName')" />
+              <el-input
+                v-model="formData.deptName"
+                :placeholder="$t('system.dept.formPlaceholder.deptName')"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item prop="deptCode" :label="$t('system.dept.form.deptCode')">
-              <el-input v-model="formData.deptCode" :placeholder="$t('system.dept.formPlaceholder.deptCode')" />
+              <el-input
+                v-model="formData.deptCode"
+                :placeholder="$t('system.dept.formPlaceholder.deptCode')"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -215,14 +247,16 @@
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-        <el-button type="primary" :loading="loading" @click="handleCreateOrUpdate">{{ $t('common.confirm') }}</el-button>
+        <el-button type="primary" :loading="loading" @click="handleCreateOrUpdate">{{
+          $t('common.confirm')
+        }}</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { useI18n } from "vue-i18n"
+import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import { useDict } from '@/common/composables/useDict'
 import type { FormRules } from 'element-plus'
@@ -231,7 +265,8 @@ import { deptTreeList, addDept, modifyDeptById, removeDeptById } from './apis'
 import type { SystemDeptVO, SystemDeptTreeVO, SystemDeptQueryVO } from './apis/type'
 import { userList } from '@/views/system/user/apis'
 
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 
 defineOptions({
   name: 'dept',
@@ -313,11 +348,15 @@ function handleRemove(row: SystemDeptTreeVO) {
     ElMessage.warning($t('system.dept.messages.hasChildren'))
     return
   }
-  ElMessageBox.confirm($t('system.dept.messages.deleteConfirm', { deptName: row.deptName }), $t('common.messages.confirmTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'warning',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.dept.messages.deleteConfirm', { deptName: row.deptName }),
+    $t('common.messages.confirmTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'warning',
+    },
+  ).then(() => {
     removeDeptById(row.id!).then((res) => {
       ElMessage.success(res.msg || $t('common.messages.operationSuccess'))
       getTableData()

@@ -56,7 +56,10 @@ export function userList(): Promise<ResponseVO<SystemUserVO[]>> {
   })
 }
 
-export function changePassword(data: { oldPassword: string; newPassword: string }): Promise<ResponseVO<number>> {
+export function changePassword(data: {
+  oldPassword: string
+  newPassword: string
+}): Promise<ResponseVO<number>> {
   return request({
     url: '/system/user/changePassword',
     method: 'POST',

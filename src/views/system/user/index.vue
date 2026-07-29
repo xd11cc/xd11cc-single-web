@@ -1,12 +1,23 @@
 <template>
-  <UseCrudView :slotProps="crud.slotProps" :formRules="formRules" :add-title="$t('system.user.dialogs.add')" :edit-title="$t('system.user.dialogs.edit')">
+  <UseCrudView
+    :slotProps="crud.slotProps"
+    :formRules="formRules"
+    :add-title="$t('system.user.dialogs.add')"
+    :edit-title="$t('system.user.dialogs.edit')"
+  >
     <!-- 搜索区字段 -->
     <template #search-form="{ searchData }">
       <el-form-item prop="username" :label="$t('system.user.search.username')">
-        <el-input v-model="searchData.username" :placeholder="$t('system.user.formPlaceholder.username')" />
+        <el-input
+          v-model="searchData.username"
+          :placeholder="$t('system.user.formPlaceholder.username')"
+        />
       </el-form-item>
       <el-form-item prop="phone" :label="$t('system.user.search.phone')">
-        <el-input v-model="searchData.phone" :placeholder="$t('system.user.formPlaceholder.phone')" />
+        <el-input
+          v-model="searchData.phone"
+          :placeholder="$t('system.user.formPlaceholder.phone')"
+        />
       </el-form-item>
       <el-form-item prop="deptId" :label="$t('system.user.search.dept')">
         <el-tree-select
@@ -21,7 +32,12 @@
         />
       </el-form-item>
       <el-form-item prop="status" :label="$t('system.user.search.status')">
-        <el-select v-model="searchData.status" :placeholder="$t('system.user.formPlaceholder.status')" clearable style="width: 150px">
+        <el-select
+          v-model="searchData.status"
+          :placeholder="$t('system.user.formPlaceholder.status')"
+          clearable
+          style="width: 150px"
+        >
           <el-option
             v-for="item in getDictList('system_status')"
             :key="item.id"
@@ -38,7 +54,8 @@
         <template #icon><Icon icon="lucide:plus-circle" /></template>{{ $t('common.add') }}
       </el-button>
       <el-button type="danger" @click="handleBatchRemove">
-        <template #icon><Icon icon="lucide:trash-2" /></template>{{ $t('system.user.actions.batchDelete') }} ({{ rowSelection.length }})
+        <template #icon><Icon icon="lucide:trash-2" /></template
+        >{{ $t('system.user.actions.batchDelete') }} ({{ rowSelection.length }})
       </el-button>
       <TableColumnSetting
         :columns="tableColumns.columns.value"
@@ -51,12 +68,43 @@
     <!-- 表格列 -->
     <template #table>
       <el-table-column type="selection" width="50" align="center" />
-      <el-table-column v-if="isColumnVisible('username')" prop="username" :label="$t('system.user.columns.username')" align="center" />
-      <el-table-column v-if="isColumnVisible('nickname')" prop="nickname" :label="$t('system.user.form.nickname')" align="center" />
-      <el-table-column v-if="isColumnVisible('deptName')" prop="deptName" :label="$t('system.user.search.dept')" align="center" />
-      <el-table-column v-if="isColumnVisible('postName')" prop="postName" :label="$t('system.user.columns.postName')" align="center" />
-      <el-table-column v-if="isColumnVisible('phone')" prop="phone" :label="$t('system.user.search.phone')" align="center" />
-      <el-table-column v-if="isColumnVisible('status')" prop="status" :label="$t('system.user.search.status')" align="center" width="80">
+      <el-table-column
+        v-if="isColumnVisible('username')"
+        prop="username"
+        :label="$t('system.user.columns.username')"
+        align="center"
+      />
+      <el-table-column
+        v-if="isColumnVisible('nickname')"
+        prop="nickname"
+        :label="$t('system.user.form.nickname')"
+        align="center"
+      />
+      <el-table-column
+        v-if="isColumnVisible('deptName')"
+        prop="deptName"
+        :label="$t('system.user.search.dept')"
+        align="center"
+      />
+      <el-table-column
+        v-if="isColumnVisible('postName')"
+        prop="postName"
+        :label="$t('system.user.columns.postName')"
+        align="center"
+      />
+      <el-table-column
+        v-if="isColumnVisible('phone')"
+        prop="phone"
+        :label="$t('system.user.search.phone')"
+        align="center"
+      />
+      <el-table-column
+        v-if="isColumnVisible('status')"
+        prop="status"
+        :label="$t('system.user.search.status')"
+        align="center"
+        width="80"
+      >
         <template #default="scope">
           <el-tag
             :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
@@ -68,7 +116,13 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column v-if="isColumnVisible('createTime')" prop="createTime" :label="$t('system.user.columns.createTime')" align="center" min-width="160" />
+      <el-table-column
+        v-if="isColumnVisible('createTime')"
+        prop="createTime"
+        :label="$t('system.user.columns.createTime')"
+        align="center"
+        min-width="160"
+      />
       <el-table-column fixed="right" :label="$t('common.action')" width="120" align="center">
         <template #default="scope">
           <el-tooltip :content="$t('common.edit')" placement="top">
@@ -96,13 +150,7 @@
             </el-button>
           </el-tooltip>
           <el-tooltip :content="$t('system.user.actions.resetPassword')" placement="top">
-            <el-button
-              type="primary"
-              text
-              bg
-              size="small"
-              @click="handleResetPwd(scope.row)"
-            >
+            <el-button type="primary" text bg size="small" @click="handleResetPwd(scope.row)">
               <Icon icon="lucide:key-round" />
             </el-button>
           </el-tooltip>
@@ -114,17 +162,30 @@
     <template #form-fields="{ formData }">
       <el-col :span="12">
         <el-form-item prop="username" :label="$t('system.user.columns.username')">
-          <el-input v-model="formData.username" :placeholder="$t('system.user.formPlaceholder.username')" maxlength="20" />
+          <el-input
+            v-model="formData.username"
+            :placeholder="$t('system.user.formPlaceholder.username')"
+            maxlength="20"
+          />
         </el-form-item>
       </el-col>
       <el-col :span="12">
         <el-form-item prop="nickname" :label="$t('system.user.form.nickname')">
-          <el-input v-model="formData.nickname" :placeholder="$t('system.user.formPlaceholder.nickname')" maxlength="20" />
+          <el-input
+            v-model="formData.nickname"
+            :placeholder="$t('system.user.formPlaceholder.nickname')"
+            maxlength="20"
+          />
         </el-form-item>
       </el-col>
       <el-col :span="12" v-if="formData.id === undefined">
         <el-form-item prop="password" :label="$t('system.user.form.password')">
-          <el-input v-model="formData.password" type="password" :placeholder="$t('system.user.formPlaceholder.password')" show-password />
+          <el-input
+            v-model="formData.password"
+            type="password"
+            :placeholder="$t('system.user.formPlaceholder.password')"
+            show-password
+          />
         </el-form-item>
       </el-col>
       <el-col :span="12">
@@ -161,7 +222,11 @@
       </el-col>
       <el-col :span="12">
         <el-form-item prop="sex" :label="$t('system.user.form.sex')">
-          <el-select v-model="formData.sex" :placeholder="$t('system.user.formPlaceholder.sex')" style="width: 100%">
+          <el-select
+            v-model="formData.sex"
+            :placeholder="$t('system.user.formPlaceholder.sex')"
+            style="width: 100%"
+          >
             <el-option
               v-for="item in getDictList('system_user_sex')"
               :key="item.id"
@@ -173,22 +238,39 @@
       </el-col>
       <el-col :span="12">
         <el-form-item prop="phone" :label="$t('system.user.search.phone')">
-          <el-input v-model="formData.phone" :placeholder="$t('system.user.formPlaceholder.phone')" maxlength="11" />
+          <el-input
+            v-model="formData.phone"
+            :placeholder="$t('system.user.formPlaceholder.phone')"
+            maxlength="11"
+          />
         </el-form-item>
       </el-col>
       <el-col :span="12">
         <el-form-item prop="email" :label="$t('system.user.form.email')">
-          <el-input v-model="formData.email" :placeholder="$t('system.user.formPlaceholder.email')" maxlength="20" />
+          <el-input
+            v-model="formData.email"
+            :placeholder="$t('system.user.formPlaceholder.email')"
+            maxlength="20"
+          />
         </el-form-item>
       </el-col>
       <el-col :span="12">
         <el-form-item prop="idCard" :label="$t('system.user.form.idCard')">
-          <el-input v-model="formData.idCard" :placeholder="$t('system.user.formPlaceholder.idCard')" maxlength="18" />
+          <el-input
+            v-model="formData.idCard"
+            :placeholder="$t('system.user.formPlaceholder.idCard')"
+            maxlength="18"
+          />
         </el-form-item>
       </el-col>
       <el-col :span="12">
         <el-form-item prop="roleIds" :label="$t('system.user.form.roleIds')">
-          <el-select v-model="formData.roleIds" :placeholder="$t('system.user.formPlaceholder.roleIds')" multiple style="width: 100%">
+          <el-select
+            v-model="formData.roleIds"
+            :placeholder="$t('system.user.formPlaceholder.roleIds')"
+            multiple
+            style="width: 100%"
+          >
             <el-option
               v-for="item in roleOptions"
               :key="item.id"
@@ -228,7 +310,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useI18n } from "vue-i18n"
+import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import { ref, nextTick } from 'vue'
 import type { FormRules } from 'element-plus'
@@ -237,13 +319,21 @@ import { useCrud } from '@/common/composables/useCrud'
 import { useDict } from '@/common/composables/useDict'
 import { useTableColumns } from '@@/composables/useTableColumns'
 import TableColumnSetting from '@@/components/TableColumnSetting/index.vue'
-import { userPage, getUserById, addUser, modifyUserById, removeUserByIds, resetPassword } from './apis'
+import {
+  userPage,
+  getUserById,
+  addUser,
+  modifyUserById,
+  removeUserByIds,
+  resetPassword,
+} from './apis'
 import type { SystemUserVO, SystemUserQueryVO } from './apis/type'
 import { deptTreeList } from '@/views/system/dept/apis'
 import { postListByDeptId } from '@/views/system/post/apis'
 import { roleList } from '@/views/system/role/apis'
 
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 
 defineOptions({ name: 'user' })
 
@@ -290,18 +380,30 @@ const formRules: FormRules = {
     { required: true, trigger: 'blur', message: () => $t('system.user.form.password') },
     { min: 6, max: 20, message: () => $t('common.validation.passwordLength'), trigger: 'blur' },
   ],
-  deptId: [{ required: true, trigger: 'change', message: () => $t('system.user.formPlaceholder.deptId') }],
-  postId: [{ required: true, trigger: 'change', message: () => $t('system.user.formPlaceholder.postId') }],
-  sex: [{ required: true, trigger: 'change', message: () => $t('system.user.formPlaceholder.sex') }],
-  roleIds: [{ required: true, trigger: 'change', message: () => $t('system.user.formPlaceholder.roleIds') }],
+  deptId: [
+    { required: true, trigger: 'change', message: () => $t('system.user.formPlaceholder.deptId') },
+  ],
+  postId: [
+    { required: true, trigger: 'change', message: () => $t('system.user.formPlaceholder.postId') },
+  ],
+  sex: [
+    { required: true, trigger: 'change', message: () => $t('system.user.formPlaceholder.sex') },
+  ],
+  roleIds: [
+    { required: true, trigger: 'change', message: () => $t('system.user.formPlaceholder.roleIds') },
+  ],
 }
 
 function getDeptTree() {
-  deptTreeList({}).then(({ data }) => { deptTreeData.value = data })
+  deptTreeList({}).then(({ data }) => {
+    deptTreeData.value = data
+  })
 }
 
 function getRoleOptions() {
-  roleList().then(({ data }) => { roleOptions.value = data })
+  roleList().then(({ data }) => {
+    roleOptions.value = data
+  })
 }
 
 function findDeptNode(tree: any[], id: number): any | undefined {
@@ -321,7 +423,9 @@ function handleDeptChange(deptId: number | undefined) {
   if (deptId) {
     const node = findDeptNode(deptTreeData.value, deptId)
     crud.state.formData.value.deptName = node?.deptName
-    postListByDeptId(deptId).then(({ data }) => { postList.value = data })
+    postListByDeptId(deptId).then(({ data }) => {
+      postList.value = data
+    })
   } else {
     crud.state.formData.value.deptName = undefined
   }
@@ -343,7 +447,9 @@ const originalHandleEdit = crud.methods.handleEdit
 crud.methods.handleEdit = (row: SystemUserVO) => {
   originalHandleEdit(row)
   if (row.deptId) {
-    postListByDeptId(row.deptId).then(({ data }) => { postList.value = data })
+    postListByDeptId(row.deptId).then(({ data }) => {
+      postList.value = data
+    })
   }
 }
 
@@ -355,11 +461,15 @@ function handleBatchRemove() {
     return
   }
   const ids = selectedRows.map((r: any) => r.id).join(',')
-  ElMessageBox.confirm($t('system.user.messages.batchDeleteConfirm', { count: selectedRows.length }), $t('common.messages.confirmTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'warning',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.user.messages.batchDeleteConfirm', { count: selectedRows.length }),
+    $t('common.messages.confirmTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'warning',
+    },
+  ).then(() => {
     removeUserByIds(ids).then((res) => {
       ElMessage.success(res.msg || $t('common.messages.operationSuccess'))
       crud.methods.getTableData()
@@ -369,13 +479,17 @@ function handleBatchRemove() {
 
 // ─── 重置密码（模块特有，保留在父组件） ──────────────────
 function handleResetPwd(row: SystemUserVO) {
-  ElMessageBox.prompt($t('common.messages.passwordResetPrompt', { username: row.username }), $t('common.messages.promptTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    inputPattern: /^.{6,20}$/,
-    inputErrorMessage: $t('common.validation.passwordLength'),
-    inputType: 'password',
-  }).then(({ value }) => {
+  ElMessageBox.prompt(
+    $t('common.messages.passwordResetPrompt', { username: row.username }),
+    $t('common.messages.promptTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      inputPattern: /^.{6,20}$/,
+      inputErrorMessage: $t('common.validation.passwordLength'),
+      inputType: 'password',
+    },
+  ).then(({ value }) => {
     resetPassword(row.id!, value).then((res) => {
       ElMessage.success(res.msg || $t('common.messages.resetSuccess'))
     })
@@ -387,5 +501,4 @@ getDeptTree()
 getRoleOptions()
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

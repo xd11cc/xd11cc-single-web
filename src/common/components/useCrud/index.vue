@@ -25,10 +25,7 @@
         </div>
       </div>
       <div class="table-wrapper">
-        <el-table
-          :data="slotProps.tableData"
-          @selection-change="slotProps.handleSelectionChange"
-        >
+        <el-table :data="slotProps.tableData" @selection-change="slotProps.handleSelectionChange">
           <slot name="table" v-bind="slotProps" />
         </el-table>
       </div>
@@ -84,7 +81,8 @@ import type { UseCrudSlotProps } from '@@/composables/useCrud'
 
 defineOptions({ name: 'useCrudView' })
 
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 
 const props = defineProps<{
   slotProps: UseCrudSlotProps

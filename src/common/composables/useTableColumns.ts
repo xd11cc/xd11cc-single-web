@@ -20,9 +20,7 @@ export function useTableColumns(options: UseTableColumnsOptions) {
   const columns = ref<TableColumnConfig[]>(loadColumns())
 
   const visibleColumns = computed(() =>
-    columns.value
-      .filter((col) => col.visible)
-      .sort((a, b) => a.order - b.order),
+    columns.value.filter((col) => col.visible).sort((a, b) => a.order - b.order),
   )
 
   function loadColumns(): TableColumnConfig[] {

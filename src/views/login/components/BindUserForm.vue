@@ -1,9 +1,11 @@
 <template>
   <div class="form-container">
     <div class="form-card">
-      <div class="title"><h3>{{ $t("login.bind.title") }}</h3></div>
+      <div class="title">
+        <h3>{{ $t('login.bind.title') }}</h3>
+      </div>
       <div class="content">
-        <p class="tip">{{ $t("login.bind.tip") }}</p>
+        <p class="tip">{{ $t('login.bind.tip') }}</p>
         <el-form
           ref="bindFormRef"
           :model="bindFormData"
@@ -37,7 +39,7 @@
             </el-input>
           </el-form-item>
           <el-button type="primary" size="large" :loading="bindLoading" @click.prevent="handleBind">
-            {{ $t("login.bind.action") }}
+            {{ $t('login.bind.action') }}
           </el-button>
         </el-form>
       </div>
@@ -54,7 +56,8 @@ import { useUserStore } from '@/pinia/stores/user'
 
 const route = useRoute()
 const router = useRouter()
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 const userStore = useUserStore()
 
 const source = computed(() => (route.query.source as string) || '')
@@ -70,7 +73,9 @@ const bindFormData = reactive({
 })
 
 const bindFormRules: FormRules = {
-  username: [{ required: true, message: () => $t('login.bind.form.usernameRequired'), trigger: 'blur' }],
+  username: [
+    { required: true, message: () => $t('login.bind.form.usernameRequired'), trigger: 'blur' },
+  ],
   password: [
     { required: true, message: () => $t('login.bind.form.passwordRequired'), trigger: 'blur' },
     { min: 8, max: 16, message: () => $t('login.bind.form.passwordLength'), trigger: 'blur' },

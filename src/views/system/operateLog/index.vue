@@ -3,10 +3,18 @@
     <el-card shadow="never" class="search-wrapper">
       <el-form ref="searchFormRef" :inline="true" :model="searchData">
         <el-form-item prop="module" :label="$t('system.operateLog.search.module')">
-          <el-input v-model="searchData.module" :placeholder="$t('system.operateLog.formPlaceholder.module')" />
+          <el-input
+            v-model="searchData.module"
+            :placeholder="$t('system.operateLog.formPlaceholder.module')"
+          />
         </el-form-item>
         <el-form-item prop="operateType" :label="$t('system.operateLog.search.operateType')">
-          <el-select v-model="searchData.operateType" :placeholder="$t('system.operateLog.formPlaceholder.operateType')" clearable style="width: 150px">
+          <el-select
+            v-model="searchData.operateType"
+            :placeholder="$t('system.operateLog.formPlaceholder.operateType')"
+            clearable
+            style="width: 150px"
+          >
             <el-option
               v-for="item in getDictList('system_operate_type')"
               :key="item.id"
@@ -16,7 +24,12 @@
           </el-select>
         </el-form-item>
         <el-form-item prop="status" :label="$t('system.operateLog.search.status')">
-          <el-select v-model="searchData.status" :placeholder="$t('system.operateLog.formPlaceholder.status')" clearable style="width: 150px">
+          <el-select
+            v-model="searchData.status"
+            :placeholder="$t('system.operateLog.formPlaceholder.status')"
+            clearable
+            style="width: 150px"
+          >
             <el-option
               v-for="item in getDictList('system_operate_status')"
               :key="item.id"
@@ -27,10 +40,12 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            <template #icon><Icon icon="lucide:search" /></template>{{ $t('system.operateLog.actions.query') }}
+            <template #icon><Icon icon="lucide:search" /></template
+            >{{ $t('system.operateLog.actions.query') }}
           </el-button>
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('system.operateLog.actions.reset') }}
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template
+            >{{ $t('system.operateLog.actions.reset') }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -62,22 +77,51 @@
       <div class="table-wrapper">
         <el-table ref="tableRef" :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column prop="module" :label="$t('system.operateLog.columns.module')" align="center" />
-          <el-table-column prop="operateType" :label="$t('system.operateLog.columns.operateType')" align="center" width="100">
+          <el-table-column
+            prop="module"
+            :label="$t('system.operateLog.columns.module')"
+            align="center"
+          />
+          <el-table-column
+            prop="operateType"
+            :label="$t('system.operateLog.columns.operateType')"
+            align="center"
+            width="100"
+          >
             <template #default="scope">
               <el-tag
-                :type="getDictItem('system_operate_type', scope.row.operateType)?.listClass || 'info'"
+                :type="
+                  getDictItem('system_operate_type', scope.row.operateType)?.listClass || 'info'
+                "
                 effect="plain"
                 size="small"
                 disable-transitions
               >
-                {{ getDictItem('system_operate_type', scope.row.operateType)?.value || scope.row.operateType }}
+                {{
+                  getDictItem('system_operate_type', scope.row.operateType)?.value ||
+                  scope.row.operateType
+                }}
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="requestMethod" :label="$t('system.operateLog.columns.requestMethod')" align="center" width="100" />
-          <el-table-column prop="operateIp" :label="$t('system.operateLog.columns.operateIp')" align="center" width="140" />
-          <el-table-column prop="status" :label="$t('system.operateLog.columns.status')" align="center" width="80">
+          <el-table-column
+            prop="requestMethod"
+            :label="$t('system.operateLog.columns.requestMethod')"
+            align="center"
+            width="100"
+          />
+          <el-table-column
+            prop="operateIp"
+            :label="$t('system.operateLog.columns.operateIp')"
+            align="center"
+            width="140"
+          />
+          <el-table-column
+            prop="status"
+            :label="$t('system.operateLog.columns.status')"
+            align="center"
+            width="80"
+          >
             <template #default="scope">
               <el-tag
                 :type="getDictItem('system_operate_status', scope.row.status)?.listClass || 'info'"
@@ -85,26 +129,35 @@
                 size="small"
                 disable-transitions
               >
-                {{ getDictItem('system_operate_status', scope.row.status)?.value || scope.row.status }}
+                {{
+                  getDictItem('system_operate_status', scope.row.status)?.value || scope.row.status
+                }}
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="costTime" :label="$t('system.operateLog.columns.costTime')" align="center" width="100">
-            <template #default="scope">
-              {{ scope.row.costTime }}ms
-            </template>
+          <el-table-column
+            prop="costTime"
+            :label="$t('system.operateLog.columns.costTime')"
+            align="center"
+            width="100"
+          >
+            <template #default="scope"> {{ scope.row.costTime }}ms </template>
           </el-table-column>
-          <el-table-column prop="createTime" :label="$t('system.operateLog.columns.createTime')" align="center" min-width="160" />
-          <el-table-column fixed="right" :label="$t('system.operateLog.columns.action')" width="90" align="center">
+          <el-table-column
+            prop="createTime"
+            :label="$t('system.operateLog.columns.createTime')"
+            align="center"
+            min-width="160"
+          />
+          <el-table-column
+            fixed="right"
+            :label="$t('system.operateLog.columns.action')"
+            width="90"
+            align="center"
+          >
             <template #default="scope">
               <el-tooltip :content="$t('system.operateLog.actions.detail')" placement="top">
-                <el-button
-                  type="primary"
-                  text
-                  bg
-                  size="small"
-                  @click="handleDetail(scope.row)"
-                >
+                <el-button type="primary" text bg size="small" @click="handleDetail(scope.row)">
                   <Icon icon="lucide:eye" />
                 </el-button>
               </el-tooltip>
@@ -142,25 +195,44 @@
     <!-- 详情弹窗 -->
     <el-dialog v-model="detailVisible" :title="$t('system.operateLog.dialogs.detail')" width="50%">
       <el-descriptions :column="2" border>
-        <el-descriptions-item :label="$t('system.operateLog.detail.module')">{{ detailData.module }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('system.operateLog.detail.module')">{{
+          detailData.module
+        }}</el-descriptions-item>
         <el-descriptions-item :label="$t('system.operateLog.detail.operateType')">
-          {{ getDictItem('system_operate_type', detailData.operateType)?.value || detailData.operateType }}
+          {{
+            getDictItem('system_operate_type', detailData.operateType)?.value ||
+            detailData.operateType
+          }}
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('system.operateLog.detail.requestMethod')">{{ detailData.requestMethod }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('system.operateLog.detail.requestMethod')">{{
+          detailData.requestMethod
+        }}</el-descriptions-item>
         <el-descriptions-item :label="$t('system.operateLog.detail.status')">
           <el-tag
             :type="getDictItem('system_operate_status', detailData.status)?.listClass || 'info'"
             effect="plain"
             size="small"
           >
-            {{ getDictItem('system_operate_status', detailData.status)?.value || detailData.status }}
+            {{
+              getDictItem('system_operate_status', detailData.status)?.value || detailData.status
+            }}
           </el-tag>
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('system.operateLog.detail.operateDesc')" :span="2">{{ detailData.operateDesc }}</el-descriptions-item>
-        <el-descriptions-item :label="$t('system.operateLog.detail.requestUrl')" :span="2">{{ detailData.requestUrl }}</el-descriptions-item>
-        <el-descriptions-item :label="$t('system.operateLog.detail.method')" :span="2">{{ detailData.method }}</el-descriptions-item>
-        <el-descriptions-item :label="$t('system.operateLog.detail.operateIp')">{{ detailData.operateIp }}</el-descriptions-item>
-        <el-descriptions-item :label="$t('system.operateLog.detail.costTime')">{{ detailData.costTime }}ms</el-descriptions-item>
+        <el-descriptions-item :label="$t('system.operateLog.detail.operateDesc')" :span="2">{{
+          detailData.operateDesc
+        }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('system.operateLog.detail.requestUrl')" :span="2">{{
+          detailData.requestUrl
+        }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('system.operateLog.detail.method')" :span="2">{{
+          detailData.method
+        }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('system.operateLog.detail.operateIp')">{{
+          detailData.operateIp
+        }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('system.operateLog.detail.costTime')"
+          >{{ detailData.costTime }}ms</el-descriptions-item
+        >
         <el-descriptions-item :label="$t('system.operateLog.detail.requestParam')" :span="2">
           <el-input
             v-if="detailData.requestParam"
@@ -181,7 +253,11 @@
           />
           <span v-else>-</span>
         </el-descriptions-item>
-        <el-descriptions-item v-if="detailData.errorMsg" :label="$t('system.operateLog.detail.errorMsg')" :span="2">
+        <el-descriptions-item
+          v-if="detailData.errorMsg"
+          :label="$t('system.operateLog.detail.errorMsg')"
+          :span="2"
+        >
           <el-input
             type="textarea"
             :model-value="detailData.errorMsg"
@@ -189,7 +265,9 @@
             :autosize="{ minRows: 2, maxRows: 4 }"
           />
         </el-descriptions-item>
-        <el-descriptions-item :label="$t('system.operateLog.detail.createTime')" :span="2">{{ detailData.createTime }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('system.operateLog.detail.createTime')" :span="2">{{
+          detailData.createTime
+        }}</el-descriptions-item>
       </el-descriptions>
       <template #footer>
         <el-button @click="detailVisible = false">{{ $t('common.close') }}</el-button>
@@ -199,14 +277,15 @@
 </template>
 
 <script lang="ts" setup>
-import { useI18n } from "vue-i18n"
+import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import { useDict } from '@/common/composables/useDict'
 import { usePagination } from '@@/composables/usePagination'
 import { operateLogPage, removeOperateLogByIds, cleanOperateLog } from './apis'
 import type { SystemOperateLogQueryVO, SystemOperateLogVO } from './apis/type'
 
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 
 defineOptions({
   name: 'operateLog',
@@ -244,11 +323,15 @@ function handleDetail(row: SystemOperateLogVO) {
 }
 
 function handleRemove(row: SystemOperateLogVO) {
-  ElMessageBox.confirm($t('system.operateLog.messages.deleteConfirm'), $t('common.messages.confirmTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'warning',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.operateLog.messages.deleteConfirm'),
+    $t('common.messages.confirmTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'warning',
+    },
+  ).then(() => {
     if (row.id) {
       removeOperateLogByIds(String(row.id)).then((data) => {
         ElMessage.success(data.msg || $t('system.operateLog.messages.deleteSuccess'))
@@ -265,11 +348,15 @@ function handleBatchRemove() {
     return
   }
   const ids = selectedRows.map((row) => row.id).join(',')
-  ElMessageBox.confirm($t('system.operateLog.messages.batchDeleteConfirm', { count: selectedRows.length }), $t('common.messages.confirmTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'warning',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.operateLog.messages.batchDeleteConfirm', { count: selectedRows.length }),
+    $t('common.messages.confirmTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'warning',
+    },
+  ).then(() => {
     removeOperateLogByIds(ids).then((data) => {
       ElMessage.success(data.msg || $t('system.operateLog.messages.deleteSuccess'))
       getTableData()
@@ -278,11 +365,15 @@ function handleBatchRemove() {
 }
 
 function handleClean() {
-  ElMessageBox.confirm($t('system.operateLog.messages.cleanConfirm'), $t('common.messages.warningTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'error',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.operateLog.messages.cleanConfirm'),
+    $t('common.messages.warningTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'error',
+    },
+  ).then(() => {
     cleanOperateLog().then(() => {
       ElMessage.success($t('system.operateLog.messages.cleanSuccess'))
       getTableData()

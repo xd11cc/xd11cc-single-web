@@ -18,7 +18,9 @@
           style="display: none"
           @change="handleFileChange"
         />
-        <h2 class="user-name">{{ userStore.nickname || userStore.username || $t('system.user.profile.defaultUser') }}</h2>
+        <h2 class="user-name">
+          {{ userStore.nickname || userStore.username || $t('system.user.profile.defaultUser') }}
+        </h2>
         <div class="user-tags">
           <el-tag v-for="name in displayRoles" :key="name" size="small" effect="plain">
             {{ name }}
@@ -27,41 +29,43 @@
       </div>
 
       <div class="sidebar-card">
-        <h4 class="sidebar-title">{{ $t("system.user.profile.sidebar.title") }}</h4>
+        <h4 class="sidebar-title">{{ $t('system.user.profile.sidebar.title') }}</h4>
         <div class="sidebar-list">
           <div class="sidebar-item">
             <Icon icon="lucide:user" class="sidebar-icon" />
-            <span class="sidebar-label">{{ $t("system.user.profile.sidebar.username") }}</span>
+            <span class="sidebar-label">{{ $t('system.user.profile.sidebar.username') }}</span>
             <span class="sidebar-value">{{ userStore.username || '-' }}</span>
           </div>
           <div class="sidebar-item">
             <Icon icon="lucide:smile" class="sidebar-icon" />
-            <span class="sidebar-label">{{ $t("system.user.profile.sidebar.nickname") }}</span>
+            <span class="sidebar-label">{{ $t('system.user.profile.sidebar.nickname') }}</span>
             <span class="sidebar-value">{{ userStore.nickname || '-' }}</span>
           </div>
           <div class="sidebar-item">
             <Icon icon="lucide:venus-and-mars" class="sidebar-icon" />
-            <span class="sidebar-label">{{ $t("system.user.profile.sidebar.sex") }}</span>
-            <span class="sidebar-value">{{ getDictItem('system_user_sex', userStore.sex)?.value || '-' }}</span>
+            <span class="sidebar-label">{{ $t('system.user.profile.sidebar.sex') }}</span>
+            <span class="sidebar-value">{{
+              getDictItem('system_user_sex', userStore.sex)?.value || '-'
+            }}</span>
           </div>
           <div class="sidebar-item">
             <Icon icon="lucide:phone" class="sidebar-icon" />
-            <span class="sidebar-label">{{ $t("system.user.profile.sidebar.phone") }}</span>
+            <span class="sidebar-label">{{ $t('system.user.profile.sidebar.phone') }}</span>
             <span class="sidebar-value">{{ userStore.phone || '-' }}</span>
           </div>
           <div class="sidebar-item">
             <Icon icon="lucide:mail" class="sidebar-icon" />
-            <span class="sidebar-label">{{ $t("system.user.profile.sidebar.email") }}</span>
+            <span class="sidebar-label">{{ $t('system.user.profile.sidebar.email') }}</span>
             <span class="sidebar-value">{{ userStore.email || '-' }}</span>
           </div>
           <div class="sidebar-item">
             <Icon icon="lucide:building-2" class="sidebar-icon" />
-            <span class="sidebar-label">{{ $t("system.user.profile.sidebar.dept") }}</span>
+            <span class="sidebar-label">{{ $t('system.user.profile.sidebar.dept') }}</span>
             <span class="sidebar-value">{{ userStore.deptName || '-' }}</span>
           </div>
           <div class="sidebar-item">
             <Icon icon="lucide:briefcase" class="sidebar-icon" />
-            <span class="sidebar-label">{{ $t("system.user.profile.sidebar.post") }}</span>
+            <span class="sidebar-label">{{ $t('system.user.profile.sidebar.post') }}</span>
             <span class="sidebar-value">{{ userStore.postName || '-' }}</span>
           </div>
         </div>
@@ -83,17 +87,28 @@
               <el-row :gutter="24">
                 <el-col :span="12">
                   <el-form-item :label="$t('system.user.profile.fields.nickname')" prop="nickname">
-                    <el-input v-model="editForm.nickname" :placeholder="$t('system.user.profile.placeholder.nickname')" maxlength="20" />
+                    <el-input
+                      v-model="editForm.nickname"
+                      :placeholder="$t('system.user.profile.placeholder.nickname')"
+                      maxlength="20"
+                    />
                   </el-form-item>
                 </el-col>
                 <el-col :span="12">
                   <el-form-item :label="$t('system.user.profile.fields.phone')" prop="phone">
-                    <el-input v-model="editForm.phone" :placeholder="$t('system.user.profile.placeholder.phone')" maxlength="11" />
+                    <el-input
+                      v-model="editForm.phone"
+                      :placeholder="$t('system.user.profile.placeholder.phone')"
+                      maxlength="11"
+                    />
                   </el-form-item>
                 </el-col>
                 <el-col :span="12">
                   <el-form-item :label="$t('system.user.profile.fields.email')" prop="email">
-                    <el-input v-model="editForm.email" :placeholder="$t('system.user.profile.placeholder.email')" />
+                    <el-input
+                      v-model="editForm.email"
+                      :placeholder="$t('system.user.profile.placeholder.email')"
+                    />
                   </el-form-item>
                 </el-col>
                 <el-col :span="12">
@@ -111,7 +126,9 @@
                 </el-col>
               </el-row>
               <el-form-item>
-                <el-button type="primary" :loading="editLoading" @click="handleSaveProfile">{{ $t("system.user.profile.actions.saveProfile") }}</el-button>
+                <el-button type="primary" :loading="editLoading" @click="handleSaveProfile">{{
+                  $t('system.user.profile.actions.saveProfile')
+                }}</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -127,18 +144,44 @@
               label-position="left"
               class="pwd-form"
             >
-              <el-form-item :label="$t('system.user.profile.fields.currentPassword')" prop="oldPassword">
-                <el-input v-model="pwdForm.oldPassword" type="password" show-password :placeholder="$t('system.user.profile.placeholder.currentPassword')" />
+              <el-form-item
+                :label="$t('system.user.profile.fields.currentPassword')"
+                prop="oldPassword"
+              >
+                <el-input
+                  v-model="pwdForm.oldPassword"
+                  type="password"
+                  show-password
+                  :placeholder="$t('system.user.profile.placeholder.currentPassword')"
+                />
               </el-form-item>
-              <el-form-item :label="$t('system.user.profile.fields.newPassword')" prop="newPassword">
-                <el-input v-model="pwdForm.newPassword" type="password" show-password :placeholder="$t('system.user.profile.placeholder.newPassword')" />
+              <el-form-item
+                :label="$t('system.user.profile.fields.newPassword')"
+                prop="newPassword"
+              >
+                <el-input
+                  v-model="pwdForm.newPassword"
+                  type="password"
+                  show-password
+                  :placeholder="$t('system.user.profile.placeholder.newPassword')"
+                />
               </el-form-item>
-              <el-form-item :label="$t('system.user.profile.fields.confirmPassword')" prop="confirmPassword">
-                <el-input v-model="pwdForm.confirmPassword" type="password" show-password :placeholder="$t('system.user.profile.placeholder.confirmPassword')" />
+              <el-form-item
+                :label="$t('system.user.profile.fields.confirmPassword')"
+                prop="confirmPassword"
+              >
+                <el-input
+                  v-model="pwdForm.confirmPassword"
+                  type="password"
+                  show-password
+                  :placeholder="$t('system.user.profile.placeholder.confirmPassword')"
+                />
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" :loading="pwdLoading" @click="handleChangePassword">{{ $t("system.user.profile.actions.confirmChange") }}</el-button>
-                <el-button @click="resetPwdForm">{{ $t("common.reset") }}</el-button>
+                <el-button type="primary" :loading="pwdLoading" @click="handleChangePassword">{{
+                  $t('system.user.profile.actions.confirmChange')
+                }}</el-button>
+                <el-button @click="resetPwdForm">{{ $t('common.reset') }}</el-button>
               </el-form-item>
             </el-form>
           </div>
@@ -148,7 +191,7 @@
           <div class="form-card">
             <h4 class="section-title">
               <Icon icon="lucide:shield-check" class="section-icon" />
-              {{ $t("system.user.profile.permission.currentRoles") }}
+              {{ $t('system.user.profile.permission.currentRoles') }}
             </h4>
             <div class="role-list">
               <div v-for="name in displayRoles" :key="name" class="role-item">
@@ -159,9 +202,13 @@
             <el-divider />
             <h4 class="section-title">
               <Icon icon="lucide:key-round" class="section-icon" />
-              {{ $t("system.user.profile.permission.operatePermission") }}
+              {{ $t('system.user.profile.permission.operatePermission') }}
               <el-tag size="small" type="info" effect="plain" style="margin-left: 8px">
-                {{ $t("system.user.profile.permission.totalCount", { count: userStore.permissions.length }) }}
+                {{
+                  $t('system.user.profile.permission.totalCount', {
+                    count: userStore.permissions.length,
+                  })
+                }}
               </el-tag>
             </h4>
             <div class="permission-grid">
@@ -185,34 +232,64 @@
                 <div class="security-info">
                   <Icon icon="lucide:lock" class="security-icon" />
                   <div>
-                    <p class="security-label">{{ $t("system.user.profile.security.loginPassword") }}</p>
-                    <p class="security-desc">{{ $t("system.user.profile.security.passwordDesc") }}</p>
+                    <p class="security-label">
+                      {{ $t('system.user.profile.security.loginPassword') }}
+                    </p>
+                    <p class="security-desc">
+                      {{ $t('system.user.profile.security.passwordDesc') }}
+                    </p>
                   </div>
                 </div>
-                <el-button type="primary" text @click="activeTab = 'password'">{{ $t("common.edit") }}</el-button>
+                <el-button type="primary" text @click="activeTab = 'password'">{{
+                  $t('common.edit')
+                }}</el-button>
               </div>
               <div class="security-item">
                 <div class="security-info">
                   <Icon icon="lucide:smartphone" class="security-icon" />
                   <div>
-                    <p class="security-label">{{ $t("system.user.profile.security.phoneBind") }}</p>
-                    <p class="security-desc">{{ userStore.phone ? $t('system.user.profile.security.phoneBound', { phone: userStore.phone }) : $t('system.user.profile.security.phoneUnbound') }}</p>
+                    <p class="security-label">{{ $t('system.user.profile.security.phoneBind') }}</p>
+                    <p class="security-desc">
+                      {{
+                        userStore.phone
+                          ? $t('system.user.profile.security.phoneBound', {
+                              phone: userStore.phone,
+                            })
+                          : $t('system.user.profile.security.phoneUnbound')
+                      }}
+                    </p>
                   </div>
                 </div>
                 <el-tag :type="userStore.phone ? 'success' : 'warning'" size="small" effect="plain">
-                  {{ userStore.phone ? $t('system.user.profile.security.bound') : $t('system.user.profile.security.unbound') }}
+                  {{
+                    userStore.phone
+                      ? $t('system.user.profile.security.bound')
+                      : $t('system.user.profile.security.unbound')
+                  }}
                 </el-tag>
               </div>
               <div class="security-item">
                 <div class="security-info">
                   <Icon icon="lucide:mail" class="security-icon" />
                   <div>
-                    <p class="security-label">{{ $t("system.user.profile.security.emailBind") }}</p>
-                    <p class="security-desc">{{ userStore.email ? $t('system.user.profile.security.emailBound', { email: userStore.email }) : $t('system.user.profile.security.emailUnbound') }}</p>
+                    <p class="security-label">{{ $t('system.user.profile.security.emailBind') }}</p>
+                    <p class="security-desc">
+                      {{
+                        userStore.email
+                          ? $t('system.user.profile.security.emailBound', {
+                              email: userStore.email,
+                            })
+                          : $t('system.user.profile.security.emailUnbound')
+                      }}
+                    </p>
                   </div>
                 </div>
                 <el-tag :type="userStore.email ? 'success' : 'warning'" size="small" effect="plain">
-                  {{ userStore.email ? $t('system.user.profile.security.bound') : $t('system.user.profile.security.unbound') }}
+                  {{
+                    userStore.email
+                      ? $t('system.user.profile.security.bound')
+                      : $t('system.user.profile.security.unbound')
+                  }}
                 </el-tag>
               </div>
             </div>
@@ -222,7 +299,12 @@
     </main>
 
     <!-- system.user.profile.dialogs.uploadAvatar -->
-    <el-dialog v-model="avatarDialogVisible" :title="$t('system.user.profile.dialogs.uploadAvatar')" width="460px" @close="handleAvatarDialogClose">
+    <el-dialog
+      v-model="avatarDialogVisible"
+      :title="$t('system.user.profile.dialogs.uploadAvatar')"
+      width="460px"
+      @close="handleAvatarDialogClose"
+    >
       <div class="avatar-editor">
         <div
           ref="cropAreaRef"
@@ -244,18 +326,31 @@
         </div>
         <div v-if="previewUrl" class="crop-toolbar">
           <Icon icon="lucide:zoom-out" class="crop-tool-icon" @click="handleZoom(-0.1)" />
-          <el-slider v-model="cropScale" :min="0.5" :max="3" :step="0.01" :show-tooltip="false" class="crop-slider" />
+          <el-slider
+            v-model="cropScale"
+            :min="0.5"
+            :max="3"
+            :step="0.01"
+            :show-tooltip="false"
+            class="crop-slider"
+          />
           <Icon icon="lucide:zoom-in" class="crop-tool-icon" @click="handleZoom(0.1)" />
         </div>
-        <p v-if="previewUrl" class="crop-tip">{{ $t("system.user.profile.avatar.tip") }}</p>
+        <p v-if="previewUrl" class="crop-tip">{{ $t('system.user.profile.avatar.tip') }}</p>
         <div v-if="!previewUrl" class="avatar-placeholder">
           <Icon icon="lucide:image-plus" :width="48" :height="48" />
-          <p>{{ $t("system.user.profile.avatar.selectImage") }}</p>
+          <p>{{ $t('system.user.profile.avatar.selectImage') }}</p>
         </div>
       </div>
       <template #footer>
-        <el-button @click="avatarDialogVisible = false">{{ $t("common.cancel") }}</el-button>
-        <el-button type="primary" :disabled="!previewUrl" :loading="avatarUploading" @click="handleAvatarUpload">{{ $t("system.user.profile.actions.confirmUpload") }}</el-button>
+        <el-button @click="avatarDialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button
+          type="primary"
+          :disabled="!previewUrl"
+          :loading="avatarUploading"
+          @click="handleAvatarUpload"
+          >{{ $t('system.user.profile.actions.confirmUpload') }}</el-button
+        >
       </template>
     </el-dialog>
   </div>
@@ -272,7 +367,8 @@ import type { FormRules } from 'element-plus'
 
 const route = useRoute()
 const router = useRouter()
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 const userStore = useUserStore()
 const { ossUrl } = useOssUrl()
 const { getDictList, getDictItem } = useDict(['system_user_sex'])
@@ -435,12 +531,26 @@ const editForm = reactive({
 })
 
 const editRules: FormRules = {
-  nickname: [{ required: true, message: () => $t('system.user.profile.placeholder.nickname'), trigger: 'blur' }],
+  nickname: [
+    {
+      required: true,
+      message: () => $t('system.user.profile.placeholder.nickname'),
+      trigger: 'blur',
+    },
+  ],
   phone: [
-    { pattern: /^1[3-9]\d{9}$/, message: () => $t('system.user.profile.validation.invalidPhone'), trigger: 'blur' },
+    {
+      pattern: /^1[3-9]\d{9}$/,
+      message: () => $t('system.user.profile.validation.invalidPhone'),
+      trigger: 'blur',
+    },
   ],
   email: [
-    { type: 'email', message: () => $t('system.user.profile.validation.invalidEmail'), trigger: 'blur' },
+    {
+      type: 'email',
+      message: () => $t('system.user.profile.validation.invalidEmail'),
+      trigger: 'blur',
+    },
   ],
 }
 
@@ -483,16 +593,36 @@ const pwdForm = reactive({
 })
 
 const pwdRules: FormRules = {
-  oldPassword: [{ required: true, message: () => $t('system.user.profile.placeholder.currentPassword'), trigger: 'blur' }],
+  oldPassword: [
+    {
+      required: true,
+      message: () => $t('system.user.profile.placeholder.currentPassword'),
+      trigger: 'blur',
+    },
+  ],
   newPassword: [
-    { required: true, message: () => $t('system.user.profile.placeholder.newPassword'), trigger: 'blur' },
-    { min: 6, max: 20, message: () => $t('system.user.profile.validation.passwordLength'), trigger: 'blur' },
+    {
+      required: true,
+      message: () => $t('system.user.profile.placeholder.newPassword'),
+      trigger: 'blur',
+    },
+    {
+      min: 6,
+      max: 20,
+      message: () => $t('system.user.profile.validation.passwordLength'),
+      trigger: 'blur',
+    },
   ],
   confirmPassword: [
-    { required: true, message: () => $t('system.user.profile.placeholder.confirmPassword'), trigger: 'blur' },
+    {
+      required: true,
+      message: () => $t('system.user.profile.placeholder.confirmPassword'),
+      trigger: 'blur',
+    },
     {
       validator: (_r: unknown, value: string, cb: (e?: Error) => void) => {
-        if (value && value !== pwdForm.newPassword) cb(new Error($t('system.user.profile.validation.passwordMismatch')))
+        if (value && value !== pwdForm.newPassword)
+          cb(new Error($t('system.user.profile.validation.passwordMismatch')))
         else cb()
       },
       trigger: 'blur',

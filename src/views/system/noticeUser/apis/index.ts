@@ -2,7 +2,9 @@ import request from '@@/utils/request'
 import type { PageData, ResponseVO } from 'types/api'
 import type { SystemNoticeUserQueryVO, SystemNoticeUserDTO, SystemNoticeSendVO } from './type'
 
-export function myNoticePage(data: SystemNoticeUserQueryVO): Promise<ResponseVO<PageData<SystemNoticeUserDTO>>> {
+export function myNoticePage(
+  data: SystemNoticeUserQueryVO,
+): Promise<ResponseVO<PageData<SystemNoticeUserDTO>>> {
   return request({
     url: '/system/notice-user/myPage',
     method: 'POST',

@@ -35,7 +35,9 @@ function detectLocale(): SupportedLocale {
   try {
     const storedLocale = normalizeLocale(localStorage.getItem('app-locale'))
     if (storedLocale) return storedLocale
-  } catch { /* quota exceeded or unavailable */ }
+  } catch {
+    /* quota exceeded or unavailable */
+  }
 
   return normalizeLocale(navigator.language) ?? defaultLocale
 }
@@ -63,7 +65,11 @@ export const i18n = createI18n({
 export function setLocale(locale: SupportedLocale) {
   i18n.global.locale.value = locale
   syncDocumentLocale(locale)
-  try { localStorage.setItem('app-locale', locale) } catch { /* ignore */ }
+  try {
+    localStorage.setItem('app-locale', locale)
+  } catch {
+    /* ignore */
+  }
 }
 
 export function getLocale(): SupportedLocale {

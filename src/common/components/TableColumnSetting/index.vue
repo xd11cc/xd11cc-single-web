@@ -8,7 +8,9 @@
     <div class="column-setting">
       <div class="column-setting-header">
         <span>{{ $t('common.columnSettings') }}</span>
-        <el-button type="primary" link size="small" @click="emit('reset')">{{ $t('common.reset') }}</el-button>
+        <el-button type="primary" link size="small" @click="emit('reset')">{{
+          $t('common.reset')
+        }}</el-button>
       </div>
       <div class="column-setting-list">
         <div
@@ -21,10 +23,7 @@
           @drop="handleDrop(index)"
         >
           <Icon icon="lucide:grip-vertical" class="drag-handle" />
-          <el-checkbox
-            :model-value="col.visible"
-            @change="emit('toggle', col.prop)"
-          >
+          <el-checkbox :model-value="col.visible" @change="emit('toggle', col.prop)">
             {{ col.label }}
           </el-checkbox>
         </div>
@@ -38,7 +37,8 @@ import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import type { TableColumnConfig } from '@@/composables/useTableColumns'
 
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 
 const props = defineProps<{
   columns: TableColumnConfig[]
@@ -50,9 +50,7 @@ const emit = defineEmits<{
   reset: []
 }>()
 
-const sortedColumns = computed(() =>
-  [...props.columns].sort((a, b) => a.order - b.order),
-)
+const sortedColumns = computed(() => [...props.columns].sort((a, b) => a.order - b.order))
 
 let dragIndex = -1
 

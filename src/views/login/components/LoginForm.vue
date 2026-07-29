@@ -57,7 +57,9 @@
       </el-form-item>
       <el-form-item>
         <div class="form-options">
-          <el-checkbox v-model="loginFormData.rememberMe">{{ $t('login.formOptions.rememberMe') }}</el-checkbox>
+          <el-checkbox v-model="loginFormData.rememberMe">{{
+            $t('login.formOptions.rememberMe')
+          }}</el-checkbox>
           <el-link type="primary" underline="never" @click="handleForgetPassword">
             {{ $t('login.forgotPassword') }}？
           </el-link>
@@ -69,7 +71,9 @@
     </el-form>
 
     <!-- 其他登录方式 -->
-    <el-divider v-if="socialConfigs.length && ossUrl">{{ $t('login.social.otherMethods') }}</el-divider>
+    <el-divider v-if="socialConfigs.length && ossUrl">{{
+      $t('login.social.otherMethods')
+    }}</el-divider>
     <div v-if="socialConfigs.length && ossUrl" class="social-login">
       <div
         v-for="item in socialConfigs"
@@ -103,7 +107,8 @@ const router = useRouter()
 
 const route = useRoute()
 
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 
 const loginFormData: LoginForm = reactive({
   username: '',
@@ -124,7 +129,9 @@ const socialConfigs = ref<AuthClientConfigVO[]>([])
 const { ossUrl } = useOssUrl()
 
 const loginFormRules: FormRules = {
-  username: [{ required: true, message: () => $t('login.rules.usernameRequired'), trigger: 'blur' }],
+  username: [
+    { required: true, message: () => $t('login.rules.usernameRequired'), trigger: 'blur' },
+  ],
   password: [
     { required: true, message: () => $t('login.rules.passwordRequired'), trigger: 'blur' },
     { min: 8, max: 16, message: () => $t('login.validation.passwordLength'), trigger: 'blur' },

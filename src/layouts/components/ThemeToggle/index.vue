@@ -26,7 +26,9 @@ function handleToggle(event: MouseEvent) {
   .toggle-icon {
     font-size: 18px;
     color: var(--theme-text-secondary);
-    transition: color var(--p-duration-fast), transform var(--p-duration-normal) var(--p-ease-out);
+    transition:
+      color var(--p-duration-fast),
+      transform var(--p-duration-normal) var(--p-ease-out);
   }
 
   &:hover .toggle-icon {

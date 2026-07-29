@@ -1,30 +1,30 @@
 export const zh = {
   empty: {
-    noResults: "未找到匹配结果"
+    noResults: '未找到匹配结果',
   },
   footer: {
-    close: "关闭",
-    navigate: "导航",
-    select: "选择"
+    close: '关闭',
+    navigate: '导航',
+    select: '选择',
   },
-  groupLabel: "页面",
-  placeholder: "搜索页面、操作...",
+  groupLabel: '页面',
+  placeholder: '搜索页面、操作...',
   tooltip: {
-    open: "搜索 ⌘K"
-  }
+    open: '搜索 ⌘K',
+  },
 }
 export const en = {
   empty: {
-    noResults: "No matching results"
+    noResults: 'No matching results',
   },
   footer: {
-    close: "Close",
-    navigate: "Navigate",
-    select: "Select"
+    close: 'Close',
+    navigate: 'Navigate',
+    select: 'Select',
   },
-  groupLabel: "Pages",
-  placeholder: "Search pages and actions...",
+  groupLabel: 'Pages',
+  placeholder: 'Search pages and actions...',
   tooltip: {
-    open: "Search ⌘K"
-  }
+    open: 'Search ⌘K',
+  },
 }

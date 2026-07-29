@@ -1,12 +1,23 @@
 <template>
-  <UseCrudView :slotProps="crud.slotProps" :formRules="formRules" :add-title="$t('system.role.dialogs.add')" :edit-title="$t('system.role.dialogs.edit')">
+  <UseCrudView
+    :slotProps="crud.slotProps"
+    :formRules="formRules"
+    :add-title="$t('system.role.dialogs.add')"
+    :edit-title="$t('system.role.dialogs.edit')"
+  >
     <!-- 搜索区字段 -->
     <template #search-form="{ searchData }">
       <el-form-item prop="roleName" :label="$t('system.role.search.roleName')">
-        <el-input v-model="searchData.roleName" :placeholder="$t('system.role.formPlaceholder.roleName')" />
+        <el-input
+          v-model="searchData.roleName"
+          :placeholder="$t('system.role.formPlaceholder.roleName')"
+        />
       </el-form-item>
       <el-form-item prop="roleCode" :label="$t('system.role.search.roleKey')">
-        <el-input v-model="searchData.roleCode" :placeholder="$t('system.role.formPlaceholder.roleKey')" />
+        <el-input
+          v-model="searchData.roleCode"
+          :placeholder="$t('system.role.formPlaceholder.roleKey')"
+        />
       </el-form-item>
       <el-form-item prop="status" :label="$t('system.role.search.status')">
         <el-select
@@ -40,7 +51,12 @@
       <el-table-column type="selection" width="50" align="center" />
       <el-table-column prop="roleName" :label="$t('system.role.search.roleName')" align="center" />
       <el-table-column prop="roleCode" :label="$t('system.role.search.roleKey')" align="center" />
-      <el-table-column prop="status" :label="$t('system.role.search.status')" align="center" width="80">
+      <el-table-column
+        prop="status"
+        :label="$t('system.role.search.status')"
+        align="center"
+        width="80"
+      >
         <template #default="scope">
           <el-tag
             :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
@@ -53,7 +69,12 @@
         </template>
       </el-table-column>
       <el-table-column prop="remark" :label="$t('system.role.form.remark')" align="center" />
-      <el-table-column prop="createTime" :label="$t('system.role.columns.createTime')" align="center" min-width="160" />
+      <el-table-column
+        prop="createTime"
+        :label="$t('system.role.columns.createTime')"
+        align="center"
+        min-width="160"
+      />
       <el-table-column fixed="right" :label="$t('common.action')" width="90" align="center">
         <template #default="scope">
           <el-tooltip :content="$t('common.edit')" placement="top">
@@ -88,12 +109,18 @@
     <template #form-fields="{ formData }">
       <el-col :span="12">
         <el-form-item prop="roleName" :label="$t('system.role.search.roleName')">
-          <el-input v-model="formData.roleName" :placeholder="$t('system.role.formPlaceholder.roleName')" />
+          <el-input
+            v-model="formData.roleName"
+            :placeholder="$t('system.role.formPlaceholder.roleName')"
+          />
         </el-form-item>
       </el-col>
       <el-col :span="12">
         <el-form-item prop="roleCode" :label="$t('system.role.search.roleKey')">
-          <el-input v-model="formData.roleCode" :placeholder="$t('system.role.formPlaceholder.roleKey')" />
+          <el-input
+            v-model="formData.roleCode"
+            :placeholder="$t('system.role.formPlaceholder.roleKey')"
+          />
         </el-form-item>
       </el-col>
       <el-col :span="12">
@@ -125,7 +152,11 @@
       </el-col>
       <el-col :span="24">
         <el-form-item prop="dataScope" :label="$t('system.role.form.dataScope')">
-          <el-select v-model="formData.dataScope" :placeholder="$t('system.role.formPlaceholder.dataScope')" style="width: 100%">
+          <el-select
+            v-model="formData.dataScope"
+            :placeholder="$t('system.role.formPlaceholder.dataScope')"
+            style="width: 100%"
+          >
             <el-option
               v-for="item in dataScopeOptions"
               :key="item.label"
@@ -166,7 +197,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useI18n } from "vue-i18n"
+import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import { ref, nextTick, watch } from 'vue'
 import type { FormRules } from 'element-plus'
@@ -174,14 +205,22 @@ import { cloneDeep } from 'lodash-es'
 import UseCrudView from '@/common/components/useCrud/index.vue'
 import { useCrud } from '@/common/composables/useCrud'
 import { useDict } from '@/common/composables/useDict'
-import { rolePage, addRole, modifyRoleById, removeRoleByIds, getRoleMenuIds, getRoleDeptIds } from './apis'
+import {
+  rolePage,
+  addRole,
+  modifyRoleById,
+  removeRoleByIds,
+  getRoleMenuIds,
+  getRoleDeptIds,
+} from './apis'
 import type { SystemRoleVO, SystemRoleQueryVO } from './apis/type'
 import { treeList } from '@/views/system/menu/apis'
 import type { SystemMenuTreeVO } from '@/views/system/menu/apis/type'
 import { deptTreeList } from '@/views/system/dept/apis'
 import type { SystemDeptTreeVO } from '@/views/system/dept/apis/type'
 
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 
 defineOptions({ name: 'role' })
 
@@ -199,9 +238,8 @@ const crud = useCrud<SystemRoleQueryVO, SystemRoleVO>({
     const checkedKeys = (menuTreeRef.value?.getCheckedKeys(false) as number[]) || []
     const halfCheckedKeys = (menuTreeRef.value?.getHalfCheckedKeys() as number[]) || []
     const menuIds = [...checkedKeys, ...halfCheckedKeys]
-    const deptIds = form.dataScope === '5'
-      ? ((deptTreeRef.value?.getCheckedKeys(false) as number[]) || [])
-      : []
+    const deptIds =
+      form.dataScope === '5' ? (deptTreeRef.value?.getCheckedKeys(false) as number[]) || [] : []
     const payload: Record<string, any> = {
       roleCode: form.roleCode,
       roleName: form.roleName,
@@ -238,11 +276,15 @@ const formRules: FormRules = {
 }
 
 function getMenuTree() {
-  treeList({}).then(({ data }) => { menuTreeData.value = data })
+  treeList({}).then(({ data }) => {
+    menuTreeData.value = data
+  })
 }
 
 function getDeptTree() {
-  deptTreeList({}).then(({ data }) => { deptTreeData.value = data })
+  deptTreeList({}).then(({ data }) => {
+    deptTreeData.value = data
+  })
 }
 
 // ─── 编辑时回填菜单/部门选中状态（模块特有逻辑） ──────────
@@ -292,11 +334,15 @@ watch(
 // ─── 自定义单条删除（保留角色名称提示文案） ──────────────────
 const originalHandleRemove = crud.methods.handleRemove
 crud.methods.handleRemove = (row: SystemRoleVO) => {
-  ElMessageBox.confirm($t('system.role.messages.deleteConfirm', { roleName: row.roleName }), $t('common.messages.confirmTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'warning',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.role.messages.deleteConfirm', { roleName: row.roleName }),
+    $t('common.messages.confirmTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'warning',
+    },
+  ).then(() => {
     removeRoleByIds(String(row.id)).then((res) => {
       ElMessage.success(res.msg || $t('common.messages.operationSuccess'))
       crud.methods.getTableData()
@@ -312,11 +358,15 @@ function handleBatchRemove() {
     return
   }
   const ids = selectedRows.map((r: any) => r.id).join(',')
-  ElMessageBox.confirm($t('system.role.messages.batchDeleteConfirm', { count: selectedRows.length }), $t('common.messages.confirmTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'warning',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.role.messages.batchDeleteConfirm', { count: selectedRows.length }),
+    $t('common.messages.confirmTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'warning',
+    },
+  ).then(() => {
     removeRoleByIds(ids).then((res) => {
       ElMessage.success(res.msg || $t('common.messages.operationSuccess'))
       crud.methods.getTableData()

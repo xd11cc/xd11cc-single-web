@@ -12,7 +12,9 @@
           <el-dropdown-item @click="handleContentLargeClick">
             {{ contentLargeTips }}
           </el-dropdown-item>
-          <el-dropdown-item @click="handleContentFullClick">{{ t('layout.screenfull.contentFull') }}</el-dropdown-item>
+          <el-dropdown-item @click="handleContentFullClick">{{
+            t('layout.screenfull.contentFull')
+          }}</el-dropdown-item>
         </el-dropdown-menu>
       </template>
     </el-dropdown>

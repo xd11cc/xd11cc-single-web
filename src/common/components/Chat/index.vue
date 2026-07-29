@@ -58,7 +58,9 @@ onUnmounted(() => {
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition:
+      transform 0.2s,
+      box-shadow 0.2s;
 
     &:hover {
       transform: scale(1.08);
@@ -69,7 +71,9 @@ onUnmounted(() => {
 
 .chat-fade-enter-active,
 .chat-fade-leave-active {
-  transition: opacity 0.2s, transform 0.2s;
+  transition:
+    opacity 0.2s,
+    transform 0.2s;
 }
 
 .chat-fade-enter-from,

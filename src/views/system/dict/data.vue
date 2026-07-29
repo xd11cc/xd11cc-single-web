@@ -18,10 +18,16 @@
           </el-select>
         </el-form-item>
         <el-form-item prop="label" :label="$t('system.dict.data.search.label')">
-          <el-input v-model="searchData.label" :placeholder="$t('system.dict.data.formPlaceholder.label')" />
+          <el-input
+            v-model="searchData.label"
+            :placeholder="$t('system.dict.data.formPlaceholder.label')"
+          />
         </el-form-item>
         <el-form-item prop="value" :label="$t('system.dict.data.search.value')">
-          <el-input v-model="searchData.value" :placeholder="$t('system.dict.data.formPlaceholder.value')" />
+          <el-input
+            v-model="searchData.value"
+            :placeholder="$t('system.dict.data.formPlaceholder.value')"
+          />
         </el-form-item>
         <el-form-item prop="status" :label="$t('system.dict.data.search.status')">
           <el-select
@@ -41,9 +47,13 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            <template #icon><Icon icon="lucide:search" /></template>{{ $t('common.search') }}</el-button>
+            <template #icon><Icon icon="lucide:search" /></template
+            >{{ $t('common.search') }}</el-button
+          >
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('common.reset') }}</el-button>
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template
+            >{{ $t('common.reset') }}</el-button
+          >
         </el-form-item>
       </el-form>
     </el-card>
@@ -69,11 +79,7 @@
         </div>
         <div>
           <el-tooltip :content="$t('system.dict.data.actions.exportTitle')">
-            <el-button
-              type="primary"
-              circle
-              v-permission="['system:dictData:export']"
-            >
+            <el-button type="primary" circle v-permission="['system:dictData:export']">
               <template #icon><Icon icon="lucide:download" /></template>
             </el-button>
           </el-tooltip>
@@ -82,10 +88,26 @@
       <div class="table-wrapper">
         <el-table ref="tableRef" :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column prop="label" :label="$t('system.dict.data.columns.label')" align="center" />
-          <el-table-column prop="value" :label="$t('system.dict.data.columns.value')" align="center" />
-          <el-table-column prop="sort" :label="$t('system.dict.data.columns.sort')" align="center" />
-          <el-table-column prop="status" :label="$t('system.dict.data.columns.status')" align="center">
+          <el-table-column
+            prop="label"
+            :label="$t('system.dict.data.columns.label')"
+            align="center"
+          />
+          <el-table-column
+            prop="value"
+            :label="$t('system.dict.data.columns.value')"
+            align="center"
+          />
+          <el-table-column
+            prop="sort"
+            :label="$t('system.dict.data.columns.sort')"
+            align="center"
+          />
+          <el-table-column
+            prop="status"
+            :label="$t('system.dict.data.columns.status')"
+            align="center"
+          >
             <template #default="scope">
               <el-tag
                 :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
@@ -96,9 +118,23 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="remark" :label="$t('system.dict.data.columns.remark')" align="center" />
-          <el-table-column prop="createTime" :label="$t('system.dict.data.columns.createTime')" align="center" min-width="160" />
-          <el-table-column fixed="right" :label="$t('system.dict.data.columns.action')" width="90" align="center">
+          <el-table-column
+            prop="remark"
+            :label="$t('system.dict.data.columns.remark')"
+            align="center"
+          />
+          <el-table-column
+            prop="createTime"
+            :label="$t('system.dict.data.columns.createTime')"
+            align="center"
+            min-width="160"
+          />
+          <el-table-column
+            fixed="right"
+            :label="$t('system.dict.data.columns.action')"
+            width="90"
+            align="center"
+          >
             <template #default="scope">
               <el-tooltip :content="$t('common.edit')" placement="top">
                 <el-button
@@ -143,7 +179,11 @@
     </el-card>
     <el-dialog
       v-model="dialogVisible"
-      :title="formData.id === undefined ? $t('system.dict.data.dialogs.addData') : $t('system.dict.data.dialogs.editData')"
+      :title="
+        formData.id === undefined
+          ? $t('system.dict.data.dialogs.addData')
+          : $t('system.dict.data.dialogs.editData')
+      "
       width="30%"
       @close="handleClose"
     >
@@ -158,13 +198,22 @@
           <el-input v-model="formData.dictType" disabled />
         </el-form-item>
         <el-form-item prop="label" :label="$t('system.dict.data.form.label')">
-          <el-input v-model="formData.label" :placeholder="$t('system.dict.data.formPlaceholder.label')" />
+          <el-input
+            v-model="formData.label"
+            :placeholder="$t('system.dict.data.formPlaceholder.label')"
+          />
         </el-form-item>
         <el-form-item prop="value" :label="$t('system.dict.data.form.value')">
-          <el-input v-model="formData.value" :placeholder="$t('system.dict.data.formPlaceholder.value')" />
+          <el-input
+            v-model="formData.value"
+            :placeholder="$t('system.dict.data.formPlaceholder.value')"
+          />
         </el-form-item>
         <el-form-item prop="cssClass" :label="$t('system.dict.data.form.cssClass')">
-          <el-input v-model="formData.cssClass" :placeholder="$t('system.dict.data.formPlaceholder.cssClass')" />
+          <el-input
+            v-model="formData.cssClass"
+            :placeholder="$t('system.dict.data.formPlaceholder.cssClass')"
+          />
         </el-form-item>
         <el-form-item prop="listClass" :label="$t('system.dict.data.form.listClass')">
           <el-select v-model="formData.listClass" style="width: 150px">
@@ -203,14 +252,16 @@
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-        <el-button type="primary" :loading="loading" @click="handleCreateOrUpdate">{{ $t('common.confirm') }}</el-button>
+        <el-button type="primary" :loading="loading" @click="handleCreateOrUpdate">{{
+          $t('common.confirm')
+        }}</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { useI18n } from "vue-i18n"
+import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import { usePagination } from '@/common/composables/usePagination'
 import type { SystemDictDataVO, SystemDictDataQueryVO, SystemDictTypeVO } from './apis/type'
@@ -225,7 +276,8 @@ import { cloneDeep } from 'lodash-es'
 import type { FormRules } from 'element-plus'
 import { useDict } from '@/common/composables/useDict'
 
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 
 defineOptions({
   name: 'dictData',
@@ -265,8 +317,20 @@ const formData = ref<SystemDictDataVO>({
 const dictTypeOptions = ref<SystemDictTypeVO[]>([])
 
 const formRules: FormRules<SystemDictDataVO> = {
-  label: [{ required: true, trigger: 'blur', message: () => $t('system.dict.data.formPlaceholder.label') }],
-  value: [{ required: true, trigger: 'blur', message: () => $t('system.dict.data.formPlaceholder.value') }],
+  label: [
+    {
+      required: true,
+      trigger: 'blur',
+      message: () => $t('system.dict.data.formPlaceholder.label'),
+    },
+  ],
+  value: [
+    {
+      required: true,
+      trigger: 'blur',
+      message: () => $t('system.dict.data.formPlaceholder.value'),
+    },
+  ],
 }
 
 const listOption = reactive([
@@ -295,11 +359,15 @@ function handleBatchRemove() {
 
   const ids = selectedRows.map((row) => row.id).join(',')
 
-  ElMessageBox.confirm($t('system.dict.data.messages.batchDeleteConfirm', { count: selectedRows.length }), $t('common.messages.confirmTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'warning',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.dict.data.messages.batchDeleteConfirm', { count: selectedRows.length }),
+    $t('common.messages.confirmTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'warning',
+    },
+  ).then(() => {
     removeDictDataByIds(ids).then((data) => {
       ElMessage.success(data.msg || $t('common.messages.deleteSuccess'))
       getTableData()
@@ -338,11 +406,15 @@ function handleCreateOrUpdate() {
 }
 
 function handleRemove(row: SystemDictDataVO) {
-  ElMessageBox.confirm($t('system.dict.data.messages.deleteConfirm', { value: row.value }), $t('common.messages.confirmTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'warning',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.dict.data.messages.deleteConfirm', { value: row.value }),
+    $t('common.messages.confirmTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'warning',
+    },
+  ).then(() => {
     if (row.id) {
       removeDictDataByIds(String(row.id)).then((data) => {
         ElMessage.success(data.msg || $t('common.messages.deleteSuccess'))

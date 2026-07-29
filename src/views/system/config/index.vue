@@ -3,17 +3,25 @@
     <el-card shadow="never" class="search-wrapper">
       <el-form ref="searchFormRef" :inline="true" :model="searchData">
         <el-form-item prop="configName" :label="$t('system.config.search.configName')">
-          <el-input v-model="searchData.configName" :placeholder="$t('system.config.formPlaceholder.configName')" />
+          <el-input
+            v-model="searchData.configName"
+            :placeholder="$t('system.config.formPlaceholder.configName')"
+          />
         </el-form-item>
         <el-form-item prop="configKey" :label="$t('system.config.search.configKey')">
-          <el-input v-model="searchData.configKey" :placeholder="$t('system.config.formPlaceholder.configKey')" />
+          <el-input
+            v-model="searchData.configKey"
+            :placeholder="$t('system.config.formPlaceholder.configKey')"
+          />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            <template #icon><Icon icon="lucide:search" /></template>{{ $t('system.config.actions.query') }}</el-button
+            <template #icon><Icon icon="lucide:search" /></template
+            >{{ $t('system.config.actions.query') }}</el-button
           >
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('system.config.actions.reset') }}</el-button
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template
+            >{{ $t('system.config.actions.reset') }}</el-button
           >
         </el-form-item>
       </el-form>
@@ -46,24 +54,34 @@
             prop="configName"
             :label="$t('system.config.columns.configName')"
             align="center"
-           
           />
-          <el-table-column prop="configKey" :label="$t('system.config.columns.configKey')" align="center" />
+          <el-table-column
+            prop="configKey"
+            :label="$t('system.config.columns.configKey')"
+            align="center"
+          />
           <el-table-column
             prop="configValue"
             :label="$t('system.config.columns.configValue')"
             align="center"
-           
           />
-          <el-table-column prop="remark" :label="$t('system.config.columns.remark')" align="center" />
+          <el-table-column
+            prop="remark"
+            :label="$t('system.config.columns.remark')"
+            align="center"
+          />
           <el-table-column
             prop="createTime"
             :label="$t('system.config.columns.createTime')"
             align="center"
             min-width="160"
-           
           />
-          <el-table-column fixed="right" :label="$t('system.config.columns.action')" width="90" align="center">
+          <el-table-column
+            fixed="right"
+            :label="$t('system.config.columns.action')"
+            width="90"
+            align="center"
+          >
             <template #default="scope">
               <el-tooltip :content="$t('system.config.actions.edit')" placement="top">
                 <el-button
@@ -109,7 +127,11 @@
     <!-- 新增、修改 -->
     <el-dialog
       v-model="dialogVisible"
-      :title="formData.id === undefined ? $t('system.config.dialogs.add') : $t('system.config.dialogs.edit')"
+      :title="
+        formData.id === undefined
+          ? $t('system.config.dialogs.add')
+          : $t('system.config.dialogs.edit')
+      "
       width="30%"
       @close="handleClose"
     >
@@ -121,13 +143,22 @@
         label-position="left"
       >
         <el-form-item prop="configName" :label="$t('system.config.search.configName')">
-          <el-input v-model="formData.configName" :placeholder="$t('system.config.formPlaceholder.configName')" />
+          <el-input
+            v-model="formData.configName"
+            :placeholder="$t('system.config.formPlaceholder.configName')"
+          />
         </el-form-item>
         <el-form-item prop="configKey" :label="$t('system.config.search.configKey')">
-          <el-input v-model="formData.configKey" :placeholder="$t('system.config.formPlaceholder.configKey')" />
+          <el-input
+            v-model="formData.configKey"
+            :placeholder="$t('system.config.formPlaceholder.configKey')"
+          />
         </el-form-item>
         <el-form-item prop="configValue" :label="$t('system.config.form.configValue')">
-          <el-input v-model="formData.configValue" :placeholder="$t('system.config.formPlaceholder.configValue')" />
+          <el-input
+            v-model="formData.configValue"
+            :placeholder="$t('system.config.formPlaceholder.configValue')"
+          />
         </el-form-item>
         <el-form-item prop="remark" :label="$t('system.config.form.remark')">
           <el-input
@@ -142,14 +173,16 @@
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-        <el-button type="primary" :loading="loading" @click="handleCreateOrUpdate">{{ $t('common.confirm') }}</el-button>
+        <el-button type="primary" :loading="loading" @click="handleCreateOrUpdate">{{
+          $t('common.confirm')
+        }}</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { useI18n } from "vue-i18n"
+import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import { usePagination } from '@@/composables/usePagination'
 import { configPage, addConfig, modifyConfigById, removeConfigByIds } from './apis'
@@ -157,7 +190,8 @@ import type { SystemConfigQueryVO, SystemConfigVO } from './apis/type'
 import type { FormRules } from 'element-plus'
 import { cloneDeep } from 'lodash-es'
 
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 
 defineOptions({
   name: 'config',
@@ -182,9 +216,27 @@ const searchFormRef = useTemplateRef('searchFormRef')
 const tableRef = useTemplateRef('tableRef')
 
 const formRules: FormRules<SystemConfigVO> = {
-  configName: [{ required: true, trigger: 'blur', message: () => $t('system.config.formPlaceholder.configName') }],
-  configKey: [{ required: true, trigger: 'blur', message: () => $t('system.config.formPlaceholder.configKey') }],
-  configValue: [{ required: true, trigger: 'blur', message: () => $t('system.config.formPlaceholder.configValue') }],
+  configName: [
+    {
+      required: true,
+      trigger: 'blur',
+      message: () => $t('system.config.formPlaceholder.configName'),
+    },
+  ],
+  configKey: [
+    {
+      required: true,
+      trigger: 'blur',
+      message: () => $t('system.config.formPlaceholder.configKey'),
+    },
+  ],
+  configValue: [
+    {
+      required: true,
+      trigger: 'blur',
+      message: () => $t('system.config.formPlaceholder.configValue'),
+    },
+  ],
 }
 
 function handleSearch() {
@@ -227,11 +279,15 @@ function handleModify(row: SystemConfigVO) {
 }
 
 function handleRemove(row: SystemConfigVO) {
-  ElMessageBox.confirm($t('system.config.messages.deleteConfirm', { configName: row.configName }), $t('common.messages.confirmTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'warning',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.config.messages.deleteConfirm', { configName: row.configName }),
+    $t('common.messages.confirmTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'warning',
+    },
+  ).then(() => {
     if (row.id) {
       removeConfigByIds(String(row.id)).then((data) => {
         ElMessage.success(data.msg || $t('system.config.messages.deleteSuccess'))
@@ -250,11 +306,15 @@ function handleBatchRemove() {
 
   const ids = selectedRows.map((row) => row.id).join(',')
 
-  ElMessageBox.confirm($t('system.config.messages.batchDeleteConfirm', { count: selectedRows.length }), $t('common.messages.confirmTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'warning',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.config.messages.batchDeleteConfirm', { count: selectedRows.length }),
+    $t('common.messages.confirmTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'warning',
+    },
+  ).then(() => {
     removeConfigByIds(ids).then((data) => {
       ElMessage.success(data.msg || $t('system.config.messages.deleteSuccess'))
       getTableData()

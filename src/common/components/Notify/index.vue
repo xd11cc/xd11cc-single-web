@@ -33,13 +33,19 @@
                     {{ t('system.noticeUser.readStatus.unread') }}
                   </el-tag>
                 </div>
-                <el-empty v-if="!item.list.length" :description="t('common.messages.noData')" :image-size="60" />
+                <el-empty
+                  v-if="!item.list.length"
+                  :description="t('common.messages.noData')"
+                  :image-size="60"
+                />
               </div>
             </el-scrollbar>
           </el-tab-pane>
         </el-tabs>
         <div class="notify-footer">
-          <el-button link @click="handleMarkAllRead">{{ t('common.messages.markAllRead') }}</el-button>
+          <el-button link @click="handleMarkAllRead">{{
+            t('common.messages.markAllRead')
+          }}</el-button>
           <el-button link @click="handleHistory">{{ t('common.messages.viewMore') }}</el-button>
         </div>
       </template>
@@ -80,9 +86,30 @@ const popoverWidth = 360
 const activeName = ref<TabName>('notice')
 
 const tabList = ref<TabItem[]>([
-  { name: 'notice', labelKey: 'layout.notify.tabs.notice', type: 1, badgeType: 'primary', unread: 0, list: [] },
-  { name: 'message', labelKey: 'layout.notify.tabs.message', type: 2, badgeType: 'danger', unread: 0, list: [] },
-  { name: 'todo', labelKey: 'layout.notify.tabs.todo', type: 3, badgeType: 'warning', unread: 0, list: [] },
+  {
+    name: 'notice',
+    labelKey: 'layout.notify.tabs.notice',
+    type: 1,
+    badgeType: 'primary',
+    unread: 0,
+    list: [],
+  },
+  {
+    name: 'message',
+    labelKey: 'layout.notify.tabs.message',
+    type: 2,
+    badgeType: 'danger',
+    unread: 0,
+    list: [],
+  },
+  {
+    name: 'todo',
+    labelKey: 'layout.notify.tabs.todo',
+    type: 3,
+    badgeType: 'warning',
+    unread: 0,
+    list: [],
+  },
 ])
 
 const totalUnread = computed(() => tabList.value.reduce((sum, item) => sum + item.unread, 0))

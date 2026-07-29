@@ -22,11 +22,7 @@
               <kbd class="cmd-kbd">ESC</kbd>
             </div>
             <div v-if="filteredItems.length" class="cmd-list">
-              <div
-                v-for="(group, gi) in groupedItems"
-                :key="group.label"
-                class="cmd-group"
-              >
+              <div v-for="(group, gi) in groupedItems" :key="group.label" class="cmd-group">
                 <div class="cmd-group-label">{{ group.label }}</div>
                 <div
                   v-for="(item, ii) in group.items"
@@ -39,7 +35,9 @@
                   <Icon :icon="item.icon || 'lucide:file'" class="cmd-item-icon" />
                   <div class="cmd-item-content">
                     <span class="cmd-item-title">{{ item.title }}</span>
-                    <span v-if="item.breadcrumb" class="cmd-item-breadcrumb">{{ item.breadcrumb }}</span>
+                    <span v-if="item.breadcrumb" class="cmd-item-breadcrumb">{{
+                      item.breadcrumb
+                    }}</span>
                   </div>
                   <Icon icon="lucide:corner-down-left" class="cmd-item-enter" />
                 </div>
@@ -47,12 +45,12 @@
             </div>
             <div v-else class="cmd-empty">
               <Icon icon="lucide:search-x" class="cmd-empty-icon" />
-              <p>{{ $t("layout.searchMenu.empty.noResults") }}</p>
+              <p>{{ $t('layout.searchMenu.empty.noResults') }}</p>
             </div>
             <div class="cmd-footer">
-              <span><kbd>↑↓</kbd> {{ $t("layout.searchMenu.footer.navigate") }}</span>
-              <span><kbd>↵</kbd> {{ $t("layout.searchMenu.footer.select") }}</span>
-              <span><kbd>ESC</kbd> {{ $t("layout.searchMenu.footer.close") }}</span>
+              <span><kbd>↑↓</kbd> {{ $t('layout.searchMenu.footer.navigate') }}</span>
+              <span><kbd>↵</kbd> {{ $t('layout.searchMenu.footer.select') }}</span>
+              <span><kbd>ESC</kbd> {{ $t('layout.searchMenu.footer.close') }}</span>
             </div>
           </div>
         </div>
@@ -62,12 +60,13 @@
 </template>
 
 <script lang="ts" setup>
-import { useI18n } from "vue-i18n"
+import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import { usePermissionStore } from '@/pinia/stores/permission'
 import type { RouteRecordRaw } from 'vue-router'
 
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 
 interface CommandItem {
   title: string
@@ -105,7 +104,8 @@ const allItems = computed<CommandItem[]>(() => {
           title,
           path: fullPath,
           icon: (route.meta?.icon as string) || 'lucide:file',
-          breadcrumb: currentBreadcrumb.length > 1 ? currentBreadcrumb.slice(0, -1).join(' / ') : undefined,
+          breadcrumb:
+            currentBreadcrumb.length > 1 ? currentBreadcrumb.slice(0, -1).join(' / ') : undefined,
         })
       }
     }
@@ -382,14 +382,18 @@ watch(query, () => {
 .cmd-enter-active {
   transition: opacity 0.15s ease;
   .cmd-palette {
-    transition: transform 0.15s ease, opacity 0.15s ease;
+    transition:
+      transform 0.15s ease,
+      opacity 0.15s ease;
   }
 }
 
 .cmd-leave-active {
   transition: opacity 0.1s ease;
   .cmd-palette {
-    transition: transform 0.1s ease, opacity 0.1s ease;
+    transition:
+      transform 0.1s ease,
+      opacity 0.1s ease;
   }
 }
 

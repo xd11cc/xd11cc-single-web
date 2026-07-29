@@ -1,14 +1,14 @@
 export const zh = {
-  logout: "退出登录",
+  logout: '退出登录',
   messages: {
-    logoutSuccess: "退出成功"
+    logoutSuccess: '退出成功',
   },
-  profile: "个人中心"
+  profile: '个人中心',
 }
 export const en = {
-  logout: "Logout",
+  logout: 'Logout',
   messages: {
-    logoutSuccess: "Logged out successfully"
+    logoutSuccess: 'Logged out successfully',
   },
-  profile: "Profile"
+  profile: 'Profile',
 }

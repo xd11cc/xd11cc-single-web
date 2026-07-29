@@ -3,7 +3,10 @@
     <el-card shadow="never" class="search-wrapper">
       <el-form ref="searchFormRef" :inline="true" :model="searchData">
         <el-form-item prop="username" :label="$t('system.loginLog.search.username')">
-          <el-input v-model="searchData.username" :placeholder="$t('system.loginLog.formPlaceholder.username')" />
+          <el-input
+            v-model="searchData.username"
+            :placeholder="$t('system.loginLog.formPlaceholder.username')"
+          />
         </el-form-item>
         <el-form-item prop="loginType" :label="$t('system.loginLog.search.loginType')">
           <el-select
@@ -37,10 +40,12 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            <template #icon><Icon icon="lucide:search" /></template>{{ $t('system.loginLog.actions.query') }}
+            <template #icon><Icon icon="lucide:search" /></template
+            >{{ $t('system.loginLog.actions.query') }}
           </el-button>
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('system.loginLog.actions.reset') }}
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template
+            >{{ $t('system.loginLog.actions.reset') }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -72,8 +77,17 @@
       <div class="table-wrapper">
         <el-table ref="tableRef" :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column prop="username" :label="$t('system.loginLog.columns.username')" align="center" />
-          <el-table-column prop="loginType" :label="$t('system.loginLog.columns.loginType')" align="center" width="100">
+          <el-table-column
+            prop="username"
+            :label="$t('system.loginLog.columns.username')"
+            align="center"
+          />
+          <el-table-column
+            prop="loginType"
+            :label="$t('system.loginLog.columns.loginType')"
+            align="center"
+            width="100"
+          >
             <template #default="scope">
               <el-tag
                 :type="getDictItem('system_login_type', scope.row.loginType)?.listClass || 'info'"
@@ -88,7 +102,12 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="status" :label="$t('system.loginLog.columns.status')" align="center" width="80">
+          <el-table-column
+            prop="status"
+            :label="$t('system.loginLog.columns.status')"
+            align="center"
+            width="80"
+          >
             <template #default="scope">
               <el-tag
                 :type="getDictItem('system_operate_status', scope.row.status)?.listClass || 'info'"
@@ -102,12 +121,31 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="loginIp" :label="$t('system.loginLog.columns.loginIp')" align="center" width="140" />
-          <el-table-column prop="browser" :label="$t('system.loginLog.columns.browser')" align="center" />
+          <el-table-column
+            prop="loginIp"
+            :label="$t('system.loginLog.columns.loginIp')"
+            align="center"
+            width="140"
+          />
+          <el-table-column
+            prop="browser"
+            :label="$t('system.loginLog.columns.browser')"
+            align="center"
+          />
           <el-table-column prop="os" :label="$t('system.loginLog.columns.os')" align="center" />
           <el-table-column prop="msg" :label="$t('system.loginLog.columns.msg')" align="center" />
-          <el-table-column prop="loginTime" :label="$t('system.loginLog.columns.loginTime')" align="center" min-width="160" />
-          <el-table-column fixed="right" :label="$t('system.loginLog.columns.action')" width="70" align="center">
+          <el-table-column
+            prop="loginTime"
+            :label="$t('system.loginLog.columns.loginTime')"
+            align="center"
+            min-width="160"
+          />
+          <el-table-column
+            fixed="right"
+            :label="$t('system.loginLog.columns.action')"
+            width="70"
+            align="center"
+          >
             <template #default="scope">
               <el-tooltip :content="$t('system.loginLog.actions.delete')" placement="top">
                 <el-button
@@ -143,14 +181,15 @@
 </template>
 
 <script lang="ts" setup>
-import { useI18n } from "vue-i18n"
+import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import { useDict } from '@/common/composables/useDict'
 import { usePagination } from '@@/composables/usePagination'
 import { loginLogPage, removeLoginLogByIds, cleanLoginLog } from './apis'
 import type { SystemLoginLogQueryVO, SystemLoginLogVO } from './apis/type'
 
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 
 defineOptions({
   name: 'loginLog',
@@ -180,11 +219,15 @@ function resetSearch() {
 }
 
 function handleRemove(row: SystemLoginLogVO) {
-  ElMessageBox.confirm($t('system.loginLog.messages.deleteConfirm'), $t('common.messages.confirmTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'warning',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.loginLog.messages.deleteConfirm'),
+    $t('common.messages.confirmTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'warning',
+    },
+  ).then(() => {
     if (row.id) {
       removeLoginLogByIds(String(row.id)).then((data) => {
         ElMessage.success(data.msg || $t('system.loginLog.messages.deleteSuccess'))
@@ -201,11 +244,15 @@ function handleBatchRemove() {
     return
   }
   const ids = selectedRows.map((row) => row.id).join(',')
-  ElMessageBox.confirm($t('system.loginLog.messages.batchDeleteConfirm', { count: selectedRows.length }), $t('common.messages.confirmTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'warning',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.loginLog.messages.batchDeleteConfirm', { count: selectedRows.length }),
+    $t('common.messages.confirmTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'warning',
+    },
+  ).then(() => {
     removeLoginLogByIds(ids).then((data) => {
       ElMessage.success(data.msg || $t('system.loginLog.messages.deleteSuccess'))
       getTableData()
@@ -214,11 +261,15 @@ function handleBatchRemove() {
 }
 
 function handleClean() {
-  ElMessageBox.confirm($t('system.loginLog.messages.cleanConfirm'), $t('common.messages.warningTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'error',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.loginLog.messages.cleanConfirm'),
+    $t('common.messages.warningTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'error',
+    },
+  ).then(() => {
     cleanLoginLog().then(() => {
       ElMessage.success($t('system.loginLog.messages.cleanSuccess'))
       getTableData()

@@ -3,16 +3,26 @@
     <el-card shadow="never" class="search-wrapper">
       <el-form ref="searchFormRef" :inline="true" :model="searchData">
         <el-form-item prop="dictName" :label="$t('system.dict.search.dictName')">
-          <el-input v-model="searchData.dictName" :placeholder="$t('system.dict.formPlaceholder.dictName')" />
+          <el-input
+            v-model="searchData.dictName"
+            :placeholder="$t('system.dict.formPlaceholder.dictName')"
+          />
         </el-form-item>
         <el-form-item prop="dictType" :label="$t('system.dict.search.dictType')">
-          <el-input v-model="searchData.dictType" :placeholder="$t('system.dict.formPlaceholder.dictType')" />
+          <el-input
+            v-model="searchData.dictType"
+            :placeholder="$t('system.dict.formPlaceholder.dictType')"
+          />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            <template #icon><Icon icon="lucide:search" /></template>{{ $t('system.dict.actions.query') }}</el-button>
+            <template #icon><Icon icon="lucide:search" /></template
+            >{{ $t('system.dict.actions.query') }}</el-button
+          >
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('system.dict.actions.reset') }}</el-button>
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template
+            >{{ $t('system.dict.actions.reset') }}</el-button
+          >
         </el-form-item>
       </el-form>
     </el-card>
@@ -38,11 +48,7 @@
         </div>
         <div>
           <el-tooltip :content="$t('system.dict.actions.exportTitle')">
-            <el-button
-              type="primary"
-              circle
-              v-permission="['system:dictType:export']"
-            >
+            <el-button type="primary" circle v-permission="['system:dictType:export']">
               <template #icon><Icon icon="lucide:download" /></template>
             </el-button>
           </el-tooltip>
@@ -51,8 +57,16 @@
       <div class="table-wrapper">
         <el-table ref="tableRef" :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column prop="dictName" :label="$t('system.dict.search.dictName')" align="center" />
-          <el-table-column prop="dictType" :label="$t('system.dict.search.dictType')" align="center">
+          <el-table-column
+            prop="dictName"
+            :label="$t('system.dict.search.dictName')"
+            align="center"
+          />
+          <el-table-column
+            prop="dictType"
+            :label="$t('system.dict.search.dictType')"
+            align="center"
+          >
             <template #default="scope">
               <router-link
                 :to="{ path: '/system/dict-data', query: { dictType: scope.row.dictType } }"
@@ -63,8 +77,17 @@
             </template>
           </el-table-column>
           <el-table-column prop="remark" :label="$t('system.dict.columns.remark')" align="center" />
-          <el-table-column prop="createTime" :label="$t('system.dict.columns.createTime')" align="center" />
-          <el-table-column fixed="right" :label="$t('system.dict.columns.action')" width="90" align="center">
+          <el-table-column
+            prop="createTime"
+            :label="$t('system.dict.columns.createTime')"
+            align="center"
+          />
+          <el-table-column
+            fixed="right"
+            :label="$t('system.dict.columns.action')"
+            width="90"
+            align="center"
+          >
             <template #default="scope">
               <el-tooltip :content="$t('system.dict.actions.edit')" placement="top">
                 <el-button
@@ -110,7 +133,9 @@
     <!-- 新增、修改 -->
     <el-dialog
       v-model="dialogVisible"
-      :title="formData.id === undefined ? $t('system.dict.dialogs.add') : $t('system.dict.dialogs.edit')"
+      :title="
+        formData.id === undefined ? $t('system.dict.dialogs.add') : $t('system.dict.dialogs.edit')
+      "
       width="30%"
       @close="handleClose"
     >
@@ -122,10 +147,16 @@
         label-position="left"
       >
         <el-form-item prop="dictName" :label="$t('system.dict.search.dictName')">
-          <el-input v-model="formData.dictName" :placeholder="$t('system.dict.formPlaceholder.dictName')" />
+          <el-input
+            v-model="formData.dictName"
+            :placeholder="$t('system.dict.formPlaceholder.dictName')"
+          />
         </el-form-item>
         <el-form-item prop="dictType" :label="$t('system.dict.search.dictType')">
-          <el-input v-model="formData.dictType" :placeholder="$t('system.dict.formPlaceholder.dictType')" />
+          <el-input
+            v-model="formData.dictType"
+            :placeholder="$t('system.dict.formPlaceholder.dictType')"
+          />
         </el-form-item>
         <el-form-item prop="remark" :label="$t('system.dict.form.remark')">
           <el-input
@@ -141,7 +172,7 @@
       <template #footer>
         <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
         <el-button type="primary" :loading="loading" @click="handleCreateOrUpdate">
-{{ $t('common.confirm') }}
+          {{ $t('common.confirm') }}
         </el-button>
       </template>
     </el-dialog>
@@ -149,7 +180,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useI18n } from "vue-i18n"
+import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import { usePagination } from '@@/composables/usePagination'
 import { dictTypePage, addDictType, modifyDictTypeById, removeDictTypeByIds } from './apis/index'
@@ -157,7 +188,8 @@ import type { SystemDictTypeQueryVO, SystemDictTypeVO } from './apis/type'
 import type { FormRules } from 'element-plus'
 import { cloneDeep } from 'lodash-es'
 
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 
 defineOptions({
   name: 'dictType',
@@ -182,8 +214,12 @@ const searchFormRef = useTemplateRef('searchFormRef')
 const tableRef = useTemplateRef('tableRef')
 
 const formRules: FormRules<SystemDictTypeVO> = {
-  dictName: [{ required: true, trigger: 'blur', message: () => $t('system.dict.formPlaceholder.dictName') }],
-  dictType: [{ required: true, trigger: 'blur', message: () => $t('system.dict.formPlaceholder.dictType') }],
+  dictName: [
+    { required: true, trigger: 'blur', message: () => $t('system.dict.formPlaceholder.dictName') },
+  ],
+  dictType: [
+    { required: true, trigger: 'blur', message: () => $t('system.dict.formPlaceholder.dictType') },
+  ],
 }
 
 function handleSearch() {
@@ -226,11 +262,15 @@ function handleModify(row: SystemDictTypeVO) {
 }
 
 function handleRemove(row: SystemDictTypeVO) {
-  ElMessageBox.confirm($t('system.dict.messages.deleteConfirm', { dictName: row.dictName }), $t('common.messages.confirmTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'warning',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.dict.messages.deleteConfirm', { dictName: row.dictName }),
+    $t('common.messages.confirmTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'warning',
+    },
+  ).then(() => {
     if (row.id) {
       removeDictTypeByIds(String(row.id)).then((data) => {
         ElMessage.success(data.msg || $t('system.dict.messages.deleteSuccess'))
@@ -249,11 +289,15 @@ function handleBatchRemove() {
 
   const ids = selectedRows.map((row) => row.id).join(',')
 
-  ElMessageBox.confirm($t('system.dict.messages.batchDeleteConfirm', { count: selectedRows.length }), $t('common.messages.confirmTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'warning',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.dict.messages.batchDeleteConfirm', { count: selectedRows.length }),
+    $t('common.messages.confirmTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'warning',
+    },
+  ).then(() => {
     removeDictTypeByIds(ids).then((data) => {
       ElMessage.success(data.msg || $t('system.dict.messages.deleteSuccess'))
       getTableData()

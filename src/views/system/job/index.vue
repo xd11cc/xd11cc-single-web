@@ -3,7 +3,10 @@
     <el-card shadow="never" class="search-wrapper">
       <el-form ref="searchFormRef" :inline="true" :model="searchData">
         <el-form-item prop="jobName" :label="$t('system.job.search.jobName')">
-          <el-input v-model="searchData.jobName" :placeholder="$t('system.job.formPlaceholder.jobName')" />
+          <el-input
+            v-model="searchData.jobName"
+            :placeholder="$t('system.job.formPlaceholder.jobName')"
+          />
         </el-form-item>
         <el-form-item prop="jobGroup" :label="$t('system.job.search.jobGroup')">
           <el-select
@@ -37,10 +40,12 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            <template #icon><Icon icon="lucide:search" /></template>{{ $t('system.job.actions.query') }}
+            <template #icon><Icon icon="lucide:search" /></template
+            >{{ $t('system.job.actions.query') }}
           </el-button>
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('system.job.actions.reset') }}
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template
+            >{{ $t('system.job.actions.reset') }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -63,8 +68,18 @@
       <div class="table-wrapper">
         <el-table ref="tableRef" :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column prop="jobName" :label="$t('system.job.columns.jobName')" align="center" min-width="120" />
-          <el-table-column prop="jobGroup" :label="$t('system.job.columns.jobGroup')" align="center" width="120">
+          <el-table-column
+            prop="jobName"
+            :label="$t('system.job.columns.jobName')"
+            align="center"
+            min-width="120"
+          />
+          <el-table-column
+            prop="jobGroup"
+            :label="$t('system.job.columns.jobGroup')"
+            align="center"
+            width="120"
+          >
             <template #default="scope">
               {{ getDictItem('system_job_group', scope.row.jobGroup)?.value || scope.row.jobGroup }}
             </template>
@@ -76,8 +91,18 @@
             min-width="160"
             show-overflow-tooltip
           />
-          <el-table-column prop="cronExpression" :label="$t('system.job.columns.cronExpression')" align="center" width="140" />
-          <el-table-column prop="executionPolicy" :label="$t('system.job.columns.executionPolicy')" align="center" width="100">
+          <el-table-column
+            prop="cronExpression"
+            :label="$t('system.job.columns.cronExpression')"
+            align="center"
+            width="140"
+          />
+          <el-table-column
+            prop="executionPolicy"
+            :label="$t('system.job.columns.executionPolicy')"
+            align="center"
+            width="100"
+          >
             <template #default="scope">
               <el-tag
                 :type="
@@ -95,7 +120,12 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="concurrent" :label="$t('system.job.columns.concurrent')" align="center" width="90">
+          <el-table-column
+            prop="concurrent"
+            :label="$t('system.job.columns.concurrent')"
+            align="center"
+            width="90"
+          >
             <template #default="scope">
               <el-tag
                 :type="
@@ -112,7 +142,12 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="status" :label="$t('system.job.columns.status')" align="center" width="100">
+          <el-table-column
+            prop="status"
+            :label="$t('system.job.columns.status')"
+            align="center"
+            width="100"
+          >
             <template #default="scope">
               <el-switch
                 :model-value="scope.row.status"
@@ -132,8 +167,18 @@
             min-width="120"
             show-overflow-tooltip
           />
-          <el-table-column prop="createTime" :label="$t('system.job.columns.createTime')" align="center" min-width="160" />
-          <el-table-column fixed="right" :label="$t('system.job.columns.action')" width="150" align="center">
+          <el-table-column
+            prop="createTime"
+            :label="$t('system.job.columns.createTime')"
+            align="center"
+            min-width="160"
+          />
+          <el-table-column
+            fixed="right"
+            :label="$t('system.job.columns.action')"
+            width="150"
+            align="center"
+          >
             <template #default="scope">
               <el-tooltip :content="$t('system.job.actions.edit')" placement="top">
                 <el-button
@@ -203,7 +248,11 @@
     <!-- 新增/修改弹窗 -->
     <el-dialog
       v-model="dialogVisible"
-      :title="formData.id === undefined ? $t('system.job.dialogs.addJob') : $t('system.job.dialogs.editJob')"
+      :title="
+        formData.id === undefined
+          ? $t('system.job.dialogs.addJob')
+          : $t('system.job.dialogs.editJob')
+      "
       width="55%"
       @close="handleClose"
     >
@@ -217,7 +266,11 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item prop="jobName" :label="$t('system.job.search.jobName')">
-              <el-input v-model="formData.jobName" :placeholder="$t('system.job.formPlaceholder.jobName')" maxlength="64" />
+              <el-input
+                v-model="formData.jobName"
+                :placeholder="$t('system.job.formPlaceholder.jobName')"
+                maxlength="64"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -245,7 +298,11 @@
           />
         </el-form-item>
         <el-form-item prop="cronExpression" :label="$t('system.job.form.cronExpression')">
-          <el-input v-model="formData.cronExpression" :placeholder="$t('system.job.formPlaceholder.cronExpression')" readonly>
+          <el-input
+            v-model="formData.cronExpression"
+            :placeholder="$t('system.job.formPlaceholder.cronExpression')"
+            readonly
+          >
             <template #append>
               <el-button @click="openCronDialog">
                 <template #icon><Icon icon="lucide:calendar-clock" /></template>
@@ -272,7 +329,11 @@
           </el-col>
           <el-col :span="12">
             <el-form-item prop="concurrent" :label="$t('system.job.form.concurrent')">
-              <el-select v-model="formData.concurrent" :placeholder="$t('system.job.formPlaceholder.concurrent')" style="width: 100%">
+              <el-select
+                v-model="formData.concurrent"
+                :placeholder="$t('system.job.formPlaceholder.concurrent')"
+                style="width: 100%"
+              >
                 <el-option
                   v-for="item in getDictList('system_job_concurrent')"
                   :key="item.id"
@@ -285,8 +346,16 @@
         </el-row>
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item v-if="formData.id !== undefined" prop="status" :label="$t('system.job.form.status')">
-              <el-select v-model="formData.status" :placeholder="$t('system.job.formPlaceholder.status')" style="width: 100%">
+            <el-form-item
+              v-if="formData.id !== undefined"
+              prop="status"
+              :label="$t('system.job.form.status')"
+            >
+              <el-select
+                v-model="formData.status"
+                :placeholder="$t('system.job.formPlaceholder.status')"
+                style="width: 100%"
+              >
                 <el-option
                   v-for="item in getDictList('system_job_status')"
                   :key="item.id"
@@ -310,9 +379,9 @@
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-        <el-button type="primary" :loading="submitLoading" @click="handleCreateOrUpdate"
-          >{{ $t('common.confirm') }}</el-button
-        >
+        <el-button type="primary" :loading="submitLoading" @click="handleCreateOrUpdate">{{
+          $t('common.confirm')
+        }}</el-button>
       </template>
     </el-dialog>
 
@@ -333,7 +402,7 @@
 </template>
 
 <script lang="ts" setup>
-import { useI18n } from "vue-i18n"
+import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import { useDict } from '@/common/composables/useDict'
 import { usePagination } from '@@/composables/usePagination'
@@ -343,7 +412,8 @@ import type { FormRules } from 'element-plus'
 import { cloneDeep } from 'lodash-es'
 import CronGenerator from '@/common/components/CronGenerator/index.vue'
 
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 
 defineOptions({
   name: 'systemJob',
@@ -390,10 +460,26 @@ function handleCronDialogClose() {
 }
 
 const formRules: FormRules = {
-  jobName: [{ required: true, trigger: 'blur', message: () => $t('system.job.formPlaceholder.jobName') }],
-  jobGroup: [{ required: true, trigger: 'change', message: () => $t('system.job.formPlaceholder.jobGroup') }],
-  invokeTarget: [{ required: true, trigger: 'blur', message: () => $t('system.job.formPlaceholder.invokeTarget') }],
-  cronExpression: [{ required: true, trigger: 'blur', message: () => $t('system.job.formPlaceholder.cronExpression') }],
+  jobName: [
+    { required: true, trigger: 'blur', message: () => $t('system.job.formPlaceholder.jobName') },
+  ],
+  jobGroup: [
+    { required: true, trigger: 'change', message: () => $t('system.job.formPlaceholder.jobGroup') },
+  ],
+  invokeTarget: [
+    {
+      required: true,
+      trigger: 'blur',
+      message: () => $t('system.job.formPlaceholder.invokeTarget'),
+    },
+  ],
+  cronExpression: [
+    {
+      required: true,
+      trigger: 'blur',
+      message: () => $t('system.job.formPlaceholder.cronExpression'),
+    },
+  ],
 }
 
 function handleSearch() {
@@ -442,11 +528,15 @@ function handleCreateOrUpdate() {
 }
 
 function handleRemove(row: SystemJobVO) {
-  ElMessageBox.confirm($t('system.job.messages.deleteConfirm', { jobName: row.jobName }), $t('common.messages.confirmTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'warning',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.job.messages.deleteConfirm', { jobName: row.jobName }),
+    $t('common.messages.confirmTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'warning',
+    },
+  ).then(() => {
     if (row.id) {
       removeJobByIds(String(row.id)).then((data) => {
         ElMessage.success(data.msg || $t('system.job.messages.deleteSuccess'))
@@ -463,11 +553,15 @@ function handleBatchRemove() {
     return
   }
   const ids = selectedRows.map((row) => row.id).join(',')
-  ElMessageBox.confirm($t('system.job.messages.batchDeleteConfirm', { count: selectedRows.length }), $t('common.messages.confirmTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'warning',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.job.messages.batchDeleteConfirm', { count: selectedRows.length }),
+    $t('common.messages.confirmTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'warning',
+    },
+  ).then(() => {
     removeJobByIds(ids).then((data) => {
       ElMessage.success(data.msg || $t('system.job.messages.deleteSuccess'))
       getTableData()
@@ -477,12 +571,17 @@ function handleBatchRemove() {
 
 function handleChangeStatus(row: SystemJobVO, newStatus: string) {
   if (!row.id) return
-  const actionLabel = newStatus === '1' ? $t('system.job.status.disable') : $t('system.job.status.enable')
-  ElMessageBox.confirm($t('system.job.messages.statusConfirm', { action: actionLabel, jobName: row.jobName }), $t('common.messages.confirmTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'warning',
-  }).then(() => {
+  const actionLabel =
+    newStatus === '1' ? $t('system.job.status.disable') : $t('system.job.status.enable')
+  ElMessageBox.confirm(
+    $t('system.job.messages.statusConfirm', { action: actionLabel, jobName: row.jobName }),
+    $t('common.messages.confirmTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'warning',
+    },
+  ).then(() => {
     changeJobStatus(row.id!, newStatus).then((data) => {
       ElMessage.success(data.msg || $t('system.job.messages.operationSuccess'))
       getTableData()
@@ -492,11 +591,15 @@ function handleChangeStatus(row: SystemJobVO, newStatus: string) {
 
 function handleRunOnce(row: SystemJobVO) {
   if (!row.id) return
-  ElMessageBox.confirm($t('system.job.messages.runConfirm', { jobName: row.jobName }), $t('common.messages.confirmTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'info',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.job.messages.runConfirm', { jobName: row.jobName }),
+    $t('common.messages.confirmTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'info',
+    },
+  ).then(() => {
     runJobOnce(row.id!).then((data) => {
       ElMessage.success(data.msg || $t('system.job.messages.runSuccess'))
       getTableData()

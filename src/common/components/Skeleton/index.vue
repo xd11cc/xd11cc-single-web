@@ -15,11 +15,7 @@
         <div v-else-if="variant === 'table'" class="skeleton-table">
           <div class="skeleton-box skeleton-table-header"></div>
           <div v-for="n in rows" :key="n" class="skeleton-table-row">
-            <div
-              v-for="c in columns"
-              :key="c"
-              class="skeleton-box skeleton-table-cell"
-            ></div>
+            <div v-for="c in columns" :key="c" class="skeleton-box skeleton-table-cell"></div>
           </div>
         </div>
 

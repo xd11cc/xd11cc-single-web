@@ -18,7 +18,8 @@
 import { Icon } from '@iconify/vue'
 import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 
 const isExpired = ref(false)
 

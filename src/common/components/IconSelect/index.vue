@@ -46,20 +46,20 @@
             </template>
           </el-input>
           <el-button size="small" @click="handleOnlineSearch" :loading="onlineLoading">
-            {{ $t("common.iconSelect.actions.onlineSearch") }}
+            {{ $t('common.iconSelect.actions.onlineSearch') }}
           </el-button>
         </div>
 
         <div class="tab-row">
           <span :class="{ active: activeTab === 'local' }" @click="activeTab = 'local'">
-            {{ $t("common.iconSelect.tabs.local") }}
+            {{ $t('common.iconSelect.tabs.local') }}
           </span>
           <span
             v-if="onlineResults.length > 0"
             :class="{ active: activeTab === 'online' }"
             @click="activeTab = 'online'"
           >
-            {{ $t("common.iconSelect.tabs.online") }}
+            {{ $t('common.iconSelect.tabs.online') }}
           </span>
         </div>
 
@@ -75,7 +75,9 @@
               <Icon :icon="icon" width="20" height="20" />
               <span>{{ icon.replace('lucide:', '') }}</span>
             </div>
-            <div v-if="displayIcons.length === 0" class="empty-state">{{ $t("common.iconSelect.empty.noMatch") }}</div>
+            <div v-if="displayIcons.length === 0" class="empty-state">
+              {{ $t('common.iconSelect.empty.noMatch') }}
+            </div>
           </template>
           <template v-else>
             <div
@@ -88,8 +90,12 @@
               <Icon :icon="icon" width="20" height="20" />
               <span>{{ icon }}</span>
             </div>
-            <div v-if="onlineLoading" class="empty-state">{{ $t("common.iconSelect.empty.searching") }}</div>
-            <div v-else-if="onlineResults.length === 0" class="empty-state">{{ $t("common.iconSelect.empty.noResults") }}</div>
+            <div v-if="onlineLoading" class="empty-state">
+              {{ $t('common.iconSelect.empty.searching') }}
+            </div>
+            <div v-else-if="onlineResults.length === 0" class="empty-state">
+              {{ $t('common.iconSelect.empty.noResults') }}
+            </div>
           </template>
         </div>
       </div>
@@ -103,7 +109,8 @@ import { Icon } from '@iconify/vue'
 import { ref, computed } from 'vue'
 import lucideIcons from '@iconify-json/lucide/icons.json'
 
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 
 const lucideIconNames = Object.keys(lucideIcons.icons).map((name) => `lucide:${name}`)
 

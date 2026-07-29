@@ -3,7 +3,10 @@
     <el-card shadow="never" class="search-wrapper">
       <el-form ref="searchFormRef" :inline="true" :model="searchData">
         <el-form-item prop="menuName" :label="$t('system.menu.search.menuName')">
-          <el-input v-model="searchData.menuName" :placeholder="$t('system.menu.formPlaceholder.menuName')" />
+          <el-input
+            v-model="searchData.menuName"
+            :placeholder="$t('system.menu.formPlaceholder.menuName')"
+          />
         </el-form-item>
         <el-form-item prop="status" :label="$t('system.menu.search.status')">
           <el-select
@@ -22,10 +25,12 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            <template #icon><Icon icon="lucide:search" /></template>{{ $t('common.search') }}</el-button
+            <template #icon><Icon icon="lucide:search" /></template
+            >{{ $t('common.search') }}</el-button
           >
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('common.reset') }}</el-button
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template
+            >{{ $t('common.reset') }}</el-button
           >
         </el-form-item>
       </el-form>
@@ -34,11 +39,16 @@
       <div class="toolbar-wrapper">
         <div>
           <el-button type="primary" @click="handleAdd" v-permission="['system:menu:add']">
-            <template #icon><Icon icon="lucide:plus-circle" /></template>{{ $t('system.menu.actions.add') }}</el-button
+            <template #icon><Icon icon="lucide:plus-circle" /></template
+            >{{ $t('system.menu.actions.add') }}</el-button
           >
           <el-button @click="toggleExpand">
             <template #icon><Icon icon="lucide:arrow-up-down" /></template
-            >{{ isExpanded ? $t('system.menu.actions.collapseAll') : $t('system.menu.actions.expandAll') }}</el-button
+            >{{
+              isExpanded
+                ? $t('system.menu.actions.collapseAll')
+                : $t('system.menu.actions.expandAll')
+            }}</el-button
           >
         </div>
       </div>
@@ -54,14 +64,23 @@
             prop="menuName"
             :label="$t('system.menu.columns.menuName')"
             min-width="180"
-           
           />
-          <el-table-column prop="icon" :label="$t('system.menu.columns.icon')" align="center" width="60">
+          <el-table-column
+            prop="icon"
+            :label="$t('system.menu.columns.icon')"
+            align="center"
+            width="60"
+          >
             <template #default="scope">
               <MenuIcon v-if="scope.row.icon" :name="scope.row.icon" class="el-icon" />
             </template>
           </el-table-column>
-          <el-table-column prop="menuType" :label="$t('system.menu.columns.type')" align="center" width="80">
+          <el-table-column
+            prop="menuType"
+            :label="$t('system.menu.columns.type')"
+            align="center"
+            width="80"
+          >
             <template #default="scope">
               <el-tag
                 :type="menuTypeTag(scope.row.menuType)"
@@ -75,14 +94,22 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="sort" :label="$t('system.menu.columns.orderNum')" align="center" width="70" />
+          <el-table-column
+            prop="sort"
+            :label="$t('system.menu.columns.orderNum')"
+            align="center"
+            width="70"
+          />
           <el-table-column
             prop="permission"
             :label="$t('system.menu.columns.perms')"
             align="center"
-           
           />
-          <el-table-column prop="component" :label="$t('system.menu.columns.component')" align="center" />
+          <el-table-column
+            prop="component"
+            :label="$t('system.menu.columns.component')"
+            align="center"
+          />
           <el-table-column prop="status" :label="$t('system.menu.columns.status')" align="center">
             <template #default="scope">
               <el-tag
@@ -99,11 +126,19 @@
             :label="$t('system.menu.columns.createTime')"
             align="center"
             min-width="160"
-           
           />
-          <el-table-column fixed="right" :label="$t('system.menu.columns.action')" width="120" align="center">
+          <el-table-column
+            fixed="right"
+            :label="$t('system.menu.columns.action')"
+            width="120"
+            align="center"
+          >
             <template #default="scope">
-              <el-tooltip v-if="scope.row.menuType !== 'B'" :content="$t('system.menu.actions.addChild')" placement="top">
+              <el-tooltip
+                v-if="scope.row.menuType !== 'B'"
+                :content="$t('system.menu.actions.addChild')"
+                placement="top"
+              >
                 <el-button
                   type="success"
                   text
@@ -116,12 +151,26 @@
                 </el-button>
               </el-tooltip>
               <el-tooltip :content="$t('system.menu.actions.edit')" placement="top">
-                <el-button type="warning" text bg size="small" @click="handleModify(scope.row)" v-permission="['system:menu:update']">
+                <el-button
+                  type="warning"
+                  text
+                  bg
+                  size="small"
+                  @click="handleModify(scope.row)"
+                  v-permission="['system:menu:update']"
+                >
                   <Icon icon="lucide:pencil" />
                 </el-button>
               </el-tooltip>
               <el-tooltip :content="$t('system.menu.actions.delete')" placement="top">
-                <el-button type="danger" text bg size="small" @click="handleRemove(scope.row)" v-permission="['system:menu:delete']">
+                <el-button
+                  type="danger"
+                  text
+                  bg
+                  size="small"
+                  @click="handleRemove(scope.row)"
+                  v-permission="['system:menu:delete']"
+                >
                   <Icon icon="lucide:trash-2" />
                 </el-button>
               </el-tooltip>
@@ -132,7 +181,9 @@
     </el-card>
     <el-dialog
       v-model="dialogVisible"
-      :title="formData.id === undefined ? $t('system.menu.dialogs.add') : $t('system.menu.dialogs.edit')"
+      :title="
+        formData.id === undefined ? $t('system.menu.dialogs.add') : $t('system.menu.dialogs.edit')
+      "
       width="40%"
       destroy-on-close
       @close="handleClose"
@@ -181,76 +232,82 @@
           </el-col>
           <el-col :span="12">
             <el-form-item prop="menuName" :label="$t('system.menu.form.menuName')">
-              <el-input v-model="formData.menuName" :placeholder="$t('system.menu.formPlaceholder.menuName')" />
+              <el-input
+                v-model="formData.menuName"
+                :placeholder="$t('system.menu.formPlaceholder.menuName')"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12" v-show="formData.menuType != 'B'">
             <el-form-item prop="component">
               <template #label>
                 <span>
-                  <el-tooltip
-                    :content="$t('system.menu.tooltip.component')"
-                    placement="top"
-                  >
+                  <el-tooltip :content="$t('system.menu.tooltip.component')" placement="top">
                     <Icon icon="lucide:help-circle" />
                   </el-tooltip>
                   {{ $t('system.menu.columns.component') }}
                 </span>
               </template>
-              <el-input v-model="formData.component" :placeholder="$t('system.menu.formPlaceholder.component')" />
+              <el-input
+                v-model="formData.component"
+                :placeholder="$t('system.menu.formPlaceholder.component')"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12" v-show="formData.menuType != 'B'">
             <el-form-item prop="routeName" :label="$t('system.menu.form.routeName')">
-              <el-input v-model="formData.routeName" :placeholder="$t('system.menu.formPlaceholder.routeName')" />
+              <el-input
+                v-model="formData.routeName"
+                :placeholder="$t('system.menu.formPlaceholder.routeName')"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12" v-show="formData.menuType != 'B'">
             <el-form-item prop="path">
               <template #label>
                 <span>
-                  <el-tooltip
-                    :content="$t('system.menu.tooltip.path')"
-                    placement="top"
-                  >
+                  <el-tooltip :content="$t('system.menu.tooltip.path')" placement="top">
                     <Icon icon="lucide:help-circle" />
                   </el-tooltip>
                   {{ $t('system.menu.form.path') }}
                 </span>
               </template>
-              <el-input v-model="formData.path" :placeholder="$t('system.menu.formPlaceholder.path')" />
+              <el-input
+                v-model="formData.path"
+                :placeholder="$t('system.menu.formPlaceholder.path')"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12" v-show="formData.menuType != 'M'">
             <el-form-item prop="permission">
               <template #label>
                 <span>
-                  <el-tooltip
-                    :content="$t('system.menu.tooltip.perms')"
-                    placement="top"
-                  >
+                  <el-tooltip :content="$t('system.menu.tooltip.perms')" placement="top">
                     <Icon icon="lucide:help-circle" />
                   </el-tooltip>
                   {{ $t('system.menu.form.perms') }}
                 </span>
               </template>
-              <el-input v-model="formData.permission" :placeholder="$t('system.menu.formPlaceholder.permission')" />
+              <el-input
+                v-model="formData.permission"
+                :placeholder="$t('system.menu.formPlaceholder.permission')"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12" v-show="formData.menuType == 'C'">
             <el-form-item prop="query">
               <template #label>
                 <span>
-                  <el-tooltip
-                    :content="$t('system.menu.tooltip.query')"
-                    placement="top"
-                  >
+                  <el-tooltip :content="$t('system.menu.tooltip.query')" placement="top">
                     <Icon icon="lucide:help-circle" />
                   </el-tooltip>
                   {{ $t('system.menu.form.query') }}
                 </span>
               </template>
-              <el-input v-model="formData.query" :placeholder="$t('system.menu.formPlaceholder.query')" />
+              <el-input
+                v-model="formData.query"
+                :placeholder="$t('system.menu.formPlaceholder.query')"
+              />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -283,14 +340,16 @@
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-        <el-button type="primary" :loading="loading" @click="handleCreateOrUpdate">{{ $t('common.confirm') }}</el-button>
+        <el-button type="primary" :loading="loading" @click="handleCreateOrUpdate">{{
+          $t('common.confirm')
+        }}</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { useI18n } from "vue-i18n"
+import { useI18n } from 'vue-i18n'
 import { useDict } from '@/common/composables/useDict'
 import { Icon } from '@iconify/vue'
 import type { FormRules } from 'element-plus'
@@ -300,7 +359,8 @@ import { cloneDeep } from 'lodash-es'
 import IconSelect from '@@/components/IconSelect/index.vue'
 import MenuIcon from '@@/components/MenuIcon/index.vue'
 
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 
 const { loading, getDictList, getDictItem } = useDict([
   'system_status',
@@ -340,9 +400,15 @@ const formRules = computed<FormRules<SystemMenuVO>>(() => {
   return {
     sort: [{ required: true, trigger: 'blur', message: () => $t('system.menu.form.orderNum') }],
     menuName: [{ required: true, trigger: 'blur', message: () => $t('system.menu.form.menuName') }],
-    component: isButton ? [] : [{ required: true, trigger: 'blur', message: () => $t('system.menu.form.component') }],
-    routeName: isButton ? [] : [{ required: true, trigger: 'blur', message: () => $t('system.menu.form.routeName') }],
-    path: isButton ? [] : [{ required: true, trigger: 'blur', message: () => $t('system.menu.form.path') }],
+    component: isButton
+      ? []
+      : [{ required: true, trigger: 'blur', message: () => $t('system.menu.form.component') }],
+    routeName: isButton
+      ? []
+      : [{ required: true, trigger: 'blur', message: () => $t('system.menu.form.routeName') }],
+    path: isButton
+      ? []
+      : [{ required: true, trigger: 'blur', message: () => $t('system.menu.form.path') }],
   }
 })
 
@@ -378,11 +444,15 @@ function handleModify(row: SystemMenuVO) {
 }
 
 function handleRemove(row: SystemMenuVO) {
-  ElMessageBox.confirm($t('system.menu.messages.deleteConfirm', { menuName: row.menuName }), $t('common.messages.confirmTitle'), {
-    confirmButtonText: $t('common.confirm'),
-    cancelButtonText: $t('common.cancel'),
-    type: 'warning',
-  }).then(() => {
+  ElMessageBox.confirm(
+    $t('system.menu.messages.deleteConfirm', { menuName: row.menuName }),
+    $t('common.messages.confirmTitle'),
+    {
+      confirmButtonText: $t('common.confirm'),
+      cancelButtonText: $t('common.cancel'),
+      type: 'warning',
+    },
+  ).then(() => {
     if (row.id) {
       removeById(row.id).then((data) => {
         ElMessage.success(data.msg || $t('common.messages.deleteSuccess'))

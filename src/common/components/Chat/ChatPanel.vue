@@ -1,9 +1,15 @@
 <template>
   <div class="chat-panel">
     <div class="chat-panel-header">
-      <span class="title">{{ $t("chat.title") }}</span>
+      <span class="title">{{ $t('chat.title') }}</span>
       <div class="actions">
-        <Icon icon="lucide:minus" width="18" height="18" class="action-btn" @click="$emit('close')" />
+        <Icon
+          icon="lucide:minus"
+          width="18"
+          height="18"
+          class="action-btn"
+          @click="$emit('close')"
+        />
       </div>
     </div>
     <div class="chat-panel-body">
@@ -20,7 +26,7 @@
       />
       <div v-else class="empty-chat">
         <Icon icon="lucide:message-square-dashed" width="48" height="48" />
-        <span>{{ $t("chat.empty") }}</span>
+        <span>{{ $t('chat.empty') }}</span>
       </div>
     </div>
   </div>
@@ -33,11 +39,13 @@ import ContactList from './ContactList.vue'
 import MessageArea from './MessageArea.vue'
 import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 
 defineEmits<{ close: [] }>()
 
-const { contacts, activeContactId, setActiveContact, send, getMessages, refreshOnlineUsers } = useChat()
+const { contacts, activeContactId, setActiveContact, send, getMessages, refreshOnlineUsers } =
+  useChat()
 
 const currentMessages = computed(() => {
   if (!activeContactId.value) return []

@@ -1,7 +1,12 @@
 <template>
   <div class="contact-list">
     <div class="search-box">
-      <el-input v-model="keyword" :placeholder="$t('chat.contactList.searchPlaceholder')" size="small" clearable>
+      <el-input
+        v-model="keyword"
+        :placeholder="$t('chat.contactList.searchPlaceholder')"
+        size="small"
+        clearable
+      >
         <template #prefix>
           <Icon icon="lucide:search" width="14" height="14" />
         </template>
@@ -22,10 +27,15 @@
           <span class="contact-name">{{ contact.username }}</span>
           <span v-if="contact.lastMessage" class="contact-last">{{ contact.lastMessage }}</span>
         </div>
-        <el-badge v-if="contact.unread > 0" :value="contact.unread" :max="99" class="contact-badge" />
+        <el-badge
+          v-if="contact.unread > 0"
+          :value="contact.unread"
+          :max="99"
+          class="contact-badge"
+        />
       </div>
       <div v-if="!filteredContacts.length" class="no-contacts">
-        {{ $t("chat.contactList.noOnlineUsers") }}
+        {{ $t('chat.contactList.noOnlineUsers') }}
       </div>
     </el-scrollbar>
   </div>
@@ -36,7 +46,8 @@ import { Icon } from '@iconify/vue'
 import type { ChatContact } from '@@/composables/useChat'
 import { useI18n } from 'vue-i18n'
 
-const { t } = useI18n(); const $t = t
+const { t } = useI18n()
+const $t = t
 
 const props = defineProps<{
   contacts: ChatContact[]
