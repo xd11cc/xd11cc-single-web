@@ -3,7 +3,7 @@
     <!-- 欢迎区 -->
     <section class="greeting" style="--delay: 0">
       <div>
-        <h1 class="greeting-title">{{ greetingText }}，{{ username }}</h1>
+        <h1 class="greeting-title">{{ greetingText }}{{ t('dashboard.greeting.userPrefix') }}{{ username }}</h1>
         <p class="greeting-sub">{{ currentDate }}</p>
       </div>
     </section>
@@ -31,7 +31,7 @@
     <section class="charts-grid">
       <div class="chart-card" style="--delay: 5">
         <div class="card-header">
-          <h3>访问趋势</h3>
+          <h3>{{ t('dashboard.charts.visitTrend') }}</h3>
           <div class="card-actions">
             <span
               v-for="p in periods"
@@ -47,7 +47,7 @@
 
       <div class="chart-card chart-card-small" style="--delay: 6">
         <div class="card-header">
-          <h3>流量来源</h3>
+          <h3>{{ t('dashboard.charts.trafficSource') }}</h3>
         </div>
         <v-chart :option="pieOption" autoresize class="chart" />
       </div>
@@ -58,7 +58,7 @@
       <!-- 周概览柱图 -->
       <div class="chart-card" style="--delay: 7">
         <div class="card-header">
-          <h3>本周概览</h3>
+          <h3>{{ t('dashboard.charts.weeklyOverview') }}</h3>
         </div>
         <v-chart :option="barOption" autoresize class="chart" />
       </div>
@@ -66,8 +66,8 @@
       <!-- 最近活动 -->
       <div class="activity-card" style="--delay: 8">
         <div class="card-header">
-          <h3>最近活动</h3>
-          <el-link type="primary" underline="never">查看全部</el-link>
+          <h3>{{ t('dashboard.activity.title') }}</h3>
+          <el-link type="primary" underline="never">{{ t('dashboard.activity.viewAll') }}</el-link>
         </div>
         <div class="activity-list">
           <div v-for="activity in activities" :key="activity.id" class="activity-item">
@@ -110,43 +110,48 @@ import {
 } from 'echarts/components'
 import { useUserStore } from '@/pinia/stores/user'
 import { useTheme } from '@@/composables/useTheme'
+import { useI18n } from 'vue-i18n'
 
 use([CanvasRenderer, LineChart, BarChart, PieChart, TitleComponent, TooltipComponent, GridComponent, LegendComponent])
 
 const router = useRouter()
 const userStore = useUserStore()
 const { isDark } = useTheme()
-const username = computed(() => userStore.username || 'Admin')
+const { t, locale } = useI18n()
+const username = computed(() => userStore.username || t('system.user.profile.defaultUser'))
 
 const now = new Date()
 const hour = now.getHours()
 const greetingText = computed(() => {
-  if (hour < 6) return '夜深了'
-  if (hour < 12) return '早上好'
-  if (hour < 14) return '中午好'
-  if (hour < 18) return '下午好'
-  return '晚上好'
+  if (hour < 6) return t('dashboard.greeting.lateNight')
+  if (hour < 12) return t('dashboard.greeting.goodMorning')
+  if (hour < 14) return t('dashboard.greeting.noon')
+  if (hour < 18) return t('dashboard.greeting.goodAfternoon')
+  return t('dashboard.greeting.goodEvening')
 })
 
 const currentDate = computed(() => {
-  const d = new Date()
-  const weekDays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
-  return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日 ${weekDays[d.getDay()]}`
+  return new Intl.DateTimeFormat(locale.value, { dateStyle: 'full' }).format(new Date())
 })
 
-const stats = [
-  { label: '用户总数', value: '286', trend: '+8', trendType: 'up', percent: 58 },
-  { label: '在线用户', value: '34', trend: '+5', trendType: 'up', percent: 42 },
-  { label: '今日登录', value: '67', trend: '+12', trendType: 'up', percent: 35 },
-  { label: '待办事项', value: '5', trend: '-2', trendType: 'down', percent: 10 },
-]
+const stats = computed(() => [
+  { label: t('dashboard.stats.users'), value: '286', trend: '+8', trendType: 'up', percent: 58 },
+  { label: t('dashboard.stats.onlineUsers'), value: '34', trend: '+5', trendType: 'up', percent: 42 },
+  { label: t('dashboard.stats.todayLogins'), value: '67', trend: '+12', trendType: 'up', percent: 35 },
+  { label: t('dashboard.stats.todos'), value: '5', trend: '-2', trendType: 'down', percent: 10 },
+])
 
-const periods = [
-  { label: '周', value: 'week' },
-  { label: '月', value: 'month' },
-  { label: '年', value: 'year' },
-]
+const periods = computed(() => [
+  { label: t('dashboard.charts.periods.week7'), value: 'week' },
+  { label: t('dashboard.charts.periods.month30'), value: 'month' },
+  { label: t('dashboard.charts.periods.year1'), value: 'year' },
+])
 const activePeriod = ref('week')
+
+const weekDays = computed(() => {
+  const formatter = new Intl.DateTimeFormat(locale.value, { weekday: 'short', timeZone: 'UTC' })
+  return Array.from({ length: 7 }, (_, index) => formatter.format(new Date(Date.UTC(2024, 0, index + 1))))
+})
 
 const textColor = computed(() => isDark.value ? '#a1a1aa' : '#71717a')
 const borderColor = computed(() => isDark.value ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)')
@@ -161,7 +166,7 @@ const lineOption = computed(() => ({
   grid: { top: 20, right: 20, bottom: 30, left: 50 },
   xAxis: {
     type: 'category',
-    data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+    data: weekDays.value,
     axisLine: { lineStyle: { color: borderColor.value } },
     axisLabel: { color: textColor.value },
   },
@@ -172,7 +177,7 @@ const lineOption = computed(() => ({
   },
   series: [
     {
-      name: '访问量',
+      name: t('dashboard.charts.visits'),
       type: 'line',
       smooth: true,
       data: [120, 156, 142, 178, 165, 58, 42],
@@ -192,7 +197,7 @@ const lineOption = computed(() => ({
       symbolSize: 6,
     },
     {
-      name: '独立访客',
+      name: t('dashboard.charts.uniqueVisitors'),
       type: 'line',
       smooth: true,
       data: [85, 102, 98, 130, 112, 36, 28],
@@ -238,10 +243,10 @@ const pieOption = computed(() => ({
         label: { show: true, fontSize: 14, fontWeight: 'bold' },
       },
       data: [
-        { value: 148, name: '直接访问', itemStyle: { color: '#7c3aed' } },
-        { value: 86, name: '搜索引擎', itemStyle: { color: '#10b981' } },
-        { value: 53, name: '外部链接', itemStyle: { color: '#f59e0b' } },
-        { value: 42, name: '收藏夹', itemStyle: { color: '#06b6d4' } },
+        { value: 148, name: t('dashboard.charts.sources.direct'), itemStyle: { color: '#7c3aed' } },
+        { value: 86, name: t('dashboard.charts.sources.search'), itemStyle: { color: '#10b981' } },
+        { value: 53, name: t('dashboard.charts.sources.referral'), itemStyle: { color: '#f59e0b' } },
+        { value: 42, name: t('dashboard.charts.sources.favorites'), itemStyle: { color: '#06b6d4' } },
       ],
     },
   ],
@@ -257,7 +262,7 @@ const barOption = computed(() => ({
   grid: { top: 20, right: 20, bottom: 30, left: 50 },
   xAxis: {
     type: 'category',
-    data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+    data: weekDays.value,
     axisLine: { lineStyle: { color: borderColor.value } },
     axisLabel: { color: textColor.value },
   },
@@ -286,20 +291,23 @@ const barOption = computed(() => ({
   ],
 }))
 
-const activities = [
-  { id: 1, text: '用户 张三 完成了注册', time: '5 分钟前', color: 'var(--theme-accent)' },
-  { id: 2, text: '系统配置已更新', time: '12 分钟前', color: 'var(--theme-warning)' },
-  { id: 3, text: '新增菜单「数据分析」', time: '1 小时前', color: 'var(--theme-info)' },
-  { id: 4, text: '角色权限已调整', time: '2 小时前', color: 'var(--theme-accent)' },
-  { id: 5, text: '数据库备份完成', time: '3 小时前', color: 'var(--theme-success)' },
-]
+const activities = computed(() => {
+  const relativeTime = new Intl.RelativeTimeFormat(locale.value, { numeric: 'always' })
+  return [
+    { id: 1, text: t('dashboard.activity.userRegistered', { name: t('dashboard.activity.sampleUser') }), time: relativeTime.format(-5, 'minute'), color: 'var(--theme-accent)' },
+    { id: 2, text: t('dashboard.activity.configUpdated'), time: relativeTime.format(-12, 'minute'), color: 'var(--theme-warning)' },
+    { id: 3, text: t('dashboard.activity.menuAdded', { name: t('dashboard.activity.sampleMenu') }), time: relativeTime.format(-1, 'hour'), color: 'var(--theme-info)' },
+    { id: 4, text: t('dashboard.activity.rolePermissionsUpdated'), time: relativeTime.format(-2, 'hour'), color: 'var(--theme-accent)' },
+    { id: 5, text: t('dashboard.activity.backupCompleted'), time: relativeTime.format(-3, 'hour'), color: 'var(--theme-success)' },
+  ]
+})
 
-const quickActions = [
-  { label: '用户管理', icon: 'lucide:users', path: '/system/user' },
-  { label: '角色管理', icon: 'lucide:shield', path: '/system/role' },
-  { label: '菜单管理', icon: 'lucide:layout-grid', path: '/system/menu' },
-  { label: '系统配置', icon: 'lucide:settings', path: '/system/config' },
-]
+const quickActions = computed(() => [
+  { label: t('dashboard.quick.user'), icon: 'lucide:users', path: '/system/user' },
+  { label: t('dashboard.quick.role'), icon: 'lucide:shield', path: '/system/role' },
+  { label: t('dashboard.quick.menu'), icon: 'lucide:layout-grid', path: '/system/menu' },
+  { label: t('dashboard.quick.config'), icon: 'lucide:settings', path: '/system/config' },
+])
 
 function handleQuickAction(path: string) {
   router.push(path)

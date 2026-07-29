@@ -1,27 +1,27 @@
 <template>
-  <UseCrudView :slotProps="crud.slotProps" :formRules="formRules" add-title="新增用户" edit-title="修改用户">
+  <UseCrudView :slotProps="crud.slotProps" :formRules="formRules" :add-title="$t('system.user.dialogs.add')" :edit-title="$t('system.user.dialogs.edit')">
     <!-- 搜索区字段 -->
     <template #search-form="{ searchData }">
-      <el-form-item prop="username" label="用户名">
-        <el-input v-model="searchData.username" placeholder="请输入用户名" />
+      <el-form-item prop="username" :label="$t('system.user.search.username')">
+        <el-input v-model="searchData.username" :placeholder="$t('system.user.formPlaceholder.username')" />
       </el-form-item>
-      <el-form-item prop="phone" label="手机号">
-        <el-input v-model="searchData.phone" placeholder="请输入手机号" />
+      <el-form-item prop="phone" :label="$t('system.user.search.phone')">
+        <el-input v-model="searchData.phone" :placeholder="$t('system.user.formPlaceholder.phone')" />
       </el-form-item>
-      <el-form-item prop="deptId" label="部门">
+      <el-form-item prop="deptId" :label="$t('system.user.search.dept')">
         <el-tree-select
           v-model="searchData.deptId"
           :data="deptTreeData"
           :props="{ label: 'deptName', children: 'children' }"
           value-key="id"
-          placeholder="请选择部门"
+          :placeholder="$t('system.user.formPlaceholder.deptId')"
           check-strictly
           clearable
           style="width: 180px"
         />
       </el-form-item>
-      <el-form-item prop="status" label="状态">
-        <el-select v-model="searchData.status" placeholder="用户状态" clearable style="width: 150px">
+      <el-form-item prop="status" :label="$t('system.user.search.status')">
+        <el-select v-model="searchData.status" :placeholder="$t('system.user.formPlaceholder.status')" clearable style="width: 150px">
           <el-option
             v-for="item in getDictList('system_status')"
             :key="item.id"
@@ -35,10 +35,10 @@
     <!-- 工具栏按钮 -->
     <template #actions="{ rowSelection }">
       <el-button type="primary" @click="crud.methods.handleAdd">
-        <template #icon><Icon icon="lucide:plus-circle" /></template>新增
+        <template #icon><Icon icon="lucide:plus-circle" /></template>{{ $t('common.add') }}
       </el-button>
       <el-button type="danger" @click="handleBatchRemove">
-        <template #icon><Icon icon="lucide:trash-2" /></template>批量删除 ({{ rowSelection.length }})
+        <template #icon><Icon icon="lucide:trash-2" /></template>{{ $t('system.user.actions.batchDelete') }} ({{ rowSelection.length }})
       </el-button>
       <TableColumnSetting
         :columns="tableColumns.columns.value"
@@ -51,12 +51,12 @@
     <!-- 表格列 -->
     <template #table>
       <el-table-column type="selection" width="50" align="center" />
-      <el-table-column v-if="isColumnVisible('username')" prop="username" label="用户名" align="center" />
-      <el-table-column v-if="isColumnVisible('nickname')" prop="nickname" label="昵称" align="center" />
-      <el-table-column v-if="isColumnVisible('deptName')" prop="deptName" label="部门" align="center" />
-      <el-table-column v-if="isColumnVisible('postName')" prop="postName" label="岗位" align="center" />
-      <el-table-column v-if="isColumnVisible('phone')" prop="phone" label="手机号" align="center" />
-      <el-table-column v-if="isColumnVisible('status')" prop="status" label="状态" align="center" width="80">
+      <el-table-column v-if="isColumnVisible('username')" prop="username" :label="$t('system.user.columns.username')" align="center" />
+      <el-table-column v-if="isColumnVisible('nickname')" prop="nickname" :label="$t('system.user.form.nickname')" align="center" />
+      <el-table-column v-if="isColumnVisible('deptName')" prop="deptName" :label="$t('system.user.search.dept')" align="center" />
+      <el-table-column v-if="isColumnVisible('postName')" prop="postName" :label="$t('system.user.columns.postName')" align="center" />
+      <el-table-column v-if="isColumnVisible('phone')" prop="phone" :label="$t('system.user.search.phone')" align="center" />
+      <el-table-column v-if="isColumnVisible('status')" prop="status" :label="$t('system.user.search.status')" align="center" width="80">
         <template #default="scope">
           <el-tag
             :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
@@ -68,32 +68,44 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column v-if="isColumnVisible('createTime')" prop="createTime" label="创建时间" align="center" min-width="160" />
-      <el-table-column fixed="right" label="操作" width="240" align="center">
+      <el-table-column v-if="isColumnVisible('createTime')" prop="createTime" :label="$t('system.user.columns.createTime')" align="center" min-width="160" />
+      <el-table-column fixed="right" :label="$t('common.action')" width="120" align="center">
         <template #default="scope">
-          <el-button
-            type="warning"
-            text
-            bg
-            size="small"
-            @click="crud.methods.handleEdit(scope.row)"
-            v-permission="['system:user:update']"
-          >修改</el-button>
-          <el-button
-            type="danger"
-            text
-            bg
-            size="small"
-            @click="crud.methods.handleRemove(scope.row)"
-            v-permission="['system:user:delete']"
-          >删除</el-button>
-          <el-button
-            type="primary"
-            text
-            bg
-            size="small"
-            @click="handleResetPwd(scope.row)"
-          >重置密码</el-button>
+          <el-tooltip :content="$t('common.edit')" placement="top">
+            <el-button
+              type="warning"
+              text
+              bg
+              size="small"
+              @click="crud.methods.handleEdit(scope.row)"
+              v-permission="['system:user:update']"
+            >
+              <Icon icon="lucide:pencil" />
+            </el-button>
+          </el-tooltip>
+          <el-tooltip :content="$t('common.delete')" placement="top">
+            <el-button
+              type="danger"
+              text
+              bg
+              size="small"
+              @click="crud.methods.handleRemove(scope.row)"
+              v-permission="['system:user:delete']"
+            >
+              <Icon icon="lucide:trash-2" />
+            </el-button>
+          </el-tooltip>
+          <el-tooltip :content="$t('system.user.actions.resetPassword')" placement="top">
+            <el-button
+              type="primary"
+              text
+              bg
+              size="small"
+              @click="handleResetPwd(scope.row)"
+            >
+              <Icon icon="lucide:key-round" />
+            </el-button>
+          </el-tooltip>
         </template>
       </el-table-column>
     </template>
@@ -101,28 +113,28 @@
     <!-- 弹窗表单字段 -->
     <template #form-fields="{ formData }">
       <el-col :span="12">
-        <el-form-item prop="username" label="用户名">
-          <el-input v-model="formData.username" placeholder="请输入用户名" maxlength="20" />
+        <el-form-item prop="username" :label="$t('system.user.columns.username')">
+          <el-input v-model="formData.username" :placeholder="$t('system.user.formPlaceholder.username')" maxlength="20" />
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item prop="nickname" label="昵称">
-          <el-input v-model="formData.nickname" placeholder="请输入昵称" maxlength="20" />
+        <el-form-item prop="nickname" :label="$t('system.user.form.nickname')">
+          <el-input v-model="formData.nickname" :placeholder="$t('system.user.formPlaceholder.nickname')" maxlength="20" />
         </el-form-item>
       </el-col>
       <el-col :span="12" v-if="formData.id === undefined">
-        <el-form-item prop="password" label="密码">
-          <el-input v-model="formData.password" type="password" placeholder="请输入密码" show-password />
+        <el-form-item prop="password" :label="$t('system.user.form.password')">
+          <el-input v-model="formData.password" type="password" :placeholder="$t('system.user.formPlaceholder.password')" show-password />
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item prop="deptId" label="部门">
+        <el-form-item prop="deptId" :label="$t('system.user.search.dept')">
           <el-tree-select
             v-model="formData.deptId"
             :data="deptTreeData"
             :props="{ label: 'deptName', children: 'children' }"
             value-key="id"
-            placeholder="请选择部门"
+            :placeholder="$t('system.user.formPlaceholder.deptId')"
             check-strictly
             style="width: 100%"
             @change="handleDeptChange"
@@ -130,10 +142,10 @@
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item prop="postId" label="岗位">
+        <el-form-item prop="postId" :label="$t('system.user.columns.postName')">
           <el-select
             v-model="formData.postId"
-            placeholder="请先选择部门"
+            :placeholder="$t('common.placeholder.selectDeptFirst')"
             :disabled="!formData.deptId"
             style="width: 100%"
             @change="handlePostChange"
@@ -148,8 +160,8 @@
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item prop="sex" label="性别">
-          <el-select v-model="formData.sex" placeholder="请选择性别" style="width: 100%">
+        <el-form-item prop="sex" :label="$t('system.user.form.sex')">
+          <el-select v-model="formData.sex" :placeholder="$t('system.user.formPlaceholder.sex')" style="width: 100%">
             <el-option
               v-for="item in getDictList('system_user_sex')"
               :key="item.id"
@@ -160,23 +172,23 @@
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item prop="phone" label="手机号">
-          <el-input v-model="formData.phone" placeholder="请输入手机号" maxlength="11" />
+        <el-form-item prop="phone" :label="$t('system.user.search.phone')">
+          <el-input v-model="formData.phone" :placeholder="$t('system.user.formPlaceholder.phone')" maxlength="11" />
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item prop="email" label="邮箱">
-          <el-input v-model="formData.email" placeholder="请输入邮箱" maxlength="20" />
+        <el-form-item prop="email" :label="$t('system.user.form.email')">
+          <el-input v-model="formData.email" :placeholder="$t('system.user.formPlaceholder.email')" maxlength="20" />
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item prop="idCard" label="身份证号">
-          <el-input v-model="formData.idCard" placeholder="请输入身份证号" maxlength="18" />
+        <el-form-item prop="idCard" :label="$t('system.user.form.idCard')">
+          <el-input v-model="formData.idCard" :placeholder="$t('system.user.formPlaceholder.idCard')" maxlength="18" />
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item prop="roleIds" label="角色">
-          <el-select v-model="formData.roleIds" placeholder="请选择角色" multiple style="width: 100%">
+        <el-form-item prop="roleIds" :label="$t('system.user.form.roleIds')">
+          <el-select v-model="formData.roleIds" :placeholder="$t('system.user.formPlaceholder.roleIds')" multiple style="width: 100%">
             <el-option
               v-for="item in roleOptions"
               :key="item.id"
@@ -187,7 +199,7 @@
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item prop="status" label="状态">
+        <el-form-item prop="status" :label="$t('system.user.search.status')">
           <el-radio-group v-model="formData.status">
             <el-radio
               v-for="item in getDictList('system_status')"
@@ -200,11 +212,11 @@
         </el-form-item>
       </el-col>
       <el-col :span="24">
-        <el-form-item prop="remark" label="备注">
+        <el-form-item prop="remark" :label="$t('system.user.form.remark')">
           <el-input
             type="textarea"
             v-model="formData.remark"
-            placeholder="请输入内容"
+            :placeholder="$t('system.user.formPlaceholder.remark')"
             autosize
             maxlength="255"
             show-word-limit
@@ -216,6 +228,7 @@
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from "vue-i18n"
 import { Icon } from '@iconify/vue'
 import { ref, nextTick } from 'vue'
 import type { FormRules } from 'element-plus'
@@ -229,6 +242,8 @@ import type { SystemUserVO, SystemUserQueryVO } from './apis/type'
 import { deptTreeList } from '@/views/system/dept/apis'
 import { postListByDeptId } from '@/views/system/post/apis'
 import { roleList } from '@/views/system/role/apis'
+
+const { t } = useI18n(); const $t = t
 
 defineOptions({ name: 'user' })
 
@@ -248,13 +263,13 @@ const crud = useCrud<SystemUserQueryVO, SystemUserVO>({
 const tableColumns = useTableColumns({
   key: 'system-user',
   defaultColumns: [
-    { prop: 'username', label: '用户名' },
-    { prop: 'nickname', label: '昵称' },
-    { prop: 'deptName', label: '部门' },
-    { prop: 'postName', label: '岗位' },
-    { prop: 'phone', label: '手机号' },
-    { prop: 'status', label: '状态', width: 80 },
-    { prop: 'createTime', label: '创建时间' },
+    { prop: 'username', label: $t('system.user.columns.username') },
+    { prop: 'nickname', label: $t('system.user.columns.nickname') },
+    { prop: 'deptName', label: $t('system.user.columns.deptName') },
+    { prop: 'postName', label: $t('system.user.columns.postName') },
+    { prop: 'phone', label: $t('system.user.columns.phone') },
+    { prop: 'status', label: $t('system.user.columns.status'), width: 80 },
+    { prop: 'createTime', label: $t('system.user.columns.createTime') },
   ],
 })
 
@@ -269,16 +284,16 @@ const roleOptions = ref<any[]>([])
 
 const formRef = ref(null)
 const formRules: FormRules = {
-  username: [{ required: true, trigger: 'blur', message: '请输入用户名' }],
-  nickname: [{ required: true, trigger: 'blur', message: '请输入昵称' }],
+  username: [{ required: true, trigger: 'blur', message: () => $t('system.user.form.username') }],
+  nickname: [{ required: true, trigger: 'blur', message: () => $t('system.user.form.nickname') }],
   password: [
-    { required: true, trigger: 'blur', message: '请输入密码' },
-    { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' },
+    { required: true, trigger: 'blur', message: () => $t('system.user.form.password') },
+    { min: 6, max: 20, message: () => $t('common.validation.passwordLength'), trigger: 'blur' },
   ],
-  deptId: [{ required: true, trigger: 'change', message: '请选择部门' }],
-  postId: [{ required: true, trigger: 'change', message: '请选择岗位' }],
-  sex: [{ required: true, trigger: 'change', message: '请选择性别' }],
-  roleIds: [{ required: true, trigger: 'change', message: '请选择角色' }],
+  deptId: [{ required: true, trigger: 'change', message: () => $t('system.user.formPlaceholder.deptId') }],
+  postId: [{ required: true, trigger: 'change', message: () => $t('system.user.formPlaceholder.postId') }],
+  sex: [{ required: true, trigger: 'change', message: () => $t('system.user.formPlaceholder.sex') }],
+  roleIds: [{ required: true, trigger: 'change', message: () => $t('system.user.formPlaceholder.roleIds') }],
 }
 
 function getDeptTree() {
@@ -336,17 +351,17 @@ crud.methods.handleEdit = (row: SystemUserVO) => {
 function handleBatchRemove() {
   const selectedRows = crud.slotProps.rowSelection
   if (selectedRows.length === 0) {
-    ElMessage.warning('请先选择要删除的数据')
+    ElMessage.warning($t('common.messages.selectFirst'))
     return
   }
   const ids = selectedRows.map((r: any) => r.id).join(',')
-  ElMessageBox.confirm(`正在删除 ${selectedRows.length} 条用户数据，确认删除？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+  ElMessageBox.confirm($t('system.user.messages.batchDeleteConfirm', { count: selectedRows.length }), $t('common.messages.confirmTitle'), {
+    confirmButtonText: $t('common.confirm'),
+    cancelButtonText: $t('common.cancel'),
     type: 'warning',
   }).then(() => {
     removeUserByIds(ids).then((res) => {
-      ElMessage.success(res.msg || '删除成功')
+      ElMessage.success(res.msg || $t('common.messages.operationSuccess'))
       crud.methods.getTableData()
     })
   })
@@ -354,15 +369,15 @@ function handleBatchRemove() {
 
 // ─── 重置密码（模块特有，保留在父组件） ──────────────────
 function handleResetPwd(row: SystemUserVO) {
-  ElMessageBox.prompt(`请输入「${row.username}」的新密码`, '重置密码', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+  ElMessageBox.prompt($t('common.messages.passwordResetPrompt', { username: row.username }), $t('common.messages.promptTitle'), {
+    confirmButtonText: $t('common.confirm'),
+    cancelButtonText: $t('common.cancel'),
     inputPattern: /^.{6,20}$/,
-    inputErrorMessage: '密码长度在 6 到 20 个字符之间',
+    inputErrorMessage: $t('common.validation.passwordLength'),
     inputType: 'password',
   }).then(({ value }) => {
     resetPassword(row.id!, value).then((res) => {
-      ElMessage.success(res.msg || '重置成功')
+      ElMessage.success(res.msg || $t('common.messages.resetSuccess'))
     })
   })
 }
@@ -373,25 +388,4 @@ getRoleOptions()
 </script>
 
 <style lang="scss" scoped>
-.search-wrapper {
-  margin-bottom: 16px;
-  :deep(.el-card__body) {
-    padding-bottom: 2px;
-  }
-}
-
-.toolbar-wrapper {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.table-wrapper {
-  margin-bottom: 20px;
-}
-
-.page-wrapper {
-  display: flex;
-  justify-content: flex-end;
-}
 </style>

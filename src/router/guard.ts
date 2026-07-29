@@ -6,6 +6,7 @@ import { isWhiteList } from '@/router/whitelist'
 import NProgress from 'nprogress'
 import { setRouteChange } from '@@/composables/useRouteListener'
 import { routerConfig } from './config'
+import { i18n } from '@/i18n'
 
 NProgress.configure({ showSpinner: false })
 
@@ -54,7 +55,8 @@ export function registerNavigationGuard(router: Router) {
     } catch (error) {
       // 过程中发生错误，直接重置 Token，并重定向到登录页面
       userStore.resetToken()
-      ElMessage.error((error as Error).message || '路由守卫发生错误')
+      console.error('Failed to load user permissions', error)
+      ElMessage.error(i18n.global.t('common.messages.routeGuardError'))
       return LOGIN_PATH
     }
   })

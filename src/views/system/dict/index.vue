@@ -2,17 +2,17 @@
   <div class="app-container">
     <el-card shadow="never" class="search-wrapper">
       <el-form ref="searchFormRef" :inline="true" :model="searchData">
-        <el-form-item prop="dictName" label="字典名称">
-          <el-input v-model="searchData.dictName" placeholder="请输入字典名称" />
+        <el-form-item prop="dictName" :label="$t('system.dict.search.dictName')">
+          <el-input v-model="searchData.dictName" :placeholder="$t('system.dict.formPlaceholder.dictName')" />
         </el-form-item>
-        <el-form-item prop="dictType" label="字典类型">
-          <el-input v-model="searchData.dictType" placeholder="请输入字典类型" />
+        <el-form-item prop="dictType" :label="$t('system.dict.search.dictType')">
+          <el-input v-model="searchData.dictType" :placeholder="$t('system.dict.formPlaceholder.dictType')" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            <template #icon><Icon icon="lucide:search" /></template> 查询 </el-button>
+            <template #icon><Icon icon="lucide:search" /></template>{{ $t('system.dict.actions.query') }}</el-button>
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template> 重置 </el-button>
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('system.dict.actions.reset') }}</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -25,7 +25,7 @@
             v-permission="['system:dictType:add']"
           >
             <template #icon><Icon icon="lucide:plus-circle" /></template>
-            新增
+            {{ $t('system.dict.actions.add') }}
           </el-button>
           <el-button
             type="danger"
@@ -33,11 +33,11 @@
             v-permission="['system:dictType:delete']"
           >
             <template #icon><Icon icon="lucide:trash-2" /></template>
-            批量删除
+            {{ $t('system.dict.actions.batchDelete') }}
           </el-button>
         </div>
         <div>
-          <el-tooltip content="下载">
+          <el-tooltip :content="$t('system.dict.actions.exportTitle')">
             <el-button
               type="primary"
               circle
@@ -51,8 +51,8 @@
       <div class="table-wrapper">
         <el-table ref="tableRef" :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column prop="dictName" label="字典名称" align="center" />
-          <el-table-column prop="dictType" label="字典类型" align="center">
+          <el-table-column prop="dictName" :label="$t('system.dict.search.dictName')" align="center" />
+          <el-table-column prop="dictType" :label="$t('system.dict.search.dictType')" align="center">
             <template #default="scope">
               <router-link
                 :to="{ path: '/system/dict-data', query: { dictType: scope.row.dictType } }"
@@ -62,28 +62,34 @@
               </router-link>
             </template>
           </el-table-column>
-          <el-table-column prop="remark" label="备注" align="center" />
-          <el-table-column prop="createTime" label="创建时间" align="center" />
-          <el-table-column fixed="right" label="操作" width="150" align="center">
+          <el-table-column prop="remark" :label="$t('system.dict.columns.remark')" align="center" />
+          <el-table-column prop="createTime" :label="$t('system.dict.columns.createTime')" align="center" />
+          <el-table-column fixed="right" :label="$t('system.dict.columns.action')" width="90" align="center">
             <template #default="scope">
-              <el-button
-                type="warning"
-                text
-                bg
-                size="small"
-                @click="handleModify(scope.row)"
-                v-permission="['system:dictType:update']"
-                >修改</el-button
-              >
-              <el-button
-                type="danger"
-                text
-                bg
-                size="small"
-                @click="handleRemove(scope.row)"
-                v-permission="['system:dictType:delete']"
-                >删除</el-button
-              >
+              <el-tooltip :content="$t('system.dict.actions.edit')" placement="top">
+                <el-button
+                  type="warning"
+                  text
+                  bg
+                  size="small"
+                  @click="handleModify(scope.row)"
+                  v-permission="['system:dictType:update']"
+                >
+                  <Icon icon="lucide:pencil" />
+                </el-button>
+              </el-tooltip>
+              <el-tooltip :content="$t('system.dict.actions.delete')" placement="top">
+                <el-button
+                  type="danger"
+                  text
+                  bg
+                  size="small"
+                  @click="handleRemove(scope.row)"
+                  v-permission="['system:dictType:delete']"
+                >
+                  <Icon icon="lucide:trash-2" />
+                </el-button>
+              </el-tooltip>
             </template>
           </el-table-column>
         </el-table>
@@ -104,7 +110,7 @@
     <!-- 新增、修改 -->
     <el-dialog
       v-model="dialogVisible"
-      :title="formData.id === undefined ? '新增字典类型' : '修改字典类型'"
+      :title="formData.id === undefined ? $t('system.dict.dialogs.add') : $t('system.dict.dialogs.edit')"
       width="30%"
       @close="handleClose"
     >
@@ -115,17 +121,17 @@
         label-width="100px"
         label-position="left"
       >
-        <el-form-item prop="dictName" label="字典名称">
-          <el-input v-model="formData.dictName" placeholder="请输入字典名称" />
+        <el-form-item prop="dictName" :label="$t('system.dict.search.dictName')">
+          <el-input v-model="formData.dictName" :placeholder="$t('system.dict.formPlaceholder.dictName')" />
         </el-form-item>
-        <el-form-item prop="dictType" label="字典类型">
-          <el-input v-model="formData.dictType" placeholder="请输入字典类型" />
+        <el-form-item prop="dictType" :label="$t('system.dict.search.dictType')">
+          <el-input v-model="formData.dictType" :placeholder="$t('system.dict.formPlaceholder.dictType')" />
         </el-form-item>
-        <el-form-item prop="remark" label="备注">
+        <el-form-item prop="remark" :label="$t('system.dict.form.remark')">
           <el-input
             type="textarea"
             v-model="formData.remark"
-            placeholder="请输入内容"
+            :placeholder="$t('system.dict.formPlaceholder.remark')"
             autosize
             maxlength="200"
             show-word-limit
@@ -133,9 +139,9 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false"> 取消 </el-button>
+        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
         <el-button type="primary" :loading="loading" @click="handleCreateOrUpdate">
-          确定
+{{ $t('common.confirm') }}
         </el-button>
       </template>
     </el-dialog>
@@ -143,12 +149,15 @@
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from "vue-i18n"
 import { Icon } from '@iconify/vue'
 import { usePagination } from '@@/composables/usePagination'
 import { dictTypePage, addDictType, modifyDictTypeById, removeDictTypeByIds } from './apis/index'
 import type { SystemDictTypeQueryVO, SystemDictTypeVO } from './apis/type'
 import type { FormRules } from 'element-plus'
 import { cloneDeep } from 'lodash-es'
+
+const { t } = useI18n(); const $t = t
 
 defineOptions({
   name: 'dictType',
@@ -173,8 +182,8 @@ const searchFormRef = useTemplateRef('searchFormRef')
 const tableRef = useTemplateRef('tableRef')
 
 const formRules: FormRules<SystemDictTypeVO> = {
-  dictName: [{ required: true, trigger: 'blur', message: '请输入字典名称' }],
-  dictType: [{ required: true, trigger: 'blur', message: '请输入字典类型' }],
+  dictName: [{ required: true, trigger: 'blur', message: () => $t('system.dict.formPlaceholder.dictName') }],
+  dictType: [{ required: true, trigger: 'blur', message: () => $t('system.dict.formPlaceholder.dictType') }],
 }
 
 function handleSearch() {
@@ -189,14 +198,14 @@ function resetSearch() {
 function handleCreateOrUpdate() {
   formRef.value?.validate((valid) => {
     if (!valid) {
-      ElMessage.error('表单校验不通过')
+      ElMessage.error($t('system.dict.messages.formError'))
       return
     }
     loading.value = true
     const api = formData.value.id === undefined ? addDictType : modifyDictTypeById
     api(formData.value)
       .then((data) => {
-        ElMessage.success(data.msg || '操作成功')
+        ElMessage.success(data.msg || $t('system.dict.messages.operationSuccess'))
         dialogVisible.value = false
         getTableData()
       })
@@ -217,14 +226,14 @@ function handleModify(row: SystemDictTypeVO) {
 }
 
 function handleRemove(row: SystemDictTypeVO) {
-  ElMessageBox.confirm(`正在删除${row.dictName}字典类型，确认删除？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+  ElMessageBox.confirm($t('system.dict.messages.deleteConfirm', { dictName: row.dictName }), $t('common.messages.confirmTitle'), {
+    confirmButtonText: $t('common.confirm'),
+    cancelButtonText: $t('common.cancel'),
     type: 'warning',
   }).then(() => {
     if (row.id) {
       removeDictTypeByIds(String(row.id)).then((data) => {
-        ElMessage.success(data.msg || '删除成功')
+        ElMessage.success(data.msg || $t('system.dict.messages.deleteSuccess'))
         getTableData()
       })
     }
@@ -234,19 +243,19 @@ function handleRemove(row: SystemDictTypeVO) {
 function handleBatchRemove() {
   const selectedRows = (tableRef.value?.getSelectionRows() as SystemDictTypeVO[]) || []
   if (selectedRows.length === 0) {
-    ElMessage.error('请选择要删除的数据')
+    ElMessage.error($t('system.dict.messages.selectFirst'))
     return
   }
 
   const ids = selectedRows.map((row) => row.id).join(',')
 
-  ElMessageBox.confirm(`正在删除${selectedRows.length}条字典类型，确认删除？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+  ElMessageBox.confirm($t('system.dict.messages.batchDeleteConfirm', { count: selectedRows.length }), $t('common.messages.confirmTitle'), {
+    confirmButtonText: $t('common.confirm'),
+    cancelButtonText: $t('common.cancel'),
     type: 'warning',
   }).then(() => {
     removeDictTypeByIds(ids).then((data) => {
-      ElMessage.success(data.msg || '删除成功')
+      ElMessage.success(data.msg || $t('system.dict.messages.deleteSuccess'))
       getTableData()
     })
   })

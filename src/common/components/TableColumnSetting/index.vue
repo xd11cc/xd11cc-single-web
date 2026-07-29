@@ -1,14 +1,14 @@
 <template>
   <el-popover placement="bottom-end" :width="220" trigger="click">
     <template #reference>
-      <el-button circle size="small" title="列配置">
+      <el-button circle size="small" :title="$t('common.columnSettings')">
         <Icon icon="lucide:settings-2" />
       </el-button>
     </template>
     <div class="column-setting">
       <div class="column-setting-header">
-        <span>列配置</span>
-        <el-button type="primary" link size="small" @click="emit('reset')">重置</el-button>
+        <span>{{ $t('common.columnSettings') }}</span>
+        <el-button type="primary" link size="small" @click="emit('reset')">{{ $t('common.reset') }}</el-button>
       </div>
       <div class="column-setting-list">
         <div
@@ -34,8 +34,11 @@
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import type { TableColumnConfig } from '@@/composables/useTableColumns'
+
+const { t } = useI18n(); const $t = t
 
 const props = defineProps<{
   columns: TableColumnConfig[]

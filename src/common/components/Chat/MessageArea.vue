@@ -5,7 +5,7 @@
     </div>
     <el-scrollbar ref="scrollRef" class="message-list">
       <div ref="listRef" class="message-list-inner">
-        <div v-if="!messages.length" class="no-messages">暂无消息</div>
+        <div v-if="!messages.length" class="no-messages">{{ $t("chat.messageArea.noMessages") }}</div>
         <div
           v-for="msg in messages"
           :key="msg.id"
@@ -26,17 +26,20 @@
       <el-input
         ref="inputRef"
         v-model="inputText"
-        placeholder="输入消息..."
+        :placeholder="$t('chat.messageArea.inputPlaceholder')"
         @keydown.enter.exact.prevent="handleSend"
         maxlength="500"
       />
-      <el-button type="primary" :disabled="!inputText.trim()" @click="handleSend"> 发送 </el-button>
+      <el-button type="primary" :disabled="!inputText.trim()" @click="handleSend">{{ $t("chat.messageArea.send") }}</el-button>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
 import type { ChatMessage } from '@@/composables/useChat'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n(); const $t = t
 
 const props = defineProps<{
   messages: ChatMessage[]

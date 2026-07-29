@@ -2,14 +2,14 @@
   <div class="app-container">
     <el-card shadow="never" class="search-wrapper">
       <el-form ref="searchFormRef" :inline="true" :model="searchData">
-        <el-form-item prop="name" label="应用名称">
-          <el-input v-model="searchData.name" placeholder="请输入应用名称" />
+        <el-form-item prop="name" :label="$t('system.authClient.search.name')">
+          <el-input v-model="searchData.name" :placeholder="$t('system.authClient.formPlaceholder.name')" />
         </el-form-item>
-        <el-form-item prop="source" label="应用类型">
-          <el-input v-model="searchData.source" placeholder="请输入应用类型" />
+        <el-form-item prop="source" :label="$t('system.authClient.search.source')">
+          <el-input v-model="searchData.source" :placeholder="$t('system.authClient.formPlaceholder.source')" />
         </el-form-item>
-        <el-form-item prop="status" label="状态">
-          <el-select v-model="searchData.status" placeholder="状态" clearable style="width: 150px">
+        <el-form-item prop="status" :label="$t('system.authClient.search.status')">
+          <el-select v-model="searchData.status" :placeholder="$t('system.authClient.search.statusPlaceholder')" clearable style="width: 150px">
             <el-option
               v-for="item in getDictList('system_status')"
               :key="item.id"
@@ -20,10 +20,10 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            <template #icon><Icon icon="lucide:search" /></template>查询
+            <template #icon><Icon icon="lucide:search" /></template>{{ $t('system.authClient.actions.query') }}
           </el-button>
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template>重置
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('system.authClient.actions.reset') }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -34,11 +34,11 @@
         <div>
           <el-button type="primary" @click="handleAdd" v-permission="['auth:clientConfig:add']">
             <template #icon><Icon icon="lucide:plus-circle" /></template>
-            新增
+            {{ $t('system.authClient.actions.add') }}
           </el-button>
           <el-button type="danger" @click="handleBatchRemove" v-permission="['auth:clientConfig:delete']">
             <template #icon><Icon icon="lucide:trash-2" /></template>
-            批量删除
+            {{ $t('system.authClient.actions.batchDelete') }}
           </el-button>
         </div>
       </div>
@@ -46,16 +46,16 @@
       <div class="table-wrapper">
         <el-table ref="tableRef" :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column prop="name" label="应用名称" align="center" />
-          <el-table-column prop="source" label="应用类型" align="center" />
-          <el-table-column prop="icon" label="图标" align="center" width="80">
+          <el-table-column prop="name" :label="$t('system.authClient.columns.name')" align="center" />
+          <el-table-column prop="source" :label="$t('system.authClient.columns.source')" align="center" />
+          <el-table-column prop="icon" :label="$t('system.authClient.columns.icon')" align="center" width="80">
             <template #default="scope">
               <img v-if="scope.row.icon" :src="ossUrl + scope.row.icon" class="table-icon" />
             </template>
           </el-table-column>
-          <el-table-column prop="clientId" label="应用ID" align="center" />
-          <el-table-column prop="sort" label="排序" align="center" width="80" />
-          <el-table-column prop="status" label="状态" align="center" width="80">
+          <el-table-column prop="clientId" :label="$t('system.authClient.columns.clientId')" align="center" />
+          <el-table-column prop="sort" :label="$t('system.authClient.columns.sort')" align="center" width="80" />
+          <el-table-column prop="status" :label="$t('system.authClient.columns.status')" align="center" width="80">
             <template #default="scope">
               <el-tag
                 :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
@@ -67,26 +67,34 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="remark" label="备注" align="center" />
-          <el-table-column prop="createTime" label="创建时间" align="center" min-width="160" />
-          <el-table-column fixed="right" label="操作" width="150" align="center">
+          <el-table-column prop="remark" :label="$t('system.authClient.columns.remark')" align="center" />
+          <el-table-column prop="createTime" :label="$t('system.authClient.columns.createTime')" align="center" min-width="160" />
+          <el-table-column fixed="right" :label="$t('system.authClient.columns.action')" width="90" align="center">
             <template #default="scope">
-              <el-button
-                type="warning"
-                text
-                bg
-                size="small"
-                @click="handleModify(scope.row)"
-                v-permission="['auth:clientConfig:update']"
-              >修改</el-button>
-              <el-button
-                type="danger"
-                text
-                bg
-                size="small"
-                @click="handleRemove(scope.row)"
-                v-permission="['auth:clientConfig:delete']"
-              >删除</el-button>
+              <el-tooltip :content="$t('system.authClient.actions.edit')" placement="top">
+                <el-button
+                  type="warning"
+                  text
+                  bg
+                  size="small"
+                  @click="handleModify(scope.row)"
+                  v-permission="['auth:clientConfig:update']"
+                >
+                  <Icon icon="lucide:pencil" />
+                </el-button>
+              </el-tooltip>
+              <el-tooltip :content="$t('system.authClient.actions.delete')" placement="top">
+                <el-button
+                  type="danger"
+                  text
+                  bg
+                  size="small"
+                  @click="handleRemove(scope.row)"
+                  v-permission="['auth:clientConfig:delete']"
+                >
+                  <Icon icon="lucide:trash-2" />
+                </el-button>
+              </el-tooltip>
             </template>
           </el-table-column>
         </el-table>
@@ -109,7 +117,7 @@
     <!-- 新增、修改弹窗 -->
     <el-dialog
       v-model="dialogVisible"
-      :title="formData.id === undefined ? '新增授权应用' : '修改授权应用'"
+      :title="formData.id === undefined ? $t('system.authClient.dialogs.add') : $t('system.authClient.dialogs.edit')"
       width="40%"
       @close="handleClose"
     >
@@ -122,42 +130,42 @@
       >
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item prop="name" label="应用名称">
-              <el-input v-model="formData.name" placeholder="请输入应用名称" />
+            <el-form-item prop="name" :label="$t('system.authClient.search.name')">
+              <el-input v-model="formData.name" :placeholder="$t('system.authClient.formPlaceholder.name')" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="source" label="应用类型">
-              <el-input v-model="formData.source" placeholder="请输入应用类型" maxlength="32" />
+            <el-form-item prop="source" :label="$t('system.authClient.search.source')">
+              <el-input v-model="formData.source" :placeholder="$t('system.authClient.formPlaceholder.source')" maxlength="32" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="clientId" label="应用ID">
-              <el-input v-model="formData.clientId" placeholder="请输入应用ID" />
+            <el-form-item prop="clientId" :label="$t('system.authClient.form.clientId')">
+              <el-input v-model="formData.clientId" :placeholder="$t('system.authClient.formPlaceholder.clientId')" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="clientSecret" label="应用密钥">
-              <el-input v-model="formData.clientSecret" placeholder="请输入应用密钥" show-password />
+            <el-form-item prop="clientSecret" :label="$t('system.authClient.form.clientSecret')">
+              <el-input v-model="formData.clientSecret" :placeholder="$t('system.authClient.formPlaceholder.clientSecret')" show-password />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="icon" label="图标">
-              <el-input v-model="formData.icon" placeholder="请输入图标标识" />
+            <el-form-item prop="icon" :label="$t('system.authClient.form.icon')">
+              <el-input v-model="formData.icon" :placeholder="$t('system.authClient.formPlaceholder.icon')" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="sort" label="排序">
+            <el-form-item prop="sort" :label="$t('system.authClient.form.sort')">
               <el-input-number v-model="formData.sort" :min="0" controls-position="right" style="width: 100%" />
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item prop="redirectUri" label="重定向地址">
-              <el-input v-model="formData.redirectUri" placeholder="请输入重定向地址" />
+            <el-form-item prop="redirectUri" :label="$t('system.authClient.form.redirectUri')">
+              <el-input v-model="formData.redirectUri" :placeholder="$t('system.authClient.formPlaceholder.redirectUri')" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="status" label="状态">
+            <el-form-item prop="status" :label="$t('system.authClient.form.status')">
               <el-radio-group v-model="formData.status">
                 <el-radio
                   v-for="item in getDictList('system_status')"
@@ -170,11 +178,11 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item prop="remark" label="备注">
+            <el-form-item prop="remark" :label="$t('system.authClient.form.remark')">
               <el-input
                 type="textarea"
                 v-model="formData.remark"
-                placeholder="请输入内容"
+                :placeholder="$t('system.authClient.formPlaceholder.remark')"
                 autosize
                 maxlength="200"
                 show-word-limit
@@ -184,14 +192,15 @@
         </el-row>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="submitLoading" @click="handleCreateOrUpdate">确定</el-button>
+        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" :loading="submitLoading" @click="handleCreateOrUpdate">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from "vue-i18n"
 import { Icon } from '@iconify/vue'
 import { useDict } from '@/common/composables/useDict'
 import { useOssUrl } from '@@/composables/useOssUrl'
@@ -205,6 +214,8 @@ import {
   removeAuthClientConfigByIds,
 } from './apis'
 import type { AuthClientConfigVO, AuthClientConfigQueryVO } from './apis/type'
+
+const { t } = useI18n(); const $t = t
 
 defineOptions({
   name: 'authClient',
@@ -229,11 +240,11 @@ const formRef = useTemplateRef('formRef')
 const formData = ref<any>({ status: '0', sort: 0 })
 
 const formRules: FormRules = {
-  source: [{ required: true, trigger: 'blur', message: '请输入应用类型' }],
-  clientId: [{ required: true, trigger: 'blur', message: '请输入应用ID' }],
-  clientSecret: [{ required: true, trigger: 'blur', message: '请输入应用密钥' }],
-  icon: [{ required: true, trigger: 'blur', message: '请输入图标标识' }],
-  status: [{ required: true, trigger: 'change', message: '请选择状态' }],
+  source: [{ required: true, trigger: 'blur', message: () => $t('system.authClient.formPlaceholder.source') }],
+  clientId: [{ required: true, trigger: 'blur', message: () => $t('system.authClient.formPlaceholder.clientId') }],
+  clientSecret: [{ required: true, trigger: 'blur', message: () => $t('system.authClient.formPlaceholder.clientSecret') }],
+  icon: [{ required: true, trigger: 'blur', message: () => $t('system.authClient.formPlaceholder.icon') }],
+  status: [{ required: true, trigger: 'change', message: () => $t('system.authClient.formPlaceholder.status') }],
 }
 
 function handleSearch() {
@@ -270,7 +281,7 @@ function handleCreateOrUpdate() {
     const api = isAdd ? addAuthClientConfig(formData.value) : modifyAuthClientConfigById(formData.value)
     api
       .then((res) => {
-        ElMessage.success(res.msg || '操作成功')
+        ElMessage.success(res.msg || $t('system.authClient.messages.operationSuccess'))
         dialogVisible.value = false
         getTableData()
       })
@@ -281,13 +292,13 @@ function handleCreateOrUpdate() {
 }
 
 function handleRemove(row: AuthClientConfigVO) {
-  ElMessageBox.confirm(`正在删除授权应用「${row.name || row.source}」，确认删除？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+  ElMessageBox.confirm($t('system.authClient.messages.deleteConfirm', { name: row.name || row.source }), $t('common.messages.confirmTitle'), {
+    confirmButtonText: $t('common.confirm'),
+    cancelButtonText: $t('common.cancel'),
     type: 'warning',
   }).then(() => {
     removeAuthClientConfigByIds(String(row.id)).then((res) => {
-      ElMessage.success(res.msg || '删除成功')
+      ElMessage.success(res.msg || $t('system.authClient.messages.deleteSuccess'))
       getTableData()
     })
   })
@@ -296,17 +307,17 @@ function handleRemove(row: AuthClientConfigVO) {
 function handleBatchRemove() {
   const selectedRows = (tableRef.value?.getSelectionRows() as AuthClientConfigVO[]) || []
   if (selectedRows.length === 0) {
-    ElMessage.warning('请选择要删除的数据')
+    ElMessage.warning($t('system.authClient.messages.selectFirst'))
     return
   }
   const ids = selectedRows.map((row) => row.id).join(',')
-  ElMessageBox.confirm(`正在删除 ${selectedRows.length} 条授权应用数据，确认删除？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+  ElMessageBox.confirm($t('system.authClient.messages.batchDeleteConfirm', { count: selectedRows.length }), $t('common.messages.confirmTitle'), {
+    confirmButtonText: $t('common.confirm'),
+    cancelButtonText: $t('common.cancel'),
     type: 'warning',
   }).then(() => {
     removeAuthClientConfigByIds(ids).then((res) => {
-      ElMessage.success(res.msg || '删除成功')
+      ElMessage.success(res.msg || $t('system.authClient.messages.deleteSuccess'))
       getTableData()
     })
   })

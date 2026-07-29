@@ -2,6 +2,7 @@ import type { ComponentPublicInstance } from 'vue'
 import { reactive, ref, watch, onMounted } from 'vue'
 import type { ResponseVO } from 'types/api'
 import { ElMessage, ElMessageBox } from 'element-plus'
+import { useI18n } from 'vue-i18n'
 
 /**
  * 业务分页接口返回结构
@@ -78,6 +79,7 @@ export interface UseCrudSlotProps {
  *      - #form-fields  弹窗表单字段
  */
 export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
+  const { t } = useI18n()
   // ─── 表格 / 分页 ──────────────────────────────────────
   const tableData = ref<T[]>([])
   const tableLoading = ref(false)
@@ -152,15 +154,15 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
 
   // ─── 单条删除 ──────────────────────────────────────────
   function handleRemove(row: any) {
-    ElMessageBox.confirm('确认删除该条记录？', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
+    ElMessageBox.confirm(t('common.messages.deleteConfirm'), t('common.messages.confirmTitle'), {
+      confirmButtonText: t('common.confirm'),
+      cancelButtonText: t('common.cancel'),
       type: 'warning',
     }).then(() => {
       options
         .removeApi?.(String(row.id))
         .then((res) => {
-          ElMessage.success(res.msg || '删除成功')
+          ElMessage.success(res.msg || t('common.messages.deleteSuccess'))
           getTableData()
         })
         .catch(() => {})
@@ -171,18 +173,18 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
   function handleBatchRemove() {
     const ids = tableSelection.value.map((r: any) => r.id).join(',')
     if (!ids) {
-      ElMessage.warning('请先选择要删除的记录')
+      ElMessage.warning(t('common.messages.selectFirst'))
       return
     }
-    ElMessageBox.confirm(`确认删除选中的 ${tableSelection.value.length} 条记录？`, '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
+    ElMessageBox.confirm(t('common.messages.deleteSelected', { count: tableSelection.value.length }), t('common.messages.confirmTitle'), {
+      confirmButtonText: t('common.confirm'),
+      cancelButtonText: t('common.cancel'),
       type: 'warning',
     }).then(() => {
       options
         .removeApi?.(ids)
         .then((res) => {
-          ElMessage.success(res.msg || '批量删除成功')
+          ElMessage.success(res.msg || t('common.messages.deleteSuccess'))
           tableSelection.value = []
           getTableData()
         })
@@ -197,7 +199,7 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
     const payload = options.transformPayload?.(formData.value, isAdd) ?? { ...formData.value }
     return api(payload)
       .then((res) => {
-        ElMessage.success(res.msg || '操作成功')
+        ElMessage.success(res.msg || t('common.messages.operationSuccess'))
         dialogVisible.value = false
         getTableData()
         return res

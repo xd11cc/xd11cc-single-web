@@ -9,16 +9,16 @@
       <div class="error-illustration">
         <Icon icon="lucide:server-crash" class="error-icon" />
       </div>
-      <h2 class="error-title">服务器错误</h2>
-      <p class="error-description">抱歉，服务器遇到了内部错误，无法完成您的请求。请稍后再试或联系技术支持。</p>
+      <h2 class="error-title">{{ t('error.500.message') }}</h2>
+      <p class="error-description">{{ t('error.500.tip') }}</p>
       <div class="error-actions">
         <el-button type="primary" size="large" @click="router.push('/')">
           <template #icon><Icon icon="lucide:home" /></template>
-          返回首页
+          {{ t('common.home') }}
         </el-button>
         <el-button size="large" @click="handleRefresh">
           <template #icon><Icon icon="lucide:refresh-cw" /></template>
-          刷新页面
+          {{ t('common.refreshPage') }}
         </el-button>
       </div>
     </div>
@@ -32,8 +32,10 @@
 
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
+const { t } = useI18n()
 
 function handleRefresh() {
   window.location.reload()

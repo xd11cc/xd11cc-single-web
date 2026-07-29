@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 全屏 -->
-    <el-tooltip v-if="!content" effect="dark" :content="fullscreenTips" placement="bottom">
+    <el-tooltip v-if="!props.content" effect="dark" :content="fullscreenTips" placement="bottom">
       <Icon icon="lucide:maximize" class="action-icon" @click="handleFullscreenClick" />
     </el-tooltip>
     <!-- 内容区 -->
@@ -12,7 +12,7 @@
           <el-dropdown-item @click="handleContentLargeClick">
             {{ contentLargeTips }}
           </el-dropdown-item>
-          <el-dropdown-item @click="handleContentFullClick"> 内容区全屏 </el-dropdown-item>
+          <el-dropdown-item @click="handleContentFullClick">{{ t('layout.screenfull.contentFull') }}</el-dropdown-item>
         </el-dropdown-menu>
       </template>
     </el-dropdown>
@@ -22,6 +22,7 @@
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
 import screenfull from 'screenfull'
+import { useI18n } from 'vue-i18n'
 
 interface Props {
   element?: string
@@ -30,12 +31,12 @@ interface Props {
   content?: boolean
 }
 
-const {
-  element = 'html',
-  openTips = '全屏',
-  exitTips = '退出全屏',
-  content = false,
-} = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  element: 'html',
+  content: false,
+})
+
+const { t } = useI18n()
 
 const CONTENT_LARGE = 'content-large'
 
@@ -47,11 +48,15 @@ const isEnabled = screenfull.isEnabled
 
 const isFullscreen = ref<boolean>(false)
 
-const fullscreenTips = computed(() => (isFullscreen.value ? exitTips : openTips))
+const fullscreenTips = computed(() =>
+  isFullscreen.value
+    ? props.exitTips || t('layout.screenfull.exit')
+    : props.openTips || t('layout.screenfull.open'),
+)
 
 function handleFullscreenClick() {
-  const dom = document.querySelector(element) || undefined
-  isEnabled ? screenfull.toggle(dom) : ElMessage.warning('您的浏览器无法工作')
+  const dom = document.querySelector(props.element) || undefined
+  isEnabled ? screenfull.toggle(dom) : ElMessage.warning(t('layout.screenfull.notSupported'))
 }
 
 function handleFullscreenChange() {
@@ -70,7 +75,9 @@ watchEffect(() => {
 
 const isContentLarge = ref<boolean>(false)
 
-const contentLargeTips = computed(() => (isContentLarge.value ? '内容区复原' : '内容区放大'))
+const contentLargeTips = computed(() =>
+  isContentLarge.value ? t('layout.screenfull.contentRestore') : t('layout.screenfull.contentZoom'),
+)
 
 function handleContentLargeClick() {
   isContentLarge.value = !isContentLarge.value

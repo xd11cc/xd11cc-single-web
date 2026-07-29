@@ -1,32 +1,32 @@
 <template>
   <div class="cron-generator">
     <el-tabs type="border-card" v-model="activeTab">
-      <!-- 秒 -->
-      <el-tab-pane label="秒" name="second">
+      <!-- tool.cronGenerator.tabs.second -->
+      <el-tab-pane :label="$t('tool.cronGenerator.tabs.second')" name="second">
         <el-form label-position="left" size="small">
           <el-form-item>
             <el-radio v-model="secondRadio" :value="1" @change="onTabChange('second')">
-              每秒，允许的通配符 [, - * /]
+              {{ $t("tool.cronGenerator.second.perSecond") }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="secondRadio" :value="2" @change="onTabChange('second')">
-              周期从
+              {{ $t("tool.cronGenerator.second.cycleFrom") }}
               <el-input-number v-model="secondCycle01" :min="0" :max="58" size="small" /> -
-              <el-input-number v-model="secondCycle02" :min="secondCycle01 + 1" :max="59" size="small" /> 秒
+              <el-input-number v-model="secondCycle02" :min="secondCycle01 + 1" :max="59" size="small" /> {{ $t("tool.cronGenerator.unit.second") }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="secondRadio" :value="3" @change="onTabChange('second')">
-              从
-              <el-input-number v-model="secondAvg01" :min="0" :max="58" size="small" /> 秒开始，每
-              <el-input-number v-model="secondAvg02" :min="1" :max="59" size="small" /> 秒执行一次
+              {{ $t("tool.cronGenerator.second.from") }}
+              <el-input-number v-model="secondAvg01" :min="0" :max="58" size="small" /> {{ $t("tool.cronGenerator.unit.second") }}{{ $t("tool.cronGenerator.second.fromSuffix") }}
+              <el-input-number v-model="secondAvg02" :min="1" :max="59" size="small" /> {{ $t("tool.cronGenerator.unit.second") }}{{ $t("tool.cronGenerator.second.everySuffix") }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="secondRadio" :value="4" @change="onTabChange('second')">
-              指定
-              <el-select v-model="secondCheckList" multiple clearable placeholder="可多选" style="width: 100%">
+              {{ $t("tool.cronGenerator.second.specify") }}
+              <el-select v-model="secondCheckList" multiple clearable :placeholder="$t('tool.cronGenerator.placeholder.multiSelect')" style="width: 100%">
                 <el-option v-for="i in 60" :key="i - 1" :label="i - 1" :value="i - 1" />
               </el-select>
             </el-radio>
@@ -34,32 +34,32 @@
         </el-form>
       </el-tab-pane>
 
-      <!-- 分钟 -->
-      <el-tab-pane label="分钟" name="min">
+      <!-- tool.cronGenerator.tabs.min -->
+      <el-tab-pane :label="$t('tool.cronGenerator.tabs.min')" name="min">
         <el-form label-position="left" size="small">
           <el-form-item>
             <el-radio v-model="minRadio" :value="1" @change="onTabChange('min')">
-              每分钟，允许的通配符 [, - * /]
+              {{ $t("tool.cronGenerator.min.perMin") }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="minRadio" :value="2" @change="onTabChange('min')">
-              周期从
+              {{ $t("tool.cronGenerator.min.cycleFrom") }}
               <el-input-number v-model="minCycle01" :min="0" :max="58" size="small" /> -
-              <el-input-number v-model="minCycle02" :min="minCycle01 + 1" :max="59" size="small" /> 分钟
+              <el-input-number v-model="minCycle02" :min="minCycle01 + 1" :max="59" size="small" /> {{ $t("tool.cronGenerator.unit.min") }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="minRadio" :value="3" @change="onTabChange('min')">
-              从
-              <el-input-number v-model="minAvg01" :min="0" :max="58" size="small" /> 分钟开始，每
-              <el-input-number v-model="minAvg02" :min="1" :max="59" size="small" /> 分钟执行一次
+              {{ $t("tool.cronGenerator.min.from") }}
+              <el-input-number v-model="minAvg01" :min="0" :max="58" size="small" /> {{ $t("tool.cronGenerator.unit.min") }}{{ $t("tool.cronGenerator.min.fromSuffix") }}
+              <el-input-number v-model="minAvg02" :min="1" :max="59" size="small" /> {{ $t("tool.cronGenerator.unit.min") }}{{ $t("tool.cronGenerator.min.everySuffix") }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="minRadio" :value="4" @change="onTabChange('min')">
-              指定
-              <el-select v-model="minCheckList" multiple clearable placeholder="可多选" style="width: 100%">
+              {{ $t("tool.cronGenerator.min.specify") }}
+              <el-select v-model="minCheckList" multiple clearable :placeholder="$t('tool.cronGenerator.placeholder.multiSelect')" style="width: 100%">
                 <el-option v-for="i in 60" :key="i - 1" :label="i - 1" :value="i - 1" />
               </el-select>
             </el-radio>
@@ -67,32 +67,32 @@
         </el-form>
       </el-tab-pane>
 
-      <!-- 小时 -->
-      <el-tab-pane label="小时" name="hour">
+      <!-- tool.cronGenerator.tabs.hour -->
+      <el-tab-pane :label="$t('tool.cronGenerator.tabs.hour')" name="hour">
         <el-form label-position="left" size="small">
           <el-form-item>
             <el-radio v-model="hourRadio" :value="1" @change="onTabChange('hour')">
-              每小时，允许的通配符 [, - * /]
+              {{ $t("tool.cronGenerator.hour.perHour") }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="hourRadio" :value="2" @change="onTabChange('hour')">
-              周期从
+              {{ $t("tool.cronGenerator.hour.cycleFrom") }}
               <el-input-number v-model="hourCycle01" :min="0" :max="22" size="small" /> -
-              <el-input-number v-model="hourCycle02" :min="hourCycle01 + 1" :max="23" size="small" /> 小时
+              <el-input-number v-model="hourCycle02" :min="hourCycle01 + 1" :max="23" size="small" /> {{ $t("tool.cronGenerator.unit.hour") }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="hourRadio" :value="3" @change="onTabChange('hour')">
-              从
-              <el-input-number v-model="hourAvg01" :min="0" :max="22" size="small" /> 小时开始，每
-              <el-input-number v-model="hourAvg02" :min="1" :max="23" size="small" /> 小时执行一次
+              {{ $t("tool.cronGenerator.hour.from") }}
+              <el-input-number v-model="hourAvg01" :min="0" :max="22" size="small" /> {{ $t("tool.cronGenerator.unit.hour") }}{{ $t("tool.cronGenerator.hour.fromSuffix") }}
+              <el-input-number v-model="hourAvg02" :min="1" :max="23" size="small" /> {{ $t("tool.cronGenerator.unit.hour") }}{{ $t("tool.cronGenerator.hour.everySuffix") }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="hourRadio" :value="4" @change="onTabChange('hour')">
-              指定
-              <el-select v-model="hourCheckList" multiple clearable placeholder="可多选" style="width: 100%">
+              {{ $t("tool.cronGenerator.hour.specify") }}
+              <el-select v-model="hourCheckList" multiple clearable :placeholder="$t('tool.cronGenerator.placeholder.multiSelect')" style="width: 100%">
                 <el-option v-for="i in 24" :key="i - 1" :label="i - 1" :value="i - 1" />
               </el-select>
             </el-radio>
@@ -100,48 +100,48 @@
         </el-form>
       </el-tab-pane>
 
-      <!-- 日 -->
-      <el-tab-pane label="日" name="day">
+      <!-- tool.cronGenerator.tabs.day -->
+      <el-tab-pane :label="$t('tool.cronGenerator.tabs.day')" name="day">
         <el-form label-position="left" size="small">
           <el-form-item>
             <el-radio v-model="dayRadio" :value="1" @change="onTabChange('day')">
-              每日，允许的通配符 [, - * ? / L W]
+              {{ $t("tool.cronGenerator.day.perDay") }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="dayRadio" :value="2" @change="onTabChange('day')">
-              不指定
+              {{ $t("tool.cronGenerator.day.notSpecified") }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="dayRadio" :value="3" @change="onTabChange('day')">
-              周期从
+              {{ $t("tool.cronGenerator.day.cycleFrom") }}
               <el-input-number v-model="dayCycle01" :min="1" :max="30" size="small" /> -
-              <el-input-number v-model="dayCycle02" :min="dayCycle01 + 1" :max="31" size="small" /> 日
+              <el-input-number v-model="dayCycle02" :min="dayCycle01 + 1" :max="31" size="small" /> {{ $t("tool.cronGenerator.unit.day") }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="dayRadio" :value="4" @change="onTabChange('day')">
-              从
-              <el-input-number v-model="dayAvg01" :min="1" :max="30" size="small" /> 号开始，每
-              <el-input-number v-model="dayAvg02" :min="1" :max="31" size="small" /> 日执行一次
+              {{ $t("tool.cronGenerator.day.from") }}
+              <el-input-number v-model="dayAvg01" :min="1" :max="30" size="small" /> {{ $t("tool.cronGenerator.unit.dayOrdinal") }}{{ $t("tool.cronGenerator.day.fromSuffix") }}
+              <el-input-number v-model="dayAvg02" :min="1" :max="31" size="small" /> {{ $t("tool.cronGenerator.unit.day") }}{{ $t("tool.cronGenerator.day.everySuffix") }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="dayRadio" :value="5" @change="onTabChange('day')">
-              每月
-              <el-input-number v-model="dayWorkday" :min="1" :max="31" size="small" /> 号最近的那个工作日
+              {{ $t("tool.cronGenerator.day.nearestWeekday") }}
+              <el-input-number v-model="dayWorkday" :min="1" :max="31" size="small" /> {{ $t("tool.cronGenerator.unit.dayOrdinal") }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="dayRadio" :value="6" @change="onTabChange('day')">
-              本月最后一天
+              {{ $t("tool.cronGenerator.day.lastDayOfMonth") }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="dayRadio" :value="7" @change="onTabChange('day')">
-              指定
-              <el-select v-model="dayCheckList" multiple clearable placeholder="可多选" style="width: 100%">
+              {{ $t("tool.cronGenerator.day.specify") }}
+              <el-select v-model="dayCheckList" multiple clearable :placeholder="$t('tool.cronGenerator.placeholder.multiSelect')" style="width: 100%">
                 <el-option v-for="i in 31" :key="i" :label="i" :value="i" />
               </el-select>
             </el-radio>
@@ -149,32 +149,32 @@
         </el-form>
       </el-tab-pane>
 
-      <!-- 月 -->
-      <el-tab-pane label="月" name="month">
+      <!-- tool.cronGenerator.tabs.month -->
+      <el-tab-pane :label="$t('tool.cronGenerator.tabs.month')" name="month">
         <el-form label-position="left" size="small">
           <el-form-item>
             <el-radio v-model="monthRadio" :value="1" @change="onTabChange('month')">
-              每月，允许的通配符 [, - * /]
+              {{ $t("tool.cronGenerator.month.perMonth") }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="monthRadio" :value="2" @change="onTabChange('month')">
-              周期从
+              {{ $t("tool.cronGenerator.month.cycleFrom") }}
               <el-input-number v-model="monthCycle01" :min="1" :max="11" size="small" /> -
-              <el-input-number v-model="monthCycle02" :min="monthCycle01 + 1" :max="12" size="small" /> 月
+              <el-input-number v-model="monthCycle02" :min="monthCycle01 + 1" :max="12" size="small" /> {{ $t("tool.cronGenerator.unit.month") }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="monthRadio" :value="3" @change="onTabChange('month')">
-              从
-              <el-input-number v-model="monthAvg01" :min="1" :max="11" size="small" /> 月开始，每
-              <el-input-number v-model="monthAvg02" :min="1" :max="12" size="small" /> 月执行一次
+              {{ $t("tool.cronGenerator.month.from") }}
+              <el-input-number v-model="monthAvg01" :min="1" :max="11" size="small" /> {{ $t("tool.cronGenerator.unit.month") }}{{ $t("tool.cronGenerator.month.fromSuffix") }}
+              <el-input-number v-model="monthAvg02" :min="1" :max="12" size="small" /> {{ $t("tool.cronGenerator.unit.month") }}{{ $t("tool.cronGenerator.month.everySuffix") }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="monthRadio" :value="4" @change="onTabChange('month')">
-              指定
-              <el-select v-model="monthCheckList" multiple clearable placeholder="可多选" style="width: 100%">
+              {{ $t("tool.cronGenerator.month.specify") }}
+              <el-select v-model="monthCheckList" multiple clearable :placeholder="$t('tool.cronGenerator.placeholder.multiSelect')" style="width: 100%">
                 <el-option v-for="i in 12" :key="i" :label="i" :value="i" />
               </el-select>
             </el-radio>
@@ -182,23 +182,23 @@
         </el-form>
       </el-tab-pane>
 
-      <!-- 周 -->
-      <el-tab-pane label="周" name="week">
+      <!-- tool.cronGenerator.tabs.week -->
+      <el-tab-pane :label="$t('tool.cronGenerator.tabs.week')" name="week">
         <el-form label-position="left" size="small">
           <el-form-item>
             <el-radio v-model="weekRadio" :value="1" @change="onTabChange('week')">
-              每周，允许的通配符 [, - * ? / L #]
+              {{ $t("tool.cronGenerator.week.perWeek") }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="weekRadio" :value="2" @change="onTabChange('week')">
-              不指定
+              {{ $t("tool.cronGenerator.week.notSpecified") }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="weekRadio" :value="3" @change="onTabChange('week')">
-              周期从
-              <el-select v-model="weekCycle01" placeholder="开始" size="small" style="width: 100px">
+              {{ $t("tool.cronGenerator.week.cycleFrom") }}
+              <el-select v-model="weekCycle01" :placeholder="$t('tool.cronGenerator.placeholder.start')" size="small" style="width: 100px">
                 <el-option
                   v-for="w in weekList"
                   :key="w.key"
@@ -208,7 +208,7 @@
                 />
               </el-select>
               -
-              <el-select v-model="weekCycle02" placeholder="结束" size="small" style="width: 100px">
+              <el-select v-model="weekCycle02" :placeholder="$t('tool.cronGenerator.placeholder.end')" size="small" style="width: 100px">
                 <el-option
                   v-for="w in weekList"
                   :key="w.key"
@@ -220,9 +220,9 @@
           </el-form-item>
           <el-form-item>
             <el-radio v-model="weekRadio" :value="4" @change="onTabChange('week')">
-              第
-              <el-input-number v-model="weekAvg01" :min="1" :max="4" size="small" /> 周的
-              <el-select v-model="weekAvg02" placeholder="星期" size="small" style="width: 110px">
+              {{ $t("tool.cronGenerator.week.nthWeek") }}
+              <el-input-number v-model="weekAvg01" :min="1" :max="4" size="small" /> {{ $t("tool.cronGenerator.week.weekOf") }}
+              <el-select v-model="weekAvg02" :placeholder="$t('tool.cronGenerator.placeholder.weekday')" size="small" style="width: 110px">
                 <el-option
                   v-for="w in weekList"
                   :key="w.key"
@@ -234,8 +234,8 @@
           </el-form-item>
           <el-form-item>
             <el-radio v-model="weekRadio" :value="5" @change="onTabChange('week')">
-              本月最后一个
-              <el-select v-model="weekLastDay" placeholder="星期" size="small" style="width: 110px">
+              {{ $t("tool.cronGenerator.week.lastWeekdayOfMonth") }}
+              <el-select v-model="weekLastDay" :placeholder="$t('tool.cronGenerator.placeholder.weekday')" size="small" style="width: 110px">
                 <el-option
                   v-for="w in weekList"
                   :key="w.key"
@@ -247,8 +247,8 @@
           </el-form-item>
           <el-form-item>
             <el-radio v-model="weekRadio" :value="6" @change="onTabChange('week')">
-              指定
-              <el-select v-model="weekCheckList" multiple clearable placeholder="可多选" style="width: 100%">
+              {{ $t("tool.cronGenerator.week.specify") }}
+              <el-select v-model="weekCheckList" multiple clearable :placeholder="$t('tool.cronGenerator.placeholder.multiSelect')" style="width: 100%">
                 <el-option
                   v-for="w in weekList"
                   :key="w.key"
@@ -261,37 +261,37 @@
         </el-form>
       </el-tab-pane>
 
-      <!-- 年 -->
-      <el-tab-pane label="年" name="year">
+      <!-- tool.cronGenerator.tabs.year -->
+      <el-tab-pane :label="$t('tool.cronGenerator.tabs.year')" name="year">
         <el-form label-position="left" size="small">
           <el-form-item>
             <el-radio v-model="yearRadio" :value="1" @change="onTabChange('year')">
-              不填，允许的通配符 [, - * /]
+              {{ $t("tool.cronGenerator.year.noSpecify") }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="yearRadio" :value="2" @change="onTabChange('year')">
-              每年
+              {{ $t("tool.cronGenerator.year.perYear") }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="yearRadio" :value="3" @change="onTabChange('year')">
-              周期从
+              {{ $t("tool.cronGenerator.year.cycleFrom") }}
               <el-input-number v-model="yearCycle01" :min="currentYear" :max="2098" size="small" /> -
               <el-input-number v-model="yearCycle02" :min="yearCycle01 + 1" :max="2099" size="small" />
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="yearRadio" :value="4" @change="onTabChange('year')">
-              从
-              <el-input-number v-model="yearAvg01" :min="currentYear" :max="2098" size="small" /> 年开始，每
-              <el-input-number v-model="yearAvg02" :min="1" :max="100" size="small" /> 年执行一次
+              {{ $t("tool.cronGenerator.year.from") }}
+              <el-input-number v-model="yearAvg01" :min="currentYear" :max="2098" size="small" /> {{ $t("tool.cronGenerator.unit.year") }}{{ $t("tool.cronGenerator.year.fromSuffix") }}
+              <el-input-number v-model="yearAvg02" :min="1" :max="100" size="small" /> {{ $t("tool.cronGenerator.unit.year") }}{{ $t("tool.cronGenerator.year.everySuffix") }}
             </el-radio>
           </el-form-item>
           <el-form-item>
             <el-radio v-model="yearRadio" :value="5" @change="onTabChange('year')">
-              指定
-              <el-select v-model="yearCheckList" multiple clearable placeholder="可多选" style="width: 100%">
+              {{ $t("tool.cronGenerator.year.specify") }}
+              <el-select v-model="yearCheckList" multiple clearable :placeholder="$t('tool.cronGenerator.placeholder.multiSelect')" style="width: 100%">
                 <el-option
                   v-for="i in 9"
                   :key="i - 1 + currentYear"
@@ -305,10 +305,10 @@
       </el-tab-pane>
     </el-tabs>
 
-    <!-- 表达式预览 -->
+    <!-- tool.cronGenerator.preview.title -->
     <div class="cron-expr-panel">
       <div class="cron-expr-header">
-        <span class="cron-expr-label">Cron 表达式</span>
+        <span class="cron-expr-label">{{ $t("tool.cronGenerator.preview.cronLabel") }}</span>
       </div>
       <div class="cron-expr-body">
         <div class="cron-fields">
@@ -324,9 +324,9 @@
       </div>
     </div>
 
-    <!-- 最近运行时间 -->
+    <!-- tool.cronGenerator.preview.recentTitle -->
     <div class="cron-run-panel">
-      <div class="cron-run-header">最近 5 次运行时间</div>
+      <div class="cron-run-header">{{ $t("tool.cronGenerator.preview.recentTitle") }}</div>
       <ul class="cron-run-list">
         <li v-for="(time, idx) in runTimes" :key="idx" class="cron-run-item">
           <span class="cron-run-index">{{ idx + 1 }}</span>
@@ -339,6 +339,8 @@
 
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n(); const $t = t
 
 // ==================== Props & Emits ====================
 
@@ -358,26 +360,26 @@ const currentYear = new Date().getFullYear()
 const activeTab = ref('second')
 
 const cronFieldLabels = [
-  { key: 'second', label: '秒' },
-  { key: 'min', label: '分' },
-  { key: 'hour', label: '时' },
-  { key: 'day', label: '日' },
-  { key: 'month', label: '月' },
-  { key: 'week', label: '周' },
-  { key: 'year', label: '年' },
+  { key: 'second', label: $t('tool.cronGenerator.fields.second') },
+  { key: 'min', label: $t('tool.cronGenerator.fields.min') },
+  { key: 'hour', label: $t('tool.cronGenerator.fields.hour') },
+  { key: 'day', label: $t('tool.cronGenerator.fields.day') },
+  { key: 'month', label: $t('tool.cronGenerator.fields.month') },
+  { key: 'week', label: $t('tool.cronGenerator.fields.week') },
+  { key: 'year', label: $t('tool.cronGenerator.fields.year') },
 ] as const
 
 const weekList = [
-  { key: 2, label: '星期一' },
-  { key: 3, label: '星期二' },
-  { key: 4, label: '星期三' },
-  { key: 5, label: '星期四' },
-  { key: 6, label: '星期五' },
-  { key: 7, label: '星期六' },
-  { key: 1, label: '星期日' },
+  { key: 2, label: $t('tool.cronGenerator.weeks.mon') },
+  { key: 3, label: $t('tool.cronGenerator.weeks.tue') },
+  { key: 4, label: $t('tool.cronGenerator.weeks.wed') },
+  { key: 5, label: $t('tool.cronGenerator.weeks.thu') },
+  { key: 6, label: $t('tool.cronGenerator.weeks.fri') },
+  { key: 7, label: $t('tool.cronGenerator.weeks.sat') },
+  { key: 1, label: $t('tool.cronGenerator.weeks.sun') },
 ]
 
-// ==================== 秒 ====================
+// ==================== second ====================
 const secondRadio = ref(1)
 const secondCycle01 = ref(1)
 const secondCycle02 = ref(2)
@@ -395,7 +397,7 @@ const secondValue = computed(() => {
   }
 })
 
-// ==================== 分钟 ====================
+// ==================== min ====================
 const minRadio = ref(1)
 const minCycle01 = ref(1)
 const minCycle02 = ref(2)
@@ -413,7 +415,7 @@ const minValue = computed(() => {
   }
 })
 
-// ==================== 小时 ====================
+// ==================== hour ====================
 const hourRadio = ref(1)
 const hourCycle01 = ref(0)
 const hourCycle02 = ref(1)
@@ -431,7 +433,7 @@ const hourValue = computed(() => {
   }
 })
 
-// ==================== 日 ====================
+// ==================== day ====================
 const dayRadio = ref(1)
 const dayCycle01 = ref(1)
 const dayCycle02 = ref(2)
@@ -453,7 +455,7 @@ const dayValue = computed(() => {
   }
 })
 
-// ==================== 月 ====================
+// ==================== month ====================
 const monthRadio = ref(1)
 const monthCycle01 = ref(1)
 const monthCycle02 = ref(2)
@@ -471,7 +473,7 @@ const monthValue = computed(() => {
   }
 })
 
-// ==================== 周 ====================
+// ==================== week ====================
 const weekRadio = ref(2)
 const weekCycle01 = ref(2)
 const weekCycle02 = ref(3)
@@ -496,7 +498,7 @@ const weekValue = computed(() => {
   }
 })
 
-// ==================== 年 ====================
+// ==================== year ====================
 const yearRadio = ref(1)
 const yearCycle01 = ref(currentYear)
 const yearCycle02 = ref(currentYear + 1)
@@ -515,7 +517,7 @@ const yearValue = computed(() => {
   }
 })
 
-// ==================== 组装表达式 ====================
+// ==================== compose ====================
 
 const cronExpression = computed(() => {
   const parts = [
@@ -684,7 +686,7 @@ watch(() => props.modelValue, (val) => {
   }
 }, { immediate: true })
 
-// ==================== 最近 5 次运行时间 ====================
+// ==================== recent ====================
 
 const runTimes = ref<string[]>([])
 
@@ -706,7 +708,7 @@ function calcRunTimes() {
     }
     runTimes.value = computeNextRuns(rules, 5)
   } catch {
-    runTimes.value = ['无法解析表达式']
+    runTimes.value = [$t('tool.cronGenerator.messages.unparsable')]
   }
 }
 
@@ -769,7 +771,7 @@ function computeNextRuns(rules: Record<string, string>, count: number): string[]
   }
 
   if (results.length === 0) {
-    results.push('最近100年内没有达到条件的结果')
+    results.push($t('tool.cronGenerator.messages.noResults'))
   }
 
   return results
@@ -857,7 +859,7 @@ watch(cronExpression, calcRunTimes, { immediate: true })
   }
 }
 
-// 表达式预览
+// {{ tool.cronGenerator.preview.title }}
 .cron-expr-panel {
   margin-top: 16px;
   border: 1px solid var(--el-border-color);
@@ -935,7 +937,7 @@ watch(cronExpression, calcRunTimes, { immediate: true })
   text-overflow: ellipsis;
 }
 
-// 最近运行时间
+// {{ tool.cronGenerator.preview.recentTitle }}
 .cron-run-panel {
   margin-top: 16px;
   border: 1px solid var(--el-border-color);

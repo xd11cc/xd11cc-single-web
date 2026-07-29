@@ -9,16 +9,16 @@
       <div class="error-illustration">
         <Icon icon="lucide:shield-off" class="error-icon" />
       </div>
-      <h2 class="error-title">访问未授权</h2>
-      <p class="error-description">抱歉，您没有权限访问此页面。请确认您已登录或联系管理员获取访问权限。</p>
+      <h2 class="error-title">{{ t('error.401.message') }}</h2>
+      <p class="error-description">{{ t('error.401.tip') }}</p>
       <div class="error-actions">
         <el-button type="primary" size="large" @click="router.push('/')">
           <template #icon><Icon icon="lucide:home" /></template>
-          返回首页
+          {{ t('common.home') }}
         </el-button>
         <el-button size="large" @click="router.back()">
           <template #icon><Icon icon="lucide:arrow-left" /></template>
-          返回上页
+          {{ t('common.previousPage') }}
         </el-button>
       </div>
     </div>
@@ -32,8 +32,10 @@
 
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
+const { t } = useI18n()
 </script>
 
 <style lang="scss" scoped>

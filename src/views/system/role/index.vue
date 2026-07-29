@@ -1,17 +1,17 @@
 <template>
-  <UseCrudView :slotProps="crud.slotProps" :formRules="formRules" add-title="新增角色" edit-title="修改角色">
+  <UseCrudView :slotProps="crud.slotProps" :formRules="formRules" :add-title="$t('system.role.dialogs.add')" :edit-title="$t('system.role.dialogs.edit')">
     <!-- 搜索区字段 -->
     <template #search-form="{ searchData }">
-      <el-form-item prop="roleName" label="角色名称">
-        <el-input v-model="searchData.roleName" placeholder="请输入角色名称" />
+      <el-form-item prop="roleName" :label="$t('system.role.search.roleName')">
+        <el-input v-model="searchData.roleName" :placeholder="$t('system.role.formPlaceholder.roleName')" />
       </el-form-item>
-      <el-form-item prop="roleCode" label="角色编码">
-        <el-input v-model="searchData.roleCode" placeholder="请输入角色编码" />
+      <el-form-item prop="roleCode" :label="$t('system.role.search.roleKey')">
+        <el-input v-model="searchData.roleCode" :placeholder="$t('system.role.formPlaceholder.roleKey')" />
       </el-form-item>
-      <el-form-item prop="status" label="状态">
+      <el-form-item prop="status" :label="$t('system.role.search.status')">
         <el-select
           v-model="searchData.status"
-          placeholder="角色状态"
+          :placeholder="$t('system.role.formPlaceholder.status')"
           clearable
           style="width: 150px"
         >
@@ -28,19 +28,19 @@
     <!-- 工具栏按钮 -->
     <template #actions>
       <el-button type="primary" @click="crud.methods.handleAdd" v-permission="['system:role:add']">
-        <template #icon><Icon icon="lucide:plus-circle" /></template>新增
+        <template #icon><Icon icon="lucide:plus-circle" /></template>{{ $t('common.add') }}
       </el-button>
       <el-button type="danger" @click="handleBatchRemove" v-permission="['system:role:delete']">
-        <template #icon><Icon icon="lucide:trash-2" /></template>批量删除
+        <template #icon><Icon icon="lucide:trash-2" /></template>{{ $t('common.batchDelete') }}
       </el-button>
     </template>
 
     <!-- 表格列 -->
     <template #table>
       <el-table-column type="selection" width="50" align="center" />
-      <el-table-column prop="roleName" label="角色名称" align="center" />
-      <el-table-column prop="roleCode" label="角色编码" align="center" />
-      <el-table-column prop="status" label="状态" align="center" width="80">
+      <el-table-column prop="roleName" :label="$t('system.role.search.roleName')" align="center" />
+      <el-table-column prop="roleCode" :label="$t('system.role.search.roleKey')" align="center" />
+      <el-table-column prop="status" :label="$t('system.role.search.status')" align="center" width="80">
         <template #default="scope">
           <el-tag
             :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
@@ -52,26 +52,34 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="remark" label="备注" align="center" />
-      <el-table-column prop="createTime" label="创建时间" align="center" min-width="160" />
-      <el-table-column fixed="right" label="操作" width="150" align="center">
+      <el-table-column prop="remark" :label="$t('system.role.form.remark')" align="center" />
+      <el-table-column prop="createTime" :label="$t('system.role.columns.createTime')" align="center" min-width="160" />
+      <el-table-column fixed="right" :label="$t('common.action')" width="90" align="center">
         <template #default="scope">
-          <el-button
-            type="warning"
-            text
-            bg
-            size="small"
-            @click="crud.methods.handleEdit(scope.row)"
-            v-permission="['system:role:update']"
-          >修改</el-button>
-          <el-button
-            type="danger"
-            text
-            bg
-            size="small"
-            @click="crud.methods.handleRemove(scope.row)"
-            v-permission="['system:role:delete']"
-          >删除</el-button>
+          <el-tooltip :content="$t('common.edit')" placement="top">
+            <el-button
+              type="warning"
+              text
+              bg
+              size="small"
+              @click="crud.methods.handleEdit(scope.row)"
+              v-permission="['system:role:update']"
+            >
+              <Icon icon="lucide:pencil" />
+            </el-button>
+          </el-tooltip>
+          <el-tooltip :content="$t('common.delete')" placement="top">
+            <el-button
+              type="danger"
+              text
+              bg
+              size="small"
+              @click="crud.methods.handleRemove(scope.row)"
+              v-permission="['system:role:delete']"
+            >
+              <Icon icon="lucide:trash-2" />
+            </el-button>
+          </el-tooltip>
         </template>
       </el-table-column>
     </template>
@@ -79,17 +87,17 @@
     <!-- 弹窗表单字段 -->
     <template #form-fields="{ formData }">
       <el-col :span="12">
-        <el-form-item prop="roleName" label="角色名称">
-          <el-input v-model="formData.roleName" placeholder="请输入角色名称" />
+        <el-form-item prop="roleName" :label="$t('system.role.search.roleName')">
+          <el-input v-model="formData.roleName" :placeholder="$t('system.role.formPlaceholder.roleName')" />
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item prop="roleCode" label="角色编码">
-          <el-input v-model="formData.roleCode" placeholder="请输入角色编码" />
+        <el-form-item prop="roleCode" :label="$t('system.role.search.roleKey')">
+          <el-input v-model="formData.roleCode" :placeholder="$t('system.role.formPlaceholder.roleKey')" />
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item prop="status" label="状态">
+        <el-form-item prop="status" :label="$t('system.role.search.status')">
           <el-radio-group v-model="formData.status">
             <el-radio
               v-for="item in getDictList('system_status')"
@@ -102,7 +110,7 @@
         </el-form-item>
       </el-col>
       <el-col :span="24">
-        <el-form-item prop="menuIds" label="菜单权限">
+        <el-form-item prop="menuIds" :label="$t('system.role.form.menuIds')">
           <el-tree
             ref="menuTreeRef"
             :data="menuTreeData"
@@ -116,8 +124,8 @@
         </el-form-item>
       </el-col>
       <el-col :span="24">
-        <el-form-item prop="dataScope" label="数据权限">
-          <el-select v-model="formData.dataScope" placeholder="请选择数据范围" style="width: 100%">
+        <el-form-item prop="dataScope" :label="$t('system.role.form.dataScope')">
+          <el-select v-model="formData.dataScope" :placeholder="$t('system.role.formPlaceholder.dataScope')" style="width: 100%">
             <el-option
               v-for="item in dataScopeOptions"
               :key="item.label"
@@ -128,7 +136,7 @@
         </el-form-item>
       </el-col>
       <el-col :span="24" v-if="formData.dataScope === '5'">
-        <el-form-item label="部门权限">
+        <el-form-item :label="$t('system.role.form.deptAuthLabel')">
           <el-tree
             ref="deptTreeRef"
             :data="deptTreeData"
@@ -142,11 +150,11 @@
         </el-form-item>
       </el-col>
       <el-col :span="24">
-        <el-form-item prop="remark" label="备注">
+        <el-form-item prop="remark" :label="$t('system.role.form.remark')">
           <el-input
             type="textarea"
             v-model="formData.remark"
-            placeholder="请输入内容"
+            :placeholder="$t('system.role.formPlaceholder.remark')"
             autosize
             maxlength="200"
             show-word-limit
@@ -158,6 +166,7 @@
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from "vue-i18n"
 import { Icon } from '@iconify/vue'
 import { ref, nextTick, watch } from 'vue'
 import type { FormRules } from 'element-plus'
@@ -171,6 +180,8 @@ import { treeList } from '@/views/system/menu/apis'
 import type { SystemMenuTreeVO } from '@/views/system/menu/apis/type'
 import { deptTreeList } from '@/views/system/dept/apis'
 import type { SystemDeptTreeVO } from '@/views/system/dept/apis/type'
+
+const { t } = useI18n(); const $t = t
 
 defineOptions({ name: 'role' })
 
@@ -214,16 +225,16 @@ const menuTreeRef = ref<any>(null)
 const deptTreeRef = ref<any>(null)
 
 const dataScopeOptions = [
-  { label: '1', value: '全部数据' },
-  { label: '2', value: '本部门及下级部门' },
-  { label: '3', value: '本部门数据' },
-  { label: '4', value: '仅本人数据' },
-  { label: '5', value: '自定义' },
+  { label: '1', value: $t('system.role.dataScope.all') },
+  { label: '2', value: $t('system.role.dataScope.selfAndChildren') },
+  { label: '3', value: $t('system.role.dataScope.self') },
+  { label: '4', value: $t('system.role.dataScope.selfOnly') },
+  { label: '5', value: $t('system.role.dataScope.custom') },
 ]
 
 const formRules: FormRules = {
-  roleName: [{ required: true, trigger: 'blur', message: '请输入角色名称' }],
-  roleCode: [{ required: true, trigger: 'blur', message: '请输入角色编码' }],
+  roleName: [{ required: true, trigger: 'blur', message: () => $t('system.role.form.roleName') }],
+  roleCode: [{ required: true, trigger: 'blur', message: () => $t('system.role.form.roleKey') }],
 }
 
 function getMenuTree() {
@@ -281,13 +292,13 @@ watch(
 // ─── 自定义单条删除（保留角色名称提示文案） ──────────────────
 const originalHandleRemove = crud.methods.handleRemove
 crud.methods.handleRemove = (row: SystemRoleVO) => {
-  ElMessageBox.confirm(`正在删除角色「${row.roleName}」，确认删除？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+  ElMessageBox.confirm($t('system.role.messages.deleteConfirm', { roleName: row.roleName }), $t('common.messages.confirmTitle'), {
+    confirmButtonText: $t('common.confirm'),
+    cancelButtonText: $t('common.cancel'),
     type: 'warning',
   }).then(() => {
     removeRoleByIds(String(row.id)).then((res) => {
-      ElMessage.success(res.msg || '删除成功')
+      ElMessage.success(res.msg || $t('common.messages.operationSuccess'))
       crud.methods.getTableData()
     })
   })
@@ -297,17 +308,17 @@ crud.methods.handleRemove = (row: SystemRoleVO) => {
 function handleBatchRemove() {
   const selectedRows = crud.slotProps.rowSelection
   if (selectedRows.length === 0) {
-    ElMessage.warning('请先选择要删除的数据')
+    ElMessage.warning($t('common.messages.selectFirst'))
     return
   }
   const ids = selectedRows.map((r: any) => r.id).join(',')
-  ElMessageBox.confirm(`正在删除 ${selectedRows.length} 条角色数据，确认删除？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+  ElMessageBox.confirm($t('system.role.messages.batchDeleteConfirm', { count: selectedRows.length }), $t('common.messages.confirmTitle'), {
+    confirmButtonText: $t('common.confirm'),
+    cancelButtonText: $t('common.cancel'),
     type: 'warning',
   }).then(() => {
     removeRoleByIds(ids).then((res) => {
-      ElMessage.success(res.msg || '删除成功')
+      ElMessage.success(res.msg || $t('common.messages.operationSuccess'))
       crud.methods.getTableData()
     })
   })

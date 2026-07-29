@@ -1,7 +1,7 @@
 <template>
   <div class="contact-list">
     <div class="search-box">
-      <el-input v-model="keyword" placeholder="搜索用户" size="small" clearable>
+      <el-input v-model="keyword" :placeholder="$t('chat.contactList.searchPlaceholder')" size="small" clearable>
         <template #prefix>
           <Icon icon="lucide:search" width="14" height="14" />
         </template>
@@ -25,7 +25,7 @@
         <el-badge v-if="contact.unread > 0" :value="contact.unread" :max="99" class="contact-badge" />
       </div>
       <div v-if="!filteredContacts.length" class="no-contacts">
-        暂无在线用户
+        {{ $t("chat.contactList.noOnlineUsers") }}
       </div>
     </el-scrollbar>
   </div>
@@ -34,6 +34,9 @@
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
 import type { ChatContact } from '@@/composables/useChat'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n(); const $t = t
 
 const props = defineProps<{
   contacts: ChatContact[]

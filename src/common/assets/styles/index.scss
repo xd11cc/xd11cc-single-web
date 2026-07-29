@@ -76,6 +76,23 @@ div:focus {
   white-space: nowrap;
 }
 
+// 固定在右侧的列用于放置操作按钮，不能按普通文本单元格裁剪。
+// 否则按钮总宽度稍大于列宽时，浏览器绘制的省略号会盖住被裁掉的按钮，
+// 省略号本身又不是可交互元素，最终表现为“看得见但点不动”。
+.el-table .el-table__body td.el-table-fixed-column--right > .cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+
+  .el-button + .el-button {
+    margin-left: 0;
+  }
+}
+
 // 表格操作列按钮样式优化
 .el-table .el-button--small.is-text.is-has-bg {
   &.el-button--primary {

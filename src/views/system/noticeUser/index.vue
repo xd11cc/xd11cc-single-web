@@ -2,11 +2,11 @@
   <div class="app-container">
     <el-card shadow="never" class="search-wrapper">
       <el-form ref="searchFormRef" :inline="true" :model="searchData">
-        <el-form-item prop="title" label="标题">
-          <el-input v-model="searchData.title" placeholder="请输入标题" />
+        <el-form-item prop="title" :label="$t('system.noticeUser.search.title')">
+          <el-input v-model="searchData.title" :placeholder="$t('system.noticeUser.formPlaceholder.title')" />
         </el-form-item>
-        <el-form-item prop="type" label="类型">
-          <el-select v-model="searchData.type" placeholder="通知类型" clearable style="width: 130px">
+        <el-form-item prop="type" :label="$t('system.noticeUser.search.type')">
+          <el-select v-model="searchData.type" :placeholder="$t('system.noticeUser.formPlaceholder.type')" clearable style="width: 130px">
             <el-option
               v-for="item in getDictList('system_notice_type')"
               :key="item.id"
@@ -15,21 +15,21 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item prop="readStatus" label="状态">
-          <el-select v-model="searchData.readStatus" placeholder="读取状态" clearable style="width: 130px">
-            <el-option :value="0" label="未读" />
-            <el-option :value="1" label="已读" />
+        <el-form-item prop="readStatus" :label="$t('system.noticeUser.search.readStatus')">
+          <el-select v-model="searchData.readStatus" :placeholder="$t('system.noticeUser.formPlaceholder.readStatus')" clearable style="width: 130px">
+            <el-option :value="0" :label="$t('system.noticeUser.readStatus.unread')" />
+            <el-option :value="1" :label="$t('system.noticeUser.readStatus.read')" />
           </el-select>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            <template #icon><Icon icon="lucide:search" /></template>查询
+            <template #icon><Icon icon="lucide:search" /></template>{{ $t('common.search') }}
           </el-button>
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template>重置
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('common.reset') }}
           </el-button>
           <el-button type="success" @click="handleMarkAllAsRead">
-            <template #icon><Icon icon="lucide:check-check" /></template>全部已读
+            <template #icon><Icon icon="lucide:check-check" /></template>{{ $t('common.messages.markAllRead') }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -38,15 +38,15 @@
     <el-card v-loading="loading" shadow="never">
       <div class="table-wrapper">
         <el-table :data="tableData" @row-click="handleRowClick">
-          <el-table-column type="index" label="序号" width="60" align="center" />
-          <el-table-column prop="title" label="标题" min-width="200">
+          <el-table-column type="index" :label="$t('system.noticeUser.columns.index')" width="60" align="center" />
+          <el-table-column prop="title" :label="$t('system.noticeUser.columns.title')" min-width="200">
             <template #default="scope">
               <span :class="{ 'unread-title': scope.row.readStatus === 0 }">
                 {{ scope.row.title }}
               </span>
             </template>
           </el-table-column>
-          <el-table-column prop="type" label="类型" align="center" width="100">
+          <el-table-column prop="type" :label="$t('system.noticeUser.columns.type')" align="center" width="100">
             <template #default="scope">
               <el-tag
                 :type="getDictItem('system_notice_type', String(scope.row.type))?.listClass || 'info'"
@@ -58,15 +58,15 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="senderName" label="发送人" align="center" width="120" />
-          <el-table-column prop="readStatus" label="状态" align="center" width="80">
+          <el-table-column prop="senderName" :label="$t('system.noticeUser.columns.senderName')" align="center" width="120" />
+          <el-table-column prop="readStatus" :label="$t('system.noticeUser.columns.readStatus')" align="center" width="80">
             <template #default="scope">
               <el-tag :type="scope.row.readStatus === 1 ? 'success' : 'danger'" size="small" effect="plain">
-                {{ scope.row.readStatus === 1 ? '已读' : '未读' }}
+                {{ scope.row.readStatus === 1 ? $t('system.noticeUser.readStatus.read') : $t('system.noticeUser.readStatus.unread') }}
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="publishTime" label="发布时间" align="center" min-width="160" />
+          <el-table-column prop="publishTime" :label="$t('system.noticeUser.columns.publishTime')" align="center" min-width="160" />
         </el-table>
       </div>
 
@@ -85,16 +85,16 @@
     </el-card>
 
     <!-- 详情弹窗 -->
-    <el-dialog v-model="detailVisible" title="通知详情" width="50%">
+    <el-dialog v-model="detailVisible" :title="$t('system.noticeUser.dialogs.detail')" width="50%">
       <el-descriptions :column="2" border>
-        <el-descriptions-item label="标题" :span="2">{{ detailData.title }}</el-descriptions-item>
-        <el-descriptions-item label="类型">
+        <el-descriptions-item :label="$t('system.noticeUser.search.title')" :span="2">{{ detailData.title }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('system.noticeUser.search.type')">
           {{ getDictItem('system_notice_type', String(detailData.type))?.value }}
         </el-descriptions-item>
-        <el-descriptions-item label="发送人">{{ detailData.senderName || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="发布时间">{{ detailData.publishTime || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="阅读时间">{{ detailData.readTime || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="内容" :span="2">
+        <el-descriptions-item :label="$t('system.noticeUser.columns.senderName')">{{ detailData.senderName || '-' }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('system.noticeUser.columns.publishTime')">{{ detailData.publishTime || '-' }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('system.noticeUser.columns.readTime')">{{ detailData.readTime || '-' }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('system.noticeUser.columns.content')" :span="2">
           <div style="white-space: pre-wrap">{{ detailData.content || '-' }}</div>
         </el-descriptions-item>
       </el-descriptions>
@@ -103,11 +103,14 @@
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from "vue-i18n"
 import { Icon } from '@iconify/vue'
 import { useDict } from '@/common/composables/useDict'
 import { usePagination } from '@@/composables/usePagination'
 import { myNoticePage, markAsRead, markAllAsRead } from './apis'
 import type { SystemNoticeUserDTO, SystemNoticeUserQueryVO } from './apis/type'
+
+const { t } = useI18n(); const $t = t
 
 defineOptions({
   name: 'noticeUser',
@@ -149,7 +152,7 @@ function handleRowClick(row: SystemNoticeUserDTO) {
 
 function handleMarkAllAsRead() {
   markAllAsRead(searchData.type).then((res) => {
-    ElMessage.success(res.msg || '操作成功')
+    ElMessage.success(res.msg || $t('common.messages.operationSuccess'))
     getTableData()
   })
 }

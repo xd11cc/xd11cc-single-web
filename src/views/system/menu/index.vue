@@ -2,13 +2,13 @@
   <div class="app-container">
     <el-card shadow="never" class="search-wrapper">
       <el-form ref="searchFormRef" :inline="true" :model="searchData">
-        <el-form-item prop="menuName" label="菜单名称">
-          <el-input v-model="searchData.menuName" placeholder="请输入菜单名称" />
+        <el-form-item prop="menuName" :label="$t('system.menu.search.menuName')">
+          <el-input v-model="searchData.menuName" :placeholder="$t('system.menu.formPlaceholder.menuName')" />
         </el-form-item>
-        <el-form-item prop="status" label="状态">
+        <el-form-item prop="status" :label="$t('system.menu.search.status')">
           <el-select
             v-model="searchData.status"
-            placeholder="菜单状态"
+            :placeholder="$t('system.menu.formPlaceholder.status')"
             clearable
             style="width: 200px"
           >
@@ -22,10 +22,10 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            <template #icon><Icon icon="lucide:search" /></template>查询</el-button
+            <template #icon><Icon icon="lucide:search" /></template>{{ $t('common.search') }}</el-button
           >
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template>重置</el-button
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('common.reset') }}</el-button
           >
         </el-form-item>
       </el-form>
@@ -34,11 +34,11 @@
       <div class="toolbar-wrapper">
         <div>
           <el-button type="primary" @click="handleAdd" v-permission="['system:menu:add']">
-            <template #icon><Icon icon="lucide:plus-circle" /></template>新增菜单</el-button
+            <template #icon><Icon icon="lucide:plus-circle" /></template>{{ $t('system.menu.actions.add') }}</el-button
           >
           <el-button @click="toggleExpand">
             <template #icon><Icon icon="lucide:arrow-up-down" /></template
-            >{{ isExpanded ? '收起全部' : '展开全部' }}</el-button
+            >{{ isExpanded ? $t('system.menu.actions.collapseAll') : $t('system.menu.actions.expandAll') }}</el-button
           >
         </div>
       </div>
@@ -52,16 +52,16 @@
         >
           <el-table-column
             prop="menuName"
-            label="菜单名称"
+            :label="$t('system.menu.columns.menuName')"
             min-width="180"
            
           />
-          <el-table-column prop="icon" label="图标" align="center" width="60">
+          <el-table-column prop="icon" :label="$t('system.menu.columns.icon')" align="center" width="60">
             <template #default="scope">
               <MenuIcon v-if="scope.row.icon" :name="scope.row.icon" class="el-icon" />
             </template>
           </el-table-column>
-          <el-table-column prop="menuType" label="类型" align="center" width="80">
+          <el-table-column prop="menuType" :label="$t('system.menu.columns.type')" align="center" width="80">
             <template #default="scope">
               <el-tag
                 :type="menuTypeTag(scope.row.menuType)"
@@ -75,15 +75,15 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="sort" label="排序" align="center" width="70" />
+          <el-table-column prop="sort" :label="$t('system.menu.columns.orderNum')" align="center" width="70" />
           <el-table-column
             prop="permission"
-            label="权限标识"
+            :label="$t('system.menu.columns.perms')"
             align="center"
            
           />
-          <el-table-column prop="component" label="组件路径" align="center" />
-          <el-table-column prop="status" label="状态" align="center">
+          <el-table-column prop="component" :label="$t('system.menu.columns.component')" align="center" />
+          <el-table-column prop="status" :label="$t('system.menu.columns.status')" align="center">
             <template #default="scope">
               <el-tag
                 :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
@@ -96,29 +96,35 @@
           </el-table-column>
           <el-table-column
             prop="createTime"
-            label="创建时间"
+            :label="$t('system.menu.columns.createTime')"
             align="center"
             min-width="160"
            
           />
-          <el-table-column fixed="right" label="操作" width="200" align="center">
+          <el-table-column fixed="right" :label="$t('system.menu.columns.action')" width="120" align="center">
             <template #default="scope">
-              <el-button
-                v-if="scope.row.menuType !== 'B'"
-                type="success"
-                text
-                bg
-                size="small"
-                @click="handleAddChild(scope.row)"
-                v-permission="['system:menu:add']"
-                >新增</el-button
-              >
-              <el-button type="warning" text bg size="small" @click="handleModify(scope.row)" v-permission="['system:menu:update']"
-                >修改</el-button
-              >
-              <el-button type="danger" text bg size="small" @click="handleRemove(scope.row)" v-permission="['system:menu:delete']"
-                >删除</el-button
-              >
+              <el-tooltip v-if="scope.row.menuType !== 'B'" :content="$t('system.menu.actions.addChild')" placement="top">
+                <el-button
+                  type="success"
+                  text
+                  bg
+                  size="small"
+                  @click="handleAddChild(scope.row)"
+                  v-permission="['system:menu:add']"
+                >
+                  <Icon icon="lucide:plus" />
+                </el-button>
+              </el-tooltip>
+              <el-tooltip :content="$t('system.menu.actions.edit')" placement="top">
+                <el-button type="warning" text bg size="small" @click="handleModify(scope.row)" v-permission="['system:menu:update']">
+                  <Icon icon="lucide:pencil" />
+                </el-button>
+              </el-tooltip>
+              <el-tooltip :content="$t('system.menu.actions.delete')" placement="top">
+                <el-button type="danger" text bg size="small" @click="handleRemove(scope.row)" v-permission="['system:menu:delete']">
+                  <Icon icon="lucide:trash-2" />
+                </el-button>
+              </el-tooltip>
             </template>
           </el-table-column>
         </el-table>
@@ -126,7 +132,7 @@
     </el-card>
     <el-dialog
       v-model="dialogVisible"
-      :title="formData.id === undefined ? '新增菜单' : '修改菜单'"
+      :title="formData.id === undefined ? $t('system.menu.dialogs.add') : $t('system.menu.dialogs.edit')"
       width="40%"
       destroy-on-close
       @close="handleClose"
@@ -134,19 +140,19 @@
       <el-form ref="formRef" :model="formData" :rules="formRules" label-width="100px">
         <el-row :gutter="20">
           <el-col :span="24" v-show="formData.menuType != 'M'">
-            <el-form-item prop="parentId" label="上级菜单">
+            <el-form-item prop="parentId" :label="$t('system.menu.form.parentMenu')">
               <el-tree-select
                 v-model="formData.parentId"
                 :data="tableData"
                 :props="{ label: 'menuName', children: 'children' }"
                 value-key="id"
-                placeholder="请选择上级菜单"
+                :placeholder="$t('system.menu.formPlaceholder.parentId')"
                 check-strictly
               />
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item prop="menuType" label="菜单类型">
+            <el-form-item prop="menuType" :label="$t('system.menu.form.menuType')">
               <el-radio-group v-model="formData.menuType">
                 <el-radio
                   v-for="item in getDictList('system_menu_type')"
@@ -159,12 +165,12 @@
             </el-form-item>
           </el-col>
           <el-col :span="12" v-show="formData.menuType != 'B'">
-            <el-form-item prop="icon" label="菜单图标">
+            <el-form-item prop="icon" :label="$t('system.menu.form.icon')">
               <icon-select v-model="formData.icon" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="sort" label="显示排序">
+            <el-form-item prop="sort" :label="$t('system.menu.form.orderNum')">
               <el-input-number
                 v-model="formData.sort"
                 :min="0"
@@ -174,8 +180,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="menuName" label="菜单名称">
-              <el-input v-model="formData.menuName" placeholder="请输入菜单名称" />
+            <el-form-item prop="menuName" :label="$t('system.menu.form.menuName')">
+              <el-input v-model="formData.menuName" :placeholder="$t('system.menu.formPlaceholder.menuName')" />
             </el-form-item>
           </el-col>
           <el-col :span="12" v-show="formData.menuType != 'B'">
@@ -183,20 +189,20 @@
               <template #label>
                 <span>
                   <el-tooltip
-                    content="访问的组件路径，如：`system/user/index`，默认在`views`目录下"
+                    :content="$t('system.menu.tooltip.component')"
                     placement="top"
                   >
                     <Icon icon="lucide:help-circle" />
                   </el-tooltip>
-                  组件路径
+                  {{ $t('system.menu.columns.component') }}
                 </span>
               </template>
-              <el-input v-model="formData.component" placeholder="请输入组件路径" />
+              <el-input v-model="formData.component" :placeholder="$t('system.menu.formPlaceholder.component')" />
             </el-form-item>
           </el-col>
           <el-col :span="12" v-show="formData.menuType != 'B'">
-            <el-form-item prop="routeName" label="路由名称">
-              <el-input v-model="formData.routeName" placeholder="请输入路由名称" />
+            <el-form-item prop="routeName" :label="$t('system.menu.form.routeName')">
+              <el-input v-model="formData.routeName" :placeholder="$t('system.menu.formPlaceholder.routeName')" />
             </el-form-item>
           </el-col>
           <el-col :span="12" v-show="formData.menuType != 'B'">
@@ -204,15 +210,15 @@
               <template #label>
                 <span>
                   <el-tooltip
-                    content="访问的路由地址，如：`user`，如外网地址需内链访问则以`http(s)://`开头"
+                    :content="$t('system.menu.tooltip.path')"
                     placement="top"
                   >
                     <Icon icon="lucide:help-circle" />
                   </el-tooltip>
-                  路由地址
+                  {{ $t('system.menu.form.path') }}
                 </span>
               </template>
-              <el-input v-model="formData.path" placeholder="请输入路由地址" />
+              <el-input v-model="formData.path" :placeholder="$t('system.menu.formPlaceholder.path')" />
             </el-form-item>
           </el-col>
           <el-col :span="12" v-show="formData.menuType != 'M'">
@@ -220,15 +226,15 @@
               <template #label>
                 <span>
                   <el-tooltip
-                    content="控制器中定义的权限字符，如：@PreAuthorize(`@ss.hasPermi('system:user:list')`)"
+                    :content="$t('system.menu.tooltip.perms')"
                     placement="top"
                   >
                     <Icon icon="lucide:help-circle" />
                   </el-tooltip>
-                  权限字符
+                  {{ $t('system.menu.form.perms') }}
                 </span>
               </template>
-              <el-input v-model="formData.permission" placeholder="请输入权限字符" />
+              <el-input v-model="formData.permission" :placeholder="$t('system.menu.formPlaceholder.permission')" />
             </el-form-item>
           </el-col>
           <el-col :span="12" v-show="formData.menuType == 'C'">
@@ -236,19 +242,19 @@
               <template #label>
                 <span>
                   <el-tooltip
-                    content='访问路由的默认传递参数，如：`{"id": 1, "name": "ry"}`'
+                    :content="$t('system.menu.tooltip.query')"
                     placement="top"
                   >
                     <Icon icon="lucide:help-circle" />
                   </el-tooltip>
-                  路由参数
+                  {{ $t('system.menu.form.query') }}
                 </span>
               </template>
-              <el-input v-model="formData.query" placeholder="请输入路由参数" />
+              <el-input v-model="formData.query" :placeholder="$t('system.menu.formPlaceholder.query')" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="visible" label="显示状态">
+            <el-form-item prop="visible" :label="$t('system.menu.form.isVisible')">
               <el-radio-group v-model="formData.visible">
                 <el-radio
                   v-for="item in getDictList('system_visible')"
@@ -261,7 +267,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="status" label="菜单状态">
+            <el-form-item prop="status" :label="$t('system.menu.form.status')">
               <el-radio-group v-model="formData.status">
                 <el-radio
                   v-for="item in getDictList('system_status')"
@@ -276,14 +282,15 @@
         </el-row>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="loading" @click="handleCreateOrUpdate">确定</el-button>
+        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" :loading="loading" @click="handleCreateOrUpdate">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from "vue-i18n"
 import { useDict } from '@/common/composables/useDict'
 import { Icon } from '@iconify/vue'
 import type { FormRules } from 'element-plus'
@@ -292,6 +299,8 @@ import type { SystemMenuVO, SystemMenuQueryVO, SystemMenuTreeVO } from './apis/t
 import { cloneDeep } from 'lodash-es'
 import IconSelect from '@@/components/IconSelect/index.vue'
 import MenuIcon from '@@/components/MenuIcon/index.vue'
+
+const { t } = useI18n(); const $t = t
 
 const { loading, getDictList, getDictItem } = useDict([
   'system_status',
@@ -329,11 +338,11 @@ const formData = ref<SystemMenuVO>({
 const formRules = computed<FormRules<SystemMenuVO>>(() => {
   const isButton = formData.value.menuType === 'B'
   return {
-    sort: [{ required: true, trigger: 'blur', message: '请选择显示排序' }],
-    menuName: [{ required: true, trigger: 'blur', message: '请输入菜单名称' }],
-    component: isButton ? [] : [{ required: true, trigger: 'blur', message: '请输入组件路径' }],
-    routeName: isButton ? [] : [{ required: true, trigger: 'blur', message: '请输入路由名称' }],
-    path: isButton ? [] : [{ required: true, trigger: 'blur', message: '请输入路由地址' }],
+    sort: [{ required: true, trigger: 'blur', message: () => $t('system.menu.form.orderNum') }],
+    menuName: [{ required: true, trigger: 'blur', message: () => $t('system.menu.form.menuName') }],
+    component: isButton ? [] : [{ required: true, trigger: 'blur', message: () => $t('system.menu.form.component') }],
+    routeName: isButton ? [] : [{ required: true, trigger: 'blur', message: () => $t('system.menu.form.routeName') }],
+    path: isButton ? [] : [{ required: true, trigger: 'blur', message: () => $t('system.menu.form.path') }],
   }
 })
 
@@ -369,14 +378,14 @@ function handleModify(row: SystemMenuVO) {
 }
 
 function handleRemove(row: SystemMenuVO) {
-  ElMessageBox.confirm(`正在删除${row.menuName}菜单数据，确认删除？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+  ElMessageBox.confirm($t('system.menu.messages.deleteConfirm', { menuName: row.menuName }), $t('common.messages.confirmTitle'), {
+    confirmButtonText: $t('common.confirm'),
+    cancelButtonText: $t('common.cancel'),
     type: 'warning',
   }).then(() => {
     if (row.id) {
       removeById(row.id).then((data) => {
-        ElMessage.success(data.msg || '删除成功')
+        ElMessage.success(data.msg || $t('common.messages.deleteSuccess'))
         getTableData()
       })
     }
@@ -391,14 +400,14 @@ function handleClose() {
 function handleCreateOrUpdate() {
   formRef.value?.validate((valid) => {
     if (!valid) {
-      ElMessage.error('表单校验不通过')
+      ElMessage.error($t('system.menu.messages.formError'))
       return
     }
     loading.value = true
     const api = formData.value.id === undefined ? addMenu : modifyById
     api(formData.value)
       .then((data) => {
-        ElMessage.success(data.msg || '操作成功')
+        ElMessage.success(data.msg || $t('common.messages.operationSuccess'))
         dialogVisible.value = false
         getTableData()
       })

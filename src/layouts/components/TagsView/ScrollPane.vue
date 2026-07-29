@@ -1,6 +1,6 @@
 <template>
   <div class="scroll-container">
-    <div class="arrow left" title="向左滚动" @click="scrollTo('left')">
+    <div class="arrow left" :title="t('layout.tagsView.scrollLeft')" @click="scrollTo('left')">
       <Icon icon="lucide:chevron-left" />
     </div>
     <el-scrollbar ref="scrollbarRef" @wheel.passive="wheelScroll" @scroll="scroll">
@@ -8,7 +8,7 @@
         <slot />
       </div>
     </el-scrollbar>
-    <div class="arrow right" title="向右滚动" @click="scrollTo('right')">
+    <div class="arrow right" :title="t('layout.tagsView.scrollRight')" @click="scrollTo('right')">
       <Icon icon="lucide:chevron-right" />
     </div>
     <Screenfull v-if="settingsStore.showScreenfull" :content="true" class="screenfull" />
@@ -21,6 +21,9 @@ import { useRouteListener } from '@@/composables/useRouteListener'
 import { useSettingsStore } from '@/pinia/stores/settings'
 import type { RouterLink } from 'vue-router'
 import Screenfull from '@@/components/Screenfull/index.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 interface Props {
   tagRefs: InstanceType<typeof RouterLink>[] | null

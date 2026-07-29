@@ -9,16 +9,16 @@
       <div class="error-illustration">
         <Icon icon="lucide:map-pin-off" class="error-icon" />
       </div>
-      <h2 class="error-title">页面未找到</h2>
-      <p class="error-description">抱歉，您访问的页面不存在。它可能已被移动、删除或者您输入了错误的地址。</p>
+      <h2 class="error-title">{{ t('error.404.message') }}</h2>
+      <p class="error-description">{{ t('error.404.tip') }}</p>
       <div class="error-actions">
         <el-button type="primary" size="large" @click="router.push('/')">
           <template #icon><Icon icon="lucide:home" /></template>
-          返回首页
+          {{ t('common.home') }}
         </el-button>
         <el-button size="large" @click="router.back()">
           <template #icon><Icon icon="lucide:arrow-left" /></template>
-          返回上页
+          {{ t('common.previousPage') }}
         </el-button>
       </div>
     </div>
@@ -32,8 +32,10 @@
 
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
+import { useI18n } from 'vue-i18n'
 
 const router = useRouter()
+const { t } = useI18n()
 </script>
 
 <style lang="scss" scoped>

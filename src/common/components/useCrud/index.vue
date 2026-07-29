@@ -8,10 +8,10 @@
         <slot name="search-form" v-bind="slotProps" />
         <el-form-item>
           <el-button type="primary" @click="slotProps.handleSearch">
-            <template #icon><Icon icon="lucide:search" /></template>查询
+            <template #icon><Icon icon="lucide:search" /></template>{{ $t('common.search') }}
           </el-button>
           <el-button @click="slotProps.resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template>重置
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('common.reset') }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -66,9 +66,9 @@
         </el-row>
       </el-form>
       <template #footer>
-        <el-button @click="slotProps.handleClose">取消</el-button>
+        <el-button @click="slotProps.handleClose">{{ $t('common.cancel') }}</el-button>
         <el-button type="primary" :loading="submitLoading" @click="handleFormSubmit">
-          确定
+          {{ $t('common.confirm') }}
         </el-button>
       </template>
     </el-dialog>
@@ -77,11 +77,14 @@
 
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
+import { useI18n } from 'vue-i18n'
 import { ref, computed, watch } from 'vue'
 import type { FormRules } from 'element-plus'
 import type { UseCrudSlotProps } from '@@/composables/useCrud'
 
 defineOptions({ name: 'useCrudView' })
+
+const { t } = useI18n(); const $t = t
 
 const props = defineProps<{
   slotProps: UseCrudSlotProps
@@ -99,7 +102,7 @@ const dialogTitle = computed(() => {
   if (props.addTitle && props.editTitle) {
     return props.slotProps.formData.id === undefined ? props.addTitle : props.editTitle
   }
-  return props.slotProps.formData.id === undefined ? '新增' : '修改'
+  return props.slotProps.formData.id === undefined ? $t('common.add') : $t('common.edit')
 })
 
 function handleFormSubmit() {

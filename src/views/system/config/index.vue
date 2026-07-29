@@ -2,18 +2,18 @@
   <div class="app-container">
     <el-card shadow="never" class="search-wrapper">
       <el-form ref="searchFormRef" :inline="true" :model="searchData">
-        <el-form-item prop="configName" label="配置名称">
-          <el-input v-model="searchData.configName" placeholder="请输入配置名称" />
+        <el-form-item prop="configName" :label="$t('system.config.search.configName')">
+          <el-input v-model="searchData.configName" :placeholder="$t('system.config.formPlaceholder.configName')" />
         </el-form-item>
-        <el-form-item prop="configKey" label="配置键名">
-          <el-input v-model="searchData.configKey" placeholder="请输入配置键名" />
+        <el-form-item prop="configKey" :label="$t('system.config.search.configKey')">
+          <el-input v-model="searchData.configKey" :placeholder="$t('system.config.formPlaceholder.configKey')" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            <template #icon><Icon icon="lucide:search" /></template>查询</el-button
+            <template #icon><Icon icon="lucide:search" /></template>{{ $t('system.config.actions.query') }}</el-button
           >
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template>重置</el-button
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('system.config.actions.reset') }}</el-button
           >
         </el-form-item>
       </el-form>
@@ -27,7 +27,7 @@
             v-permission="['system:config:add']"
           >
             <template #icon><Icon icon="lucide:plus-circle" /></template>
-            新增
+            {{ $t('system.config.actions.add') }}
           </el-button>
           <el-button
             type="danger"
@@ -35,7 +35,7 @@
             v-permission="['system:config:delete']"
           >
             <template #icon><Icon icon="lucide:trash-2" /></template>
-            批量删除
+            {{ $t('system.config.actions.batchDelete') }}
           </el-button>
         </div>
       </div>
@@ -44,45 +44,51 @@
           <el-table-column type="selection" width="50" align="center" />
           <el-table-column
             prop="configName"
-            label="配置名称"
+            :label="$t('system.config.columns.configName')"
             align="center"
            
           />
-          <el-table-column prop="configKey" label="配置键名" align="center" />
+          <el-table-column prop="configKey" :label="$t('system.config.columns.configKey')" align="center" />
           <el-table-column
             prop="configValue"
-            label="配置键值"
+            :label="$t('system.config.columns.configValue')"
             align="center"
            
           />
-          <el-table-column prop="remark" label="备注" align="center" />
+          <el-table-column prop="remark" :label="$t('system.config.columns.remark')" align="center" />
           <el-table-column
             prop="createTime"
-            label="创建时间"
+            :label="$t('system.config.columns.createTime')"
             align="center"
             min-width="160"
            
           />
-          <el-table-column fixed="right" label="操作" width="150" align="center">
+          <el-table-column fixed="right" :label="$t('system.config.columns.action')" width="90" align="center">
             <template #default="scope">
-              <el-button
-                type="warning"
-                text
-                bg
-                size="small"
-                @click="handleModify(scope.row)"
-                v-permission="['system:config:update']"
-                >修改</el-button
-              >
-              <el-button
-                type="danger"
-                text
-                bg
-                size="small"
-                @click="handleRemove(scope.row)"
-                v-permission="['system:config:delete']"
-                >删除</el-button
-              >
+              <el-tooltip :content="$t('system.config.actions.edit')" placement="top">
+                <el-button
+                  type="warning"
+                  text
+                  bg
+                  size="small"
+                  @click="handleModify(scope.row)"
+                  v-permission="['system:config:update']"
+                >
+                  <Icon icon="lucide:pencil" />
+                </el-button>
+              </el-tooltip>
+              <el-tooltip :content="$t('system.config.actions.delete')" placement="top">
+                <el-button
+                  type="danger"
+                  text
+                  bg
+                  size="small"
+                  @click="handleRemove(scope.row)"
+                  v-permission="['system:config:delete']"
+                >
+                  <Icon icon="lucide:trash-2" />
+                </el-button>
+              </el-tooltip>
             </template>
           </el-table-column>
         </el-table>
@@ -103,7 +109,7 @@
     <!-- 新增、修改 -->
     <el-dialog
       v-model="dialogVisible"
-      :title="formData.id === undefined ? '新增系统配置' : '修改系统配置'"
+      :title="formData.id === undefined ? $t('system.config.dialogs.add') : $t('system.config.dialogs.edit')"
       width="30%"
       @close="handleClose"
     >
@@ -114,20 +120,20 @@
         label-width="100px"
         label-position="left"
       >
-        <el-form-item prop="configName" label="配置名称">
-          <el-input v-model="formData.configName" placeholder="请输入配置名称" />
+        <el-form-item prop="configName" :label="$t('system.config.search.configName')">
+          <el-input v-model="formData.configName" :placeholder="$t('system.config.formPlaceholder.configName')" />
         </el-form-item>
-        <el-form-item prop="configKey" label="配置键名">
-          <el-input v-model="formData.configKey" placeholder="请输入配置键名" />
+        <el-form-item prop="configKey" :label="$t('system.config.search.configKey')">
+          <el-input v-model="formData.configKey" :placeholder="$t('system.config.formPlaceholder.configKey')" />
         </el-form-item>
-        <el-form-item prop="configValue" label="配置键值">
-          <el-input v-model="formData.configValue" placeholder="请输入配置键值" />
+        <el-form-item prop="configValue" :label="$t('system.config.form.configValue')">
+          <el-input v-model="formData.configValue" :placeholder="$t('system.config.formPlaceholder.configValue')" />
         </el-form-item>
-        <el-form-item prop="remark" label="备注">
+        <el-form-item prop="remark" :label="$t('system.config.form.remark')">
           <el-input
             type="textarea"
             v-model="formData.remark"
-            placeholder="请输入内容"
+            :placeholder="$t('system.config.formPlaceholder.remark')"
             autosize
             maxlength="200"
             show-word-limit
@@ -135,20 +141,23 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="loading" @click="handleCreateOrUpdate">确定</el-button>
+        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" :loading="loading" @click="handleCreateOrUpdate">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from "vue-i18n"
 import { Icon } from '@iconify/vue'
 import { usePagination } from '@@/composables/usePagination'
 import { configPage, addConfig, modifyConfigById, removeConfigByIds } from './apis'
 import type { SystemConfigQueryVO, SystemConfigVO } from './apis/type'
 import type { FormRules } from 'element-plus'
 import { cloneDeep } from 'lodash-es'
+
+const { t } = useI18n(); const $t = t
 
 defineOptions({
   name: 'config',
@@ -173,9 +182,9 @@ const searchFormRef = useTemplateRef('searchFormRef')
 const tableRef = useTemplateRef('tableRef')
 
 const formRules: FormRules<SystemConfigVO> = {
-  configName: [{ required: true, trigger: 'blur', message: '请输入配置名称' }],
-  configKey: [{ required: true, trigger: 'blur', message: '请输入配置键名' }],
-  configValue: [{ required: true, trigger: 'blur', message: '请输入配置键值' }],
+  configName: [{ required: true, trigger: 'blur', message: () => $t('system.config.formPlaceholder.configName') }],
+  configKey: [{ required: true, trigger: 'blur', message: () => $t('system.config.formPlaceholder.configKey') }],
+  configValue: [{ required: true, trigger: 'blur', message: () => $t('system.config.formPlaceholder.configValue') }],
 }
 
 function handleSearch() {
@@ -190,14 +199,14 @@ function resetSearch() {
 function handleCreateOrUpdate() {
   formRef.value?.validate((valid) => {
     if (!valid) {
-      ElMessage.error('表单校验不通过')
+      ElMessage.error($t('system.config.messages.formError'))
       return
     }
     loading.value = true
     const api = formData.value.id === undefined ? addConfig : modifyConfigById
     api(formData.value)
       .then((data) => {
-        ElMessage.success(data.msg || '操作成功')
+        ElMessage.success(data.msg || $t('system.config.messages.operationSuccess'))
         dialogVisible.value = false
         getTableData()
       })
@@ -218,14 +227,14 @@ function handleModify(row: SystemConfigVO) {
 }
 
 function handleRemove(row: SystemConfigVO) {
-  ElMessageBox.confirm(`正在删除「${row.configName}」配置，确认删除？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+  ElMessageBox.confirm($t('system.config.messages.deleteConfirm', { configName: row.configName }), $t('common.messages.confirmTitle'), {
+    confirmButtonText: $t('common.confirm'),
+    cancelButtonText: $t('common.cancel'),
     type: 'warning',
   }).then(() => {
     if (row.id) {
       removeConfigByIds(String(row.id)).then((data) => {
-        ElMessage.success(data.msg || '删除成功')
+        ElMessage.success(data.msg || $t('system.config.messages.deleteSuccess'))
         getTableData()
       })
     }
@@ -235,19 +244,19 @@ function handleRemove(row: SystemConfigVO) {
 function handleBatchRemove() {
   const selectedRows = (tableRef.value?.getSelectionRows() as SystemConfigVO[]) || []
   if (selectedRows.length === 0) {
-    ElMessage.error('请选择要删除的数据')
+    ElMessage.error($t('system.config.messages.selectFirst'))
     return
   }
 
   const ids = selectedRows.map((row) => row.id).join(',')
 
-  ElMessageBox.confirm(`正在删除${selectedRows.length}条配置，确认删除？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+  ElMessageBox.confirm($t('system.config.messages.batchDeleteConfirm', { count: selectedRows.length }), $t('common.messages.confirmTitle'), {
+    confirmButtonText: $t('common.confirm'),
+    cancelButtonText: $t('common.cancel'),
     type: 'warning',
   }).then(() => {
     removeConfigByIds(ids).then((data) => {
-      ElMessage.success(data.msg || '删除成功')
+      ElMessage.success(data.msg || $t('system.config.messages.deleteSuccess'))
       getTableData()
     })
   })

@@ -5,17 +5,20 @@
         <Icon v-if="!isExpired" icon="lucide:monitor" width="64" height="64" class="qrcode-icon" />
         <div v-if="isExpired" class="expired-mask" @click="handleRefresh">
           <Icon icon="lucide:refresh-cw" width="28" height="28" />
-          <span>点击刷新</span>
+          <span>{{ $t('login.qrcode.refresh') }}</span>
         </div>
       </div>
     </div>
-    <p class="tip-text">请使用手机扫描二维码</p>
-    <p class="tip-sub">扫描后在手机端确认登录</p>
+    <p class="tip-text">{{ $t('login.qrcode.tipText') }}</p>
+    <p class="tip-sub">{{ $t('login.qrcode.tipSub') }}</p>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n(); const $t = t
 
 const isExpired = ref(false)
 

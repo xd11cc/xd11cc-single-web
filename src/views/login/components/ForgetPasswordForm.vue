@@ -1,14 +1,14 @@
 <template>
   <div class="form-container">
     <div class="form-card">
-      <div class="title"><h3>找回密码</h3></div>
+      <div class="title"><h3>{{ $t('login.forgot.title') }}</h3></div>
       <div class="content">
         <div class="login-tabs">
           <span :class="{ active: activeTab === 'phone' }" @click="activeTab = 'phone'">
-            手机找回
+            {{ $t('login.forgot.tabPhone') }}
           </span>
           <span :class="{ active: activeTab === 'email' }" @click="activeTab = 'email'">
-            邮箱找回
+            {{ $t('login.forgot.tabEmail') }}
           </span>
         </div>
 
@@ -18,7 +18,7 @@
             <el-form-item prop="phone">
               <el-input
                 v-model.trim="formData.phone"
-                placeholder="请输入手机号"
+                :placeholder="$t('login.forgot.phone')"
                 size="large"
                 maxlength="11"
               >
@@ -28,14 +28,14 @@
             <el-form-item prop="phoneCode" class="code-form-item">
               <el-input
                 v-model.trim="formData.phoneCode"
-                placeholder="请输入验证码"
+                :placeholder="$t('login.forgot.phoneCode')"
                 size="large"
                 maxlength="6"
               >
                 <template #prefix><Icon icon="lucide:mail" /></template>
               </el-input>
               <el-button :disabled="phoneCountdown > 0" class="code-btn" @click="handleSendSms">
-                {{ phoneCountdown > 0 ? `${phoneCountdown}s 后重发` : '获取验证码' }}
+                {{ phoneCountdown > 0 ? $t('login.forgot.resend', { n: phoneCountdown }) : $t('login.forgot.sendCode') }}
               </el-button>
             </el-form-item>
           </template>
@@ -45,7 +45,7 @@
             <el-form-item prop="email">
               <el-input
                 v-model.trim="formData.email"
-                placeholder="请输入邮箱"
+                :placeholder="$t('login.forgot.email')"
                 size="large"
               >
                 <template #prefix><Icon icon="lucide:mail" /></template>
@@ -54,14 +54,14 @@
             <el-form-item prop="emailCode" class="code-form-item">
               <el-input
                 v-model.trim="formData.emailCode"
-                placeholder="请输入验证码"
+                :placeholder="$t('login.forgot.emailCode')"
                 size="large"
                 maxlength="6"
               >
                 <template #prefix><Icon icon="lucide:key-round" /></template>
               </el-input>
               <el-button :disabled="emailCountdown > 0" class="code-btn" @click="handleSendEmail">
-                {{ emailCountdown > 0 ? `${emailCountdown}s 后重发` : '获取验证码' }}
+                {{ emailCountdown > 0 ? $t('login.forgot.resend', { n: emailCountdown }) : $t('login.forgot.sendCode') }}
               </el-button>
             </el-form-item>
           </template>
@@ -71,7 +71,7 @@
             <el-input
               v-model.trim="formData.newPassword"
               :type="pwdVisible ? 'text' : 'password'"
-              placeholder="请输入新密码"
+              :placeholder="$t('login.forgot.newPassword')"
               size="large"
             >
               <template #prefix><Icon icon="lucide:lock" /></template>
@@ -88,7 +88,7 @@
             <el-input
               v-model.trim="formData.confirmPassword"
               :type="confirmPwdVisible ? 'text' : 'password'"
-              placeholder="请确认新密码"
+              :placeholder="$t('login.forgot.confirmPassword')"
               size="large"
             >
               <template #prefix><Icon icon="lucide:lock" /></template>
@@ -103,11 +103,11 @@
           </el-form-item>
 
           <el-button type="primary" size="large" :loading="loading" @click.prevent="handleSubmit">
-            重置密码
+            {{ $t('login.forgot.submit') }}
           </el-button>
           <div class="back-link">
-            想起密码了？<el-link type="primary" underline="never" @click="emit('back')"
-              >返回登录</el-link
+            {{ $t('login.forgot.backToLogin') }}<el-link type="primary" underline="never" @click="emit('back')"
+              >{{ $t('login.forgot.backLink') }}</el-link
             >
           </div>
         </el-form>
@@ -117,8 +117,11 @@
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from "vue-i18n"
 import { Icon } from '@iconify/vue'
 import type { FormRules } from 'element-plus'
+
+const { t } = useI18n(); const $t = t
 
 const emit = defineEmits<{ back: [] }>()
 
@@ -148,9 +151,9 @@ const confirmPasswordValidator = (
   callback: (error?: Error) => void,
 ) => {
   if (!value) {
-    callback(new Error('请确认新密码'))
+    callback(new Error($t('login.forgot.confirmPassword')))
   } else if (value !== formData.newPassword) {
-    callback(new Error('两次输入密码不一致'))
+    callback(new Error($t('login.validation.passwordMismatch')))
   } else {
     callback()
   }
@@ -158,9 +161,9 @@ const confirmPasswordValidator = (
 
 const phoneValidator = (_rule: unknown, value: string, callback: (error?: Error) => void) => {
   if (!value) {
-    callback(new Error('请输入手机号'))
+    callback(new Error($t('login.forgot.phone')))
   } else if (!/^1[3-9]\d{9}$/.test(value)) {
-    callback(new Error('请输入正确的手机号'))
+    callback(new Error($t('login.forgot.phoneInvalid')))
   } else {
     callback()
   }
@@ -168,9 +171,9 @@ const phoneValidator = (_rule: unknown, value: string, callback: (error?: Error)
 
 const emailValidator = (_rule: unknown, value: string, callback: (error?: Error) => void) => {
   if (!value) {
-    callback(new Error('请输入邮箱'))
+    callback(new Error($t('login.forgot.email')))
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-    callback(new Error('请输入正确的邮箱地址'))
+    callback(new Error($t('login.forgot.emailInvalid')))
   } else {
     callback()
   }
@@ -180,20 +183,20 @@ const formRules = computed<FormRules>(() => {
   if (activeTab.value === 'phone') {
     return {
       phone: [{ validator: phoneValidator, trigger: 'blur' }],
-      phoneCode: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
+      phoneCode: [{ required: true, message: () => $t('login.rules.captchaRequired'), trigger: 'blur' }],
       newPassword: [
-        { required: true, message: '请输入新密码', trigger: 'blur' },
-        { min: 8, max: 16, message: '长度在 8 到 16 个字符', trigger: 'blur' },
+        { required: true, message: () => $t('login.forgot.newPassword'), trigger: 'blur' },
+        { min: 8, max: 16, message: () => $t('login.validation.passwordLength'), trigger: 'blur' },
       ],
       confirmPassword: [{ validator: confirmPasswordValidator, trigger: 'blur' }],
     }
   }
   return {
     email: [{ validator: emailValidator, trigger: 'blur' }],
-    emailCode: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
+    emailCode: [{ required: true, message: () => $t('login.rules.captchaRequired'), trigger: 'blur' }],
     newPassword: [
-      { required: true, message: '请输入新密码', trigger: 'blur' },
-      { min: 8, max: 16, message: '长度在 8 到 16 个字符', trigger: 'blur' },
+      { required: true, message: () => $t('login.forgot.newPassword'), trigger: 'blur' },
+      { min: 8, max: 16, message: () => $t('login.validation.passwordLength'), trigger: 'blur' },
     ],
     confirmPassword: [{ validator: confirmPasswordValidator, trigger: 'blur' }],
   }
@@ -218,10 +221,10 @@ async function handleSendSms() {
   }
   try {
     // await sendSmsCode(formData.phone)
-    ElMessage.success('验证码已发送')
+    ElMessage.success($t('login.forgot.smsSent'))
     startCountdown('phone')
   } catch {
-    ElMessage.error('发送失败，请稍后重试')
+    ElMessage.error($t('login.forgot.sendFail'))
   }
 }
 
@@ -233,10 +236,10 @@ async function handleSendEmail() {
   }
   try {
     // await sendEmailCode(formData.email)
-    ElMessage.success('验证码已发送')
+    ElMessage.success($t('login.forgot.smsSent'))
     startCountdown('email')
   } catch {
-    ElMessage.error('发送失败，请稍后重试')
+    ElMessage.error($t('login.forgot.sendFail'))
   }
 }
 

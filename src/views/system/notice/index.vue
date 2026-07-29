@@ -2,11 +2,11 @@
   <div class="app-container">
     <el-card shadow="never" class="search-wrapper">
       <el-form ref="searchFormRef" :inline="true" :model="searchData">
-        <el-form-item prop="title" label="标题">
-          <el-input v-model="searchData.title" placeholder="请输入标题" />
+        <el-form-item prop="title" :label="$t('system.notice.search.title')">
+          <el-input v-model="searchData.title" :placeholder="$t('system.notice.formPlaceholder.title')" />
         </el-form-item>
-        <el-form-item prop="type" label="类型">
-          <el-select v-model="searchData.type" placeholder="通知类型" clearable style="width: 130px">
+        <el-form-item prop="type" :label="$t('system.notice.search.type')">
+          <el-select v-model="searchData.type" :placeholder="$t('system.notice.formPlaceholder.type')" clearable style="width: 130px">
             <el-option
               v-for="item in getDictList('system_notice_type')"
               :key="item.id"
@@ -15,8 +15,8 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item prop="status" label="状态">
-          <el-select v-model="searchData.status" placeholder="状态" clearable style="width: 130px">
+        <el-form-item prop="status" :label="$t('system.notice.search.status')">
+          <el-select v-model="searchData.status" :placeholder="$t('system.notice.formPlaceholder.status')" clearable style="width: 130px">
             <el-option
               v-for="item in getDictList('system_notice_status')"
               :key="item.id"
@@ -27,10 +27,10 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            <template #icon><Icon icon="lucide:search" /></template>查询
+            <template #icon><Icon icon="lucide:search" /></template>{{ $t('system.notice.actions.query') }}
           </el-button>
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template>重置
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('system.notice.actions.reset') }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -41,11 +41,11 @@
         <div>
           <el-button type="primary" @click="handleAdd" v-permission="['system:notice:add']">
             <template #icon><Icon icon="lucide:plus-circle" /></template>
-            新增
+            {{ $t('system.notice.actions.add') }}
           </el-button>
           <el-button type="danger" @click="handleBatchRemove" v-permission="['system:notice:delete']">
             <template #icon><Icon icon="lucide:trash-2" /></template>
-            批量删除
+            {{ $t('system.notice.actions.batchDelete') }}
           </el-button>
         </div>
       </div>
@@ -53,8 +53,8 @@
       <div class="table-wrapper">
         <el-table ref="tableRef" :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column prop="title" label="标题" min-width="200" />
-          <el-table-column prop="type" label="类型" align="center" width="100">
+          <el-table-column prop="title" :label="$t('system.notice.columns.title')" min-width="200" />
+          <el-table-column prop="type" :label="$t('system.notice.columns.type')" align="center" width="100">
             <template #default="scope">
               <el-tag
                 :type="getDictItem('system_notice_type', String(scope.row.type))?.listClass || 'info'"
@@ -66,13 +66,13 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="scope" label="范围" align="center" width="120">
+          <el-table-column prop="scope" :label="$t('system.notice.columns.scope')" align="center" width="120">
             <template #default="scope">
               {{ scopeMap[scope.row.scope] || '-' }}
             </template>
           </el-table-column>
-          <el-table-column prop="senderName" label="发送人" align="center" width="120" />
-          <el-table-column prop="status" label="状态" align="center" width="100">
+          <el-table-column prop="senderName" :label="$t('system.notice.columns.senderName')" align="center" width="120" />
+          <el-table-column prop="status" :label="$t('system.notice.columns.status')" align="center" width="100">
             <template #default="scope">
               <el-tag
                 :type="getDictItem('system_notice_status', String(scope.row.status))?.listClass || 'info'"
@@ -84,45 +84,59 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="publishTime" label="发布时间" align="center" min-width="160" />
-          <el-table-column prop="createTime" label="创建时间" align="center" min-width="160" />
-          <el-table-column fixed="right" label="操作" width="220" align="center">
+          <el-table-column prop="publishTime" :label="$t('system.notice.columns.publishTime')" align="center" min-width="160" />
+          <el-table-column prop="createTime" :label="$t('system.notice.columns.createTime')" align="center" min-width="160" />
+          <el-table-column fixed="right" :label="$t('system.notice.columns.action')" width="120" align="center">
             <template #default="scope">
-              <el-button
-                type="warning"
-                text
-                bg
-                size="small"
-                @click="handleModify(scope.row)"
-                v-permission="['system:notice:update']"
-                :disabled="scope.row.status === 1"
-              >修改</el-button>
-              <el-button
-                v-if="scope.row.status === 0 || scope.row.status === 2"
-                type="success"
-                text
-                bg
-                size="small"
-                @click="handlePublish(scope.row)"
-                v-permission="['system:notice:publish']"
-              >发布</el-button>
-              <el-button
-                v-if="scope.row.status === 1"
-                type="info"
-                text
-                bg
-                size="small"
-                @click="handleRevoke(scope.row)"
-                v-permission="['system:notice:publish']"
-              >撤回</el-button>
-              <el-button
-                type="danger"
-                text
-                bg
-                size="small"
-                @click="handleRemove(scope.row)"
-                v-permission="['system:notice:delete']"
-              >删除</el-button>
+              <el-tooltip :content="$t('system.notice.actions.edit')" placement="top">
+                <el-button
+                  type="warning"
+                  text
+                  bg
+                  size="small"
+                  @click="handleModify(scope.row)"
+                  v-permission="['system:notice:update']"
+                  :disabled="scope.row.status === 1"
+                >
+                  <Icon icon="lucide:pencil" />
+                </el-button>
+              </el-tooltip>
+              <el-tooltip v-if="scope.row.status === 0 || scope.row.status === 2" :content="$t('system.notice.actions.publish')" placement="top">
+                <el-button
+                  type="success"
+                  text
+                  bg
+                  size="small"
+                  @click="handlePublish(scope.row)"
+                  v-permission="['system:notice:publish']"
+                >
+                  <Icon icon="lucide:send" />
+                </el-button>
+              </el-tooltip>
+              <el-tooltip v-if="scope.row.status === 1" :content="$t('system.notice.actions.revoke')" placement="top">
+                <el-button
+                  type="info"
+                  text
+                  bg
+                  size="small"
+                  @click="handleRevoke(scope.row)"
+                  v-permission="['system:notice:publish']"
+                >
+                  <Icon icon="lucide:x" />
+                </el-button>
+              </el-tooltip>
+              <el-tooltip :content="$t('system.notice.actions.delete')" placement="top">
+                <el-button
+                  type="danger"
+                  text
+                  bg
+                  size="small"
+                  @click="handleRemove(scope.row)"
+                  v-permission="['system:notice:delete']"
+                >
+                  <Icon icon="lucide:trash-2" />
+                </el-button>
+              </el-tooltip>
             </template>
           </el-table-column>
         </el-table>
@@ -145,7 +159,7 @@
     <!-- 新增、修改弹窗 -->
     <el-dialog
       v-model="dialogVisible"
-      :title="formData.id === undefined ? '新增通知' : '修改通知'"
+      :title="formData.id === undefined ? $t('system.notice.dialogs.add') : $t('system.notice.dialogs.edit')"
       width="50%"
       destroy-on-close
       @close="handleClose"
@@ -159,13 +173,13 @@
       >
         <el-row :gutter="20">
           <el-col :span="24">
-            <el-form-item prop="title" label="标题">
-              <el-input v-model="formData.title" placeholder="请输入标题" />
+            <el-form-item prop="title" :label="$t('system.notice.search.title')">
+              <el-input v-model="formData.title" :placeholder="$t('system.notice.formPlaceholder.title')" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="type" label="类型">
-              <el-select v-model="formData.type" placeholder="请选择类型" style="width: 100%">
+            <el-form-item prop="type" :label="$t('system.notice.search.type')">
+              <el-select v-model="formData.type" :placeholder="$t('system.notice.formPlaceholder.type')" style="width: 100%">
                 <el-option
                   v-for="item in getDictList('system_notice_type')"
                   :key="item.id"
@@ -176,16 +190,16 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item prop="scope" label="范围">
-              <el-select v-model="formData.scope" placeholder="请选择范围" style="width: 100%">
-                <el-option :value="1" label="全部" />
-                <el-option :value="2" label="指定部门" />
-                <el-option :value="3" label="指定用户" />
+            <el-form-item prop="scope" :label="$t('system.notice.form.scope')">
+              <el-select v-model="formData.scope" :placeholder="$t('system.notice.formPlaceholder.scope')" style="width: 100%">
+                <el-option :value="1" :label="$t('system.notice.types.all')" />
+                <el-option :value="2" :label="$t('system.notice.types.dept')" />
+                <el-option :value="3" :label="$t('system.notice.types.user')" />
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="24" v-if="formData.scope === 2">
-            <el-form-item label="指定部门">
+            <el-form-item :label="$t('system.notice.form.scopeDept')">
               <el-tree
                 ref="deptTreeRef"
                 :data="deptTreeData"
@@ -199,12 +213,12 @@
             </el-form-item>
           </el-col>
           <el-col :span="24" v-if="formData.scope === 3">
-            <el-form-item label="指定用户">
+            <el-form-item :label="$t('system.notice.form.scopeUser')">
               <el-select
                 v-model="formData.scopeUserIds"
                 multiple
                 filterable
-                placeholder="请选择用户"
+                :placeholder="$t('system.notice.formPlaceholder.scopeUser')"
                 style="width: 100%"
               >
                 <el-option
@@ -217,11 +231,11 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item prop="content" label="内容">
+            <el-form-item prop="content" :label="$t('system.notice.form.content')">
               <el-input
                 type="textarea"
                 v-model="formData.content"
-                placeholder="请输入通知内容"
+                :placeholder="$t('system.notice.formPlaceholder.content')"
                 :autosize="{ minRows: 4, maxRows: 10 }"
                 maxlength="2000"
                 show-word-limit
@@ -229,11 +243,11 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item prop="remark" label="备注">
+            <el-form-item prop="remark" :label="$t('system.notice.form.remark')">
               <el-input
                 type="textarea"
                 v-model="formData.remark"
-                placeholder="请输入备注"
+                :placeholder="$t('system.notice.formPlaceholder.remark')"
                 autosize
                 maxlength="200"
                 show-word-limit
@@ -243,35 +257,36 @@
         </el-row>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="submitLoading" @click="handleCreateOrUpdate">确定</el-button>
+        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" :loading="submitLoading" @click="handleCreateOrUpdate">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
 
     <!-- 详情弹窗 -->
-    <el-dialog v-model="detailVisible" title="通知详情" width="50%">
+    <el-dialog v-model="detailVisible" :title="$t('system.notice.dialogs.detail')" width="50%">
       <el-descriptions :column="2" border>
-        <el-descriptions-item label="标题" :span="2">{{ detailData.title }}</el-descriptions-item>
-        <el-descriptions-item label="类型">
+        <el-descriptions-item :label="$t('system.notice.columns.title')" :span="2">{{ detailData.title }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('system.notice.columns.type')">
           {{ getDictItem('system_notice_type', String(detailData.type))?.value }}
         </el-descriptions-item>
-        <el-descriptions-item label="状态">
+        <el-descriptions-item :label="$t('system.notice.columns.status')">
           {{ getDictItem('system_notice_status', String(detailData.status))?.value }}
         </el-descriptions-item>
-        <el-descriptions-item label="范围">{{ scopeMap[detailData.scope!] || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="发送人">{{ detailData.senderName || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="发布时间">{{ detailData.publishTime || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="创建时间">{{ detailData.createTime || '-' }}</el-descriptions-item>
-        <el-descriptions-item label="内容" :span="2">
+        <el-descriptions-item :label="$t('system.notice.columns.scope')">{{ scopeMap[detailData.scope!] || '-' }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('system.notice.columns.senderName')">{{ detailData.senderName || '-' }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('system.notice.columns.publishTime')">{{ detailData.publishTime || '-' }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('system.notice.columns.createTime')">{{ detailData.createTime || '-' }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('system.notice.form.content')" :span="2">
           <div style="white-space: pre-wrap">{{ detailData.content || '-' }}</div>
         </el-descriptions-item>
-        <el-descriptions-item label="备注" :span="2">{{ detailData.remark || '-' }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('system.notice.form.remark')" :span="2">{{ detailData.remark || '-' }}</el-descriptions-item>
       </el-descriptions>
     </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from "vue-i18n"
 import { Icon } from '@iconify/vue'
 import { useDict } from '@/common/composables/useDict'
 import { usePagination } from '@@/composables/usePagination'
@@ -283,6 +298,8 @@ import { deptTreeList } from '@/views/system/dept/apis'
 import type { SystemDeptTreeVO } from '@/views/system/dept/apis/type'
 import { userList } from '@/views/system/user/apis'
 import type { SystemUserVO } from '@/views/system/user/apis/type'
+
+const { t } = useI18n(); const $t = t
 
 defineOptions({
   name: 'notice',
@@ -312,15 +329,15 @@ const deptTreeData = ref<SystemDeptTreeVO[]>([])
 const userListData = ref<SystemUserVO[]>([])
 
 const scopeMap: Record<number, string> = {
-  1: '全部',
-  2: '指定部门',
-  3: '指定用户',
+  1: $t('system.notice.types.all'),
+  2: $t('system.notice.types.dept'),
+  3: $t('system.notice.types.user'),
 }
 
 const formRules: FormRules = {
-  title: [{ required: true, trigger: 'blur', message: '请输入标题' }],
-  type: [{ required: true, trigger: 'change', message: '请选择类型' }],
-  scope: [{ required: true, trigger: 'change', message: '请选择范围' }],
+  title: [{ required: true, trigger: 'blur', message: () => $t('system.notice.formPlaceholder.title') }],
+  type: [{ required: true, trigger: 'change', message: () => $t('system.notice.formPlaceholder.type') }],
+  scope: [{ required: true, trigger: 'change', message: () => $t('system.notice.formPlaceholder.scope') }],
 }
 
 function handleSearch() {
@@ -398,7 +415,7 @@ function handleCreateOrUpdate() {
 
     api
       .then((res) => {
-        ElMessage.success(res.msg || '操作成功')
+        ElMessage.success(res.msg || $t('system.notice.messages.operationSuccess'))
         dialogVisible.value = false
         getTableData()
       })
@@ -409,39 +426,39 @@ function handleCreateOrUpdate() {
 }
 
 function handlePublish(row: SystemNoticeVO) {
-  ElMessageBox.confirm(`确认发布通知「${row.title}」？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+  ElMessageBox.confirm($t('system.notice.messages.publishConfirm', { title: row.title }), $t('common.messages.confirmTitle'), {
+    confirmButtonText: $t('common.confirm'),
+    cancelButtonText: $t('common.cancel'),
     type: 'warning',
   }).then(() => {
     publishNotice(row.id!).then((res) => {
-      ElMessage.success(res.msg || '发布成功')
+      ElMessage.success(res.msg || $t('system.notice.messages.publishSuccess'))
       getTableData()
     })
   })
 }
 
 function handleRevoke(row: SystemNoticeVO) {
-  ElMessageBox.confirm(`确认撤回通知「${row.title}」？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+  ElMessageBox.confirm($t('system.notice.messages.revokeConfirm', { title: row.title }), $t('common.messages.confirmTitle'), {
+    confirmButtonText: $t('common.confirm'),
+    cancelButtonText: $t('common.cancel'),
     type: 'warning',
   }).then(() => {
     revokeNotice(row.id!).then((res) => {
-      ElMessage.success(res.msg || '撤回成功')
+      ElMessage.success(res.msg || $t('system.notice.messages.revokeSuccess'))
       getTableData()
     })
   })
 }
 
 function handleRemove(row: SystemNoticeVO) {
-  ElMessageBox.confirm(`正在删除通知「${row.title}」，确认删除？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+  ElMessageBox.confirm($t('system.notice.messages.deleteConfirm', { title: row.title }), $t('common.messages.confirmTitle'), {
+    confirmButtonText: $t('common.confirm'),
+    cancelButtonText: $t('common.cancel'),
     type: 'warning',
   }).then(() => {
     removeNoticeByIds(String(row.id)).then((res) => {
-      ElMessage.success(res.msg || '删除成功')
+      ElMessage.success(res.msg || $t('system.notice.messages.deleteSuccess'))
       getTableData()
     })
   })
@@ -450,17 +467,17 @@ function handleRemove(row: SystemNoticeVO) {
 function handleBatchRemove() {
   const selectedRows = (tableRef.value?.getSelectionRows() as SystemNoticeVO[]) || []
   if (selectedRows.length === 0) {
-    ElMessage.warning('请选择要删除的数据')
+    ElMessage.warning($t('system.notice.messages.selectFirst'))
     return
   }
   const ids = selectedRows.map((row) => row.id).join(',')
-  ElMessageBox.confirm(`正在删除 ${selectedRows.length} 条通知数据，确认删除？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+  ElMessageBox.confirm($t('system.notice.messages.batchDeleteConfirm', { count: selectedRows.length }), $t('common.messages.confirmTitle'), {
+    confirmButtonText: $t('common.confirm'),
+    cancelButtonText: $t('common.cancel'),
     type: 'warning',
   }).then(() => {
     removeNoticeByIds(ids).then((res) => {
-      ElMessage.success(res.msg || '删除成功')
+      ElMessage.success(res.msg || $t('system.notice.messages.deleteSuccess'))
       getTableData()
     })
   })

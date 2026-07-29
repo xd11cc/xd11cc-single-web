@@ -12,6 +12,25 @@
       <SearchMenu v-if="showSearchMenu" class="right-menu-item" />
       <Screenfull v-if="showScreenfull" class="right-menu-item" />
       <ThemeToggle class="right-menu-item" />
+      <!-- 语言切换 -->
+      <el-dropdown class="right-menu-item locale-switch" :hide-on-click="false">
+        <div class="locale-trigger">
+          <Icon icon="lucide:globe" width="18" height="18" />
+          <Transition name="locale" mode="out-in">
+            <span :key="i18nLocale">{{ i18nLocale === 'zh-CN' ? t('layout.languageSwitcher.zh') : t('layout.languageSwitcher.en') }}</span>
+          </Transition>
+        </div>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item :disabled="i18nLocale === 'zh-CN'" @click="handleLanguageChange('zh-CN')">
+              {{ t('layout.languageSwitcher.zh') }}
+            </el-dropdown-item>
+            <el-dropdown-item :disabled="i18nLocale === 'en-US'" @click="handleLanguageChange('en-US')">
+              {{ t('layout.languageSwitcher.en') }}
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
       <Notify class="right-menu-item" />
       <el-dropdown>
         <div class="right-menu-item user">
@@ -23,9 +42,9 @@
         <template #dropdown>
           <el-dropdown-menu>
             <router-link to="/user/profile">
-              <el-dropdown-item>个人中心</el-dropdown-item>
+              <el-dropdown-item>{{ t('layout.navigationBar.profile') }}</el-dropdown-item>
             </router-link>
-            <el-dropdown-item divided @click="logout">退出登录</el-dropdown-item>
+            <el-dropdown-item divided @click="logout">{{ t('layout.navigationBar.logout') }}</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -52,6 +71,8 @@ import { useDevice } from '@@/composables/useDevice'
 import { useSettingsStore } from '@/pinia/stores/settings'
 import { Icon } from '@iconify/vue'
 import { useUserStore } from '@/pinia/stores/user'
+import { setLocale } from '@/i18n'
+import { useI18n } from 'vue-i18n'
 
 const appStore = useAppStore()
 
@@ -67,6 +88,12 @@ const settingsStore = useSettingsStore()
 
 const { showScreenfull, showSearchMenu, showSettings } = storeToRefs(settingsStore)
 
+const { locale: i18nLocale, t } = useI18n()
+
+function handleLanguageChange(locale: 'zh-CN' | 'en-US') {
+  setLocale(locale)
+}
+
 // 切换侧边栏
 const toggleSidebar = () => {
   appStore.toggleSidebar(false)
@@ -75,7 +102,7 @@ const toggleSidebar = () => {
 function logout() {
   userStore.logout().then(() => {
     router.push('/login')
-    ElMessage.success('退出成功')
+    ElMessage.success(t('layout.navigationBar.messages.logoutSuccess'))
   })
 }
 </script>
@@ -160,6 +187,29 @@ function logout() {
         font-size: var(--p-text-sm);
         font-weight: var(--p-weight-medium);
       }
+    }
+    .locale-switch {
+      width: auto !important;
+      min-width: 48px;
+      .locale-trigger {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: var(--p-text-sm);
+        font-weight: var(--p-weight-medium);
+      }
+    }
+    .locale-enter-active,
+    .locale-leave-active {
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .locale-enter-from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    .locale-leave-to {
+      opacity: 0;
+      transform: translateY(4px);
     }
   }
 }

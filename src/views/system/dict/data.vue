@@ -2,10 +2,10 @@
   <div class="app-container">
     <el-card shadow="never" class="search-wrapper">
       <el-form ref="searchFormRef" :inline="true" :model="searchData">
-        <el-form-item prop="dictType" label="字典类型">
+        <el-form-item prop="dictType" :label="$t('system.dict.data.search.dictType')">
           <el-select
             v-model="searchData.dictType"
-            placeholder="字典类型"
+            :placeholder="$t('system.dict.data.search.dictTypePlaceholder')"
             style="width: 200px"
             @change="getTableData"
           >
@@ -17,16 +17,16 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item prop="label" label="字典标签">
-          <el-input v-model="searchData.label" placeholder="请输入字典标签" />
+        <el-form-item prop="label" :label="$t('system.dict.data.search.label')">
+          <el-input v-model="searchData.label" :placeholder="$t('system.dict.data.formPlaceholder.label')" />
         </el-form-item>
-        <el-form-item prop="value" label="字典键值">
-          <el-input v-model="searchData.value" placeholder="请输入字典键值" />
+        <el-form-item prop="value" :label="$t('system.dict.data.search.value')">
+          <el-input v-model="searchData.value" :placeholder="$t('system.dict.data.formPlaceholder.value')" />
         </el-form-item>
-        <el-form-item prop="status" label="状态">
+        <el-form-item prop="status" :label="$t('system.dict.data.search.status')">
           <el-select
             v-model="searchData.status"
-            placeholder="数据状态"
+            :placeholder="$t('system.dict.data.search.statusPlaceholder')"
             clearable
             style="width: 200px"
             @change="getTableData"
@@ -41,9 +41,9 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            <template #icon><Icon icon="lucide:search" /></template>查询</el-button>
+            <template #icon><Icon icon="lucide:search" /></template>{{ $t('common.search') }}</el-button>
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template>重置</el-button>
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('common.reset') }}</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -56,7 +56,7 @@
             v-permission="['system:dictData:add']"
           >
             <template #icon><Icon icon="lucide:plus-circle" /></template>
-            新增
+            {{ $t('system.dict.data.actions.addData') }}
           </el-button>
           <el-button
             type="danger"
@@ -64,11 +64,11 @@
             v-permission="['system:dictData:delete']"
           >
             <template #icon><Icon icon="lucide:trash-2" /></template>
-            批量删除
+            {{ $t('system.dict.data.actions.batchDelete') }}
           </el-button>
         </div>
         <div>
-          <el-tooltip content="下载">
+          <el-tooltip :content="$t('system.dict.data.actions.exportTitle')">
             <el-button
               type="primary"
               circle
@@ -82,10 +82,10 @@
       <div class="table-wrapper">
         <el-table ref="tableRef" :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column prop="label" label="字典标签" align="center" />
-          <el-table-column prop="value" label="字典键值" align="center" />
-          <el-table-column prop="sort" label="排序" align="center" />
-          <el-table-column prop="status" label="状态" align="center">
+          <el-table-column prop="label" :label="$t('system.dict.data.columns.label')" align="center" />
+          <el-table-column prop="value" :label="$t('system.dict.data.columns.value')" align="center" />
+          <el-table-column prop="sort" :label="$t('system.dict.data.columns.sort')" align="center" />
+          <el-table-column prop="status" :label="$t('system.dict.data.columns.status')" align="center">
             <template #default="scope">
               <el-tag
                 :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
@@ -96,28 +96,34 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="remark" label="备注" align="center" />
-          <el-table-column prop="createTime" label="创建时间" align="center" min-width="160" />
-          <el-table-column fixed="right" label="操作" width="150" align="center">
+          <el-table-column prop="remark" :label="$t('system.dict.data.columns.remark')" align="center" />
+          <el-table-column prop="createTime" :label="$t('system.dict.data.columns.createTime')" align="center" min-width="160" />
+          <el-table-column fixed="right" :label="$t('system.dict.data.columns.action')" width="90" align="center">
             <template #default="scope">
-              <el-button
-                type="warning"
-                text
-                bg
-                size="small"
-                @click="handleModify(scope.row)"
-                v-permission="['system:dictData:update']"
-                >修改</el-button
-              >
-              <el-button
-                type="danger"
-                text
-                bg
-                size="small"
-                @click="handleRemove(scope.row)"
-                v-permission="['system:dictData:delete']"
-                >删除</el-button
-              >
+              <el-tooltip :content="$t('common.edit')" placement="top">
+                <el-button
+                  type="warning"
+                  text
+                  bg
+                  size="small"
+                  @click="handleModify(scope.row)"
+                  v-permission="['system:dictData:update']"
+                >
+                  <Icon icon="lucide:pencil" />
+                </el-button>
+              </el-tooltip>
+              <el-tooltip :content="$t('common.delete')" placement="top">
+                <el-button
+                  type="danger"
+                  text
+                  bg
+                  size="small"
+                  @click="handleRemove(scope.row)"
+                  v-permission="['system:dictData:delete']"
+                >
+                  <Icon icon="lucide:trash-2" />
+                </el-button>
+              </el-tooltip>
             </template>
           </el-table-column>
         </el-table>
@@ -137,7 +143,7 @@
     </el-card>
     <el-dialog
       v-model="dialogVisible"
-      :title="formData.id === undefined ? '新增字典数据' : '修改字典数据'"
+      :title="formData.id === undefined ? $t('system.dict.data.dialogs.addData') : $t('system.dict.data.dialogs.editData')"
       width="30%"
       @close="handleClose"
     >
@@ -148,19 +154,19 @@
         label-width="100px"
         label-position="left"
       >
-        <el-form-item prop="dictType" label="字典类型">
+        <el-form-item prop="dictType" :label="$t('system.dict.data.form.dictType')">
           <el-input v-model="formData.dictType" disabled />
         </el-form-item>
-        <el-form-item prop="label" label="字典标签">
-          <el-input v-model="formData.label" placeholder="请输入字典标签" />
+        <el-form-item prop="label" :label="$t('system.dict.data.form.label')">
+          <el-input v-model="formData.label" :placeholder="$t('system.dict.data.formPlaceholder.label')" />
         </el-form-item>
-        <el-form-item prop="value" label="字典键值">
-          <el-input v-model="formData.value" placeholder="请输入字典键值" />
+        <el-form-item prop="value" :label="$t('system.dict.data.form.value')">
+          <el-input v-model="formData.value" :placeholder="$t('system.dict.data.formPlaceholder.value')" />
         </el-form-item>
-        <el-form-item prop="cssClass" label="样式属性">
-          <el-input v-model="formData.cssClass" placeholder="请输入样式属性" />
+        <el-form-item prop="cssClass" :label="$t('system.dict.data.form.cssClass')">
+          <el-input v-model="formData.cssClass" :placeholder="$t('system.dict.data.formPlaceholder.cssClass')" />
         </el-form-item>
-        <el-form-item prop="listClass" label="回显样式">
+        <el-form-item prop="listClass" :label="$t('system.dict.data.form.listClass')">
           <el-select v-model="formData.listClass" style="width: 150px">
             <el-option
               v-for="item in listOption"
@@ -170,10 +176,10 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item prop="sort" label="显示排序">
+        <el-form-item prop="sort" :label="$t('system.dict.data.form.sort')">
           <el-input-number v-model="formData.sort" :min="0" controls-position="right" />
         </el-form-item>
-        <el-form-item prop="status" label="状态">
+        <el-form-item prop="status" :label="$t('system.dict.data.form.status')">
           <el-radio-group v-model="formData.status">
             <el-radio
               v-for="item in getDictList('system_status')"
@@ -184,11 +190,11 @@
             </el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item prop="remark" label="备注">
+        <el-form-item prop="remark" :label="$t('system.dict.data.form.remark')">
           <el-input
             type="textarea"
             v-model="formData.remark"
-            placeholder="请输入备注"
+            :placeholder="$t('system.dict.data.formPlaceholder.remark')"
             autosize
             maxlength="200"
             show-word-limit
@@ -196,14 +202,15 @@
         </el-form-item>
       </el-form>
       <template #footer>
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" :loading="loading" @click="handleCreateOrUpdate">确定</el-button>
+        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
+        <el-button type="primary" :loading="loading" @click="handleCreateOrUpdate">{{ $t('common.confirm') }}</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from "vue-i18n"
 import { Icon } from '@iconify/vue'
 import { usePagination } from '@/common/composables/usePagination'
 import type { SystemDictDataVO, SystemDictDataQueryVO, SystemDictTypeVO } from './apis/type'
@@ -217,6 +224,8 @@ import {
 import { cloneDeep } from 'lodash-es'
 import type { FormRules } from 'element-plus'
 import { useDict } from '@/common/composables/useDict'
+
+const { t } = useI18n(); const $t = t
 
 defineOptions({
   name: 'dictData',
@@ -256,16 +265,16 @@ const formData = ref<SystemDictDataVO>({
 const dictTypeOptions = ref<SystemDictTypeVO[]>([])
 
 const formRules: FormRules<SystemDictDataVO> = {
-  label: [{ required: true, trigger: 'blur', message: '请输入字典标签' }],
-  value: [{ required: true, trigger: 'blur', message: '请输入字典键值' }],
+  label: [{ required: true, trigger: 'blur', message: () => $t('system.dict.data.formPlaceholder.label') }],
+  value: [{ required: true, trigger: 'blur', message: () => $t('system.dict.data.formPlaceholder.value') }],
 }
 
 const listOption = reactive([
-  { value: 'primary', label: '主要' },
-  { value: 'success', label: '成功' },
-  { value: 'info', label: '信息' },
-  { value: 'warning', label: '警告' },
-  { value: 'danger', label: '危险' },
+  { value: 'primary', label: $t('system.dict.data.listClass.primary') },
+  { value: 'success', label: $t('system.dict.data.listClass.success') },
+  { value: 'info', label: $t('system.dict.data.listClass.info') },
+  { value: 'warning', label: $t('system.dict.data.listClass.warning') },
+  { value: 'danger', label: $t('system.dict.data.listClass.danger') },
 ])
 
 function handleSearch() {
@@ -280,19 +289,19 @@ function resetSearch() {
 function handleBatchRemove() {
   const selectedRows = (tableRef.value?.getSelectionRows() as SystemDictDataVO[]) || []
   if (selectedRows.length === 0) {
-    ElMessage.error('请选择要删除的数据')
+    ElMessage.error($t('common.messages.selectFirst'))
     return
   }
 
   const ids = selectedRows.map((row) => row.id).join(',')
 
-  ElMessageBox.confirm(`正在删除${selectedRows.length}条字典数据，确认删除`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+  ElMessageBox.confirm($t('system.dict.data.messages.batchDeleteConfirm', { count: selectedRows.length }), $t('common.messages.confirmTitle'), {
+    confirmButtonText: $t('common.confirm'),
+    cancelButtonText: $t('common.cancel'),
     type: 'warning',
   }).then(() => {
     removeDictDataByIds(ids).then((data) => {
-      ElMessage.success(data.msg || '删除成功')
+      ElMessage.success(data.msg || $t('common.messages.deleteSuccess'))
       getTableData()
     })
   })
@@ -311,14 +320,14 @@ function handleClose() {
 function handleCreateOrUpdate() {
   formRef.value?.validate((valid) => {
     if (!valid) {
-      ElMessage.error('表单校验不通过')
+      ElMessage.error($t('system.dict.data.messages.formError'))
       return
     }
     loading.value = true
     const api = formData.value.id === undefined ? addDictData : modifyDictDataById
     api(formData.value)
       .then((data) => {
-        ElMessage.success(data.msg || '操作成功')
+        ElMessage.success(data.msg || $t('common.messages.operationSuccess'))
         dialogVisible.value = false
         getTableData()
       })
@@ -329,14 +338,14 @@ function handleCreateOrUpdate() {
 }
 
 function handleRemove(row: SystemDictDataVO) {
-  ElMessageBox.confirm(`正在删除${row.value}字典数据，确认删除？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+  ElMessageBox.confirm($t('system.dict.data.messages.deleteConfirm', { value: row.value }), $t('common.messages.confirmTitle'), {
+    confirmButtonText: $t('common.confirm'),
+    cancelButtonText: $t('common.cancel'),
     type: 'warning',
   }).then(() => {
     if (row.id) {
       removeDictDataByIds(String(row.id)).then((data) => {
-        ElMessage.success(data.msg || '删除成功')
+        ElMessage.success(data.msg || $t('common.messages.deleteSuccess'))
         getTableData()
       })
     }

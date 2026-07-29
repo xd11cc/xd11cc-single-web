@@ -1,15 +1,15 @@
 <template>
-  <UseCrudView :slotProps="crud.slotProps" :formRules="formRules" add-title="新增岗位" edit-title="修改岗位">
+  <UseCrudView :slotProps="crud.slotProps" :formRules="formRules" :add-title="$t('system.post.dialogs.add')" :edit-title="$t('system.post.dialogs.edit')">
     <!-- 搜索区字段 -->
     <template #search-form="{ searchData }">
-      <el-form-item prop="postCode" label="岗位编码">
-        <el-input v-model="searchData.postCode" placeholder="请输入岗位编码" />
+      <el-form-item prop="postCode" :label="$t('system.post.columns.postCode')">
+        <el-input v-model="searchData.postCode" :placeholder="$t('system.post.formPlaceholder.postCode')" />
       </el-form-item>
-      <el-form-item prop="postName" label="岗位名称">
-        <el-input v-model="searchData.postName" placeholder="请输入岗位名称" />
+      <el-form-item prop="postName" :label="$t('system.post.columns.postName')">
+        <el-input v-model="searchData.postName" :placeholder="$t('system.post.formPlaceholder.postName')" />
       </el-form-item>
-      <el-form-item prop="status" label="状态">
-        <el-select v-model="searchData.status" placeholder="岗位状态" clearable style="width: 150px">
+      <el-form-item prop="status" :label="$t('system.post.form.status')">
+        <el-select v-model="searchData.status" :placeholder="$t('system.post.formPlaceholder.status')" clearable style="width: 150px">
           <el-option
             v-for="item in getDictList('system_status')"
             :key="item.id"
@@ -23,19 +23,19 @@
     <!-- 工具栏按钮 -->
     <template #actions>
       <el-button type="primary" @click="crud.methods.handleAdd" v-permission="['system:post:add']">
-        <template #icon><Icon icon="lucide:plus-circle" /></template>新增
+        <template #icon><Icon icon="lucide:plus-circle" /></template>{{ $t('system.post.actions.add') }}
       </el-button>
       <el-button type="danger" @click="handleBatchRemove" v-permission="['system:post:delete']">
-        <template #icon><Icon icon="lucide:trash-2" /></template>批量删除
+        <template #icon><Icon icon="lucide:trash-2" /></template>{{ $t('system.post.actions.batchDelete') }}
       </el-button>
     </template>
 
     <!-- 表格列 -->
     <template #table>
       <el-table-column type="selection" width="50" align="center" />
-      <el-table-column prop="postCode" label="岗位编码" align="center" />
-      <el-table-column prop="postName" label="岗位名称" align="center" />
-      <el-table-column prop="status" label="状态" align="center" width="80">
+      <el-table-column prop="postCode" :label="$t('system.post.columns.postCode')" align="center" />
+      <el-table-column prop="postName" :label="$t('system.post.columns.postName')" align="center" />
+      <el-table-column prop="status" :label="$t('system.post.columns.status')" align="center" width="80">
         <template #default="scope">
           <el-tag
             :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
@@ -47,26 +47,34 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="remark" label="备注" align="center" />
-      <el-table-column prop="createTime" label="创建时间" align="center" min-width="160" />
-      <el-table-column fixed="right" label="操作" width="150" align="center">
+      <el-table-column prop="remark" :label="$t('system.post.columns.remark')" align="center" />
+      <el-table-column prop="createTime" :label="$t('system.post.columns.createTime')" align="center" min-width="160" />
+      <el-table-column fixed="right" :label="$t('common.action')" width="90" align="center">
         <template #default="scope">
-          <el-button
-            type="warning"
-            text
-            bg
-            size="small"
-            @click="crud.methods.handleEdit(scope.row)"
-            v-permission="['system:post:update']"
-          >修改</el-button>
-          <el-button
-            type="danger"
-            text
-            bg
-            size="small"
-            @click="crud.methods.handleRemove(scope.row)"
-            v-permission="['system:post:delete']"
-          >删除</el-button>
+          <el-tooltip :content="$t('system.post.actions.edit')" placement="top">
+            <el-button
+              type="warning"
+              text
+              bg
+              size="small"
+              @click="crud.methods.handleEdit(scope.row)"
+              v-permission="['system:post:update']"
+            >
+              <Icon icon="lucide:pencil" />
+            </el-button>
+          </el-tooltip>
+          <el-tooltip :content="$t('system.post.actions.delete')" placement="top">
+            <el-button
+              type="danger"
+              text
+              bg
+              size="small"
+              @click="crud.methods.handleRemove(scope.row)"
+              v-permission="['system:post:delete']"
+            >
+              <Icon icon="lucide:trash-2" />
+            </el-button>
+          </el-tooltip>
         </template>
       </el-table-column>
     </template>
@@ -74,17 +82,17 @@
     <!-- 弹窗表单字段 -->
     <template #form-fields="{ formData }">
       <el-col :span="12">
-        <el-form-item prop="postName" label="岗位名称">
-          <el-input v-model="formData.postName" placeholder="请输入岗位名称" />
+        <el-form-item prop="postName" :label="$t('system.post.form.postName')">
+          <el-input v-model="formData.postName" :placeholder="$t('system.post.formPlaceholder.postName')" />
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item prop="postCode" label="岗位编码">
-          <el-input v-model="formData.postCode" placeholder="请输入岗位编码" />
+        <el-form-item prop="postCode" :label="$t('system.post.columns.postCode')">
+          <el-input v-model="formData.postCode" :placeholder="$t('system.post.formPlaceholder.postCode')" />
         </el-form-item>
       </el-col>
       <el-col :span="12">
-        <el-form-item prop="status" label="状态">
+        <el-form-item prop="status" :label="$t('system.post.form.status')">
           <el-radio-group v-model="formData.status">
             <el-radio
               v-for="item in getDictList('system_status')"
@@ -97,7 +105,7 @@
         </el-form-item>
       </el-col>
       <el-col :span="24">
-        <el-form-item prop="deptIds" label="所属部门">
+        <el-form-item prop="deptIds" :label="$t('system.post.form.deptIds')">
           <el-tree
             ref="deptTreeRef"
             :data="deptTreeData"
@@ -111,11 +119,11 @@
         </el-form-item>
       </el-col>
       <el-col :span="24">
-        <el-form-item prop="remark" label="备注">
+        <el-form-item prop="remark" :label="$t('system.post.form.remark')">
           <el-input
             type="textarea"
             v-model="formData.remark"
-            placeholder="请输入内容"
+            :placeholder="$t('system.post.formPlaceholder.remark')"
             autosize
             maxlength="200"
             show-word-limit
@@ -127,6 +135,7 @@
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from "vue-i18n"
 import { Icon } from '@iconify/vue'
 import { ref, nextTick } from 'vue'
 import type { FormRules } from 'element-plus'
@@ -138,6 +147,8 @@ import { postPage, addPost, modifyPostById, removePostByIds, getPostDeptIds } fr
 import type { SystemPostVO, SystemPostQueryVO } from './apis/type'
 import { deptTreeList } from '@/views/system/dept/apis'
 import type { SystemDeptTreeVO } from '@/views/system/dept/apis/type'
+
+const { t } = useI18n(); const $t = t
 
 defineOptions({ name: 'post' })
 
@@ -174,9 +185,9 @@ const deptTreeData = ref<SystemDeptTreeVO[]>([])
 const deptTreeRef = ref<any>(null)
 
 const formRules: FormRules = {
-  postCode: [{ required: true, trigger: 'blur', message: '请输入岗位编码' }],
-  postName: [{ required: true, trigger: 'blur', message: '请输入岗位名称' }],
-  status: [{ required: true, trigger: 'change', message: '请选择状态' }],
+  postCode: [{ required: true, trigger: 'blur', message: () => $t('system.post.form.postCode') }],
+  postName: [{ required: true, trigger: 'blur', message: () => $t('system.post.form.postName') }],
+  status: [{ required: true, trigger: 'change', message: () => $t('system.post.formPlaceholder.status') }],
 }
 
 function getDeptTree() {
@@ -202,13 +213,13 @@ crud.methods.handleEdit = (row: SystemPostVO) => {
 // ─── 自定义单条删除（保留岗位名称提示文案） ──────────────────
 const originalHandleRemove = crud.methods.handleRemove
 crud.methods.handleRemove = (row: SystemPostVO) => {
-  ElMessageBox.confirm(`正在删除岗位「${row.postName}」，确认删除？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+  ElMessageBox.confirm($t('system.post.messages.deleteConfirm', { postName: row.postName }), $t('common.messages.confirmTitle'), {
+    confirmButtonText: $t('common.confirm'),
+    cancelButtonText: $t('common.cancel'),
     type: 'warning',
   }).then(() => {
     removePostByIds(String(row.id)).then((res) => {
-      ElMessage.success(res.msg || '删除成功')
+      ElMessage.success(res.msg || $t('common.messages.operationSuccess'))
       crud.methods.getTableData()
     })
   })
@@ -218,17 +229,17 @@ crud.methods.handleRemove = (row: SystemPostVO) => {
 function handleBatchRemove() {
   const selectedRows = crud.slotProps.rowSelection
   if (selectedRows.length === 0) {
-    ElMessage.warning('请先选择要删除的数据')
+    ElMessage.warning($t('common.messages.selectFirst'))
     return
   }
   const ids = selectedRows.map((r: any) => r.id).join(',')
-  ElMessageBox.confirm(`正在删除 ${selectedRows.length} 条岗位数据，确认删除？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+  ElMessageBox.confirm($t('system.post.messages.batchDeleteConfirm', { count: selectedRows.length }), $t('common.messages.confirmTitle'), {
+    confirmButtonText: $t('common.confirm'),
+    cancelButtonText: $t('common.cancel'),
     type: 'warning',
   }).then(() => {
     removePostByIds(ids).then((res) => {
-      ElMessage.success(res.msg || '删除成功')
+      ElMessage.success(res.msg || $t('common.messages.operationSuccess'))
       crud.methods.getTableData()
     })
   })

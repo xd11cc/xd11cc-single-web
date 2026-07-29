@@ -1,5 +1,5 @@
 <template>
-  <!-- 可编辑模式：仅输入框 -->
+  <!-- common.iconSelect.editMode -->
   <div v-if="allowEdit">
     <el-input v-model="inputValue" :placeholder="placeholder" clearable @clear="handleClear">
       <template #prefix>
@@ -9,7 +9,7 @@
     </el-input>
   </div>
 
-  <!-- 选择模式：弹窗图标选择器 -->
+  <!-- common.iconSelect.selectMode -->
   <div v-else>
     <el-popover
       placement="bottom-start"
@@ -36,7 +36,7 @@
         <div class="search-row">
           <el-input
             v-model="searchKeyword"
-            placeholder="搜索图标"
+            :placeholder="$t('common.iconSelect.placeholder.search')"
             clearable
             size="small"
             @input="handleLocalFilter"
@@ -46,20 +46,20 @@
             </template>
           </el-input>
           <el-button size="small" @click="handleOnlineSearch" :loading="onlineLoading">
-            在线搜索
+            {{ $t("common.iconSelect.actions.onlineSearch") }}
           </el-button>
         </div>
 
         <div class="tab-row">
           <span :class="{ active: activeTab === 'local' }" @click="activeTab = 'local'">
-            Lucide 图标
+            {{ $t("common.iconSelect.tabs.local") }}
           </span>
           <span
             v-if="onlineResults.length > 0"
             :class="{ active: activeTab === 'online' }"
             @click="activeTab = 'online'"
           >
-            在线结果
+            {{ $t("common.iconSelect.tabs.online") }}
           </span>
         </div>
 
@@ -75,7 +75,7 @@
               <Icon :icon="icon" width="20" height="20" />
               <span>{{ icon.replace('lucide:', '') }}</span>
             </div>
-            <div v-if="displayIcons.length === 0" class="empty-state">无匹配图标</div>
+            <div v-if="displayIcons.length === 0" class="empty-state">{{ $t("common.iconSelect.empty.noMatch") }}</div>
           </template>
           <template v-else>
             <div
@@ -88,8 +88,8 @@
               <Icon :icon="icon" width="20" height="20" />
               <span>{{ icon }}</span>
             </div>
-            <div v-if="onlineLoading" class="empty-state">搜索中...</div>
-            <div v-else-if="onlineResults.length === 0" class="empty-state">暂无结果</div>
+            <div v-if="onlineLoading" class="empty-state">{{ $t("common.iconSelect.empty.searching") }}</div>
+            <div v-else-if="onlineResults.length === 0" class="empty-state">{{ $t("common.iconSelect.empty.noResults") }}</div>
           </template>
         </div>
       </div>
@@ -98,9 +98,12 @@
 </template>
 
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import { ref, computed } from 'vue'
 import lucideIcons from '@iconify-json/lucide/icons.json'
+
+const { t } = useI18n(); const $t = t
 
 const lucideIconNames = Object.keys(lucideIcons.icons).map((name) => `lucide:${name}`)
 
@@ -112,9 +115,11 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: '',
-  placeholder: '请选择图标',
+  placeholder: '',
   allowEdit: false,
 })
+
+const placeholder = computed(() => props.placeholder || $t('common.placeholder.select'))
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void

@@ -1,7 +1,7 @@
 <template>
   <div class="chat-panel">
     <div class="chat-panel-header">
-      <span class="title">在线聊天</span>
+      <span class="title">{{ $t("chat.title") }}</span>
       <div class="actions">
         <Icon icon="lucide:minus" width="18" height="18" class="action-btn" @click="$emit('close')" />
       </div>
@@ -20,7 +20,7 @@
       />
       <div v-else class="empty-chat">
         <Icon icon="lucide:message-square-dashed" width="48" height="48" />
-        <span>选择联系人开始聊天</span>
+        <span>{{ $t("chat.empty") }}</span>
       </div>
     </div>
   </div>
@@ -31,6 +31,9 @@ import { Icon } from '@iconify/vue'
 import { useChat } from '@@/composables/useChat'
 import ContactList from './ContactList.vue'
 import MessageArea from './MessageArea.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n(); const $t = t
 
 defineEmits<{ close: [] }>()
 

@@ -1,9 +1,9 @@
 <template>
   <div class="form-container">
     <div class="form-card">
-      <div class="title"><h3>社交账号绑定</h3></div>
+      <div class="title"><h3>{{ $t("login.bind.title") }}</h3></div>
       <div class="content">
-        <p class="tip">请绑定已有账号以完成第三方登录</p>
+        <p class="tip">{{ $t("login.bind.tip") }}</p>
         <el-form
           ref="bindFormRef"
           :model="bindFormData"
@@ -13,7 +13,7 @@
           <el-form-item prop="username">
             <el-input
               v-model.trim="bindFormData.username"
-              placeholder="请输入用户名"
+              :placeholder="$t('login.bind.form.username')"
               size="large"
             >
               <template #prefix><Icon icon="lucide:user" /></template>
@@ -23,7 +23,7 @@
             <el-input
               v-model.trim="bindFormData.password"
               :type="bindPwdVisible ? 'text' : 'password'"
-              placeholder="请输入密码"
+              :placeholder="$t('login.bind.form.password')"
               size="large"
             >
               <template #prefix><Icon icon="lucide:lock" /></template>
@@ -37,7 +37,7 @@
             </el-input>
           </el-form-item>
           <el-button type="primary" size="large" :loading="bindLoading" @click.prevent="handleBind">
-            关联登录
+            {{ $t("login.bind.action") }}
           </el-button>
         </el-form>
       </div>
@@ -47,12 +47,14 @@
 
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
+import { useI18n } from 'vue-i18n'
 import type { FormRules } from 'element-plus'
 import { socialUserBind } from '../apis'
 import { useUserStore } from '@/pinia/stores/user'
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n(); const $t = t
 const userStore = useUserStore()
 
 const source = computed(() => (route.query.source as string) || '')
@@ -68,10 +70,10 @@ const bindFormData = reactive({
 })
 
 const bindFormRules: FormRules = {
-  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+  username: [{ required: true, message: () => $t('login.bind.form.usernameRequired'), trigger: 'blur' }],
   password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 8, max: 16, message: '长度在 8 到 16 个字符', trigger: 'blur' },
+    { required: true, message: () => $t('login.bind.form.passwordRequired'), trigger: 'blur' },
+    { min: 8, max: 16, message: () => $t('login.bind.form.passwordLength'), trigger: 'blur' },
   ],
 }
 
@@ -91,7 +93,7 @@ function handleBind() {
       .then(({ data }) => {
         userStore.setToken(data)
         router.push('/')
-        ElMessage.success('关联成功')
+        ElMessage.success($t('login.bind.success'))
       })
       .catch(() => {})
       .finally(() => {

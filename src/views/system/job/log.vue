@@ -2,13 +2,13 @@
   <div class="app-container">
     <el-card shadow="never" class="search-wrapper">
       <el-form ref="searchFormRef" :inline="true" :model="searchData">
-        <el-form-item prop="jobName" label="任务名称">
-          <el-input v-model="searchData.jobName" placeholder="请输入任务名称" />
+        <el-form-item prop="jobName" :label="$t('system.job.log.search.jobName')">
+          <el-input v-model="searchData.jobName" :placeholder="$t('system.job.log.searchPlaceholder.jobName')" />
         </el-form-item>
-        <el-form-item prop="jobGroup" label="任务组名">
+        <el-form-item prop="jobGroup" :label="$t('system.job.log.search.jobGroup')">
           <el-select
             v-model="searchData.jobGroup"
-            placeholder="请选择任务组名"
+            :placeholder="$t('system.job.log.searchPlaceholder.jobGroup')"
             clearable
             style="width: 180px"
           >
@@ -20,10 +20,10 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item prop="status" label="执行状态">
+        <el-form-item prop="status" :label="$t('system.job.log.search.status')">
           <el-select
             v-model="searchData.status"
-            placeholder="执行状态"
+            :placeholder="$t('system.job.log.searchPlaceholder.status')"
             clearable
             style="width: 150px"
           >
@@ -37,10 +37,10 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            <template #icon><Icon icon="lucide:search" /></template>查询
+            <template #icon><Icon icon="lucide:search" /></template>{{ $t('system.job.actions.query') }}
           </el-button>
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template>重置
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('system.job.actions.reset') }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -51,7 +51,7 @@
         <div>
           <el-button type="danger" @click="handleBatchRemove" v-permission="['system:job:delete']">
             <template #icon><Icon icon="lucide:trash-2" /></template>
-            批量删除
+            {{ $t('system.job.actions.batchDelete') }}
           </el-button>
         </div>
       </div>
@@ -59,23 +59,23 @@
       <div class="table-wrapper">
         <el-table ref="tableRef" :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column prop="jobName" label="任务名称" align="center" min-width="120" />
-          <el-table-column prop="jobGroup" label="任务组名" align="center" width="120" />
+          <el-table-column prop="jobName" :label="$t('system.job.log.columns.jobName')" align="center" min-width="120" />
+          <el-table-column prop="jobGroup" :label="$t('system.job.log.columns.jobGroup')" align="center" width="120" />
           <el-table-column
             prop="invokeTarget"
-            label="调度目标"
+            :label="$t('system.job.log.columns.invokeTarget')"
             align="center"
             min-width="160"
             show-overflow-tooltip
           />
           <el-table-column
             prop="jobMessage"
-            label="日志信息"
+            :label="$t('system.job.log.columns.jobMessage')"
             align="center"
             min-width="200"
             show-overflow-tooltip
           />
-          <el-table-column prop="status" label="执行状态" align="center" width="90">
+          <el-table-column prop="status" :label="$t('system.job.log.columns.status')" align="center" width="90">
             <template #default="scope">
               <el-tag
                 :type="
@@ -94,26 +94,31 @@
           </el-table-column>
           <el-table-column
             prop="remark"
-            label="备注"
+            :label="$t('system.job.log.columns.remark')"
             align="center"
             min-width="120"
             show-overflow-tooltip
           />
-          <el-table-column prop="createTime" label="执行时间" align="center" min-width="160" />
-          <el-table-column fixed="right" label="操作" width="150" align="center">
+          <el-table-column prop="createTime" :label="$t('system.job.log.columns.createTime')" align="center" min-width="160" />
+          <el-table-column fixed="right" :label="$t('system.job.log.columns.action')" width="90" align="center">
             <template #default="scope">
-              <el-button type="primary" text bg size="small" @click="handleDetail(scope.row)"
-                >详情</el-button
-              >
-              <el-button
-                type="danger"
-                text
-                bg
-                size="small"
-                @click="handleRemove(scope.row)"
-                v-permission="['system:job:delete']"
-                >删除</el-button
-              >
+              <el-tooltip :content="$t('system.job.log.actions.detail')" placement="top">
+                <el-button type="primary" text bg size="small" @click="handleDetail(scope.row)">
+                  <Icon icon="lucide:eye" />
+                </el-button>
+              </el-tooltip>
+              <el-tooltip :content="$t('system.job.log.actions.delete')" placement="top">
+                <el-button
+                  type="danger"
+                  text
+                  bg
+                  size="small"
+                  @click="handleRemove(scope.row)"
+                  v-permission="['system:job:delete']"
+                >
+                  <Icon icon="lucide:trash-2" />
+                </el-button>
+              </el-tooltip>
             </template>
           </el-table-column>
         </el-table>
@@ -134,14 +139,14 @@
     </el-card>
 
     <!-- 详情弹窗 -->
-    <el-dialog v-model="detailVisible" title="任务日志详情" width="45%">
+    <el-dialog v-model="detailVisible" :title="$t('system.job.log.dialogs.detail')" width="45%">
       <el-descriptions :column="2" border>
-        <el-descriptions-item label="任务名称">{{ detailData.jobName }}</el-descriptions-item>
-        <el-descriptions-item label="任务组名">{{ detailData.jobGroup }}</el-descriptions-item>
-        <el-descriptions-item label="调度目标" :span="2">{{
+        <el-descriptions-item :label="$t('system.job.log.columns.jobName')">{{ detailData.jobName }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('system.job.log.columns.jobGroup')">{{ detailData.jobGroup }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('system.job.log.columns.invokeTarget')" :span="2">{{
           detailData.invokeTarget
         }}</el-descriptions-item>
-        <el-descriptions-item label="执行状态">
+        <el-descriptions-item :label="$t('system.job.log.columns.status')">
           <el-tag
             :type="
               getDictItem('system_job_log_status', detailData.status ?? '')?.listClass || 'info'
@@ -155,8 +160,8 @@
             }}
           </el-tag>
         </el-descriptions-item>
-        <el-descriptions-item label="执行时间">{{ detailData.createTime }}</el-descriptions-item>
-        <el-descriptions-item label="日志信息" :span="2">
+        <el-descriptions-item :label="$t('system.job.log.columns.createTime')">{{ detailData.createTime }}</el-descriptions-item>
+        <el-descriptions-item :label="$t('system.job.log.columns.jobMessage')" :span="2">
           <el-input
             v-if="detailData.jobMessage"
             type="textarea"
@@ -166,23 +171,26 @@
           />
           <span v-else>-</span>
         </el-descriptions-item>
-        <el-descriptions-item v-if="detailData.remark" label="备注" :span="2">{{
+        <el-descriptions-item v-if="detailData.remark" :label="$t('system.job.log.columns.remark')" :span="2">{{
           detailData.remark
         }}</el-descriptions-item>
       </el-descriptions>
       <template #footer>
-        <el-button @click="detailVisible = false">关闭</el-button>
+        <el-button @click="detailVisible = false">{{ $t('common.close') }}</el-button>
       </template>
     </el-dialog>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from "vue-i18n"
 import { Icon } from '@iconify/vue'
 import { useDict } from '@/common/composables/useDict'
 import { usePagination } from '@@/composables/usePagination'
 import { jobLogPage, removeJobLogByIds } from './apis'
 import type { SystemJobLogQueryVO, SystemJobLogVO } from './apis/type'
+
+const { t } = useI18n(); const $t = t
 
 defineOptions({
   name: 'jobLog',
@@ -220,14 +228,14 @@ function handleDetail(row: SystemJobLogVO) {
 }
 
 function handleRemove(row: SystemJobLogVO) {
-  ElMessageBox.confirm(`确认删除该条任务日志？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+  ElMessageBox.confirm($t('system.job.log.messages.deleteConfirm'), $t('common.messages.confirmTitle'), {
+    confirmButtonText: $t('common.confirm'),
+    cancelButtonText: $t('common.cancel'),
     type: 'warning',
   }).then(() => {
     if (row.id) {
       removeJobLogByIds(String(row.id)).then((data) => {
-        ElMessage.success(data.msg || '删除成功')
+        ElMessage.success(data.msg || $t('system.job.log.messages.deleteSuccess'))
         getTableData()
       })
     }
@@ -237,17 +245,17 @@ function handleRemove(row: SystemJobLogVO) {
 function handleBatchRemove() {
   const selectedRows = (tableRef.value?.getSelectionRows() as SystemJobLogVO[]) || []
   if (selectedRows.length === 0) {
-    ElMessage.warning('请选择要删除的数据')
+    ElMessage.warning($t('system.job.log.messages.selectFirst'))
     return
   }
   const ids = selectedRows.map((row) => row.id).join(',')
-  ElMessageBox.confirm(`确认删除选中的 ${selectedRows.length} 条任务日志？`, '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
+  ElMessageBox.confirm($t('system.job.log.messages.batchDeleteConfirm', { count: selectedRows.length }), $t('common.messages.confirmTitle'), {
+    confirmButtonText: $t('common.confirm'),
+    cancelButtonText: $t('common.cancel'),
     type: 'warning',
   }).then(() => {
     removeJobLogByIds(ids).then((data) => {
-      ElMessage.success(data.msg || '删除成功')
+      ElMessage.success(data.msg || $t('system.job.log.messages.deleteSuccess'))
       getTableData()
     })
   })

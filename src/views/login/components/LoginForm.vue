@@ -9,7 +9,7 @@
       <el-form-item prop="username">
         <el-input
           v-model.trim="loginFormData.username"
-          placeholder="请输入用户名"
+          :placeholder="$t('login.placeholder.username')"
           type="text"
           tabindex="1"
           size="large"
@@ -21,7 +21,7 @@
         <el-input
           v-model.trim="loginFormData.password"
           :type="passwordVisible ? 'text' : 'password'"
-          placeholder="请输入密码"
+          :placeholder="$t('login.placeholder.password')"
           tabindex="2"
           size="large"
         >
@@ -39,7 +39,7 @@
         <div class="captcha-row">
           <el-input
             v-model.trim="loginFormData.captcha"
-            placeholder="请输入验证码"
+            :placeholder="$t('login.placeholder.captcha')"
             type="text"
             tabindex="3"
             size="large"
@@ -49,27 +49,27 @@
           <img
             :src="captchaImg"
             @click="refreshCaptcha"
-            alt="验证码"
-            title="点击刷新"
+            :alt="$t('login.captcha')"
+            :title="$t('login.qrcode.refresh')"
             class="captcha-img"
           />
         </div>
       </el-form-item>
       <el-form-item>
         <div class="form-options">
-          <el-checkbox v-model="loginFormData.rememberMe">记住我</el-checkbox>
+          <el-checkbox v-model="loginFormData.rememberMe">{{ $t('login.formOptions.rememberMe') }}</el-checkbox>
           <el-link type="primary" underline="never" @click="handleForgetPassword">
-            忘记密码？
+            {{ $t('login.forgotPassword') }}？
           </el-link>
         </div>
       </el-form-item>
       <el-button class="login-btn" size="large" @click.prevent="handleLogin" :loading="loading">
-        登录
+        {{ $t('login.login') }}
       </el-button>
     </el-form>
 
     <!-- 其他登录方式 -->
-    <el-divider v-if="socialConfigs.length && ossUrl">其他登录方式</el-divider>
+    <el-divider v-if="socialConfigs.length && ossUrl">{{ $t('login.social.otherMethods') }}</el-divider>
     <div v-if="socialConfigs.length && ossUrl" class="social-login">
       <div
         v-for="item in socialConfigs"
@@ -87,6 +87,7 @@
 <script lang="ts" setup>
 import { useUserStore } from '@/pinia/stores/user'
 import { Icon } from '@iconify/vue'
+import { useI18n } from 'vue-i18n'
 import type { FormRules } from 'element-plus'
 import type { LoginForm, AuthClientConfigVO } from '../apis/type'
 import { getCaptcha, socialLogin, getSocialClientConfigList } from '../apis'
@@ -101,6 +102,8 @@ const useStore = useUserStore()
 const router = useRouter()
 
 const route = useRoute()
+
+const { t } = useI18n(); const $t = t
 
 const loginFormData: LoginForm = reactive({
   username: '',
@@ -121,12 +124,12 @@ const socialConfigs = ref<AuthClientConfigVO[]>([])
 const { ossUrl } = useOssUrl()
 
 const loginFormRules: FormRules = {
-  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
+  username: [{ required: true, message: () => $t('login.rules.usernameRequired'), trigger: 'blur' }],
   password: [
-    { required: true, message: '请输入密码', trigger: 'blur' },
-    { min: 8, max: 16, message: '长度在 8 到 16 个字符', trigger: 'blur' },
+    { required: true, message: () => $t('login.rules.passwordRequired'), trigger: 'blur' },
+    { min: 8, max: 16, message: () => $t('login.validation.passwordLength'), trigger: 'blur' },
   ],
-  captcha: [{ required: true, message: '请输入验证码', trigger: 'blur' }],
+  captcha: [{ required: true, message: () => $t('login.rules.captchaRequired'), trigger: 'blur' }],
 }
 
 const handleLogin = () => {
@@ -137,7 +140,7 @@ const handleLogin = () => {
       .userLogin(loginFormData)
       .then(() => {
         router.push(route.query.redirect ? decodeURIComponent(route.query.redirect as string) : '/')
-        ElMessage.success('登录成功')
+        ElMessage.success($t('login.messages.loginSuccess'))
       })
       .catch(() => {
         refreshCaptcha()

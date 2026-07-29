@@ -3,6 +3,7 @@ import type { ResponseVO } from 'types/api'
 import { getToken, removeToken } from '@@/utils/cache/cookies'
 import { resetRouter, router } from '@/router'
 import { useUserStore } from '@/pinia/stores/user'
+import { i18n } from '@/i18n'
 
 // 创建axios实例
 const BASE_URL = import.meta.env.VITE_BASE_URL + import.meta.env.VITE_PUBLIC_PATH
@@ -37,7 +38,7 @@ service.interceptors.request.use(
 function handleUnauthorized() {
   if (isHandlingUnauthorized) return
   isHandlingUnauthorized = true
-  ElMessage.warning('登录已过期，请重新登录')
+  ElMessage.warning(i18n.global.t('common.network.unauthorized'))
   removeToken()
   resetRouter()
   const userStore = useUserStore()
@@ -46,6 +47,17 @@ function handleUnauthorized() {
   if (fullPath !== '/login') {
     router.push(`/login?redirect=${encodeURIComponent(fullPath)}`)
   }
+}
+
+function getLocalizedErrorMessage(status?: number) {
+  const keyMap: Record<number, string> = {
+    400: 'common.network.badRequest',
+    401: 'common.network.unauthorized',
+    403: 'common.network.forbidden',
+    404: 'common.network.notFound',
+    500: 'common.network.serverError',
+  }
+  return i18n.global.t(keyMap[status || 0] || 'common.network.unknown')
 }
 
 // 响应拦截器
@@ -72,7 +84,9 @@ service.interceptors.response.use(
           console.error('服务器内部异常')
           break
       }
-      ElMessage.error(res.msg)
+      if (res.code !== 401) {
+        ElMessage.error(getLocalizedErrorMessage(res.code))
+      }
       return Promise.reject(new Error(res.msg))
     }
     return res
@@ -80,7 +94,7 @@ service.interceptors.response.use(
   (error) => {
     if (error.code === 'ECONNABORTED' && error.message.includes('timeout')) {
       ElMessage.error({
-        message: '请求超时啦～ 请检查网络或稍后重试',
+        message: i18n.global.t('common.network.timeout'),
         duration: 3000,
       })
     }
@@ -98,11 +112,15 @@ service.interceptors.response.use(
         break
       case 404:
         console.error('接口不存在')
-        ElMessage.error('接口不存在')
         break
       case 500:
         console.error('服务器内部异常', error)
         break
+    }
+    if (status && status !== 401) {
+      ElMessage.error(getLocalizedErrorMessage(status))
+    } else if (!status && error.code !== 'ECONNABORTED') {
+      ElMessage.error(getLocalizedErrorMessage())
     }
     return Promise.reject(error)
   },

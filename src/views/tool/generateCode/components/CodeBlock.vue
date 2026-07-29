@@ -9,6 +9,9 @@
 
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 // 组件 Props 定义
 const props = defineProps({
@@ -29,13 +32,13 @@ const props = defineProps({
 
 const handleCopy = async () => {
   if (!props.code?.trim()) {
-    ElMessage.warning('暂无代码可复制')
+    ElMessage.warning(t('common.messages.noCodeToCopy'))
     return
   }
   try {
     // 优先使用现代 Clipboard API
     await navigator.clipboard.writeText(props.code)
-    ElMessage.success('复制成功')
+    ElMessage.success(t('common.messages.copySuccess'))
   } catch (err) {
     // 降级方案：兼容旧浏览器
     const textArea = document.createElement('textarea')
@@ -47,9 +50,9 @@ const handleCopy = async () => {
 
     try {
       document.execCommand('copy')
-      ElMessage.success('复制成功')
+      ElMessage.success(t('common.messages.copySuccess'))
     } catch (fallbackErr) {
-      ElMessage.error('复制失败，请手动选择代码复制')
+      ElMessage.error(t('common.messages.copyFailed'))
     } finally {
       document.body.removeChild(textArea)
     }

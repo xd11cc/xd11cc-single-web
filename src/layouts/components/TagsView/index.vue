@@ -16,10 +16,10 @@
       </router-link>
     </ScrollPane>
     <ul v-show="visiable" class="contextmenu" :style="{ left: `${left}px`, top: `${top}px` }">
-      <li @click="refreshSelectedTag(selectedTag)">刷新</li>
-      <li v-if="!isAffix(selectedTag)" @click="closeSelectedTag(selectedTag)">关闭</li>
-      <li @click="closeOthersTags">关闭其他</li>
-      <li @click="closeAllTags(selectedTag)">关闭所有</li>
+      <li @click="refreshSelectedTag(selectedTag)">{{ t('layout.tagsView.refresh') }}</li>
+      <li v-if="!isAffix(selectedTag)" @click="closeSelectedTag(selectedTag)">{{ t('layout.tagsView.close') }}</li>
+      <li @click="closeOthersTags">{{ t('layout.tagsView.closeOthers') }}</li>
+      <li @click="closeAllTags(selectedTag)">{{ t('layout.tagsView.closeAll') }}</li>
     </ul>
   </div>
 </template>
@@ -33,6 +33,9 @@ import { useTagsViewStore } from '@/pinia/stores/tags-view'
 import { Icon } from '@iconify/vue'
 import path from 'path-browserify'
 import ScrollPane from './ScrollPane.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
 
 const router = useRouter()
 

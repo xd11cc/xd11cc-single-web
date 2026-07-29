@@ -1,6 +1,6 @@
 <template>
   <div class="profile-page">
-    <!-- 左侧用户卡片 -->
+    <!-- system.user.profile.sidebar.title -->
     <aside class="profile-sidebar">
       <div class="user-card">
         <div class="avatar-wrapper" @click="handleAvatarClick">
@@ -18,7 +18,7 @@
           style="display: none"
           @change="handleFileChange"
         />
-        <h2 class="user-name">{{ userStore.nickname || userStore.username || '用户' }}</h2>
+        <h2 class="user-name">{{ userStore.nickname || userStore.username || $t('system.user.profile.defaultUser') }}</h2>
         <div class="user-tags">
           <el-tag v-for="name in displayRoles" :key="name" size="small" effect="plain">
             {{ name }}
@@ -27,51 +27,51 @@
       </div>
 
       <div class="sidebar-card">
-        <h4 class="sidebar-title">基本信息</h4>
+        <h4 class="sidebar-title">{{ $t("system.user.profile.sidebar.title") }}</h4>
         <div class="sidebar-list">
           <div class="sidebar-item">
             <Icon icon="lucide:user" class="sidebar-icon" />
-            <span class="sidebar-label">用户名</span>
+            <span class="sidebar-label">{{ $t("system.user.profile.sidebar.username") }}</span>
             <span class="sidebar-value">{{ userStore.username || '-' }}</span>
           </div>
           <div class="sidebar-item">
             <Icon icon="lucide:smile" class="sidebar-icon" />
-            <span class="sidebar-label">昵称</span>
+            <span class="sidebar-label">{{ $t("system.user.profile.sidebar.nickname") }}</span>
             <span class="sidebar-value">{{ userStore.nickname || '-' }}</span>
           </div>
           <div class="sidebar-item">
             <Icon icon="lucide:venus-and-mars" class="sidebar-icon" />
-            <span class="sidebar-label">性别</span>
+            <span class="sidebar-label">{{ $t("system.user.profile.sidebar.sex") }}</span>
             <span class="sidebar-value">{{ getDictItem('system_user_sex', userStore.sex)?.value || '-' }}</span>
           </div>
           <div class="sidebar-item">
             <Icon icon="lucide:phone" class="sidebar-icon" />
-            <span class="sidebar-label">手机号</span>
+            <span class="sidebar-label">{{ $t("system.user.profile.sidebar.phone") }}</span>
             <span class="sidebar-value">{{ userStore.phone || '-' }}</span>
           </div>
           <div class="sidebar-item">
             <Icon icon="lucide:mail" class="sidebar-icon" />
-            <span class="sidebar-label">邮箱</span>
+            <span class="sidebar-label">{{ $t("system.user.profile.sidebar.email") }}</span>
             <span class="sidebar-value">{{ userStore.email || '-' }}</span>
           </div>
           <div class="sidebar-item">
             <Icon icon="lucide:building-2" class="sidebar-icon" />
-            <span class="sidebar-label">部门</span>
+            <span class="sidebar-label">{{ $t("system.user.profile.sidebar.dept") }}</span>
             <span class="sidebar-value">{{ userStore.deptName || '-' }}</span>
           </div>
           <div class="sidebar-item">
             <Icon icon="lucide:briefcase" class="sidebar-icon" />
-            <span class="sidebar-label">岗位</span>
+            <span class="sidebar-label">{{ $t("system.user.profile.sidebar.post") }}</span>
             <span class="sidebar-value">{{ userStore.postName || '-' }}</span>
           </div>
         </div>
       </div>
     </aside>
 
-    <!-- 右侧主内容 -->
+    <!-- system.user.profile.main -->
     <main class="profile-main">
       <el-tabs v-model="activeTab" class="profile-tabs">
-        <el-tab-pane label="修改资料" name="edit">
+        <el-tab-pane :label="$t('system.user.profile.tabs.edit')" name="edit">
           <div class="form-card">
             <el-form
               ref="editFormRef"
@@ -82,22 +82,22 @@
             >
               <el-row :gutter="24">
                 <el-col :span="12">
-                  <el-form-item label="昵称" prop="nickname">
-                    <el-input v-model="editForm.nickname" placeholder="请输入昵称" maxlength="20" />
+                  <el-form-item :label="$t('system.user.profile.fields.nickname')" prop="nickname">
+                    <el-input v-model="editForm.nickname" :placeholder="$t('system.user.profile.placeholder.nickname')" maxlength="20" />
                   </el-form-item>
                 </el-col>
                 <el-col :span="12">
-                  <el-form-item label="手机号" prop="phone">
-                    <el-input v-model="editForm.phone" placeholder="请输入手机号" maxlength="11" />
+                  <el-form-item :label="$t('system.user.profile.fields.phone')" prop="phone">
+                    <el-input v-model="editForm.phone" :placeholder="$t('system.user.profile.placeholder.phone')" maxlength="11" />
                   </el-form-item>
                 </el-col>
                 <el-col :span="12">
-                  <el-form-item label="邮箱" prop="email">
-                    <el-input v-model="editForm.email" placeholder="请输入邮箱" />
+                  <el-form-item :label="$t('system.user.profile.fields.email')" prop="email">
+                    <el-input v-model="editForm.email" :placeholder="$t('system.user.profile.placeholder.email')" />
                   </el-form-item>
                 </el-col>
                 <el-col :span="12">
-                  <el-form-item label="性别" prop="sex">
+                  <el-form-item :label="$t('system.user.profile.fields.sex')" prop="sex">
                     <el-radio-group v-model="editForm.sex">
                       <el-radio
                         v-for="item in getDictList('system_user_sex')"
@@ -111,13 +111,13 @@
                 </el-col>
               </el-row>
               <el-form-item>
-                <el-button type="primary" :loading="editLoading" @click="handleSaveProfile">保存修改</el-button>
+                <el-button type="primary" :loading="editLoading" @click="handleSaveProfile">{{ $t("system.user.profile.actions.saveProfile") }}</el-button>
               </el-form-item>
             </el-form>
           </div>
         </el-tab-pane>
 
-        <el-tab-pane label="修改密码" name="password">
+        <el-tab-pane :label="$t('system.user.profile.tabs.password')" name="password">
           <div class="form-card">
             <el-form
               ref="pwdFormRef"
@@ -127,28 +127,28 @@
               label-position="left"
               class="pwd-form"
             >
-              <el-form-item label="当前密码" prop="oldPassword">
-                <el-input v-model="pwdForm.oldPassword" type="password" show-password placeholder="请输入当前密码" />
+              <el-form-item :label="$t('system.user.profile.fields.currentPassword')" prop="oldPassword">
+                <el-input v-model="pwdForm.oldPassword" type="password" show-password :placeholder="$t('system.user.profile.placeholder.currentPassword')" />
               </el-form-item>
-              <el-form-item label="新密码" prop="newPassword">
-                <el-input v-model="pwdForm.newPassword" type="password" show-password placeholder="请输入新密码" />
+              <el-form-item :label="$t('system.user.profile.fields.newPassword')" prop="newPassword">
+                <el-input v-model="pwdForm.newPassword" type="password" show-password :placeholder="$t('system.user.profile.placeholder.newPassword')" />
               </el-form-item>
-              <el-form-item label="确认密码" prop="confirmPassword">
-                <el-input v-model="pwdForm.confirmPassword" type="password" show-password placeholder="请确认新密码" />
+              <el-form-item :label="$t('system.user.profile.fields.confirmPassword')" prop="confirmPassword">
+                <el-input v-model="pwdForm.confirmPassword" type="password" show-password :placeholder="$t('system.user.profile.placeholder.confirmPassword')" />
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" :loading="pwdLoading" @click="handleChangePassword">确认修改</el-button>
-                <el-button @click="resetPwdForm">重置</el-button>
+                <el-button type="primary" :loading="pwdLoading" @click="handleChangePassword">{{ $t("system.user.profile.actions.confirmChange") }}</el-button>
+                <el-button @click="resetPwdForm">{{ $t("common.reset") }}</el-button>
               </el-form-item>
             </el-form>
           </div>
         </el-tab-pane>
 
-        <el-tab-pane label="角色权限" name="permission">
+        <el-tab-pane :label="$t('system.user.profile.tabs.permission')" name="permission">
           <div class="form-card">
             <h4 class="section-title">
               <Icon icon="lucide:shield-check" class="section-icon" />
-              当前角色
+              {{ $t("system.user.profile.permission.currentRoles") }}
             </h4>
             <div class="role-list">
               <div v-for="name in displayRoles" :key="name" class="role-item">
@@ -159,9 +159,9 @@
             <el-divider />
             <h4 class="section-title">
               <Icon icon="lucide:key-round" class="section-icon" />
-              操作权限
+              {{ $t("system.user.profile.permission.operatePermission") }}
               <el-tag size="small" type="info" effect="plain" style="margin-left: 8px">
-                共 {{ userStore.permissions.length }} 项
+                {{ $t("system.user.profile.permission.totalCount", { count: userStore.permissions.length }) }}
               </el-tag>
             </h4>
             <div class="permission-grid">
@@ -178,41 +178,41 @@
           </div>
         </el-tab-pane>
 
-        <el-tab-pane label="账户安全" name="security">
+        <el-tab-pane :label="$t('system.user.profile.tabs.security')" name="security">
           <div class="form-card">
             <div class="security-list">
               <div class="security-item">
                 <div class="security-info">
                   <Icon icon="lucide:lock" class="security-icon" />
                   <div>
-                    <p class="security-label">登录密码</p>
-                    <p class="security-desc">安全性高的密码可以保护您的账户安全</p>
+                    <p class="security-label">{{ $t("system.user.profile.security.loginPassword") }}</p>
+                    <p class="security-desc">{{ $t("system.user.profile.security.passwordDesc") }}</p>
                   </div>
                 </div>
-                <el-button type="primary" text @click="activeTab = 'password'">修改</el-button>
+                <el-button type="primary" text @click="activeTab = 'password'">{{ $t("common.edit") }}</el-button>
               </div>
               <div class="security-item">
                 <div class="security-info">
                   <Icon icon="lucide:smartphone" class="security-icon" />
                   <div>
-                    <p class="security-label">手机绑定</p>
-                    <p class="security-desc">{{ userStore.phone ? `已绑定手机：${userStore.phone}` : '未绑定手机号' }}</p>
+                    <p class="security-label">{{ $t("system.user.profile.security.phoneBind") }}</p>
+                    <p class="security-desc">{{ userStore.phone ? $t('system.user.profile.security.phoneBound', { phone: userStore.phone }) : $t('system.user.profile.security.phoneUnbound') }}</p>
                   </div>
                 </div>
                 <el-tag :type="userStore.phone ? 'success' : 'warning'" size="small" effect="plain">
-                  {{ userStore.phone ? '已绑定' : '未绑定' }}
+                  {{ userStore.phone ? $t('system.user.profile.security.bound') : $t('system.user.profile.security.unbound') }}
                 </el-tag>
               </div>
               <div class="security-item">
                 <div class="security-info">
                   <Icon icon="lucide:mail" class="security-icon" />
                   <div>
-                    <p class="security-label">邮箱绑定</p>
-                    <p class="security-desc">{{ userStore.email ? `已绑定邮箱：${userStore.email}` : '未绑定邮箱' }}</p>
+                    <p class="security-label">{{ $t("system.user.profile.security.emailBind") }}</p>
+                    <p class="security-desc">{{ userStore.email ? $t('system.user.profile.security.emailBound', { email: userStore.email }) : $t('system.user.profile.security.emailUnbound') }}</p>
                   </div>
                 </div>
                 <el-tag :type="userStore.email ? 'success' : 'warning'" size="small" effect="plain">
-                  {{ userStore.email ? '已绑定' : '未绑定' }}
+                  {{ userStore.email ? $t('system.user.profile.security.bound') : $t('system.user.profile.security.unbound') }}
                 </el-tag>
               </div>
             </div>
@@ -221,8 +221,8 @@
       </el-tabs>
     </main>
 
-    <!-- 头像上传弹窗 -->
-    <el-dialog v-model="avatarDialogVisible" title="上传头像" width="460px" @close="handleAvatarDialogClose">
+    <!-- system.user.profile.dialogs.uploadAvatar -->
+    <el-dialog v-model="avatarDialogVisible" :title="$t('system.user.profile.dialogs.uploadAvatar')" width="460px" @close="handleAvatarDialogClose">
       <div class="avatar-editor">
         <div
           ref="cropAreaRef"
@@ -247,17 +247,15 @@
           <el-slider v-model="cropScale" :min="0.5" :max="3" :step="0.01" :show-tooltip="false" class="crop-slider" />
           <Icon icon="lucide:zoom-in" class="crop-tool-icon" @click="handleZoom(0.1)" />
         </div>
-        <p v-if="previewUrl" class="crop-tip">拖拽调整位置，滚轮缩放大小</p>
+        <p v-if="previewUrl" class="crop-tip">{{ $t("system.user.profile.avatar.tip") }}</p>
         <div v-if="!previewUrl" class="avatar-placeholder">
           <Icon icon="lucide:image-plus" :width="48" :height="48" />
-          <p>请选择图片</p>
+          <p>{{ $t("system.user.profile.avatar.selectImage") }}</p>
         </div>
       </div>
       <template #footer>
-        <el-button @click="avatarDialogVisible = false">取消</el-button>
-        <el-button type="primary" :disabled="!previewUrl" :loading="avatarUploading" @click="handleAvatarUpload">
-          确认上传
-        </el-button>
+        <el-button @click="avatarDialogVisible = false">{{ $t("common.cancel") }}</el-button>
+        <el-button type="primary" :disabled="!previewUrl" :loading="avatarUploading" @click="handleAvatarUpload">{{ $t("system.user.profile.actions.confirmUpload") }}</el-button>
       </template>
     </el-dialog>
   </div>
@@ -265,6 +263,7 @@
 
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
+import { useI18n } from 'vue-i18n'
 import { useUserStore } from '@/pinia/stores/user'
 import { useOssUrl } from '@@/composables/useOssUrl'
 import { useDict } from '@/common/composables/useDict'
@@ -273,6 +272,7 @@ import type { FormRules } from 'element-plus'
 
 const route = useRoute()
 const router = useRouter()
+const { t } = useI18n(); const $t = t
 const userStore = useUserStore()
 const { ossUrl } = useOssUrl()
 const { getDictList, getDictItem } = useDict(['system_user_sex'])
@@ -293,7 +293,7 @@ const displayRoles = computed(() => {
   return userStore.roleNames.length > 0 ? userStore.roleNames : userStore.roles
 })
 
-// 头像上传
+// system.user.profile.dialogs.uploadAvatar
 const fileInputRef = useTemplateRef('fileInputRef')
 const cropAreaRef = useTemplateRef('cropAreaRef')
 const cropImageRef = useTemplateRef('cropImageRef')
@@ -302,7 +302,7 @@ const avatarUploading = ref(false)
 const previewUrl = ref('')
 const selectedFile = ref<File | null>(null)
 
-// 裁切状态
+// system.user.profile.dialogs.uploadAvatar
 const cropScale = ref(1)
 const cropX = ref(0)
 const cropY = ref(0)
@@ -326,7 +326,7 @@ function handleFileChange(e: Event) {
   if (!file) return
 
   if (file.size > 5 * 1024 * 1024) {
-    ElMessage.warning('图片大小不能超过 5MB')
+    ElMessage.warning($t('system.user.profile.messages.avatarSizeExceeded'))
     return
   }
 
@@ -410,7 +410,7 @@ function handleAvatarUpload() {
   setTimeout(() => {
     avatarUploading.value = false
     avatarDialogVisible.value = false
-    ElMessage.success('头像上传成功')
+    ElMessage.success($t('system.user.profile.messages.avatarUploadSuccess'))
   }, 800)
 }
 
@@ -425,7 +425,7 @@ function handleAvatarDialogClose() {
   cropY.value = 0
 }
 
-// 修改资料
+// system.user.profile.sidebar.title
 const editFormRef = useTemplateRef('editFormRef')
 const editForm = reactive({
   nickname: userStore.nickname || '',
@@ -435,12 +435,12 @@ const editForm = reactive({
 })
 
 const editRules: FormRules = {
-  nickname: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
+  nickname: [{ required: true, message: () => $t('system.user.profile.placeholder.nickname'), trigger: 'blur' }],
   phone: [
-    { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号', trigger: 'blur' },
+    { pattern: /^1[3-9]\d{9}$/, message: () => $t('system.user.profile.validation.invalidPhone'), trigger: 'blur' },
   ],
   email: [
-    { type: 'email', message: '请输入正确的邮箱', trigger: 'blur' },
+    { type: 'email', message: () => $t('system.user.profile.validation.invalidEmail'), trigger: 'blur' },
   ],
 }
 
@@ -465,7 +465,7 @@ function handleSaveProfile() {
       roleIds: [],
     })
       .then((res) => {
-        ElMessage.success(res.msg || '资料修改成功')
+        ElMessage.success(res.msg || $t('system.user.profile.messages.profileUpdateSuccess'))
         userStore.getInfo()
       })
       .finally(() => {
@@ -474,7 +474,7 @@ function handleSaveProfile() {
   })
 }
 
-// 修改密码
+// system.user.profile.tabs.password
 const pwdFormRef = useTemplateRef('pwdFormRef')
 const pwdForm = reactive({
   oldPassword: '',
@@ -483,16 +483,16 @@ const pwdForm = reactive({
 })
 
 const pwdRules: FormRules = {
-  oldPassword: [{ required: true, message: '请输入当前密码', trigger: 'blur' }],
+  oldPassword: [{ required: true, message: () => $t('system.user.profile.placeholder.currentPassword'), trigger: 'blur' }],
   newPassword: [
-    { required: true, message: '请输入新密码', trigger: 'blur' },
-    { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' },
+    { required: true, message: () => $t('system.user.profile.placeholder.newPassword'), trigger: 'blur' },
+    { min: 6, max: 20, message: () => $t('system.user.profile.validation.passwordLength'), trigger: 'blur' },
   ],
   confirmPassword: [
-    { required: true, message: '请确认新密码', trigger: 'blur' },
+    { required: true, message: () => $t('system.user.profile.placeholder.confirmPassword'), trigger: 'blur' },
     {
       validator: (_r: unknown, value: string, cb: (e?: Error) => void) => {
-        if (value && value !== pwdForm.newPassword) cb(new Error('两次输入密码不一致'))
+        if (value && value !== pwdForm.newPassword) cb(new Error($t('system.user.profile.validation.passwordMismatch')))
         else cb()
       },
       trigger: 'blur',
@@ -511,7 +511,7 @@ function handleChangePassword() {
       newPassword: pwdForm.newPassword,
     })
       .then((res) => {
-        ElMessage.success(res.msg || '密码修改成功，即将退出登录')
+        ElMessage.success(res.msg || $t('system.user.profile.messages.passwordChangeSuccess'))
         resetPwdForm()
         setTimeout(() => {
           userStore.logout()
@@ -542,7 +542,7 @@ function resetPwdForm() {
   }
 }
 
-// 左侧栏
+// system.user.profile.sidebar.title
 .profile-sidebar {
   display: flex;
   flex-direction: column;
@@ -659,7 +659,7 @@ function resetPwdForm() {
   }
 }
 
-// 右侧主区域
+// system.user.profile.main
 .profile-main {
   min-width: 0;
 }
@@ -706,14 +706,14 @@ function resetPwdForm() {
 }
 
 .form-card {
-  // 表单卡片无额外外层，tabs content 本身已有背景
+  // system.user.profile.sidebar.title
 }
 
 .pwd-form {
   max-width: 420px;
 }
 
-// 角色权限
+// system.user.profile.permission.currentRoles
 .section-title {
   margin: 0 0 var(--p-space-3);
   font-family: var(--p-font-display);
@@ -758,7 +758,7 @@ function resetPwdForm() {
   gap: 8px;
 }
 
-// 账户安全
+// system.user.profile.tabs.security
 .security-list {
   display: flex;
   flex-direction: column;
@@ -802,7 +802,7 @@ function resetPwdForm() {
   }
 }
 
-// 头像编辑器
+// system.user.profile.dialogs.uploadAvatar
 .avatar-editor {
   display: flex;
   flex-direction: column;

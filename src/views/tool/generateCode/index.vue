@@ -2,18 +2,18 @@
   <div class="app-container">
     <el-card shadow="never" class="search-wrapper">
       <el-form ref="searchFormRef" :inline="true" :model="searchData" @keyup.enter="handleSearch">
-        <el-form-item prop="tableName" label="表名称">
-          <el-input v-model="searchData.tableName" placeholder="请输入表名称" />
+        <el-form-item prop="tableName" :label="$t('tool.generateCode.search.tableName')">
+          <el-input v-model="searchData.tableName" :placeholder="$t('tool.generateCode.search.tableNamePlaceholder')" />
         </el-form-item>
-        <el-form-item prop="tableComment" label="表注释">
-          <el-input v-model="searchData.tableComment" placeholder="请输入表注释" />
+        <el-form-item prop="tableComment" :label="$t('tool.generateCode.search.tableComment')">
+          <el-input v-model="searchData.tableComment" :placeholder="$t('tool.generateCode.search.tableCommentPlaceholder')" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleSearch">
-            <template #icon><Icon icon="lucide:search" /></template> 查询
+            <template #icon><Icon icon="lucide:search" /></template>{{ $t('tool.generateCode.actions.query') }}
           </el-button>
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template> 重置
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('tool.generateCode.actions.reset') }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -22,20 +22,23 @@
       <div class="table-wrapper">
         <el-table ref="tableRef" :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column prop="tableName" label="表名称" align="center" />
-          <el-table-column prop="tableComment" label="表注释" align="center" />
-          <el-table-column prop="createTime" label="创建时间" align="center" />
-          <el-table-column fixed="right" label="操作" width="150" align="center">
+          <el-table-column prop="tableName" :label="$t('tool.generateCode.columns.tableName')" align="center" />
+          <el-table-column prop="tableComment" :label="$t('tool.generateCode.columns.tableComment')" align="center" />
+          <el-table-column prop="createTime" :label="$t('tool.generateCode.columns.createTime')" align="center" />
+          <el-table-column fixed="right" :label="$t('tool.generateCode.columns.action')" width="70" align="center">
             <template #default="scope">
-              <el-button
-                type="success"
-                text
-                bg
-                size="small"
-                @click="handleGenerateCode(scope.row)"
-                v-permission="['system:generate:code']"
-                >生成代码</el-button
-              >
+              <el-tooltip :content="$t('tool.generateCode.actions.generate')" placement="top">
+                <el-button
+                  type="success"
+                  text
+                  bg
+                  size="small"
+                  @click="handleGenerateCode(scope.row)"
+                  v-permission="['system:generate:code']"
+                >
+                  <Icon icon="lucide:code-2" />
+                </el-button>
+              </el-tooltip>
             </template>
           </el-table-column>
         </el-table>
@@ -53,7 +56,7 @@
         />
       </div>
     </el-card>
-    <el-dialog v-model="dialogVisible" title="生成代码" width="80%" @close="handleClose">
+    <el-dialog v-model="dialogVisible" :title="$t('tool.generateCode.dialog.title')" width="80%" @close="handleClose">
       <el-tabs v-model="activeTab" class="code-tabs">
         <el-tab-pane
           v-for="item in previewCodeData"
@@ -74,6 +77,9 @@ import { usePagination } from '@@/composables/usePagination'
 import { PreviewCodeVO, type TableInfoQueryVO, type TableInfoVO } from './apis/type'
 import { generateCodePage, generateCode } from './apis'
 import CodeBlock from './components/CodeBlock.vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n(); const $t = t
 
 defineOptions({
   name: 'generateCode',

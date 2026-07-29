@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-tooltip effect="dark" content="搜索 ⌘K" placement="bottom">
+    <el-tooltip effect="dark" :content="$t('layout.searchMenu.tooltip.open')" placement="bottom">
       <Icon icon="lucide:search" class="action-icon" @click="open" />
     </el-tooltip>
     <Teleport to="body">
@@ -13,7 +13,7 @@
                 ref="inputRef"
                 v-model="query"
                 class="cmd-input"
-                placeholder="搜索页面、操作..."
+                :placeholder="$t('layout.searchMenu.placeholder')"
                 @keydown.esc="close"
                 @keydown.up.prevent="moveUp"
                 @keydown.down.prevent="moveDown"
@@ -47,12 +47,12 @@
             </div>
             <div v-else class="cmd-empty">
               <Icon icon="lucide:search-x" class="cmd-empty-icon" />
-              <p>未找到匹配结果</p>
+              <p>{{ $t("layout.searchMenu.empty.noResults") }}</p>
             </div>
             <div class="cmd-footer">
-              <span><kbd>↑↓</kbd> 导航</span>
-              <span><kbd>↵</kbd> 选择</span>
-              <span><kbd>ESC</kbd> 关闭</span>
+              <span><kbd>↑↓</kbd> {{ $t("layout.searchMenu.footer.navigate") }}</span>
+              <span><kbd>↵</kbd> {{ $t("layout.searchMenu.footer.select") }}</span>
+              <span><kbd>ESC</kbd> {{ $t("layout.searchMenu.footer.close") }}</span>
             </div>
           </div>
         </div>
@@ -62,9 +62,12 @@
 </template>
 
 <script lang="ts" setup>
+import { useI18n } from "vue-i18n"
 import { Icon } from '@iconify/vue'
 import { usePermissionStore } from '@/pinia/stores/permission'
 import type { RouteRecordRaw } from 'vue-router'
+
+const { t } = useI18n(); const $t = t
 
 interface CommandItem {
   title: string
@@ -127,7 +130,7 @@ const filteredItems = computed(() => {
 const groupedItems = computed(() => {
   const items = filteredItems.value
   if (!items.length) return []
-  return [{ label: '页面', items }]
+  return [{ label: $t('layout.searchMenu.groupLabel'), items }]
 })
 
 function isActive(gi: number, ii: number) {
