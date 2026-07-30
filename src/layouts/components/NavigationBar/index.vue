@@ -9,9 +9,6 @@
     <Breadcrumb v-if="!isTop || isMobile" class="breadcrumb" />
     <Sidebar v-if="isTop && !isMobile" class="sidebar" />
     <div class="right-menu">
-      <SearchMenu v-if="showSearchMenu" class="right-menu-item" />
-      <Screenfull v-if="showScreenfull" class="right-menu-item" />
-      <ThemeToggle class="right-menu-item" />
       <!-- 语言切换 -->
       <el-dropdown class="right-menu-item locale-switch" :hide-on-click="false">
         <div class="locale-trigger">
@@ -41,6 +38,9 @@
           </el-dropdown-menu>
         </template>
       </el-dropdown>
+      <SearchMenu v-if="showSearchMenu" class="right-menu-item" />
+      <Screenfull v-if="showScreenfull" class="right-menu-item" />
+      <ThemeToggle class="right-menu-item" />
       <Notify class="right-menu-item" />
       <el-dropdown>
         <div class="right-menu-item user">
