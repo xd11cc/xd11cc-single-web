@@ -6,8 +6,6 @@ import Components from 'unplugin-vue-components/vite'
 import { defineConfig, loadEnv } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import compression from 'vite-plugin-compression'
-import { visualizer } from 'rollup-plugin-visualizer'
-
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const { VITE_PUBLIC_PATH } = loadEnv(mode, process.cwd(), '') as ImportMetaEnv
@@ -113,13 +111,6 @@ export default defineConfig(({ mode }) => {
         algorithm: 'gzip',
         threshold: 1024, // 大于 1KB 才压缩
         ext: '.gz',
-      }),
-      // 打包产物可视化（npx vite build --report）
-      visualizer({
-        filename: 'stats.html',
-        gzipSize: true,
-        brotliSize: true,
-        open: false,
       }),
       // PWA 离线缓存支持（可选，生产构建时自动生成 Service Worker）
       ...(pwaPlugin ? [pwaPlugin] : []),

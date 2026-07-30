@@ -45,7 +45,6 @@
     "@vitejs/plugin-vue": "^6.0.0",
     "fast-glob": "^3.3.3",
     "prettier": "3.5.3",
-    "rollup-plugin-visualizer": "^7.0.1",
     "sass": "^1.89.2",
     "unplugin-auto-import": "^20.3.0",
     "unplugin-vue-components": "^30.0.0",
