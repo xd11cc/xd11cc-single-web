@@ -6,23 +6,23 @@ SaaS 多租户管理平台前端，基于 Vue 3.5 + TypeScript + Element Plus �
 
 ## 技术栈
 
-| 分类 | 技术 | 版本 | 说明 |
-|------|------|------|------|
-| **基础框架** | Vue | 3.5.17 | 渐进式前端框架 |
-| **语言** | TypeScript | 5.x | 类型安全 |
-| **构建工具** | Vite | 7.0.0 | 极速开发体验 |
-| **UI 组件库** | Element Plus | 2.10.2 | 企业级组件库 |
-| **状态管理** | Pinia | 3.0.3 | 响应式状态容器 |
-| **路由** | Vue Router | 4.5.1 | 路由管理 + 动态路由 |
-| **HTTP 请求** | Axios | 1.10.0 | 请求拦截 + 统一错误处理 |
-| **样式方案** | Sass | 1.89.2 | Obsidian 三层设计令牌架构 |
-| **图标** | Iconify | 5.0.1 | Lucide 离线包 |
-| **字体** | Outfit + DM Sans | - | Display / Body 字体 |
-| **图表** | ECharts + Vue-ECharts | 6.1.0 / 8.0.1 | 数据可视化 |
-| **代码高亮** | Highlight.js | 11.11.1 | 代码生成器预览 |
-| **实时通信** | WebSocket | - | 心跳 + 指数退避重连 |
-| **工具库** | lodash-es / mitt / nprogress / screenfull | - | 常用工具集 |
-| **国际化** | vue-i18n | 11.2.8 | 多语言支持 |
+| 分类          | 技术                                      | 版本          | 说明                      |
+| ------------- | ----------------------------------------- | ------------- | ------------------------- |
+| **基础框架**  | Vue                                       | 3.5.17        | 渐进式前端框架            |
+| **语言**      | TypeScript                                | 5.x           | 类型安全                  |
+| **构建工具**  | Vite                                      | 7.0.0         | 极速开发体验              |
+| **UI 组件库** | Element Plus                              | 2.10.2        | 企业级组件库              |
+| **状态管理**  | Pinia                                     | 3.0.3         | 响应式状态容器            |
+| **路由**      | Vue Router                                | 4.5.1         | 路由管理 + 动态路由       |
+| **HTTP 请求** | Axios                                     | 1.10.0        | 请求拦截 + 统一错误处理   |
+| **样式方案**  | Sass                                      | 1.89.2        | Obsidian 三层设计令牌架构 |
+| **图标**      | Iconify                                   | 5.0.1         | Lucide 离线包             |
+| **字体**      | Outfit + DM Sans                          | -             | Display / Body 字体       |
+| **图表**      | ECharts + Vue-ECharts                     | 6.1.0 / 8.0.1 | 数据可视化                |
+| **代码高亮**  | Highlight.js                              | 11.11.1       | 代码生成器预览            |
+| **实时通信**  | WebSocket                                 | -             | 心跳 + 指数退避重连       |
+| **工具库**    | lodash-es / mitt / nprogress / screenfull | -             | 常用工具集                |
+| **国际化**    | vue-i18n                                  | 11.2.8        | 多语言支持                |
 
 ## 功能特性
 
@@ -211,64 +211,64 @@ pnpm format
 
 项目根目录下 `.env.*` 文件管理不同环境的变量：
 
-| 变量 | 说明 |
-|------|------|
-| `VITE_APP_TITLE` | 应用标题，显示在浏览器标签页 |
-| `VITE_BASE_URL` | API 基础地址 |
-| `VITE_PUBLIC_PATH` | 应用公共路径（部署子路径） |
-| `VITE_WS_URL` | WebSocket 服务地址 |
-| `VITE_WS_PATH` | WebSocket 端点路径 |
+| 变量               | 说明                         |
+| ------------------ | ---------------------------- |
+| `VITE_APP_TITLE`   | 应用标题，显示在浏览器标签页 |
+| `VITE_BASE_URL`    | API 基础地址                 |
+| `VITE_PUBLIC_PATH` | 应用公共路径（部署子路径）   |
+| `VITE_WS_URL`      | WebSocket 服务地址           |
+| `VITE_WS_PATH`     | WebSocket 端点路径           |
 
-| 文件 | 环境 | API 地址 | WS 地址 |
-|------|------|------|------|
-| `.env.dev` | 开发 | `http://127.0.0.1:10001` | `ws://127.0.0.1:12001` |
-| `.env.test` | 测试 | 按部署配置 | 按部署配置 |
+| 文件        | 环境 | API 地址                           | WS 地址                          |
+| ----------- | ---- | ---------------------------------- | -------------------------------- |
+| `.env.dev`  | 开发 | `http://127.0.0.1:10001`           | `ws://127.0.0.1:12001`           |
+| `.env.test` | 测试 | 按部署配置                         | 按部署配置                       |
 | `.env.prod` | 生产 | `https://xd11ccc.cloud/single-api` | `wss://xd11ccc.cloud/single-api` |
 
 开发环境下 Vite 配置了代理：`/xd11cc` → `http://localhost:10001`。
 
 ## 接口概览
 
-| 模块 | 接口 | 描述 |
-|------|------|------|
-| **认证** | `POST /login/loginByPassword` | 账号密码登录 |
-| 认证 | `GET /login/getCaptcha` | 获取验证码 |
-| 认证 | `GET /login/getUserInfo` | 获取当前登录用户信息 |
-| 认证 | `GET /login/getRoutes` | 获取当前用户路由菜单 |
-| 认证 | `GET /login/authorize/{source}` | OAuth2 社交登录认证 |
-| 认证 | `GET /login/callback/{source}` | OAuth2 认证回调 |
-| **用户** | `POST /system/user/page` | 用户分页列表 |
-| 用户 | `POST /system/user/add` | 新增用户 |
-| 用户 | `PUT /system/user/edit` | 编辑用户 |
-| 用户 | `DELETE /system/user/remove/{id}` | 删除用户 |
-| 用户 | `PUT /system/user/resetPassword` | 重置密码 |
-| **角色** | `POST /system/role/page` | 角色分页列表 |
-| 角色 | `POST /system/role/assign` | 分配角色权限 |
-| **菜单** | `GET /system/menu/list` | 菜单列表（树形） |
-| **部门** | `GET /system/dept/list` | 部门列表（树形） |
-| 部门 | `POST /system/dept/add` | 新增部门 |
-| **岗位** | `POST /system/post/page` | 岗位分页列表 |
-| **字典** | `POST /system/dict/type/page` | 字典类型分页 |
-| 字典 | `POST /system/dict/data/page` | 字典数据分页 |
-| **配置** | `POST /system/config/page` | 系统配置分页 |
-| **通知** | `POST /system/notice/page` | 通知公告分页 |
-| 通知 | `POST /system/notice/publish/{id}` | 发布通知 |
-| 通知 | `PUT /system/notice/revoke/{id}` | 撤回通知 |
-| **日志** | `POST /system/operateLog/page` | 操作日志分页 |
-| 日志 | `POST /system/loginLog/page` | 登录日志分页 |
-| **在线用户** | `GET /system/onlineUser/list` | 在线用户列表 |
-| 在线用户 | `DELETE /system/onlineUser/forceLogout/{tokenId}` | 强制下线 |
-| **定时任务** | `POST /system/job/page` | 任务分页列表 |
-| 任务 | `POST /system/job/add` | 新增任务 |
-| 任务 | `POST /system/job/run/{id}` | 立即执行 |
-| 任务 | `GET /system/job/log/page` | 执行日志 |
-| **文件** | `POST /file/upload` | 文件上传 |
-| 文件 | `GET /file/download/{id}` | 文件下载 |
-| **代码生成** | `POST /generate/code/preview` | 代码生成预览 |
-| 代码生成 | `POST /generate/code/download` | 代码生成下载 |
-| **聊天** | `GET /system/chat/onlineUsers` | 在线用户列表 |
-| 聊天 | `POST /system/chat/send` | 发送消息 |
-| **授权客户端** | `POST /auth/client/config/list` | 社交登录配置列表 |
+| 模块           | 接口                                              | 描述                 |
+| -------------- | ------------------------------------------------- | -------------------- |
+| **认证**       | `POST /login/loginByPassword`                     | 账号密码登录         |
+| 认证           | `GET /login/getCaptcha`                           | 获取验证码           |
+| 认证           | `GET /login/getUserInfo`                          | 获取当前登录用户信息 |
+| 认证           | `GET /login/getRoutes`                            | 获取当前用户路由菜单 |
+| 认证           | `GET /login/authorize/{source}`                   | OAuth2 社交登录认证  |
+| 认证           | `GET /login/callback/{source}`                    | OAuth2 认证回调      |
+| **用户**       | `POST /system/user/page`                          | 用户分页列表         |
+| 用户           | `POST /system/user/add`                           | 新增用户             |
+| 用户           | `PUT /system/user/edit`                           | 编辑用户             |
+| 用户           | `DELETE /system/user/remove/{id}`                 | 删除用户             |
+| 用户           | `PUT /system/user/resetPassword`                  | 重置密码             |
+| **角色**       | `POST /system/role/page`                          | 角色分页列表         |
+| 角色           | `POST /system/role/assign`                        | 分配角色权限         |
+| **菜单**       | `GET /system/menu/list`                           | 菜单列表（树形）     |
+| **部门**       | `GET /system/dept/list`                           | 部门列表（树形）     |
+| 部门           | `POST /system/dept/add`                           | 新增部门             |
+| **岗位**       | `POST /system/post/page`                          | 岗位分页列表         |
+| **字典**       | `POST /system/dict/type/page`                     | 字典类型分页         |
+| 字典           | `POST /system/dict/data/page`                     | 字典数据分页         |
+| **配置**       | `POST /system/config/page`                        | 系统配置分页         |
+| **通知**       | `POST /system/notice/page`                        | 通知公告分页         |
+| 通知           | `POST /system/notice/publish/{id}`                | 发布通知             |
+| 通知           | `PUT /system/notice/revoke/{id}`                  | 撤回通知             |
+| **日志**       | `POST /system/operateLog/page`                    | 操作日志分页         |
+| 日志           | `POST /system/loginLog/page`                      | 登录日志分页         |
+| **在线用户**   | `GET /system/onlineUser/list`                     | 在线用户列表         |
+| 在线用户       | `DELETE /system/onlineUser/forceLogout/{tokenId}` | 强制下线             |
+| **定时任务**   | `POST /system/job/page`                           | 任务分页列表         |
+| 任务           | `POST /system/job/add`                            | 新增任务             |
+| 任务           | `POST /system/job/run/{id}`                       | 立即执行             |
+| 任务           | `GET /system/job/log/page`                        | 执行日志             |
+| **文件**       | `POST /file/upload`                               | 文件上传             |
+| 文件           | `GET /file/download/{id}`                         | 文件下载             |
+| **代码生成**   | `POST /generate/code/preview`                     | 代码生成预览         |
+| 代码生成       | `POST /generate/code/download`                    | 代码生成下载         |
+| **聊天**       | `GET /system/chat/onlineUsers`                    | 在线用户列表         |
+| 聊天           | `POST /system/chat/send`                          | 发送消息             |
+| **授权客户端** | `POST /auth/client/config/list`                   | 社交登录配置列表     |
 
 ## 架构亮点
 
@@ -285,6 +285,7 @@ pnpm format
 ```
 
 **关键设计**：
+
 - 降级兼容：不支持 View Transition API 的浏览器直接切换主题，无动画但功能正常
 - 三层令牌：`--p-*`（原始） → `--theme-*`（语义） → `--btn-*` / `--card-*`（组件）
 - `applyTheme()` 统一设置 `document.documentElement.dataset.theme`，所有组件令牌通过 CSS 变量级联继承
@@ -315,6 +316,7 @@ const permission: Directive = {
 ```
 
 **实现原理**：
+
 - 指令在 `mounted` 时校验当前用户的 `permissions` 标签数组
 - 支持通配符 `*:*:*` 超级权限
 - 无权限时静默移除 DOM 元素（`el.parentNode?.removeChild(el)`），无视觉闪烁
@@ -334,6 +336,7 @@ const permission: Directive = {
 ```
 
 **关键设计**：
+
 - 静态路由（登录页 / 404 / 重定向）在 `router/index.ts` 中静态定义
 - 动态路由（业务页面）通过后端接口 `/login/getRoutes` 获取，按角色过滤
 - 组件懒加载：`const viewModules = import.meta.glob('@/views/**/*.vue', { eager: false })`
@@ -368,6 +371,7 @@ useWebSocket.connect(token)
 ```
 
 **关键设计**：
+
 - Token 通过 URL Query 传递（`?token=xxx`），服务端在 WebSocket 握手阶段完成认证
 - 页面不可见时暂停心跳，切回后自动检测连接状态并重连
 - `dispatchMessage` 支持 action 精确匹配 + 通配符 `*` 全局监听
@@ -407,6 +411,7 @@ function loadColumns(): TableColumnConfig[] {
 ```
 
 **关键设计**：
+
 - 每个页面独立的 `key` 作为 localStorage 键名前缀，互不干扰
 - 新增列自动追加到末尾，删除列后用户恢复时重新显示
 - 支持拖拽排序（`updateColumnOrder`）+ 显隐切换（`toggleColumnVisible`）+ 宽度记忆
@@ -422,6 +427,7 @@ setWatermark(text) → createWatermarkEl()
 ```
 
 **关键设计**：
+
 - 水印元素 `pointer-events: none` 不干扰用户交互
 - `z-index: 99999` 确保在最上层
 - 主题自适应：`getThemeWatermarkColor()` 根据当前主题返回不同的透明度颜色
@@ -445,6 +451,7 @@ afterEach → setTitle(to.meta.title) → NProgress.done()
 ```
 
 **关键设计**：
+
 - 401 防并发处理：`isHandlingUnauthorized` 标志位，防止多个并发请求同时触发跳转
 - 社交登录回调：URL Query 携带 Token，提取后存入 store 并清除参数避免刷新丢失
 - `replace: true` 重定向不留历史记录，避免用户点击后退重新触发守卫
@@ -484,16 +491,16 @@ afterEach → setTitle(to.meta.title) → NProgress.done()
 
 ## 后端
 
-本项目配合 [XD11CC Single Backend](../backend/xd11cc-single) 使用。后端提供 REST API、WebSocket 服务、OAuth2 授权、动态路由等接口。
+本项目配合 [XD11CC Single Backend](https://github.com/xd11cc/xd11cc-single.git) 使用。后端提供 REST API、WebSocket 服务、OAuth2 授权、动态路由等接口。
 
 ## 浏览器支持
 
-| 浏览器 | 版本 |
-|------|------|
-| Chrome | 最近 2 个版本 |
+| 浏览器  | 版本          |
+| ------- | ------------- |
+| Chrome  | 最近 2 个版本 |
 | Firefox | 最近 2 个版本 |
-| Safari | 最近 2 个版本 |
-| Edge | 最近 2 个版本 |
+| Safari  | 最近 2 个版本 |
+| Edge    | 最近 2 个版本 |
 
 ## 许可证
 

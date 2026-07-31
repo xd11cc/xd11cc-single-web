@@ -6,23 +6,23 @@ A production-ready, multi-tenant SaaS admin frontend framework built with Vue 3.
 
 ## Tech Stack
 
-| Category | Technology | Version | Description |
-|----------|-----------|---------|-------------|
-| **Framework** | Vue | 3.5.17 | Progressive frontend framework |
-| **Language** | TypeScript | 5.x | Type safety |
-| **Build Tool** | Vite | 7.0.0 | Lightning-fast dev experience |
-| **UI Library** | Element Plus | 2.10.2 | Enterprise-grade component library |
-| **State Management** | Pinia | 3.0.3 | Reactive state container |
-| **Router** | Vue Router | 4.5.1 | Routing management + dynamic routes |
-| **HTTP Client** | Axios | 1.10.0 | Request interceptor + unified error handling |
-| **Styling** | Sass | 1.89.2 | Obsidian three-layer design token architecture |
-| **Icons** | Iconify | 5.0.1 | Lucide offline bundle |
-| **Fonts** | Outfit + DM Sans | - | Display / Body fonts |
-| **Charts** | ECharts + Vue-ECharts | 6.1.0 / 8.0.1 | Data visualization |
-| **Code Highlight** | Highlight.js | 11.11.1 | Code generator preview |
-| **Realtime** | WebSocket | - | Heartbeat + exponential backoff reconnection |
-| **Utilities** | lodash-es / mitt / nprogress / screenfull | - | Common utilities |
-| **i18n** | vue-i18n | 11.2.8 | Internationalization |
+| Category             | Technology                                | Version       | Description                                    |
+| -------------------- | ----------------------------------------- | ------------- | ---------------------------------------------- |
+| **Framework**        | Vue                                       | 3.5.17        | Progressive frontend framework                 |
+| **Language**         | TypeScript                                | 5.x           | Type safety                                    |
+| **Build Tool**       | Vite                                      | 7.0.0         | Lightning-fast dev experience                  |
+| **UI Library**       | Element Plus                              | 2.10.2        | Enterprise-grade component library             |
+| **State Management** | Pinia                                     | 3.0.3         | Reactive state container                       |
+| **Router**           | Vue Router                                | 4.5.1         | Routing management + dynamic routes            |
+| **HTTP Client**      | Axios                                     | 1.10.0        | Request interceptor + unified error handling   |
+| **Styling**          | Sass                                      | 1.89.2        | Obsidian three-layer design token architecture |
+| **Icons**            | Iconify                                   | 5.0.1         | Lucide offline bundle                          |
+| **Fonts**            | Outfit + DM Sans                          | -             | Display / Body fonts                           |
+| **Charts**           | ECharts + Vue-ECharts                     | 6.1.0 / 8.0.1 | Data visualization                             |
+| **Code Highlight**   | Highlight.js                              | 11.11.1       | Code generator preview                         |
+| **Realtime**         | WebSocket                                 | -             | Heartbeat + exponential backoff reconnection   |
+| **Utilities**        | lodash-es / mitt / nprogress / screenfull | -             | Common utilities                               |
+| **i18n**             | vue-i18n                                  | 11.2.8        | Internationalization                           |
 
 ## Features
 
@@ -211,64 +211,64 @@ pnpm format
 
 Environment variables are managed via `.env.*` files in the project root:
 
-| Variable | Description |
-|----------|-------------|
-| `VITE_APP_TITLE` | Application title shown in browser tab |
-| `VITE_BASE_URL` | API base URL |
+| Variable           | Description                            |
+| ------------------ | -------------------------------------- |
+| `VITE_APP_TITLE`   | Application title shown in browser tab |
+| `VITE_BASE_URL`    | API base URL                           |
 | `VITE_PUBLIC_PATH` | Public base path (deployment sub-path) |
-| `VITE_WS_URL` | WebSocket server URL |
-| `VITE_WS_PATH` | WebSocket endpoint path |
+| `VITE_WS_URL`      | WebSocket server URL                   |
+| `VITE_WS_PATH`     | WebSocket endpoint path                |
 
-| File | Environment | API URL | WS URL |
-|------|-------------|---------|--------|
-| `.env.dev` | Development | `http://127.0.0.1:10001` | `ws://127.0.0.1:12001` |
-| `.env.test` | Testing | Per deployment | Per deployment |
-| `.env.prod` | Production | `https://xd11ccc.cloud/single-api` | `wss://xd11ccc.cloud/single-api` |
+| File        | Environment | API URL                            | WS URL                           |
+| ----------- | ----------- | ---------------------------------- | -------------------------------- |
+| `.env.dev`  | Development | `http://127.0.0.1:10001`           | `ws://127.0.0.1:12001`           |
+| `.env.test` | Testing     | Per deployment                     | Per deployment                   |
+| `.env.prod` | Production  | `https://xd11ccc.cloud/single-api` | `wss://xd11ccc.cloud/single-api` |
 
 In development mode, Vite proxies `/xd11cc` → `http://localhost:10001`.
 
 ## API Endpoints
 
-| Module | Endpoint | Description |
-|--------|----------|-------------|
-| **Auth** | `POST /login/loginByPassword` | Username/password login |
-| Auth | `GET /login/getCaptcha` | Get CAPTCHA |
-| Auth | `GET /login/getUserInfo` | Get current user info |
-| Auth | `GET /login/getRoutes` | Get current user routes |
-| Auth | `GET /login/authorize/{source}` | OAuth2 social login |
-| Auth | `GET /login/callback/{source}` | OAuth2 callback |
-| **User** | `POST /system/user/page` | User paginated list |
-| User | `POST /system/user/add` | Add user |
-| User | `PUT /system/user/edit` | Edit user |
-| User | `DELETE /system/user/remove/{id}` | Delete user |
-| User | `PUT /system/user/resetPassword` | Reset password |
-| **Role** | `POST /system/role/page` | Role paginated list |
-| Role | `POST /system/role/assign` | Assign role permissions |
-| **Menu** | `GET /system/menu/list` | Menu list (tree) |
-| **Department** | `GET /system/dept/list` | Department list (tree) |
-| Department | `POST /system/dept/add` | Add department |
-| **Post** | `POST /system/post/page` | Post paginated list |
-| **Dictionary** | `POST /system/dict/type/page` | Dict type paginated |
-| Dictionary | `POST /system/dict/data/page` | Dict data paginated |
-| **Config** | `POST /system/config/page` | System config paginated |
-| **Notice** | `POST /system/notice/page` | Notice paginated |
-| Notice | `POST /system/notice/publish/{id}` | Publish notice |
-| Notice | `PUT /system/notice/revoke/{id}` | Revoke notice |
-| **Operate Log** | `POST /system/operateLog/page` | Operate log paginated |
-| **Login Log** | `POST /system/loginLog/page` | Login log paginated |
-| **Online User** | `GET /system/onlineUser/list` | Online user list |
-| Online User | `DELETE /system/onlineUser/forceLogout/{tokenId}` | Force logout |
-| **Job** | `POST /system/job/page` | Job paginated list |
-| Job | `POST /system/job/add` | Add job |
-| Job | `POST /system/job/run/{id}` | Execute immediately |
-| Job | `GET /system/job/log/page` | Execution logs |
-| **File** | `POST /file/upload` | File upload |
-| File | `GET /file/download/{id}` | File download |
-| **Code Gen** | `POST /generate/code/preview` | Code preview |
-| Code Gen | `POST /generate/code/download` | Code download |
-| **Chat** | `GET /system/chat/onlineUsers` | Online user list |
-| Chat | `POST /system/chat/send` | Send message |
-| **Auth Client** | `POST /auth/client/config/list` | Social login config list |
+| Module          | Endpoint                                          | Description              |
+| --------------- | ------------------------------------------------- | ------------------------ |
+| **Auth**        | `POST /login/loginByPassword`                     | Username/password login  |
+| Auth            | `GET /login/getCaptcha`                           | Get CAPTCHA              |
+| Auth            | `GET /login/getUserInfo`                          | Get current user info    |
+| Auth            | `GET /login/getRoutes`                            | Get current user routes  |
+| Auth            | `GET /login/authorize/{source}`                   | OAuth2 social login      |
+| Auth            | `GET /login/callback/{source}`                    | OAuth2 callback          |
+| **User**        | `POST /system/user/page`                          | User paginated list      |
+| User            | `POST /system/user/add`                           | Add user                 |
+| User            | `PUT /system/user/edit`                           | Edit user                |
+| User            | `DELETE /system/user/remove/{id}`                 | Delete user              |
+| User            | `PUT /system/user/resetPassword`                  | Reset password           |
+| **Role**        | `POST /system/role/page`                          | Role paginated list      |
+| Role            | `POST /system/role/assign`                        | Assign role permissions  |
+| **Menu**        | `GET /system/menu/list`                           | Menu list (tree)         |
+| **Department**  | `GET /system/dept/list`                           | Department list (tree)   |
+| Department      | `POST /system/dept/add`                           | Add department           |
+| **Post**        | `POST /system/post/page`                          | Post paginated list      |
+| **Dictionary**  | `POST /system/dict/type/page`                     | Dict type paginated      |
+| Dictionary      | `POST /system/dict/data/page`                     | Dict data paginated      |
+| **Config**      | `POST /system/config/page`                        | System config paginated  |
+| **Notice**      | `POST /system/notice/page`                        | Notice paginated         |
+| Notice          | `POST /system/notice/publish/{id}`                | Publish notice           |
+| Notice          | `PUT /system/notice/revoke/{id}`                  | Revoke notice            |
+| **Operate Log** | `POST /system/operateLog/page`                    | Operate log paginated    |
+| **Login Log**   | `POST /system/loginLog/page`                      | Login log paginated      |
+| **Online User** | `GET /system/onlineUser/list`                     | Online user list         |
+| Online User     | `DELETE /system/onlineUser/forceLogout/{tokenId}` | Force logout             |
+| **Job**         | `POST /system/job/page`                           | Job paginated list       |
+| Job             | `POST /system/job/add`                            | Add job                  |
+| Job             | `POST /system/job/run/{id}`                       | Execute immediately      |
+| Job             | `GET /system/job/log/page`                        | Execution logs           |
+| **File**        | `POST /file/upload`                               | File upload              |
+| File            | `GET /file/download/{id}`                         | File download            |
+| **Code Gen**    | `POST /generate/code/preview`                     | Code preview             |
+| Code Gen        | `POST /generate/code/download`                    | Code download            |
+| **Chat**        | `GET /system/chat/onlineUsers`                    | Online user list         |
+| Chat            | `POST /system/chat/send`                          | Send message             |
+| **Auth Client** | `POST /auth/client/config/list`                   | Social login config list |
 
 ## Architecture Highlights
 
@@ -285,6 +285,7 @@ User clicks theme toggle → toggleTheme(event)
 ```
 
 **Key Design**:
+
 - Graceful degradation: browsers without View Transition API switch theme directly, no animation but fully functional
 - Three-layer tokens: Primitive (`--p-*`) → Semantic (`--theme-*`) → Component (`--btn-*` / `--card-*`)
 - `applyTheme()` centrally sets `document.documentElement.dataset.theme`, all component tokens inherit via CSS variable cascade
@@ -315,6 +316,7 @@ const permission: Directive = {
 ```
 
 **Implementation Principle**:
+
 - Directive validates against current user's `permissions` tag array at `mounted`
 - Supports wildcard `*:*:*` super-admin permission
 - On denial, silently removes DOM element (`el.parentNode?.removeChild(el)`) — no visual flicker
@@ -334,6 +336,7 @@ User login success → Save Token
 ```
 
 **Key Design**:
+
 - Static routes (login / 404 / redirect) defined in `router/index.ts`
 - Dynamic routes (business pages) fetched via `/login/getRoutes`, filtered by role
 - Lazy component loading: `const viewModules = import.meta.glob('@/views/**/*.vue', { eager: false })`
@@ -368,6 +371,7 @@ Manual close → close()
 ```
 
 **Key Design**:
+
 - Token passed via URL Query (`?token=xxx`), server completes auth at WebSocket handshake
 - Heartbeat pauses when page is hidden, auto-detects and reconnects when visible
 - `dispatchMessage` supports action exact match + wildcard `*` global listener
@@ -407,6 +411,7 @@ function loadColumns(): TableColumnConfig[] {
 ```
 
 **Key Design**:
+
 - Each page has a unique `key` as localStorage key prefix, no cross-page interference
 - New columns auto-append; deleted columns reappear on user restore
 - Supports drag reorder (`updateColumnOrder`) + visibility toggle (`toggleColumnVisible`) + width memory
@@ -422,6 +427,7 @@ setWatermark(text) → createWatermarkEl()
 ```
 
 **Key Design**:
+
 - Watermark element `pointer-events: none` — no interference with user interaction
 - `z-index: 99999` ensures topmost layer
 - Theme-adaptive: `getThemeWatermarkColor()` returns different opacity colors per theme
@@ -445,6 +451,7 @@ afterEach → setTitle(to.meta.title) → NProgress.done()
 ```
 
 **Key Design**:
+
 - 401 concurrent-dedup: `isHandlingUnauthorized` flag prevents multiple concurrent requests from triggering duplicate redirects
 - Social login callback: URL Query carries Token, extracted into store and parameter cleared to survive refresh
 - `replace: true` redirect avoids history record, prevents user clicking back from re-triggering guard
@@ -484,16 +491,16 @@ afterEach → setTitle(to.meta.title) → NProgress.done()
 
 ## Backend
 
-This frontend works with [XD11CC Single Backend](../backend/xd11cc-single). The backend provides REST API, WebSocket service, OAuth2 authorization, dynamic routing, and more.
+This frontend works with [XD11CC Single Backend](https://github.com/xd11cc/xd11cc-single.git). The backend provides REST API, WebSocket service, OAuth2 authorization, dynamic routing, and more.
 
 ## Browser Support
 
-| Browser | Version |
-|---------|---------|
-| Chrome | Last 2 versions |
+| Browser | Version         |
+| ------- | --------------- |
+| Chrome  | Last 2 versions |
 | Firefox | Last 2 versions |
-| Safari | Last 2 versions |
-| Edge | Last 2 versions |
+| Safari  | Last 2 versions |
+| Edge    | Last 2 versions |
 
 ## License
 
