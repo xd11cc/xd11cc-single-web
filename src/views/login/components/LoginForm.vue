@@ -60,9 +60,9 @@
           <el-checkbox v-model="loginFormData.rememberMe">{{
             $t('login.formOptions.rememberMe')
           }}</el-checkbox>
-          <el-link type="primary" underline="never" @click="handleForgetPassword">
+          <!-- <el-link type="primary" underline="never" @click="handleForgetPassword">
             {{ $t('login.forgotPassword') }}？
-          </el-link>
+          </el-link> -->
         </div>
       </el-form-item>
       <el-button class="login-btn" size="large" @click.prevent="handleLogin" :loading="loading">
