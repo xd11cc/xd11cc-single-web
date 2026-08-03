@@ -279,15 +279,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12" v-show="formData.menuType != 'M'">
-            <el-form-item prop="permission">
-              <template #label>
-                <span>
-                  <el-tooltip :content="$t('system.menu.tooltip.perms')" placement="top">
-                    <Icon icon="lucide:help-circle" />
-                  </el-tooltip>
-                  {{ $t('system.menu.form.perms') }}
-                </span>
-              </template>
+            <el-form-item prop="permission" :label="$t('system.menu.form.perms')">
               <el-input
                 v-model="formData.permission"
                 :placeholder="$t('system.menu.formPlaceholder.permission')"
@@ -295,15 +287,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12" v-show="formData.menuType == 'C'">
-            <el-form-item prop="query">
-              <template #label>
-                <span>
-                  <el-tooltip :content="$t('system.menu.tooltip.query')" placement="top">
-                    <Icon icon="lucide:help-circle" />
-                  </el-tooltip>
-                  {{ $t('system.menu.form.query') }}
-                </span>
-              </template>
+            <el-form-item prop="query" :label="$t('system.menu.form.query')">
               <el-input
                 v-model="formData.query"
                 :placeholder="$t('system.menu.formPlaceholder.query')"

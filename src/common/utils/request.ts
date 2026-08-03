@@ -66,6 +66,8 @@ service.interceptors.response.use(
     const res = response.data
     if (res.code && res.code !== 200) {
       console.warn('业务错误', res.msg)
+      // 默认使用后端返回的 msg，仅在 msg 为空时回退前端映射
+      const errorMsg = res.msg || getLocalizedErrorMessage(res.code)
       switch (res.code) {
         case 400:
           console.error('请求参数错误')
@@ -73,7 +75,7 @@ service.interceptors.response.use(
         case 401:
           console.error('未授权或者token过期')
           handleUnauthorized()
-          return Promise.reject(new Error(res.msg))
+          return Promise.reject(new Error(errorMsg))
         case 403:
           console.error('未授权')
           break
@@ -85,9 +87,9 @@ service.interceptors.response.use(
           break
       }
       if (res.code !== 401) {
-        ElMessage.error(getLocalizedErrorMessage(res.code))
+        ElMessage.error(errorMsg)
       }
-      return Promise.reject(new Error(res.msg))
+      return Promise.reject(new Error(errorMsg))
     }
     return res
   },
