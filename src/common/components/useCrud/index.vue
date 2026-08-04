@@ -47,15 +47,16 @@
     <el-dialog
       v-model="slotProps.dialogVisible"
       :title="dialogTitle"
-      width="40%"
+      width="min(760px, calc(100vw - 32px))"
       destroy-on-close
       @close="slotProps.handleClose"
     >
       <el-form
         ref="formRef"
+        class="adaptive-form"
         :model="slotProps.formData"
         :rules="formRules"
-        label-width="80px"
+        label-width="168px"
         label-position="left"
       >
         <el-row :gutter="20">

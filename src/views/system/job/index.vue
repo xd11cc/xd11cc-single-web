@@ -253,14 +253,15 @@
           ? $t('system.job.dialogs.addJob')
           : $t('system.job.dialogs.editJob')
       "
-      width="55%"
+      width="min(860px, calc(100vw - 32px))"
       @close="handleClose"
     >
       <el-form
         ref="formRef"
+        class="adaptive-form"
         :model="formData"
         :rules="formRules"
-        label-width="100px"
+        label-width="144px"
         label-position="left"
       >
         <el-row :gutter="20">

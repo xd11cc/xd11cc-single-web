@@ -234,15 +234,16 @@
           ? $t('system.notice.dialogs.add')
           : $t('system.notice.dialogs.edit')
       "
-      width="50%"
+      width="min(800px, calc(100vw - 32px))"
       destroy-on-close
       @close="handleClose"
     >
       <el-form
         ref="formRef"
+        class="adaptive-form"
         :model="formData"
         :rules="formRules"
-        label-width="80px"
+        label-width="144px"
         label-position="left"
       >
         <el-row :gutter="20">

@@ -180,14 +180,15 @@
           ? $t('system.authClient.dialogs.add')
           : $t('system.authClient.dialogs.edit')
       "
-      width="40%"
+      width="min(760px, calc(100vw - 32px))"
       @close="handleClose"
     >
       <el-form
         ref="formRef"
+        class="adaptive-form"
         :model="formData"
         :rules="formRules"
-        label-width="100px"
+        label-width="144px"
         label-position="left"
       >
         <el-row :gutter="20">

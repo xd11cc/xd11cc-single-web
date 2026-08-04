@@ -151,14 +151,15 @@
       :title="
         formData.id === undefined ? $t('system.dept.dialogs.add') : $t('system.dept.dialogs.edit')
       "
-      width="35%"
+      width="min(720px, calc(100vw - 32px))"
       @close="handleClose"
     >
       <el-form
         ref="formRef"
+        class="adaptive-form"
         :model="formData"
         :rules="formRules"
-        label-width="80px"
+        label-width="144px"
         label-position="left"
       >
         <el-form-item prop="parentId" :label="$t('system.dept.form.parentId')">

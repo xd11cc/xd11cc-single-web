@@ -133,3 +133,67 @@ div:focus {
     background-color: var(--theme-accent-glow);
   }
 }
+
+// 新增/编辑表单的国际化自适应布局，避免英文长标签换行或撑开内容区
+.adaptive-form {
+  .el-form-item__label {
+    white-space: nowrap;
+
+    > span {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+  }
+
+  .el-form-item__content {
+    min-width: 0;
+  }
+
+  .el-input,
+  .el-input-number,
+  .el-select,
+  .el-tree-select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .el-radio-group {
+    min-width: 0;
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+
+  .el-form-item__error {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 767px) {
+  .adaptive-form .el-col.el-col-12 {
+    max-width: 100%;
+    flex: 0 0 100%;
+  }
+}
+
+@media (max-width: 575px) {
+  .adaptive-form {
+    .el-form-item {
+      display: block;
+    }
+
+    .el-form-item__label {
+      width: auto !important;
+      height: auto;
+      margin-bottom: 6px;
+      line-height: 20px;
+      justify-content: flex-start;
+    }
+
+    .el-form-item__content {
+      margin-left: 0 !important;
+    }
+  }
+}

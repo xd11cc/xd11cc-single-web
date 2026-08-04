@@ -79,9 +79,10 @@
           <div class="form-card">
             <el-form
               ref="editFormRef"
+              class="adaptive-form"
               :model="editForm"
               :rules="editRules"
-              label-width="80px"
+              label-width="112px"
               label-position="left"
             >
               <el-row :gutter="24">
@@ -138,11 +139,11 @@
           <div class="form-card">
             <el-form
               ref="pwdFormRef"
+              class="pwd-form adaptive-form"
               :model="pwdForm"
               :rules="pwdRules"
-              label-width="100px"
+              label-width="144px"
               label-position="left"
-              class="pwd-form"
             >
               <el-form-item
                 :label="$t('system.user.profile.fields.currentPassword')"

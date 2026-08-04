@@ -184,11 +184,17 @@
       :title="
         formData.id === undefined ? $t('system.menu.dialogs.add') : $t('system.menu.dialogs.edit')
       "
-      width="40%"
+      width="min(760px, calc(100vw - 32px))"
       destroy-on-close
       @close="handleClose"
     >
-      <el-form ref="formRef" :model="formData" :rules="formRules" label-width="100px">
+      <el-form
+        ref="formRef"
+        class="adaptive-form"
+        :model="formData"
+        :rules="formRules"
+        label-width="144px"
+      >
         <el-row :gutter="20">
           <el-col :span="24" v-show="formData.menuType != 'M'">
             <el-form-item prop="parentId" :label="$t('system.menu.form.parentMenu')">
@@ -215,12 +221,12 @@
               </el-radio-group>
             </el-form-item>
           </el-col>
-          <el-col :span="12" v-show="formData.menuType != 'B'">
+          <el-col :xs="24" :sm="12" v-show="formData.menuType != 'B'">
             <el-form-item prop="icon" :label="$t('system.menu.form.icon')">
               <icon-select v-model="formData.icon" />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :xs="24" :sm="12">
             <el-form-item prop="sort" :label="$t('system.menu.form.orderNum')">
               <el-input-number
                 v-model="formData.sort"
@@ -230,7 +236,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :xs="24" :sm="12">
             <el-form-item prop="menuName" :label="$t('system.menu.form.menuName')">
               <el-input
                 v-model="formData.menuName"
@@ -238,7 +244,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="12" v-show="formData.menuType != 'B'">
+          <el-col :xs="24" :sm="12" v-show="formData.menuType != 'B'">
             <el-form-item prop="component">
               <template #label>
                 <span>
@@ -254,7 +260,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="12" v-show="formData.menuType != 'B'">
+          <el-col :xs="24" :sm="12" v-show="formData.menuType != 'B'">
             <el-form-item prop="routeName" :label="$t('system.menu.form.routeName')">
               <el-input
                 v-model="formData.routeName"
@@ -262,7 +268,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="12" v-show="formData.menuType != 'B'">
+          <el-col :xs="24" :sm="12" v-show="formData.menuType != 'B'">
             <el-form-item prop="path">
               <template #label>
                 <span>
@@ -278,7 +284,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="12" v-show="formData.menuType != 'M'">
+          <el-col :xs="24" :sm="12" v-show="formData.menuType != 'M'">
             <el-form-item prop="permission" :label="$t('system.menu.form.perms')">
               <el-input
                 v-model="formData.permission"
@@ -286,7 +292,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="12" v-show="formData.menuType == 'C'">
+          <el-col :xs="24" :sm="12" v-show="formData.menuType == 'C'">
             <el-form-item prop="query" :label="$t('system.menu.form.query')">
               <el-input
                 v-model="formData.query"
@@ -294,7 +300,7 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :xs="24" :sm="12">
             <el-form-item prop="visible" :label="$t('system.menu.form.isVisible')">
               <el-radio-group v-model="formData.visible">
                 <el-radio
@@ -307,7 +313,7 @@
               </el-radio-group>
             </el-form-item>
           </el-col>
-          <el-col :span="12">
+          <el-col :xs="24" :sm="12">
             <el-form-item prop="status" :label="$t('system.menu.form.status')">
               <el-radio-group v-model="formData.status">
                 <el-radio

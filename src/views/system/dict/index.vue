@@ -136,14 +136,15 @@
       :title="
         formData.id === undefined ? $t('system.dict.dialogs.add') : $t('system.dict.dialogs.edit')
       "
-      width="30%"
+      width="min(600px, calc(100vw - 32px))"
       @close="handleClose"
     >
       <el-form
         ref="formRef"
+        class="adaptive-form"
         :model="formData"
         :rules="formRules"
-        label-width="100px"
+        label-width="144px"
         label-position="left"
       >
         <el-form-item prop="dictName" :label="$t('system.dict.search.dictName')">
