@@ -228,10 +228,22 @@
           </el-col>
           <el-col :span="12">
             <el-form-item prop="icon" :label="$t('system.authClient.form.icon')">
-              <el-input
-                v-model="formData.icon"
-                :placeholder="$t('system.authClient.formPlaceholder.icon')"
-              />
+              <el-upload
+                v-model:file-list="iconFileList"
+                list-type="picture"
+                :limit="1"
+                :http-request="handleIconUpload"
+                :on-remove="handleIconRemove"
+                :on-exceed="handleIconExceed"
+              >
+                <el-button type="primary" size="small">
+                  <template #icon><Icon icon="lucide:upload" /></template>
+                  {{ $t('system.authClient.actions.upload') }}
+                </el-button>
+                <template #tip>
+                  <div class="el-upload__tip">{{ $t('system.authClient.upload.tip') }}</div>
+                </template>
+              </el-upload>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -295,6 +307,7 @@ import { Icon } from '@iconify/vue'
 import { useDict } from '@/common/composables/useDict'
 import { useOssUrl } from '@@/composables/useOssUrl'
 import { usePagination } from '@@/composables/usePagination'
+import request from '@@/utils/request'
 import type { FormRules } from 'element-plus'
 import { cloneDeep } from 'lodash-es'
 import {
@@ -320,6 +333,7 @@ const { paginationData, handleCurrentChange, handleSizeChange } = usePagination(
 const loading = ref(false)
 const submitLoading = ref(false)
 const dialogVisible = ref(false)
+const iconFileList = ref<any[]>([])
 
 const searchFormRef = useTemplateRef('searchFormRef')
 const searchData = reactive<AuthClientConfigQueryVO>({})
@@ -355,7 +369,7 @@ const formRules: FormRules = {
   icon: [
     {
       required: true,
-      trigger: 'blur',
+      trigger: 'change',
       message: () => $t('system.authClient.formPlaceholder.icon'),
     },
   ],
@@ -382,15 +396,28 @@ function resetSearch() {
 function handleAdd() {
   dialogVisible.value = true
   formData.value = { status: '0', sort: 0 }
+  iconFileList.value = []
 }
 
 function handleModify(row: AuthClientConfigVO) {
   dialogVisible.value = true
   formData.value = cloneDeep(row)
+  if (row.icon && ossUrl.value) {
+    iconFileList.value = [
+      {
+        uid: String(row.id ?? Date.now()),
+        name: 'icon',
+        url: ossUrl.value + row.icon,
+      },
+    ]
+  } else {
+    iconFileList.value = []
+  }
 }
 
 function handleClose() {
   formData.value = { status: '0', sort: 0 }
+  iconFileList.value = []
   formRef.value?.clearValidate()
 }
 
@@ -454,6 +481,35 @@ function handleBatchRemove() {
   })
 }
 
+function handleIconUpload(options: any) {
+  const { file, onSuccess, onError } = options
+  const uploadFormData = new FormData()
+  uploadFormData.append('file', file)
+  return request({
+    url: '/file/upload',
+    method: 'POST',
+    data: uploadFormData,
+  })
+    .then((res: any) => {
+      if (res.data?.fileId) {
+        formData.value.icon = res.data.fileId
+      }
+      onSuccess(res.data)
+    })
+    .catch(() => {
+      onError()
+      iconFileList.value = []
+    })
+}
+
+function handleIconRemove() {
+  formData.value.icon = ''
+}
+
+function handleIconExceed() {
+  ElMessage.warning('只能上传一个图标文件')
+}
+
 function getTableData() {
   loading.value = true
   const params: AuthClientConfigQueryVO = {
@@ -507,5 +563,12 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
   height: 24px;
   object-fit: contain;
   vertical-align: middle;
+}
+
+.el-upload__tip {
+  font-size: 12px;
+  color: var(--el-color-info);
+  margin-top: 4px;
+  line-height: 1.4;
 }
 </style>

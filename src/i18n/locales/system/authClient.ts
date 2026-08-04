@@ -6,6 +6,7 @@ export const zh = {
     edit: '修改',
     query: '查询',
     reset: '重置',
+    upload: '上传图标',
   },
   columns: {
     action: '操作',
@@ -36,7 +37,7 @@ export const zh = {
   formPlaceholder: {
     clientId: '请输入应用ID',
     clientSecret: '请输入应用密钥',
-    icon: '请输入图标标识',
+    icon: '请上传图标',
     name: '请输入应用名称',
     redirectUri: '请输入重定向地址',
     remark: '请输入内容',
@@ -58,6 +59,9 @@ export const zh = {
     statusPlaceholder: '状态',
   },
   title: '客户端管理',
+  upload: {
+    tip: '仅支持上传 png、jpg、jpeg、ico 格式，且只能上传一个文件',
+  },
 }
 export const en = {
   actions: {
@@ -97,7 +101,7 @@ export const en = {
   formPlaceholder: {
     clientId: 'Please enter app ID',
     clientSecret: 'Please enter app secret',
-    icon: 'Please enter icon identifier',
+    icon: 'Please upload icon',
     name: 'Please enter app name',
     redirectUri: 'Please enter redirect URI',
     remark: 'Please enter content',
@@ -119,4 +123,7 @@ export const en = {
     statusPlaceholder: 'Status',
   },
   title: 'Auth Client',
+  upload: {
+    tip: 'Only png, jpg, jpeg, ico formats supported. Single file only.',
+  },
 }

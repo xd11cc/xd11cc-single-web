@@ -10,9 +10,6 @@ const BASE_URL = import.meta.env.VITE_BASE_URL + import.meta.env.VITE_PUBLIC_PAT
 const service = axios.create({
   baseURL: BASE_URL,
   timeout: 3000,
-  headers: {
-    'Content-Type': 'application/json',
-  },
 })
 
 // 防止 token 过期时多个并发请求同时触发 401 导致重复跳转
