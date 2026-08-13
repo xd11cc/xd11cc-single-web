@@ -85,6 +85,10 @@ const loadView = (view: string): RouteComponent => {
 }
 
 export const usePermissionStore = defineStore('permission', () => {
+  // 动态路由是否已完成注册。不能用用户角色是否存在来代替该状态，
+  // 因为角色信息和后端路由是两个独立的异步请求。
+  const routesReady = ref(false)
+
   // 可访问的路由
   const routes = ref<RouteRecordRaw[]>([])
 
@@ -110,6 +114,10 @@ export const usePermissionStore = defineStore('permission', () => {
     set(dynamicRoutes.value)
   }
 
+  const markRoutesReady = () => {
+    routesReady.value = true
+  }
+
   // 统一设置
   const set = (accessedRoutes: RouteRecordRaw[]) => {
     routes.value = publicRoutes.concat(accessedRoutes)
@@ -119,12 +127,13 @@ export const usePermissionStore = defineStore('permission', () => {
   }
 
   const reset = () => {
+    routesReady.value = false
     routes.value = publicRoutes
     addRoutes.value = []
     dynamicRoutes.value = []
   }
 
-  return { routes, addRoutes, generateRoutes, setAllRoutes, reset }
+  return { routesReady, routes, addRoutes, generateRoutes, setAllRoutes, markRoutesReady, reset }
 })
 
 export function usePermissionStoreOutside() {

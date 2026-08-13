@@ -13,6 +13,42 @@ NProgress.configure({ showSpinner: false })
 const { setTitle } = useTitle()
 
 const LOGIN_PATH = '/login'
+const CHUNK_RELOAD_KEY = 'router-chunk-reload-target'
+
+// 多次导航同时发生时复用同一个初始化任务，避免重复请求、重复注册路由，
+// 以及后发导航在路由尚未注册时被错误放行。
+let permissionInitialization: Promise<void> | null = null
+
+function isChunkLoadError(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error)
+  return /Failed to fetch dynamically imported module|Importing a module script failed|Loading chunk .* failed|ChunkLoadError|Unable to preload CSS/i.test(
+    message,
+  )
+}
+
+function getChunkReloadTarget() {
+  try {
+    return sessionStorage.getItem(CHUNK_RELOAD_KEY)
+  } catch {
+    return null
+  }
+}
+
+function setChunkReloadTarget(target: string) {
+  try {
+    sessionStorage.setItem(CHUNK_RELOAD_KEY, target)
+  } catch {
+    // sessionStorage 不可用时仍保留原始错误日志，避免刷新循环
+  }
+}
+
+function clearChunkReloadTarget() {
+  try {
+    sessionStorage.removeItem(CHUNK_RELOAD_KEY)
+  } catch {
+    // sessionStorage 不可用无需额外处理
+  }
+}
 
 export function registerNavigationGuard(router: Router) {
   // 全局前置守卫
@@ -37,19 +73,29 @@ export function registerNavigationGuard(router: Router) {
     }
     // 如果已经登录，并准备进入 Login 页面，则重定向到主页
     if (to.path === LOGIN_PATH) return '/dashboard'
-    // 如果用户已经获得其权限角色
-    if (userStore.roles.length !== 0) return true
-    // 否则要重新获取权限角色
+    // 用户信息和动态路由必须作为一个完整初始化过程。首次打开页面时，
+    // 即使连续触发多次导航，也只会执行一次并等待路由真正注册完成。
+    if (permissionStore.routesReady) return true
     try {
-      await userStore.getInfo()
-      // 注意：角色必须是一个数组！例如：["admin"] 或 ["developer", "editor"]
-      const roles = userStore.roles
-      // 生成可访问的 Routes
-      routerConfig.dynamic
-        ? await permissionStore.generateRoutes(roles)
-        : permissionStore.setAllRoutes()
-      // 将 “有访问权限的动态路由” 添加到 Router 中
-      permissionStore.addRoutes.forEach((route) => router.addRoute(route))
+      if (!permissionInitialization) {
+        permissionInitialization = (async () => {
+          if (userStore.roles.length === 0) {
+            await userStore.getInfo()
+          }
+          // 注意：角色必须是一个数组！例如：["admin"] 或 ["developer", "editor"]
+          const roles = userStore.roles
+          // 生成可访问的 Routes
+          routerConfig.dynamic
+            ? await permissionStore.generateRoutes(roles)
+            : permissionStore.setAllRoutes()
+          // 将“有访问权限的动态路由”添加到 Router 中
+          permissionStore.addRoutes.forEach((route) => router.addRoute(route))
+          permissionStore.markRoutesReady()
+        })().finally(() => {
+          permissionInitialization = null
+        })
+      }
+      await permissionInitialization
       // 设置 replace: true，因此导航将不会留下历史记录
       return { ...to, replace: true }
     } catch (error) {
@@ -61,9 +107,26 @@ export function registerNavigationGuard(router: Router) {
     }
   })
 
-  router.afterEach((to) => {
-    setRouteChange(to)
-    setTitle(to.meta.title)
+  router.afterEach((to, _from, failure) => {
+    if (!failure) {
+      clearChunkReloadTarget()
+      setRouteChange(to)
+      setTitle(to.meta.title)
+    }
     NProgress.done()
+  })
+
+  // 发布新版本或网络波动可能导致懒加载 chunk 获取失败。首次失败时直接
+  // 打开目标地址以获取最新入口和资源；同一目标只恢复一次，防止刷新循环。
+  router.onError((error, to) => {
+    NProgress.done()
+    console.error('Router navigation failed', error)
+    if (!isChunkLoadError(error)) return
+
+    const target = to.fullPath
+    if (getChunkReloadTarget() === target) return
+
+    setChunkReloadTarget(target)
+    window.location.assign(router.resolve(target).href)
   })
 }
