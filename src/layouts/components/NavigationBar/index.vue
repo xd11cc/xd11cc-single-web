@@ -10,34 +10,22 @@
     <Sidebar v-if="isTop && !isMobile" class="sidebar" />
     <div class="right-menu">
       <!-- 语言切换 -->
-      <el-dropdown class="right-menu-item locale-switch" :hide-on-click="false">
-        <div class="locale-trigger">
-          <Icon icon="lucide:globe" width="18" height="18" />
-          <Transition name="locale" mode="out-in">
-            <span :key="i18nLocale">{{
-              i18nLocale === 'zh-CN'
-                ? t('layout.languageSwitcher.zh')
-                : t('layout.languageSwitcher.en')
-            }}</span>
-          </Transition>
-        </div>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item
-              :disabled="i18nLocale === 'zh-CN'"
-              @click="handleLanguageChange('zh-CN')"
-            >
-              {{ t('layout.languageSwitcher.zh') }}
-            </el-dropdown-item>
-            <el-dropdown-item
-              :disabled="i18nLocale === 'en-US'"
-              @click="handleLanguageChange('en-US')"
-            >
-              {{ t('layout.languageSwitcher.en') }}
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
+      <div class="right-menu-item">
+        <el-tooltip :content="localeSwitchTip" placement="bottom">
+          <button
+            type="button"
+            class="locale-switch"
+            :aria-label="localeSwitchTip"
+            @click="toggleLanguage"
+          >
+            <span class="locale-glyph" aria-hidden="true">
+              <span class="glyph-zh">文</span>
+              <span class="glyph-divider"></span>
+              <span class="glyph-en">A</span>
+            </span>
+          </button>
+        </el-tooltip>
+      </div>
       <SearchMenu v-if="showSearchMenu" class="right-menu-item" />
       <Screenfull v-if="showScreenfull" class="right-menu-item" />
       <ThemeToggle class="right-menu-item" />
@@ -102,8 +90,14 @@ const { showScreenfull, showSearchMenu, showSettings } = storeToRefs(settingsSto
 
 const { locale: i18nLocale, t } = useI18n()
 
-function handleLanguageChange(locale: 'zh-CN' | 'en-US') {
-  setLocale(locale)
+const localeSwitchTip = computed(() =>
+  i18nLocale.value === 'zh-CN'
+    ? t('layout.languageSwitcher.switchToEn')
+    : t('layout.languageSwitcher.switchToZh'),
+)
+
+function toggleLanguage() {
+  setLocale(i18nLocale.value === 'zh-CN' ? 'en-US' : 'zh-CN')
 }
 
 // 切换侧边栏
@@ -201,27 +195,61 @@ function logout() {
       }
     }
     .locale-switch {
-      width: auto !important;
-      min-width: 48px;
-      .locale-trigger {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        font-size: var(--p-text-sm);
-        font-weight: var(--p-weight-medium);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+      padding: 0;
+      color: var(--theme-text-secondary);
+      border: 0;
+      background: transparent;
+
+      .locale-glyph {
+        position: relative;
+        display: block;
+        width: 23px;
+        height: 21px;
+        transition:
+          color var(--p-duration-fast),
+          transform var(--p-duration-normal) var(--p-ease-out);
       }
-    }
-    .locale-enter-active,
-    .locale-leave-active {
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .locale-enter-from {
-      opacity: 0;
-      transform: translateY(-4px);
-    }
-    .locale-leave-to {
-      opacity: 0;
-      transform: translateY(4px);
+
+      .glyph-zh,
+      .glyph-en {
+        position: absolute;
+        font-family: 'DM Sans', 'PingFang SC', sans-serif;
+        font-weight: 700;
+        line-height: 1;
+      }
+
+      .glyph-zh {
+        top: 1px;
+        left: 0;
+        font-size: 15px;
+      }
+
+      .glyph-en {
+        right: 0;
+        bottom: 1px;
+        font-size: 11px;
+      }
+
+      .glyph-divider {
+        position: absolute;
+        top: 10px;
+        left: 9px;
+        width: 9px;
+        height: 1px;
+        background: currentColor;
+        opacity: 0.55;
+        transform: rotate(-52deg);
+      }
+
+      &:hover .locale-glyph {
+        color: var(--theme-accent);
+        transform: translateY(-1px) rotate(-3deg);
+      }
     }
   }
 }

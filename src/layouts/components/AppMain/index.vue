@@ -1,6 +1,6 @@
 <template>
   <section class="app-main">
-    <div class="app-scrollbar">
+    <div class="app-scrollbar" :class="{ 'is-full-height-page': route.meta.fullHeight }">
       <router-view v-slot="{ Component, route }">
         <transition name="page-slide" mode="out-in">
           <keep-alive :include="tagsViewStore.cachedViews">
@@ -8,7 +8,7 @@
           </keep-alive>
         </transition>
       </router-view>
-      <Footer v-if="settingsStore.showFooter" />
+      <Footer v-if="settingsStore.showFooter && !route.meta.fullHeight" />
     </div>
     <el-backtop :target="settingsStore.fixedHeader ? '.app-scrollbar' : undefined" />
   </section>
@@ -22,6 +22,8 @@ import Footer from '../Footer/index.vue'
 const tagsViewStore = useTagsViewStore()
 
 const settingsStore = useSettingsStore()
+
+const route = useRoute()
 </script>
 
 <style lang="scss" scoped>
@@ -40,6 +42,15 @@ const settingsStore = useSettingsStore()
   flex-direction: column;
   .app-container-grow {
     flex-grow: 1;
+  }
+
+  &.is-full-height-page {
+    min-height: 0;
+    overflow: hidden;
+
+    .app-container-grow {
+      min-height: 0;
+    }
   }
 }
 

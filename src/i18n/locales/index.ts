@@ -4,6 +4,7 @@ import { zh as ChatContactlistZh, en as ChatContactlistEn } from './chat/contact
 import { zh as ChatMessageareaZh, en as ChatMessageareaEn } from './chat/messageArea'
 import { zh as ChatTitleZh, en as ChatTitleEn } from './chat/title'
 import { zh as CommonZh, en as CommonEn } from './common'
+import { zh as BpmModelerZh, en as BpmModelerEn } from './bpm/modeler'
 import { zh as DashboardActivityZh, en as DashboardActivityEn } from './dashboard/activity'
 import { zh as DashboardChartsZh, en as DashboardChartsEn } from './dashboard/charts'
 import { zh as DashboardGreetingZh, en as DashboardGreetingEn } from './dashboard/greeting'
@@ -54,6 +55,7 @@ export const zhCN = {
     title: ChatTitleZh,
   },
   common: CommonZh,
+  bpm: { modeler: BpmModelerZh },
   dashboard: {
     activity: DashboardActivityZh,
     charts: DashboardChartsZh,
@@ -125,6 +127,7 @@ export const enUS = {
     title: ChatTitleEn,
   },
   common: CommonEn,
+  bpm: { modeler: BpmModelerEn },
   dashboard: {
     activity: DashboardActivityEn,
     charts: DashboardChartsEn,

@@ -85,6 +85,9 @@
       v-model="dialogVisible"
       :title="$t('tool.generateCode.dialog.title')"
       width="80%"
+      class="generate-code-dialog"
+      append-to-body
+      destroy-on-close
       @close="handleClose"
     >
       <el-tabs v-model="activeTab" class="code-tabs">
@@ -94,7 +97,7 @@
           :label="item.fileName"
           :name="item.fileName"
         >
-          <CodeBlock :code="item.content" language="java" />
+          <CodeBlock :code="item.content" language="java" max-height="calc(90vh - 190px)" />
         </el-tab-pane>
       </el-tabs>
     </el-dialog>
@@ -177,4 +180,48 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
 })
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.code-tabs {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.code-tabs :deep(.el-tabs__header) {
+  flex: 0 0 auto;
+}
+
+.code-tabs :deep(.el-tabs__content),
+.code-tabs :deep(.el-tab-pane) {
+  min-height: 0;
+}
+
+</style>
+
+<style lang="scss">
+.generate-code-dialog {
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+  margin-top: 5vh;
+  margin-bottom: 0;
+  overflow: hidden;
+
+  .el-dialog__header {
+    flex: 0 0 auto;
+  }
+
+  .el-dialog__body {
+    min-height: 0;
+    flex: 1;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 768px) {
+  .generate-code-dialog {
+    width: 94% !important;
+  }
+}
+</style>
