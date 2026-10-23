@@ -5,6 +5,7 @@ export const zh = {
   },
   profile: '个人中心',
 }
+
 export const en = {
   logout: 'Logout',
   messages: {

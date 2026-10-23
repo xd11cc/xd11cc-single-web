@@ -6,6 +6,7 @@ export const zh = {
   noon: '中午好',
   userPrefix: '，',
 }
+
 export const en = {
   goodAfternoon: 'Good afternoon',
   goodEvening: 'Good evening',

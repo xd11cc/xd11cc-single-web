@@ -1,14 +1,10 @@
 export const zh = {
   actions: {
-    batchDelete: '批量删除',
     clean: '清空',
-    delete: '删除',
     detail: '详情',
     query: '查询',
-    reset: '重置',
   },
   columns: {
-    action: '操作',
     costTime: '耗时',
     createTime: '操作时间',
     module: '操作模块',
@@ -46,8 +42,6 @@ export const zh = {
     cleanSuccess: '清空成功',
     deleteConfirm: '确认删除该条操作日志？',
     deleteSuccess: '删除成功',
-    formError: '表单校验不通过',
-    operationSuccess: '操作成功',
     selectFirst: '请选择要删除的数据',
   },
   search: {
@@ -55,19 +49,15 @@ export const zh = {
     operateType: '操作类型',
     status: '状态',
   },
-  title: '操作日志',
 }
+
 export const en = {
   actions: {
-    batchDelete: 'Batch Delete',
     clean: 'Clear',
-    delete: 'Delete',
     detail: 'Detail',
     query: 'Query',
-    reset: 'Reset',
   },
   columns: {
-    action: 'Action',
     costTime: 'Duration',
     createTime: 'Operated At',
     module: 'Module',
@@ -105,8 +95,6 @@ export const en = {
     cleanSuccess: 'Cleared successfully',
     deleteConfirm: 'Are you sure to delete this operation log?',
     deleteSuccess: 'Deleted successfully',
-    formError: 'Form validation failed',
-    operationSuccess: 'Operation succeeded',
     selectFirst: 'Please select data to delete first',
   },
   search: {
@@ -114,5 +102,4 @@ export const en = {
     operateType: 'Operation Type',
     status: 'Status',
   },
-  title: 'Operation Logs',
 }

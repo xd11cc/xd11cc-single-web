@@ -608,8 +608,8 @@ const pwdRules: FormRules = {
       trigger: 'blur',
     },
     {
-      min: 6,
-      max: 20,
+      min: 8,
+      max: 16,
       message: () => $t('system.user.profile.validation.passwordLength'),
       trigger: 'blur',
     },

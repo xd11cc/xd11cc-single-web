@@ -6,8 +6,6 @@ export const zh = {
   emailCode: '请输入验证码',
   emailInvalid: '请输入正确的邮箱地址',
   newPassword: '请输入新密码',
-  passwordLength: '长度在 8 到 16 个字符',
-  passwordMismatch: '两次输入密码不一致',
   phone: '请输入手机号',
   phoneCode: '请输入验证码',
   phoneInvalid: '请输入正确的手机号',
@@ -20,6 +18,7 @@ export const zh = {
   tabPhone: '手机找回',
   title: '找回密码',
 }
+
 export const en = {
   backLink: 'Back to Login',
   backToLogin: 'Remembered your password?',
@@ -28,8 +27,6 @@ export const en = {
   emailCode: 'Please enter verification code',
   emailInvalid: 'Please enter a valid email address',
   newPassword: 'New password',
-  passwordLength: 'Length must be 8 to 16 characters',
-  passwordMismatch: 'Passwords do not match',
   phone: 'Please enter phone number',
   phoneCode: 'Please enter verification code',
   phoneInvalid: 'Please enter a valid phone number',

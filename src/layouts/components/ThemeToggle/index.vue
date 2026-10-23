@@ -1,12 +1,7 @@
 <template>
   <div class="theme-toggle-shell">
     <el-tooltip :content="themeToggleTip" placement="bottom">
-      <button
-        type="button"
-        class="theme-toggle"
-        :aria-label="themeToggleTip"
-        @click="handleToggle"
-      >
+      <button type="button" class="theme-toggle" :aria-label="themeToggleTip" @click="handleToggle">
         <Icon :icon="isDark ? 'lucide:sun' : 'lucide:moon'" class="toggle-icon" />
       </button>
     </el-tooltip>

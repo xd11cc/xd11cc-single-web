@@ -6,16 +6,12 @@ export const zh = {
     delete: '删除部门',
     edit: '修改部门',
     expandAll: '展开全部',
-    query: '查询',
   },
   columns: {
-    action: '操作',
     createTime: '创建时间',
     deptCode: '部门编码',
-    deptName: '部门名称',
     remark: '备注',
     sort: '排序',
-    status: '状态',
   },
   dialogs: {
     add: '新增部门',
@@ -24,7 +20,6 @@ export const zh = {
   form: {
     deptCode: '部门编码',
     deptName: '部门名称',
-    leader: '负责人',
     leaderId: '负责人',
     orderNum: '显示排序',
     parentId: '上级部门',
@@ -35,7 +30,6 @@ export const zh = {
     deptCode: '请输入部门编码',
     deptName: '请输入部门名称',
     leaderId: '请选择负责人',
-    orderNum: '请输入显示排序',
     parentId: '不选则为顶级部门',
     remark: '请输入内容',
     status: '请选择状态',
@@ -49,8 +43,8 @@ export const zh = {
     deptName: '部门名称',
     status: '状态',
   },
-  title: '部门管理',
 }
+
 export const en = {
   actions: {
     add: 'Add Department',
@@ -59,16 +53,12 @@ export const en = {
     delete: 'Delete Department',
     edit: 'Edit Department',
     expandAll: 'Expand All',
-    query: 'Search',
   },
   columns: {
-    action: 'Action',
     createTime: 'Created',
     deptCode: 'Department Code',
-    deptName: 'Department Name',
     remark: 'Remark',
     sort: 'Sort',
-    status: 'Status',
   },
   dialogs: {
     add: 'Add Department',
@@ -77,7 +67,6 @@ export const en = {
   form: {
     deptCode: 'Department Code',
     deptName: 'Department Name',
-    leader: 'Leader',
     leaderId: 'Leader',
     orderNum: 'Display Sort',
     parentId: 'Parent Department',
@@ -88,7 +77,6 @@ export const en = {
     deptCode: 'Please enter department code',
     deptName: 'Please enter department name',
     leaderId: 'Please select leader',
-    orderNum: 'Please enter display sort',
     parentId: 'Leave empty for top-level',
     remark: 'Please enter content',
     status: 'Please select status',
@@ -102,5 +90,4 @@ export const en = {
     deptName: 'Department Name',
     status: 'Status',
   },
-  title: 'Department Management',
 }

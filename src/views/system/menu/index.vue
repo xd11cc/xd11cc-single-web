@@ -35,8 +35,14 @@
         </el-form-item>
       </el-form>
     </el-card>
-    <el-card v-loading="loading" shadow="never">
-      <div class="toolbar-wrapper">
+    <TreeTableView
+      ref="treeTableRef"
+      :data="tableData"
+      :loading="loading"
+      row-key="id"
+      @row-click="handleRowClick"
+    >
+      <template #toolbar>
         <div>
           <el-button type="primary" @click="handleAdd" v-permission="['system:menu:add']">
             <template #icon><Icon icon="lucide:plus-circle" /></template
@@ -51,134 +57,113 @@
             }}</el-button
           >
         </div>
-      </div>
-      <div class="table-wrapper">
-        <el-table
-          ref="tableRef"
-          :data="tableData"
-          :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-          row-key="id"
-          @row-click="handleRowClick"
-        >
-          <el-table-column
-            prop="menuName"
-            :label="$t('system.menu.columns.menuName')"
-            min-width="180"
-          />
-          <el-table-column
-            prop="icon"
-            :label="$t('system.menu.columns.icon')"
-            align="center"
-            width="60"
+      </template>
+      <el-table-column
+        prop="menuName"
+        :label="$t('system.menu.columns.menuName')"
+        min-width="180"
+      />
+      <el-table-column
+        prop="icon"
+        :label="$t('system.menu.columns.icon')"
+        align="center"
+        width="60"
+      >
+        <template #default="scope">
+          <MenuIcon v-if="scope.row.icon" :name="scope.row.icon" class="el-icon" />
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="menuType"
+        :label="$t('system.menu.columns.type')"
+        align="center"
+        width="80"
+      >
+        <template #default="scope">
+          <el-tag
+            :type="menuTypeTag(scope.row.menuType)"
+            effect="plain"
+            size="small"
+            disable-transitions
           >
-            <template #default="scope">
-              <MenuIcon v-if="scope.row.icon" :name="scope.row.icon" class="el-icon" />
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="menuType"
-            :label="$t('system.menu.columns.type')"
-            align="center"
-            width="80"
+            {{ getDictItem('system_menu_type', scope.row.menuType)?.value || scope.row.menuType }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="sort"
+        :label="$t('system.menu.columns.orderNum')"
+        align="center"
+        width="70"
+      />
+      <el-table-column prop="permission" :label="$t('system.menu.columns.perms')" align="center" />
+      <el-table-column
+        prop="component"
+        :label="$t('system.menu.columns.component')"
+        align="center"
+      />
+      <el-table-column prop="status" :label="$t('system.menu.columns.status')" align="center">
+        <template #default="scope">
+          <el-tag
+            :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
+            effect="plain"
+            disable-transitions
           >
-            <template #default="scope">
-              <el-tag
-                :type="menuTypeTag(scope.row.menuType)"
-                effect="plain"
-                size="small"
-                disable-transitions
-              >
-                {{
-                  getDictItem('system_menu_type', scope.row.menuType)?.value || scope.row.menuType
-                }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="sort"
-            :label="$t('system.menu.columns.orderNum')"
-            align="center"
-            width="70"
-          />
-          <el-table-column
-            prop="permission"
-            :label="$t('system.menu.columns.perms')"
-            align="center"
-          />
-          <el-table-column
-            prop="component"
-            :label="$t('system.menu.columns.component')"
-            align="center"
-          />
-          <el-table-column prop="status" :label="$t('system.menu.columns.status')" align="center">
-            <template #default="scope">
-              <el-tag
-                :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
-                effect="plain"
-                disable-transitions
-              >
-                {{ getDictItem('system_status', scope.row.status)?.value }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="createTime"
-            :label="$t('system.menu.columns.createTime')"
-            align="center"
-            min-width="160"
-          />
-          <el-table-column
-            fixed="right"
-            :label="$t('system.menu.columns.action')"
-            width="120"
-            align="center"
+            {{ getDictItem('system_status', scope.row.status)?.value }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="createTime"
+        :label="$t('system.menu.columns.createTime')"
+        align="center"
+        min-width="160"
+      />
+      <el-table-column fixed="right" :label="$t('common.action')" width="120" align="center">
+        <template #default="scope">
+          <el-tooltip
+            v-if="scope.row.menuType !== 'B'"
+            :content="$t('system.menu.actions.addChild')"
+            placement="top"
           >
-            <template #default="scope">
-              <el-tooltip
-                v-if="scope.row.menuType !== 'B'"
-                :content="$t('system.menu.actions.addChild')"
-                placement="top"
-              >
-                <el-button
-                  type="success"
-                  text
-                  bg
-                  size="small"
-                  @click="handleAddChild(scope.row)"
-                  v-permission="['system:menu:add']"
-                >
-                  <Icon icon="lucide:plus" />
-                </el-button>
-              </el-tooltip>
-              <el-tooltip :content="$t('system.menu.actions.edit')" placement="top">
-                <el-button
-                  type="warning"
-                  text
-                  bg
-                  size="small"
-                  @click="handleModify(scope.row)"
-                  v-permission="['system:menu:update']"
-                >
-                  <Icon icon="lucide:pencil" />
-                </el-button>
-              </el-tooltip>
-              <el-tooltip :content="$t('system.menu.actions.delete')" placement="top">
-                <el-button
-                  type="danger"
-                  text
-                  bg
-                  size="small"
-                  @click="handleRemove(scope.row)"
-                  v-permission="['system:menu:delete']"
-                >
-                  <Icon icon="lucide:trash-2" />
-                </el-button>
-              </el-tooltip>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
-    </el-card>
+            <el-button
+              type="success"
+              text
+              bg
+              size="small"
+              @click="handleAddChild(scope.row)"
+              v-permission="['system:menu:add']"
+            >
+              <Icon icon="lucide:plus" />
+            </el-button>
+          </el-tooltip>
+          <el-tooltip :content="$t('system.menu.actions.edit')" placement="top">
+            <el-button
+              type="warning"
+              text
+              bg
+              size="small"
+              @click="handleModify(scope.row)"
+              v-permission="['system:menu:update']"
+            >
+              <Icon icon="lucide:pencil" />
+            </el-button>
+          </el-tooltip>
+          <el-tooltip :content="$t('system.menu.actions.delete')" placement="top">
+            <el-button
+              type="danger"
+              text
+              bg
+              size="small"
+              @click="handleRemove(scope.row)"
+              v-permission="['system:menu:delete']"
+            >
+              <Icon icon="lucide:trash-2" />
+            </el-button>
+          </el-tooltip>
+        </template>
+      </el-table-column>
+    </TreeTableView>
     <el-dialog
       v-model="dialogVisible"
       :title="
@@ -348,6 +333,7 @@ import type { SystemMenuVO, SystemMenuQueryVO, SystemMenuTreeVO } from './apis/t
 import { cloneDeep } from 'lodash-es'
 import IconSelect from '@@/components/IconSelect/index.vue'
 import MenuIcon from '@@/components/MenuIcon/index.vue'
+import TreeTableView from '@/common/components/TreeTable/index.vue'
 
 const { t } = useI18n()
 const $t = t
@@ -360,7 +346,7 @@ const { loading, getDictList, getDictItem } = useDict([
 
 const searchFormRef = useTemplateRef('searchFormRef')
 
-const tableRef = useTemplateRef('tableRef')
+const treeTableRef = useTemplateRef<InstanceType<typeof TreeTableView>>('treeTableRef')
 
 const formRef = useTemplateRef('formRef')
 
@@ -424,7 +410,7 @@ function handleAdd() {
 function handleRowClick(row: SystemMenuTreeVO, _column: any, event: Event) {
   if ((event.target as HTMLElement).closest('.el-button')) return
   if (row.children?.length) {
-    tableRef.value?.toggleRowExpansion(row)
+    treeTableRef.value?.toggleRowExpansion(row)
   }
 }
 
@@ -500,7 +486,7 @@ const isExpanded = ref(false)
 
 function toggleExpand() {
   isExpanded.value = !isExpanded.value
-  const table = tableRef.value
+  const table = treeTableRef.value
   if (!table) return
   const toggleRows = (rows: SystemMenuTreeVO[]) => {
     rows.forEach((row) => {
@@ -531,15 +517,5 @@ function handleAddChild(row: SystemMenuVO) {
   :deep(.el-card__body) {
     padding-bottom: 2px;
   }
-}
-
-.toolbar-wrapper {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.table-wrapper {
-  margin-bottom: 20px;
 }
 </style>

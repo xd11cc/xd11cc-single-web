@@ -20,8 +20,7 @@
             >{{ $t('tool.generateCode.actions.query') }}
           </el-button>
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template
-            >{{ $t('tool.generateCode.actions.reset') }}
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('common.reset') }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -45,12 +44,7 @@
             :label="$t('tool.generateCode.columns.createTime')"
             align="center"
           />
-          <el-table-column
-            fixed="right"
-            :label="$t('tool.generateCode.columns.action')"
-            width="70"
-            align="center"
-          >
+          <el-table-column fixed="right" :label="$t('common.action')" width="70" align="center">
             <template #default="scope">
               <el-tooltip :content="$t('tool.generateCode.actions.generate')" placement="top">
                 <el-button
@@ -196,7 +190,6 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
 .code-tabs :deep(.el-tab-pane) {
   min-height: 0;
 }
-
 </style>
 
 <style lang="scss">

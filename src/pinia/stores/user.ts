@@ -8,6 +8,7 @@ import { useTagsViewStore } from './tags-view'
 import { pinia } from '..'
 import type { RouteRecordRaw } from 'vue-router'
 import { usePermissionStore } from './permission'
+import { resetUnauthorizedHandling } from '@/common/utils/request'
 
 export const useUserStore = defineStore('user', () => {
   const token = ref<string>(getToken() || '')
@@ -41,6 +42,7 @@ export const useUserStore = defineStore('user', () => {
   const userLogin = async (loginForm: LoginForm) => {
     const { data } = await loginByPassword(loginForm)
     setToken(data)
+    resetUnauthorizedHandling()
   }
 
   // 获取用户详情
@@ -66,27 +68,39 @@ export const useUserStore = defineStore('user', () => {
   // 登出
   const logout = async () => {
     await _logout()
-    removeToken()
-    token.value = ''
-    roles.value = []
-    permissions.value = []
-    resetRouter()
-    const permissionStore = usePermissionStore()
-    permissionStore.reset()
-    resetTagsView()
+    resetToken()
   }
 
-  // 重置 Token
+  // 重置 Token 及其关联的用户、权限、动态路由和页面缓存状态。
+  // Token 失效后必须完整清理，否则重新登录时会误判动态路由仍然可用。
   const resetToken = () => {
     removeToken()
     token.value = ''
     roles.value = []
+    permissions.value = []
+    routes.value = []
+    userId.value = 0
+    username.value = ''
+    nickname.value = ''
+    sex.value = ''
+    phone.value = ''
+    email.value = ''
+    headUrl.value = ''
+    deptId.value = 0
+    deptName.value = ''
+    postId.value = 0
+    postName.value = ''
+    roleNames.value = []
+    resetRouter()
+    const permissionStore = usePermissionStore()
+    permissionStore.reset()
+    resetTagsView(true)
   }
 
   // 重置 Visited Views 和 Cache Views
-  const resetTagsView = () => {
+  const resetTagsView = (force = false) => {
     const settingsStore = useSettingsStore()
-    if (!settingsStore.cacheTagsView) {
+    if (force || !settingsStore.cacheTagsView) {
       const tagsViewStore = useTagsViewStore()
       tagsViewStore.delAllVisitedViews()
       tagsViewStore.delAllCachedViews()

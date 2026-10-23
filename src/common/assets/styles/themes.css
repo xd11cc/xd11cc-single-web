@@ -180,7 +180,7 @@
   --el-disabled-border-color: var(--p-gray-200);
 
   /* --- Layout Override --- */
-  --v3-sidebar-menu-bg-color: var(--p-white);
+  --v3-sidebar-menu-bg-color: var(--p-gray-100);
   --v3-sidebar-menu-text-color: var(--p-gray-600);
   --v3-sidebar-menu-active-text-color: var(--p-emerald-600);
   --v3-sidebar-menu-hover-bg-color: rgba(5, 150, 105, 0.05);
@@ -274,7 +274,7 @@
   --el-disabled-border-color: rgba(255, 255, 255, 0.05);
 
   /* --- Layout Override --- */
-  --v3-sidebar-menu-bg-color: var(--p-gray-950);
+  --v3-sidebar-menu-bg-color: var(--p-gray-850);
   --v3-sidebar-menu-text-color: var(--p-gray-400);
   --v3-sidebar-menu-active-text-color: #ececec;
   --v3-sidebar-menu-hover-bg-color: rgba(16, 185, 129, 0.08);

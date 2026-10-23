@@ -9,6 +9,7 @@ export const zh = {
   userRegistered: '用户 {name} 完成了注册',
   viewAll: '查看全部',
 }
+
 export const en = {
   backupCompleted: 'Database backup completed',
   configUpdated: 'System configuration updated',

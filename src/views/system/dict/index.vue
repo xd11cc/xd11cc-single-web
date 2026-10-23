@@ -21,7 +21,7 @@
           >
           <el-button @click="resetSearch">
             <template #icon><Icon icon="lucide:rotate-ccw" /></template
-            >{{ $t('system.dict.actions.reset') }}</el-button
+            >{{ $t('common.reset') }}</el-button
           >
         </el-form-item>
       </el-form>
@@ -35,7 +35,7 @@
             v-permission="['system:dictType:add']"
           >
             <template #icon><Icon icon="lucide:plus-circle" /></template>
-            {{ $t('system.dict.actions.add') }}
+            {{ $t('common.add') }}
           </el-button>
           <el-button
             type="danger"
@@ -43,7 +43,7 @@
             v-permission="['system:dictType:delete']"
           >
             <template #icon><Icon icon="lucide:trash-2" /></template>
-            {{ $t('system.dict.actions.batchDelete') }}
+            {{ $t('common.batchDelete') }}
           </el-button>
         </div>
         <div>
@@ -82,14 +82,9 @@
             :label="$t('system.dict.columns.createTime')"
             align="center"
           />
-          <el-table-column
-            fixed="right"
-            :label="$t('system.dict.columns.action')"
-            width="90"
-            align="center"
-          >
+          <el-table-column fixed="right" :label="$t('common.action')" width="90" align="center">
             <template #default="scope">
-              <el-tooltip :content="$t('system.dict.actions.edit')" placement="top">
+              <el-tooltip :content="$t('common.edit')" placement="top">
                 <el-button
                   type="warning"
                   text
@@ -101,7 +96,7 @@
                   <Icon icon="lucide:pencil" />
                 </el-button>
               </el-tooltip>
-              <el-tooltip :content="$t('system.dict.actions.delete')" placement="top">
+              <el-tooltip :content="$t('common.delete')" placement="top">
                 <el-button
                   type="danger"
                   text

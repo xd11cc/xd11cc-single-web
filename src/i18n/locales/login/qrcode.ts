@@ -3,6 +3,7 @@ export const zh = {
   tipSub: '扫描后在手机端确认登录',
   tipText: '请使用手机扫描二维码',
 }
+
 export const en = {
   refresh: 'Tap to refresh',
   tipSub: 'Confirm login on your phone after scanning',

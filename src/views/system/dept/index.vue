@@ -34,8 +34,15 @@
       </el-form>
     </el-card>
 
-    <el-card v-loading="loading" shadow="never">
-      <div class="toolbar-wrapper">
+    <TreeTableView
+      ref="treeTableRef"
+      :data="tableData"
+      :loading="loading"
+      row-key="id"
+      :default-expand-all="true"
+      @row-click="handleRowClick"
+    >
+      <template #toolbar>
         <div>
           <el-button type="primary" @click="handleAdd" v-permission="['system:dept:add']">
             <template #icon><Icon icon="lucide:plus-circle" /></template>
@@ -50,100 +57,81 @@
             }}
           </el-button>
         </div>
-      </div>
+      </template>
 
-      <div class="table-wrapper">
-        <el-table
-          ref="tableRef"
-          :data="tableData"
-          :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-          row-key="id"
-          default-expand-all
-          @row-click="handleRowClick"
-        >
-          <el-table-column
-            prop="deptName"
-            :label="$t('system.dept.search.deptName')"
-            min-width="180"
-          />
-          <el-table-column
-            prop="deptCode"
-            :label="$t('system.dept.columns.deptCode')"
-            align="center"
-          />
-          <el-table-column
-            prop="sort"
-            :label="$t('system.dept.columns.sort')"
-            align="center"
-            width="80"
-          />
-          <el-table-column
-            prop="status"
-            :label="$t('system.dept.search.status')"
-            align="center"
-            width="80"
+      <el-table-column prop="deptName" :label="$t('system.dept.search.deptName')" min-width="180" />
+      <el-table-column prop="deptCode" :label="$t('system.dept.columns.deptCode')" align="center" />
+      <el-table-column
+        prop="sort"
+        :label="$t('system.dept.columns.sort')"
+        align="center"
+        width="80"
+      />
+      <el-table-column
+        prop="status"
+        :label="$t('system.dept.search.status')"
+        align="center"
+        width="80"
+      >
+        <template #default="scope">
+          <el-tag
+            :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
+            effect="plain"
+            size="small"
+            disable-transitions
           >
-            <template #default="scope">
-              <el-tag
-                :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
-                effect="plain"
-                size="small"
-                disable-transitions
-              >
-                {{ getDictItem('system_status', scope.row.status)?.value }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column prop="remark" :label="$t('system.dept.columns.remark')" align="center" />
-          <el-table-column
-            prop="createTime"
-            :label="$t('system.dept.columns.createTime')"
-            align="center"
-            min-width="160"
-          />
-          <el-table-column fixed="right" :label="$t('common.action')" width="120" align="center">
-            <template #default="scope">
-              <el-tooltip :content="$t('system.dept.actions.addChild')" placement="top">
-                <el-button
-                  type="success"
-                  text
-                  bg
-                  size="small"
-                  @click="handleAddChild(scope.row)"
-                  v-permission="['system:dept:add']"
-                >
-                  <Icon icon="lucide:plus" />
-                </el-button>
-              </el-tooltip>
-              <el-tooltip :content="$t('system.dept.actions.edit')" placement="top">
-                <el-button
-                  type="warning"
-                  text
-                  bg
-                  size="small"
-                  @click="handleModify(scope.row)"
-                  v-permission="['system:dept:update']"
-                >
-                  <Icon icon="lucide:pencil" />
-                </el-button>
-              </el-tooltip>
-              <el-tooltip :content="$t('system.dept.actions.delete')" placement="top">
-                <el-button
-                  type="danger"
-                  text
-                  bg
-                  size="small"
-                  @click="handleRemove(scope.row)"
-                  v-permission="['system:dept:delete']"
-                >
-                  <Icon icon="lucide:trash-2" />
-                </el-button>
-              </el-tooltip>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
-    </el-card>
+            {{ getDictItem('system_status', scope.row.status)?.value }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="remark" :label="$t('system.dept.columns.remark')" align="center" />
+      <el-table-column
+        prop="createTime"
+        :label="$t('system.dept.columns.createTime')"
+        align="center"
+        min-width="160"
+      />
+      <el-table-column fixed="right" :label="$t('common.action')" width="120" align="center">
+        <template #default="scope">
+          <el-tooltip :content="$t('system.dept.actions.addChild')" placement="top">
+            <el-button
+              type="success"
+              text
+              bg
+              size="small"
+              @click="handleAddChild(scope.row)"
+              v-permission="['system:dept:add']"
+            >
+              <Icon icon="lucide:plus" />
+            </el-button>
+          </el-tooltip>
+          <el-tooltip :content="$t('system.dept.actions.edit')" placement="top">
+            <el-button
+              type="warning"
+              text
+              bg
+              size="small"
+              @click="handleModify(scope.row)"
+              v-permission="['system:dept:update']"
+            >
+              <Icon icon="lucide:pencil" />
+            </el-button>
+          </el-tooltip>
+          <el-tooltip :content="$t('system.dept.actions.delete')" placement="top">
+            <el-button
+              type="danger"
+              text
+              bg
+              size="small"
+              @click="handleRemove(scope.row)"
+              v-permission="['system:dept:delete']"
+            >
+              <Icon icon="lucide:trash-2" />
+            </el-button>
+          </el-tooltip>
+        </template>
+      </el-table-column>
+    </TreeTableView>
 
     <!-- 新增、修改弹窗 -->
     <el-dialog
@@ -265,6 +253,7 @@ import { cloneDeep } from 'lodash-es'
 import { deptTreeList, addDept, modifyDeptById, removeDeptById } from './apis'
 import type { SystemDeptVO, SystemDeptTreeVO, SystemDeptQueryVO } from './apis/type'
 import { userList } from '@/views/system/user/apis'
+import TreeTableView from '@/common/components/TreeTable/index.vue'
 
 const { t } = useI18n()
 const $t = t
@@ -282,7 +271,7 @@ const isExpanded = ref(true)
 const searchFormRef = useTemplateRef('searchFormRef')
 const searchData = reactive<SystemDeptQueryVO>({})
 
-const tableRef = useTemplateRef('tableRef')
+const treeTableRef = useTemplateRef<InstanceType<typeof TreeTableView>>('treeTableRef')
 const tableData = ref<SystemDeptTreeVO[]>([])
 
 const formRef = useTemplateRef('formRef')
@@ -367,13 +356,13 @@ function handleRemove(row: SystemDeptTreeVO) {
 
 function handleRowClick(row: SystemDeptTreeVO) {
   if (row.children?.length) {
-    tableRef.value?.toggleRowExpansion(row)
+    treeTableRef.value?.toggleRowExpansion(row)
   }
 }
 
 function toggleExpand() {
   isExpanded.value = !isExpanded.value
-  const table = tableRef.value
+  const table = treeTableRef.value
   if (!table) return
   const toggleRows = (rows: SystemDeptTreeVO[]) => {
     rows.forEach((row) => {
@@ -416,15 +405,5 @@ getUserList()
   :deep(.el-card__body) {
     padding-bottom: 2px;
   }
-}
-
-.toolbar-wrapper {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.table-wrapper {
-  margin-bottom: 20px;
 }
 </style>

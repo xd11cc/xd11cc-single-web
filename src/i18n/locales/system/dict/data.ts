@@ -1,16 +1,9 @@
 export const zh = {
   actions: {
     addData: '新增字典数据',
-    batchDelete: '批量删除',
-    deleteData: '删除字典数据',
-    editData: '修改字典数据',
-    export: '导出',
     exportTitle: '下载',
-    query: '查询',
-    reset: '重置',
   },
   columns: {
-    action: '操作',
     createTime: '创建时间',
     label: '字典标签',
     remark: '备注',
@@ -49,8 +42,6 @@ export const zh = {
     batchDeleteConfirm: '正在删除{count}条字典数据，确认删除？',
     deleteConfirm: '正在删除{value}字典数据，确认删除？',
     formError: '表单校验不通过',
-    operationSuccess: '操作成功',
-    selectFirst: '请选择要删除的数据',
   },
   search: {
     dictType: '字典类型',
@@ -61,19 +52,13 @@ export const zh = {
     value: '字典键值',
   },
 }
+
 export const en = {
   actions: {
     addData: 'Add Data',
-    batchDelete: 'Batch Delete',
-    deleteData: 'Delete Data',
-    editData: 'Edit Data',
-    export: 'Export',
     exportTitle: 'Download',
-    query: 'Search',
-    reset: 'Reset',
   },
   columns: {
-    action: 'Action',
     createTime: 'Created',
     label: 'Dictionary Label',
     remark: 'Remark',
@@ -112,8 +97,6 @@ export const en = {
     batchDeleteConfirm: 'Delete {count} dict data, confirm?',
     deleteConfirm: 'Delete dict {value}, confirm?',
     formError: 'Form validation failed',
-    operationSuccess: 'Operation successful',
-    selectFirst: 'Please select data to delete first',
   },
   search: {
     dictType: 'Dictionary Type',

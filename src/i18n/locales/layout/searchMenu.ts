@@ -13,6 +13,7 @@ export const zh = {
     open: '搜索 ⌘K',
   },
 }
+
 export const en = {
   empty: {
     noResults: 'No matching results',

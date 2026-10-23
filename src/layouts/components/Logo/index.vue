@@ -4,13 +4,14 @@
       <div class="logo-icon">
         <Icon icon="lucide:hexagon" class="icon" />
       </div>
-      <span v-if="!collapse" class="logo-text">XD11CC</span>
+      <span v-if="!collapse" class="logo-text">{{ t('app.name') }}</span>
     </router-link>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
+import { useI18n } from 'vue-i18n'
 import { useLayoutMode } from '@@/composables/useLayoutMode'
 
 interface Props {
@@ -19,6 +20,7 @@ interface Props {
 
 const { collapse = true } = defineProps<Props>()
 
+const { t } = useI18n()
 const { isTop } = useLayoutMode()
 </script>
 

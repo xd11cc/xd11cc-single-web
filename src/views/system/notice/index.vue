@@ -44,8 +44,7 @@
             >{{ $t('system.notice.actions.query') }}
           </el-button>
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template
-            >{{ $t('system.notice.actions.reset') }}
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('common.reset') }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -64,7 +63,7 @@
             v-permission="['system:notice:delete']"
           >
             <template #icon><Icon icon="lucide:trash-2" /></template>
-            {{ $t('system.notice.actions.batchDelete') }}
+            {{ $t('common.batchDelete') }}
           </el-button>
         </div>
       </div>
@@ -143,12 +142,7 @@
             align="center"
             min-width="160"
           />
-          <el-table-column
-            fixed="right"
-            :label="$t('system.notice.columns.action')"
-            width="120"
-            align="center"
-          >
+          <el-table-column fixed="right" :label="$t('common.action')" width="120" align="center">
             <template #default="scope">
               <el-tooltip :content="$t('system.notice.actions.edit')" placement="top">
                 <el-button

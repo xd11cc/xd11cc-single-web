@@ -21,7 +21,7 @@
           >
           <el-button @click="resetSearch">
             <template #icon><Icon icon="lucide:rotate-ccw" /></template
-            >{{ $t('system.config.actions.reset') }}</el-button
+            >{{ $t('common.reset') }}</el-button
           >
         </el-form-item>
       </el-form>
@@ -43,7 +43,7 @@
             v-permission="['system:config:delete']"
           >
             <template #icon><Icon icon="lucide:trash-2" /></template>
-            {{ $t('system.config.actions.batchDelete') }}
+            {{ $t('common.batchDelete') }}
           </el-button>
         </div>
       </div>
@@ -76,12 +76,7 @@
             align="center"
             min-width="160"
           />
-          <el-table-column
-            fixed="right"
-            :label="$t('system.config.columns.action')"
-            width="90"
-            align="center"
-          >
+          <el-table-column fixed="right" :label="$t('common.action')" width="90" align="center">
             <template #default="scope">
               <el-tooltip :content="$t('system.config.actions.edit')" placement="top">
                 <el-button

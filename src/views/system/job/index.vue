@@ -44,8 +44,7 @@
             >{{ $t('system.job.actions.query') }}
           </el-button>
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template
-            >{{ $t('system.job.actions.reset') }}
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('common.reset') }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -56,11 +55,11 @@
         <div>
           <el-button type="primary" @click="handleAdd" v-permission="['system:job:add']">
             <template #icon><Icon icon="lucide:plus-circle" /></template>
-            {{ $t('system.job.actions.add') }}
+            {{ $t('common.add') }}
           </el-button>
           <el-button type="danger" @click="handleBatchRemove" v-permission="['system:job:delete']">
             <template #icon><Icon icon="lucide:trash-2" /></template>
-            {{ $t('system.job.actions.batchDelete') }}
+            {{ $t('common.batchDelete') }}
           </el-button>
         </div>
       </div>
@@ -173,14 +172,9 @@
             align="center"
             min-width="160"
           />
-          <el-table-column
-            fixed="right"
-            :label="$t('system.job.columns.action')"
-            width="150"
-            align="center"
-          >
+          <el-table-column fixed="right" :label="$t('common.action')" width="150" align="center">
             <template #default="scope">
-              <el-tooltip :content="$t('system.job.actions.edit')" placement="top">
+              <el-tooltip :content="$t('common.edit')" placement="top">
                 <el-button
                   type="warning"
                   text
@@ -192,7 +186,7 @@
                   <Icon icon="lucide:pencil" />
                 </el-button>
               </el-tooltip>
-              <el-tooltip :content="$t('system.job.actions.delete')" placement="top">
+              <el-tooltip :content="$t('common.delete')" placement="top">
                 <el-button
                   type="danger"
                   text

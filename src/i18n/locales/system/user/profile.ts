@@ -72,10 +72,11 @@ export const zh = {
   validation: {
     invalidEmail: '请输入正确的邮箱',
     invalidPhone: '请输入正确的手机号',
-    passwordLength: '长度在 6 到 20 个字符',
+    passwordLength: '长度在 8 到 16 个字符',
     passwordMismatch: '两次输入密码不一致',
   },
 }
+
 export const en = {
   actions: {
     confirmChange: 'Confirm Change',
@@ -150,7 +151,7 @@ export const en = {
   validation: {
     invalidEmail: 'Please enter a valid email',
     invalidPhone: 'Please enter a valid phone number',
-    passwordLength: 'Length between 6 and 20 characters',
+    passwordLength: 'Length between 8 and 16 characters',
     passwordMismatch: 'Passwords do not match',
   },
 }

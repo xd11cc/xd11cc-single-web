@@ -7,7 +7,7 @@
         :collapse="isCollapse && !isTop"
         :collapse-transition="false"
         :mode="isTop && !isMobile ? 'horizontal' : 'vertical'"
-        :class="{ 'sidebar-menu-left': isLeft }"
+        :class="{ 'sidebar-menu-left': isLeft, 'sidebar-menu-rail': !isTop && !isLeft }"
       >
         <Item
           v-for="noHiddenRoute in noHiddenRoutes"
@@ -84,7 +84,8 @@ const sidebarMenuHoverBgColor = computed(() =>
   border: none;
   width: 100%;
 
-  &.sidebar-menu-left {
+  &.sidebar-menu-left,
+  &.sidebar-menu-rail {
     --el-menu-bg-color: var(--v3-sidebar-menu-bg-color);
     --el-menu-text-color: var(--v3-sidebar-menu-text-color);
     --el-menu-active-color: var(--v3-sidebar-menu-active-text-color);

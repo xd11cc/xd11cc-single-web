@@ -6,6 +6,7 @@ export const zh = {
   notSupported: '当前浏览器不支持全屏',
   open: '进入全屏',
 }
+
 export const en = {
   contentFull: 'Content Fullscreen',
   contentRestore: 'Restore Content',

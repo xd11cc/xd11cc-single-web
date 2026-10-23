@@ -26,8 +26,8 @@ export const zh = {
     title: '标题',
     type: '类型',
   },
-  title: '通知公告（用户）',
 }
+
 export const en = {
   columns: {
     content: 'Content',
@@ -56,5 +56,4 @@ export const en = {
     title: 'Title',
     type: 'Type',
   },
-  title: 'Notifications (User)',
 }

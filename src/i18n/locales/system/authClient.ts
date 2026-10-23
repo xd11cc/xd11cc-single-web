@@ -1,15 +1,9 @@
 export const zh = {
   actions: {
-    add: '新增',
-    batchDelete: '批量删除',
-    delete: '删除',
-    edit: '修改',
     query: '查询',
-    reset: '重置',
     upload: '上传图标',
   },
   columns: {
-    action: '操作',
     clientId: '应用ID',
     createTime: '创建时间',
     icon: '图标',
@@ -27,11 +21,9 @@ export const zh = {
     clientId: '应用ID',
     clientSecret: '应用密钥',
     icon: '图标',
-    name: '应用名称',
     redirectUri: '重定向地址',
     remark: '备注',
     sort: '排序',
-    source: '应用类型',
     status: '状态',
   },
   formPlaceholder: {
@@ -48,7 +40,6 @@ export const zh = {
     batchDeleteConfirm: '正在删除 {count} 条授权应用数据，确认删除？',
     deleteConfirm: '正在删除授权应用「{name}」，确认删除？',
     deleteSuccess: '删除成功',
-    formError: '表单校验不通过',
     operationSuccess: '操作成功',
     selectFirst: '请选择要删除的数据',
   },
@@ -58,22 +49,17 @@ export const zh = {
     status: '状态',
     statusPlaceholder: '状态',
   },
-  title: '客户端管理',
   upload: {
     tip: '仅支持上传 png、jpg、jpeg、ico 格式，且只能上传一个文件',
   },
 }
+
 export const en = {
   actions: {
-    add: 'Add',
-    batchDelete: 'Batch Delete',
-    delete: 'Delete',
-    edit: 'Edit',
     query: 'Search',
-    reset: 'Reset',
+    upload: 'Upload Icon',
   },
   columns: {
-    action: 'Action',
     clientId: 'App ID',
     createTime: 'Create Time',
     icon: 'Icon',
@@ -91,11 +77,9 @@ export const en = {
     clientId: 'App ID',
     clientSecret: 'App Secret',
     icon: 'Icon',
-    name: 'App Name',
     redirectUri: 'Redirect URI',
     remark: 'Remark',
     sort: 'Sort',
-    source: 'App Type',
     status: 'Status',
   },
   formPlaceholder: {
@@ -112,7 +96,6 @@ export const en = {
     batchDeleteConfirm: 'Are you sure to delete {count} auth apps?',
     deleteConfirm: 'Are you sure to delete auth app 「{name}」?',
     deleteSuccess: 'Delete successful',
-    formError: 'Form validation failed',
     operationSuccess: 'Operation successful',
     selectFirst: 'Please select data to delete first',
   },
@@ -122,7 +105,6 @@ export const en = {
     status: 'Status',
     statusPlaceholder: 'Status',
   },
-  title: 'Auth Client',
   upload: {
     tip: 'Only png, jpg, jpeg, ico formats supported. Single file only.',
   },

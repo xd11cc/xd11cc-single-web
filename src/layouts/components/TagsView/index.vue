@@ -22,9 +22,9 @@
       </router-link>
     </ScrollPane>
     <ul v-show="visiable" class="contextmenu" :style="{ left: `${left}px`, top: `${top}px` }">
-      <li @click="refreshSelectedTag(selectedTag)">{{ t('layout.tagsView.refresh') }}</li>
+      <li @click="refreshSelectedTag(selectedTag)">{{ t('common.refresh') }}</li>
       <li v-if="!isAffix(selectedTag)" @click="closeSelectedTag(selectedTag)">
-        {{ t('layout.tagsView.close') }}
+        {{ t('common.close') }}
       </li>
       <li @click="closeOthersTags">{{ t('layout.tagsView.closeOthers') }}</li>
       <li @click="closeAllTags(selectedTag)">{{ t('layout.tagsView.closeAll') }}</li>

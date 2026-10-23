@@ -1,15 +1,11 @@
 export const zh = {
   actions: {
-    clean: '清空',
-    delete: '删除',
     detail: '详情',
   },
   columns: {
-    action: '操作',
     createTime: '执行时间',
     invokeTarget: '调度目标',
     jobGroup: '任务组名',
-    jobLogId: '日志编号',
     jobMessage: '日志信息',
     jobName: '任务名称',
     remark: '备注',
@@ -34,24 +30,16 @@ export const zh = {
     jobName: '请输入任务名称',
     status: '执行状态',
   },
-  status: {
-    fail: '失败',
-    success: '正常',
-  },
-  title: '调度日志',
 }
+
 export const en = {
   actions: {
-    clean: 'Clear',
-    delete: 'Delete',
     detail: 'Detail',
   },
   columns: {
-    action: 'Action',
     createTime: 'Executed At',
     invokeTarget: 'Dispatch Target',
     jobGroup: 'Job Group',
-    jobLogId: 'Log ID',
     jobMessage: 'Log Message',
     jobName: 'Job Name',
     remark: 'Remark',
@@ -76,9 +64,4 @@ export const en = {
     jobName: 'Please enter job name',
     status: 'Status',
   },
-  status: {
-    fail: 'Failed',
-    success: 'Success',
-  },
-  title: 'Job Logs',
 }

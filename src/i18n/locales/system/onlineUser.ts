@@ -3,7 +3,6 @@ export const zh = {
     forceLogout: '强退',
   },
   columns: {
-    action: '操作',
     browser: '浏览器',
     index: '序号',
     ipAddr: '登录IP',
@@ -21,14 +20,13 @@ export const zh = {
   search: {
     username: '用户名称',
   },
-  title: '在线用户',
 }
+
 export const en = {
   actions: {
     forceLogout: 'Force Logout',
   },
   columns: {
-    action: 'Action',
     browser: 'Browser',
     index: 'No.',
     ipAddr: 'Login IP',
@@ -46,5 +44,4 @@ export const en = {
   search: {
     username: 'Username',
   },
-  title: 'Online Users',
 }

@@ -36,3 +36,4 @@ yarn.lock
 
 *.tsbuildinfo
 stats.html
+AGENTS.md

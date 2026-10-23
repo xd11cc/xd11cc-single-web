@@ -74,6 +74,34 @@ div:focus {
   }
 }
 
+// 表格基础视觉统一
+.el-table {
+  --el-table-border-color: var(--theme-border-light);
+  --el-table-header-bg-color: var(--theme-bg-elevated);
+  --el-table-row-hover-bg-color: var(--theme-accent-light);
+  --el-table-bg-color: var(--theme-bg-surface);
+  --el-table-tr-bg-color: var(--theme-bg-surface);
+  --el-table-text-color: var(--theme-text-secondary);
+  --el-table-header-text-color: var(--theme-text-secondary);
+}
+
+.el-table .el-table__header-wrapper th {
+  height: 44px;
+  border-bottom-color: var(--theme-border);
+  color: var(--theme-text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.el-table .el-table__body tr {
+  transition: background-color 160ms ease;
+}
+
+.el-table .el-table__body td {
+  height: 52px;
+  border-bottom-color: var(--theme-border-light);
+}
+
 // 表格单元格全局不换行，超出省略
 .el-table .el-table__cell .cell {
   overflow: hidden;

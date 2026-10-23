@@ -2,10 +2,8 @@ export const zh = {
   actions: {
     generate: '生成代码',
     query: '查询',
-    reset: '重置',
   },
   columns: {
-    action: '操作',
     createTime: '创建时间',
     tableComment: '表注释',
     tableName: '表名称',
@@ -20,14 +18,13 @@ export const zh = {
     tableNamePlaceholder: '请输入表名称',
   },
 }
+
 export const en = {
   actions: {
     generate: 'Generate Code',
     query: 'Search',
-    reset: 'Reset',
   },
   columns: {
-    action: 'Action',
     createTime: 'Created Time',
     tableComment: 'Table Comment',
     tableName: 'Table Name',

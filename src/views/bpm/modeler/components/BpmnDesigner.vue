@@ -19,6 +19,7 @@ import { Icon } from '@iconify/vue'
 import Modeler from 'bpmn-js/lib/Modeler'
 import flowableModdle from '../moddle/flowable.json'
 import { useI18n } from 'vue-i18n'
+import type { ApprovalConfig, ListenerConfig } from '../types'
 
 const { t } = useI18n()
 
@@ -35,7 +36,27 @@ const emit = defineEmits<{
 const canvasRef = useTemplateRef('canvasRef')
 const loading = ref(true)
 let modeler: Modeler<any> | null = null
-let exportTimer: ReturnType<typeof setTimeout> | undefined
+// 显式取浏览器 window.setTimeout 的返回类型，避免 NodeJS.Timeout 类型污染。
+let exportTimer: number | undefined
+let layoutObserver: ResizeObserver | undefined
+
+async function fitViewportWhenReady() {
+  const canvas = modeler?.get<any>('canvas')
+  const element = canvasRef.value
+  if (!canvas || !element) return
+
+  // 路由切换时组件可能已经 mounted，但外层 transition/flex 尚未完成布局。
+  // bpmn-js 在 0 尺寸容器上 fit viewport 会得到空白视图，因此至少等待两帧，
+  // 并在尺寸有效后再执行 resize + fit。
+  await nextTick()
+  await new Promise<void>((resolve) =>
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve())),
+  )
+  if (element.clientWidth > 0 && element.clientHeight > 0) {
+    canvas.resized?.()
+    canvas.zoom('fit-viewport', 'auto')
+  }
+}
 
 async function exportXml() {
   if (!modeler) return
@@ -48,9 +69,9 @@ async function importXml(xml: string) {
   loading.value = true
   try {
     await modeler.importXML(xml)
+    await fitViewportWhenReady()
     const canvas = modeler.get<any>('canvas')
-    canvas.zoom('fit-viewport', 'auto')
-    emit('selected', null)
+    emit('selected', canvas.getRootElement())
   } finally {
     loading.value = false
   }
@@ -60,18 +81,30 @@ function getService<T = any>(name: string): T | null {
   return modeler?.get<T>(name) ?? null
 }
 
+function getActiveElement() {
+  return (
+    getService<any>('selection')?.get()?.[0] ?? getService<any>('canvas')?.getRootElement() ?? null
+  )
+}
+
 function updateSelectedElement(properties: Record<string, unknown>) {
-  const selection = getService<any>('selection')
   const modeling = getService<any>('modeling')
-  const element = selection?.get()?.[0]
-  if (element && modeling) {
+  const moddle = getService<any>('moddle')
+  const element = getActiveElement()
+  if (element && modeling && moddle) {
     const nextProperties = { ...properties }
     const condition = nextProperties.conditionExpression as any
     if (condition?.$type === 'bpmn:FormalExpression') {
-      const moddle = getService<any>('moddle')
       nextProperties.conditionExpression = moddle.create('bpmn:FormalExpression', {
         body: condition.body,
       })
+    }
+    if ('documentationText' in nextProperties) {
+      const documentationText = nextProperties.documentationText as string | undefined
+      delete nextProperties.documentationText
+      nextProperties.documentation = documentationText
+        ? [moddle.create('bpmn:Documentation', { text: documentationText })]
+        : []
     }
     modeling.updateProperties(element, nextProperties)
   }
@@ -84,34 +117,14 @@ function updateProcess(properties: Record<string, unknown>) {
   if (rootElement && modeling) modeling.updateProperties(rootElement, properties)
 }
 
-type ListenerField = {
-  name: string
-  valueType: 'stringValue' | 'expression'
-  value: string
-}
-
-type ListenerConfig = {
-  id: string
-  listenerType: 'task' | 'execution'
-  event: string
-  implementationType: 'class' | 'expression' | 'delegateExpression'
-  implementation: string
-  fields: ListenerField[]
-}
-
-type ApprovalConfig = {
-  mode: 'single' | 'countersign' | 'orsign'
-  collection: string
-  elementVariable: string
-}
-
 function updateApprovalConfig(config: ApprovalConfig) {
   const selection = getService<any>('selection')
   const modeling = getService<any>('modeling')
   const moddle = getService<any>('moddle')
   const element = selection?.get()?.[0]
   if (!element || !modeling || !moddle) return
-  const previousMode = element.businessObject?.get?.('flowable:approvalMode') ??
+  const previousMode =
+    element.businessObject?.get?.('flowable:approvalMode') ??
     (element.businessObject?.loopCharacteristics ? 'multi' : 'single')
 
   if (config.mode === 'single') {
@@ -119,9 +132,7 @@ function updateApprovalConfig(config: ApprovalConfig) {
       loopCharacteristics: undefined,
       'flowable:approvalMode': config.mode,
       'flowable:assignee':
-        previousMode === 'single'
-          ? element.businessObject?.get?.('flowable:assignee')
-          : undefined,
+        previousMode === 'single' ? element.businessObject?.get?.('flowable:assignee') : undefined,
       ...(previousMode !== 'single'
         ? {
             'flowable:candidateUsers': undefined,
@@ -144,6 +155,10 @@ function updateApprovalConfig(config: ApprovalConfig) {
     'flowable:collection': config.collection,
     'flowable:elementVariable': config.elementVariable,
     completionCondition,
+    'flowable:expressionConfigKey': config.expressionConfigKey,
+    'flowable:expressionParameters': config.expressionParameters
+      ? JSON.stringify(config.expressionParameters)
+      : undefined,
   })
   modeling.updateProperties(element, {
     loopCharacteristics,
@@ -155,10 +170,9 @@ function updateApprovalConfig(config: ApprovalConfig) {
 }
 
 function updateListeners(listeners: ListenerConfig[]) {
-  const selection = getService<any>('selection')
   const modeling = getService<any>('modeling')
   const moddle = getService<any>('moddle')
-  const element = selection?.get()?.[0]
+  const element = getActiveElement()
   const businessObject = element?.businessObject
   if (!element || !businessObject || !modeling || !moddle) return
 
@@ -175,16 +189,22 @@ function updateListeners(listeners: ListenerConfig[]) {
         moddle.create('flowable:Field', {
           name: field.name,
           [field.valueType]: field.value,
+          expressionConfigKey: field.expressionConfigKey,
+          expressionParameters: field.expressionParameters
+            ? JSON.stringify(field.expressionParameters)
+            : undefined,
         }),
       )
     return moddle.create(
-      listener.listenerType === 'task'
-        ? 'flowable:TaskListener'
-        : 'flowable:ExecutionListener',
+      listener.listenerType === 'task' ? 'flowable:TaskListener' : 'flowable:ExecutionListener',
       {
         event: listener.event,
         [listener.implementationType]: listener.implementation,
         fields,
+        expressionConfigKey: listener.expressionConfigKey,
+        expressionParameters: listener.expressionParameters
+          ? JSON.stringify(listener.expressionParameters)
+          : undefined,
       },
     )
   })
@@ -225,28 +245,30 @@ function redo() {
   getService<any>('commandStack')?.redo()
 }
 
-function canUndo() {
-  return Boolean(getService<any>('commandStack')?.canUndo())
-}
-
-function canRedo() {
-  return Boolean(getService<any>('commandStack')?.canRedo())
-}
-
 onMounted(async () => {
   modeler = new Modeler({
     container: canvasRef.value!,
     moddleExtensions: { flowable: flowableModdle },
-    keyboard: { bindTo: document },
   })
+
+  layoutObserver = new ResizeObserver(() => {
+    void fitViewportWhenReady()
+  })
+  layoutObserver.observe(canvasRef.value!)
 
   const eventBus = modeler.get<any>('eventBus')
   eventBus.on('selection.changed', ({ newSelection }: any) => {
-    emit('selected', newSelection?.[0] ?? null)
+    const selectedElement = newSelection?.[0]
+    if (selectedElement) {
+      emit('selected', selectedElement)
+      return
+    }
+    emit('selected', modeler?.get<any>('canvas')?.getRootElement() ?? null)
   })
   eventBus.on('element.changed', ({ element }: any) => {
     const selection = modeler?.get<any>('selection')?.get()?.[0]
-    if (selection?.id === element?.id) emit('selected', element)
+    const activeElement = selection ?? modeler?.get<any>('canvas')?.getRootElement()
+    if (activeElement?.id === element?.id) emit('selected', element)
   })
   eventBus.on('commandStack.changed', () => {
     window.clearTimeout(exportTimer)
@@ -254,11 +276,14 @@ onMounted(async () => {
   })
 
   await importXml(props.xml)
+  await fitViewportWhenReady()
   emit('ready')
 })
 
 onBeforeUnmount(() => {
   window.clearTimeout(exportTimer)
+  layoutObserver?.disconnect()
+  layoutObserver = undefined
   modeler?.destroy()
   modeler = null
 })
@@ -275,8 +300,6 @@ defineExpose({
   fitViewport,
   undo,
   redo,
-  canUndo,
-  canRedo,
 })
 </script>
 
@@ -368,10 +391,14 @@ defineExpose({
 }
 
 @keyframes state-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 900px) {
-  .canvas-hint { display: none; }
+  .canvas-hint {
+    display: none;
+  }
 }
 </style>

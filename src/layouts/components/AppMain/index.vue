@@ -32,6 +32,7 @@ const route = useRoute()
 .app-main {
   width: 100%;
   display: flex;
+  background-color: var(--theme-bg-page);
 }
 
 .app-scrollbar {

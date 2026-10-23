@@ -39,12 +39,10 @@
     <!-- 工具栏按钮 -->
     <template #actions>
       <el-button type="primary" @click="crud.methods.handleAdd" v-permission="['system:post:add']">
-        <template #icon><Icon icon="lucide:plus-circle" /></template
-        >{{ $t('system.post.actions.add') }}
+        <template #icon><Icon icon="lucide:plus-circle" /></template>{{ $t('common.add') }}
       </el-button>
       <el-button type="danger" @click="handleBatchRemove" v-permission="['system:post:delete']">
-        <template #icon><Icon icon="lucide:trash-2" /></template
-        >{{ $t('system.post.actions.batchDelete') }}
+        <template #icon><Icon icon="lucide:trash-2" /></template>{{ $t('common.batchDelete') }}
       </el-button>
     </template>
 
@@ -79,7 +77,7 @@
       />
       <el-table-column fixed="right" :label="$t('common.action')" width="90" align="center">
         <template #default="scope">
-          <el-tooltip :content="$t('system.post.actions.edit')" placement="top">
+          <el-tooltip :content="$t('common.edit')" placement="top">
             <el-button
               type="warning"
               text
@@ -91,7 +89,7 @@
               <Icon icon="lucide:pencil" />
             </el-button>
           </el-tooltip>
-          <el-tooltip :content="$t('system.post.actions.delete')" placement="top">
+          <el-tooltip :content="$t('common.delete')" placement="top">
             <el-button
               type="danger"
               text

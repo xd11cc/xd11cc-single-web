@@ -18,16 +18,25 @@
     </el-card>
 
     <!-- 表格区 -->
-    <el-card v-loading="slotProps.tableLoading" shadow="never">
+    <el-card shadow="never">
       <div class="toolbar-wrapper">
         <div>
           <slot name="actions" v-bind="slotProps" />
         </div>
       </div>
-      <div class="table-wrapper">
-        <el-table :data="slotProps.tableData" @selection-change="slotProps.handleSelectionChange">
-          <slot name="table" v-bind="slotProps" />
-        </el-table>
+      <div class="table-wrapper" :aria-busy="slotProps.tableLoading">
+        <div class="table-page-shell">
+          <el-table :data="slotProps.tableData" @selection-change="slotProps.handleSelectionChange">
+            <slot name="table" v-bind="slotProps" />
+          </el-table>
+        </div>
+        <div
+          class="table-loading-mask"
+          :class="{ 'is-active': slotProps.tableLoading }"
+          role="status"
+          :aria-label="$t('common.loading')"
+          aria-live="polite"
+        ></div>
       </div>
       <div class="page-wrapper">
         <el-pagination
@@ -125,3 +134,73 @@ watch(
   },
 )
 </script>
+
+<style scoped>
+.table-page-shell {
+  min-height: 120px;
+}
+
+.table-wrapper {
+  position: relative;
+}
+
+.table-loading-mask {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--theme-bg-surface) 92%, transparent);
+  backdrop-filter: blur(0.5px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+
+.table-loading-mask::before {
+  position: absolute;
+  top: 0;
+  left: -35%;
+  width: 35%;
+  height: 2px;
+  content: '';
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--theme-accent),
+    color-mix(in srgb, var(--theme-accent) 35%, transparent),
+    transparent
+  );
+  opacity: 0;
+  transform: translateX(0);
+}
+
+.table-loading-mask.is-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.table-loading-mask.is-active::before {
+  opacity: 1;
+  animation: table-loading-sweep 1.15s var(--p-ease-in-out) infinite;
+}
+
+@keyframes table-loading-sweep {
+  to {
+    transform: translateX(385%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .table-loading-mask {
+    transition: none;
+  }
+
+  .table-loading-mask.is-active::before {
+    animation: none;
+  }
+}
+</style>

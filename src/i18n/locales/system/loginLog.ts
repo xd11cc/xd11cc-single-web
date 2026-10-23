@@ -1,13 +1,9 @@
 export const zh = {
   actions: {
-    batchDelete: '批量删除',
     clean: '清空',
-    delete: '删除',
     query: '查询',
-    reset: '重置',
   },
   columns: {
-    action: '操作',
     browser: '浏览器',
     loginIp: '登录IP',
     loginTime: '登录时间',
@@ -28,8 +24,6 @@ export const zh = {
     cleanSuccess: '清空成功',
     deleteConfirm: '确认删除该条登录日志？',
     deleteSuccess: '删除成功',
-    formError: '表单校验不通过',
-    operationSuccess: '操作成功',
     selectFirst: '请选择要删除的数据',
   },
   search: {
@@ -37,18 +31,14 @@ export const zh = {
     status: '状态',
     username: '登录账号',
   },
-  title: '登录日志',
 }
+
 export const en = {
   actions: {
-    batchDelete: 'Batch Delete',
     clean: 'Clear',
-    delete: 'Delete',
     query: 'Query',
-    reset: 'Reset',
   },
   columns: {
-    action: 'Action',
     browser: 'Browser',
     loginIp: 'Login IP',
     loginTime: 'Login Time',
@@ -69,8 +59,6 @@ export const en = {
     cleanSuccess: 'Cleared successfully',
     deleteConfirm: 'Are you sure to delete this login log?',
     deleteSuccess: 'Deleted successfully',
-    formError: 'Form validation failed',
-    operationSuccess: 'Operation succeeded',
     selectFirst: 'Please select data to delete first',
   },
   search: {
@@ -78,5 +66,4 @@ export const en = {
     status: 'Status',
     username: 'Login Account',
   },
-  title: 'Login Logs',
 }

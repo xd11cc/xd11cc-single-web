@@ -11,6 +11,7 @@ export const zh = {
   tip: '请绑定已有账号以完成第三方登录',
   title: '社交账号绑定',
 }
+
 export const en = {
   action: 'Link Login',
   form: {

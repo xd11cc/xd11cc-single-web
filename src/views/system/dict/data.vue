@@ -74,7 +74,7 @@
             v-permission="['system:dictData:delete']"
           >
             <template #icon><Icon icon="lucide:trash-2" /></template>
-            {{ $t('system.dict.data.actions.batchDelete') }}
+            {{ $t('common.batchDelete') }}
           </el-button>
         </div>
         <div>
@@ -129,12 +129,7 @@
             align="center"
             min-width="160"
           />
-          <el-table-column
-            fixed="right"
-            :label="$t('system.dict.data.columns.action')"
-            width="90"
-            align="center"
-          >
+          <el-table-column fixed="right" :label="$t('common.action')" width="90" align="center">
             <template #default="scope">
               <el-tooltip :content="$t('common.edit')" placement="top">
                 <el-button

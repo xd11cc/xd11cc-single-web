@@ -117,8 +117,7 @@
             <el-radio v-model="hourRadio" :value="3" @change="onTabChange('hour')">
               {{ $t('tool.cronGenerator.hour.from') }}
               <el-input-number v-model="hourAvg01" :min="0" :max="22" size="small" />
-              {{ $t('tool.cronGenerator.unit.hour')
-              }}{{ $t('tool.cronGenerator.hour.fromSuffix') }}
+              {{ $t('tool.cronGenerator.unit.hour') }}{{ $t('tool.cronGenerator.hour.fromSuffix') }}
               <el-input-number v-model="hourAvg02" :min="1" :max="23" size="small" />
               {{ $t('tool.cronGenerator.unit.hour')
               }}{{ $t('tool.cronGenerator.hour.everySuffix') }}
@@ -366,8 +365,7 @@
             <el-radio v-model="yearRadio" :value="4" @change="onTabChange('year')">
               {{ $t('tool.cronGenerator.year.from') }}
               <el-input-number v-model="yearAvg01" :min="currentYear" :max="2098" size="small" />
-              {{ $t('tool.cronGenerator.unit.year')
-              }}{{ $t('tool.cronGenerator.year.fromSuffix') }}
+              {{ $t('tool.cronGenerator.unit.year') }}{{ $t('tool.cronGenerator.year.fromSuffix') }}
               <el-input-number v-model="yearAvg02" :min="1" :max="100" size="small" />
               {{ $t('tool.cronGenerator.unit.year')
               }}{{ $t('tool.cronGenerator.year.everySuffix') }}

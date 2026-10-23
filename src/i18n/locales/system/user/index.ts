@@ -1,13 +1,8 @@
 export const zh = {
   actions: {
-    add: '新增',
-    batchDelete: '批量删除',
-    delete: '删除',
-    edit: '修改',
     resetPassword: '重置密码',
   },
   columns: {
-    action: '操作',
     createTime: '创建时间',
     deptName: '部门',
     nickname: '昵称',
@@ -21,17 +16,13 @@ export const zh = {
     edit: '修改用户',
   },
   form: {
-    deptId: '部门',
     email: '邮箱',
     idCard: '身份证号',
     nickname: '昵称',
     password: '密码',
-    phone: '手机号',
-    postId: '岗位',
     remark: '备注',
     roleIds: '角色',
     sex: '性别',
-    status: '状态',
     username: '用户名',
   },
   formPlaceholder: {
@@ -40,7 +31,6 @@ export const zh = {
     idCard: '请输入身份证号',
     nickname: '请输入昵称',
     password: '请输入密码',
-    passwordLength: '长度在 6 到 20 个字符',
     phone: '请输入手机号',
     postId: '请选择岗位',
     remark: '请输入内容',
@@ -48,11 +38,6 @@ export const zh = {
     sex: '请选择性别',
     status: '用户状态',
     username: '请输入用户名',
-  },
-  gender: {
-    female: '女',
-    male: '男',
-    unknown: '未知',
   },
   messages: {
     batchDeleteConfirm: '正在删除 {count} 条用户数据，确认删除？',
@@ -63,18 +48,13 @@ export const zh = {
     status: '状态',
     username: '用户名',
   },
-  title: '用户管理',
 }
+
 export const en = {
   actions: {
-    add: 'Add',
-    batchDelete: 'Batch Delete',
-    delete: 'Delete',
-    edit: 'Edit',
     resetPassword: 'Reset Password',
   },
   columns: {
-    action: 'Action',
     createTime: 'Created',
     deptName: 'Department',
     nickname: 'Nickname',
@@ -88,17 +68,13 @@ export const en = {
     edit: 'Edit User',
   },
   form: {
-    deptId: 'Department',
     email: 'Email',
     idCard: 'ID Card',
     nickname: 'Nickname',
     password: 'Password',
-    phone: 'Phone',
-    postId: 'Post',
     remark: 'Remark',
     roleIds: 'Roles',
     sex: 'Gender',
-    status: 'Status',
     username: 'Username',
   },
   formPlaceholder: {
@@ -107,7 +83,6 @@ export const en = {
     idCard: 'Please enter ID card',
     nickname: 'Please enter nickname',
     password: 'Please enter password',
-    passwordLength: 'Length must be 6 to 20 characters',
     phone: 'Please enter phone',
     postId: 'Please select post',
     remark: 'Please enter content',
@@ -115,11 +90,6 @@ export const en = {
     sex: 'Please select gender',
     status: 'User status',
     username: 'Please enter username',
-  },
-  gender: {
-    female: 'Female',
-    male: 'Male',
-    unknown: 'Unknown',
   },
   messages: {
     batchDeleteConfirm: 'You are about to delete {count} users. Confirm?',
@@ -130,5 +100,4 @@ export const en = {
     status: 'Status',
     username: 'Username',
   },
-  title: 'User Management',
 }

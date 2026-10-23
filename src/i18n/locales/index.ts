@@ -4,14 +4,17 @@ import { zh as ChatContactlistZh, en as ChatContactlistEn } from './chat/contact
 import { zh as ChatMessageareaZh, en as ChatMessageareaEn } from './chat/messageArea'
 import { zh as ChatTitleZh, en as ChatTitleEn } from './chat/title'
 import { zh as CommonZh, en as CommonEn } from './common'
+import { zh as BpmDefinitionZh, en as BpmDefinitionEn } from './bpm/definition'
 import { zh as BpmModelerZh, en as BpmModelerEn } from './bpm/modeler'
+import { zh as BpmExpressionConfigZh, en as BpmExpressionConfigEn } from './bpm/expressionConfig'
+import { zh as BpmCategoryZh, en as BpmCategoryEn } from './bpm/category'
+import { zh as BpmApprovalZh, en as BpmApprovalEn } from './bpm/approval'
 import { zh as DashboardActivityZh, en as DashboardActivityEn } from './dashboard/activity'
 import { zh as DashboardChartsZh, en as DashboardChartsEn } from './dashboard/charts'
 import { zh as DashboardGreetingZh, en as DashboardGreetingEn } from './dashboard/greeting'
 import { zh as DashboardQuickZh, en as DashboardQuickEn } from './dashboard/quick'
 import { zh as DashboardStatsZh, en as DashboardStatsEn } from './dashboard/stats'
 import { zh as Error401Zh, en as Error401En } from './error/401'
-import { zh as Error403Zh, en as Error403En } from './error/403'
 import { zh as Error404Zh, en as Error404En } from './error/404'
 import { zh as Error500Zh, en as Error500En } from './error/500'
 import { zh as LayoutZh, en as LayoutEn } from './layout/index'
@@ -25,7 +28,6 @@ import { zh as LoginZh, en as LoginEn } from './login/index'
 import { zh as LoginBindZh, en as LoginBindEn } from './login/bind'
 import { zh as LoginForgotZh, en as LoginForgotEn } from './login/forgot'
 import { zh as LoginQrcodeZh, en as LoginQrcodeEn } from './login/qrcode'
-import { zh as MonitorDruidZh, en as MonitorDruidEn } from './monitor/druid'
 import { zh as SystemAuthclientZh, en as SystemAuthclientEn } from './system/authClient'
 import { zh as SystemConfigZh, en as SystemConfigEn } from './system/config'
 import { zh as SystemDeptZh, en as SystemDeptEn } from './system/dept'
@@ -55,7 +57,13 @@ export const zhCN = {
     title: ChatTitleZh,
   },
   common: CommonZh,
-  bpm: { modeler: BpmModelerZh },
+  bpm: {
+    definition: BpmDefinitionZh,
+    modeler: BpmModelerZh,
+    expressionConfig: BpmExpressionConfigZh,
+    category: BpmCategoryZh,
+    approval: BpmApprovalZh,
+  },
   dashboard: {
     activity: DashboardActivityZh,
     charts: DashboardChartsZh,
@@ -65,7 +73,6 @@ export const zhCN = {
   },
   error: {
     401: Error401Zh,
-    403: Error403Zh,
     404: Error404Zh,
     500: Error500Zh,
   },
@@ -83,9 +90,6 @@ export const zhCN = {
     bind: LoginBindZh,
     forgot: LoginForgotZh,
     qrcode: LoginQrcodeZh,
-  },
-  monitor: {
-    druid: MonitorDruidZh,
   },
   system: {
     authClient: SystemAuthclientZh,
@@ -127,7 +131,13 @@ export const enUS = {
     title: ChatTitleEn,
   },
   common: CommonEn,
-  bpm: { modeler: BpmModelerEn },
+  bpm: {
+    definition: BpmDefinitionEn,
+    modeler: BpmModelerEn,
+    expressionConfig: BpmExpressionConfigEn,
+    category: BpmCategoryEn,
+    approval: BpmApprovalEn,
+  },
   dashboard: {
     activity: DashboardActivityEn,
     charts: DashboardChartsEn,
@@ -137,7 +147,6 @@ export const enUS = {
   },
   error: {
     401: Error401En,
-    403: Error403En,
     404: Error404En,
     500: Error500En,
   },
@@ -155,9 +164,6 @@ export const enUS = {
     bind: LoginBindEn,
     forgot: LoginForgotEn,
     qrcode: LoginQrcodeEn,
-  },
-  monitor: {
-    druid: MonitorDruidEn,
   },
   system: {
     authClient: SystemAuthclientEn,

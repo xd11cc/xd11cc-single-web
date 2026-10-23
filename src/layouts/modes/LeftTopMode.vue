@@ -66,7 +66,7 @@ $transition-time: 0.35s;
 }
 
 .sidebar-container {
-  background-color: var(--el-menu-bg-color);
+  background-color: var(--v3-sidebar-menu-bg-color);
   transition: width $transition-time;
   width: var(--v3-sidebar-width);
   height: 100%;

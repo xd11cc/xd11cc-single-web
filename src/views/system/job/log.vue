@@ -44,8 +44,7 @@
             >{{ $t('system.job.actions.query') }}
           </el-button>
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template
-            >{{ $t('system.job.actions.reset') }}
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('common.reset') }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -56,7 +55,7 @@
         <div>
           <el-button type="danger" @click="handleBatchRemove" v-permission="['system:job:delete']">
             <template #icon><Icon icon="lucide:trash-2" /></template>
-            {{ $t('system.job.actions.batchDelete') }}
+            {{ $t('common.batchDelete') }}
           </el-button>
         </div>
       </div>
@@ -125,19 +124,14 @@
             align="center"
             min-width="160"
           />
-          <el-table-column
-            fixed="right"
-            :label="$t('system.job.log.columns.action')"
-            width="90"
-            align="center"
-          >
+          <el-table-column fixed="right" :label="$t('common.action')" width="90" align="center">
             <template #default="scope">
               <el-tooltip :content="$t('system.job.log.actions.detail')" placement="top">
                 <el-button type="primary" text bg size="small" @click="handleDetail(scope.row)">
                   <Icon icon="lucide:eye" />
                 </el-button>
               </el-tooltip>
-              <el-tooltip :content="$t('system.job.log.actions.delete')" placement="top">
+              <el-tooltip :content="$t('common.delete')" placement="top">
                 <el-button
                   type="danger"
                   text

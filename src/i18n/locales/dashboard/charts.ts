@@ -16,6 +16,7 @@ export const zh = {
   visits: '访问量',
   weeklyOverview: '本周概览',
 }
+
 export const en = {
   periods: {
     month30: 'Last 30 days',

@@ -1,18 +1,6 @@
 export const zh = {
-  actions: {
-    add: '新增角色',
-    batchDelete: '批量删除',
-    dataScope: '数据权限',
-    delete: '删除角色',
-    edit: '修改角色',
-  },
   columns: {
-    action: '操作',
     createTime: '创建时间',
-    roleId: '角色编号',
-    roleKey: '权限字符',
-    roleName: '角色名称',
-    status: '状态',
   },
   dataScope: {
     all: '全部数据',
@@ -28,20 +16,16 @@ export const zh = {
   form: {
     dataScope: '数据权限',
     deptAuthLabel: '部门权限',
-    deptIds: '数据权限',
     menuIds: '菜单权限',
     remark: '备注',
     roleKey: '权限字符',
     roleName: '角色名称',
-    roleSort: '角色顺序',
-    status: '状态',
   },
   formPlaceholder: {
     dataScope: '请选择数据范围',
     remark: '请输入备注',
     roleKey: '请输入权限字符',
     roleName: '请输入角色名称',
-    roleSort: '请输入角色顺序',
     status: '请选择状态',
   },
   messages: {
@@ -53,23 +37,11 @@ export const zh = {
     roleName: '角色名称',
     status: '状态',
   },
-  title: '角色管理',
 }
+
 export const en = {
-  actions: {
-    add: 'Add Role',
-    batchDelete: 'Batch Delete',
-    dataScope: 'Data Scope',
-    delete: 'Delete Role',
-    edit: 'Edit Role',
-  },
   columns: {
-    action: 'Action',
     createTime: 'Created',
-    roleId: 'Role ID',
-    roleKey: 'Permission String',
-    roleName: 'Role Name',
-    status: 'Status',
   },
   dataScope: {
     all: 'All data',
@@ -85,20 +57,16 @@ export const en = {
   form: {
     dataScope: 'Data Scope',
     deptAuthLabel: 'Department Authorization',
-    deptIds: 'Data Scope',
     menuIds: 'Menu Permissions',
     remark: 'Remark',
     roleKey: 'Permission String',
     roleName: 'Role Name',
-    roleSort: 'Role Sort',
-    status: 'Status',
   },
   formPlaceholder: {
     dataScope: 'Please select data scope',
     remark: 'Please enter remark',
     roleKey: 'Please enter permission string',
     roleName: 'Please enter role name',
-    roleSort: 'Please enter role sort',
     status: 'Please select status',
   },
   messages: {
@@ -110,5 +78,4 @@ export const en = {
     roleName: 'Role Name',
     status: 'Status',
   },
-  title: 'Role Management',
 }

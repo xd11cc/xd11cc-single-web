@@ -1,7 +1,4 @@
 export const zh = {
-  compose: {
-    title: '组装表达式',
-  },
   day: {
     cycleFrom: '周期从',
     everySuffix: '日执行一次',
@@ -85,7 +82,6 @@ export const zh = {
     min: '分钟',
     month: '月',
     second: '秒',
-    week: '周',
     year: '年',
   },
   week: {
@@ -116,10 +112,8 @@ export const zh = {
     specify: '指定',
   },
 }
+
 export const en = {
-  compose: {
-    title: 'Compose Expression',
-  },
   day: {
     cycleFrom: 'Cycle from',
     everySuffix: ' days',
@@ -203,7 +197,6 @@ export const en = {
     min: 'min',
     month: 'mo',
     second: 'sec',
-    week: 'wk',
     year: 'yr',
   },
   week: {

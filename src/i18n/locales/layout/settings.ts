@@ -2,11 +2,8 @@ export const zh = {
   cacheTagsView: '是否缓存标签栏',
   fixedHeader: '固定 Header',
   functional: '功能配置',
-  language: '界面语言',
-  layoutMode: '布局模式',
   leftMode: '左侧模式',
   mixedMode: '混合模式',
-  reset: '重置',
   showColorWeakness: '显示色弱模式',
   showFooter: '显示页脚',
   showGreyMode: '显示灰色模式',
@@ -18,15 +15,13 @@ export const zh = {
   title: '布局配置',
   topMode: '顶部模式',
 }
+
 export const en = {
   cacheTagsView: 'Cache Tags View',
   fixedHeader: 'Fixed Header',
   functional: 'Function Configuration',
-  language: 'Language',
-  layoutMode: 'Layout Mode',
   leftMode: 'Left Layout',
   mixedMode: 'Mixed Layout',
-  reset: 'Reset',
   showColorWeakness: 'Color-Weakness Mode',
   showFooter: 'Show Footer',
   showGreyMode: 'Grey Mode',

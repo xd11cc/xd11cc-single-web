@@ -8,6 +8,14 @@
   "associations": [],
   "types": [
     {
+      "name": "Process",
+      "extends": ["bpmn:Process"],
+      "properties": [
+        { "name": "category", "isAttr": true, "type": "String" },
+        { "name": "variables", "isAttr": true, "type": "String" }
+      ]
+    },
+    {
       "name": "UserTask",
       "extends": ["bpmn:UserTask"],
       "properties": [
@@ -16,7 +24,13 @@
         { "name": "candidateGroups", "isAttr": true, "type": "String" },
         { "name": "formKey", "isAttr": true, "type": "String" },
         { "name": "priority", "isAttr": true, "type": "String" },
-        { "name": "approvalMode", "isAttr": true, "type": "String" }
+        { "name": "approvalMode", "isAttr": true, "type": "String" },
+        { "name": "assigneeExpressionConfigKey", "isAttr": true, "type": "String" },
+        { "name": "assigneeExpressionParameters", "isAttr": true, "type": "String" },
+        { "name": "candidateUsersExpressionConfigKey", "isAttr": true, "type": "String" },
+        { "name": "candidateUsersExpressionParameters", "isAttr": true, "type": "String" },
+        { "name": "candidateGroupsExpressionConfigKey", "isAttr": true, "type": "String" },
+        { "name": "candidateGroupsExpressionParameters", "isAttr": true, "type": "String" }
       ]
     },
     {
@@ -24,7 +38,17 @@
       "extends": ["bpmn:MultiInstanceLoopCharacteristics"],
       "properties": [
         { "name": "collection", "isAttr": true, "type": "String" },
-        { "name": "elementVariable", "isAttr": true, "type": "String" }
+        { "name": "elementVariable", "isAttr": true, "type": "String" },
+        { "name": "expressionConfigKey", "isAttr": true, "type": "String" },
+        { "name": "expressionParameters", "isAttr": true, "type": "String" }
+      ]
+    },
+    {
+      "name": "SequenceFlow",
+      "extends": ["bpmn:SequenceFlow"],
+      "properties": [
+        { "name": "expressionConfigKey", "isAttr": true, "type": "String" },
+        { "name": "expressionParameters", "isAttr": true, "type": "String" }
       ]
     },
     {
@@ -33,7 +57,9 @@
       "properties": [
         { "name": "class", "isAttr": true, "type": "String" },
         { "name": "delegateExpression", "isAttr": true, "type": "String" },
-        { "name": "expression", "isAttr": true, "type": "String" }
+        { "name": "expression", "isAttr": true, "type": "String" },
+        { "name": "expressionConfigKey", "isAttr": true, "type": "String" },
+        { "name": "expressionParameters", "isAttr": true, "type": "String" }
       ]
     },
     {
@@ -44,7 +70,9 @@
         { "name": "class", "isAttr": true, "type": "String" },
         { "name": "expression", "isAttr": true, "type": "String" },
         { "name": "delegateExpression", "isAttr": true, "type": "String" },
-        { "name": "fields", "type": "Field", "isMany": true }
+        { "name": "fields", "type": "Field", "isMany": true },
+        { "name": "expressionConfigKey", "isAttr": true, "type": "String" },
+        { "name": "expressionParameters", "isAttr": true, "type": "String" }
       ]
     },
     {
@@ -55,7 +83,9 @@
         { "name": "class", "isAttr": true, "type": "String" },
         { "name": "expression", "isAttr": true, "type": "String" },
         { "name": "delegateExpression", "isAttr": true, "type": "String" },
-        { "name": "fields", "type": "Field", "isMany": true }
+        { "name": "fields", "type": "Field", "isMany": true },
+        { "name": "expressionConfigKey", "isAttr": true, "type": "String" },
+        { "name": "expressionParameters", "isAttr": true, "type": "String" }
       ]
     },
     {
@@ -64,7 +94,9 @@
       "properties": [
         { "name": "name", "isAttr": true, "type": "String" },
         { "name": "stringValue", "isAttr": true, "type": "String" },
-        { "name": "expression", "isAttr": true, "type": "String" }
+        { "name": "expression", "isAttr": true, "type": "String" },
+        { "name": "expressionConfigKey", "isAttr": true, "type": "String" },
+        { "name": "expressionParameters", "isAttr": true, "type": "String" }
       ]
     }
   ],

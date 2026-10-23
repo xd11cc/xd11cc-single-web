@@ -1,7 +1,7 @@
 import axios from 'axios'
 import type { ResponseVO } from 'types/api'
-import { getToken, removeToken } from '@@/utils/cache/cookies'
-import { resetRouter, router } from '@/router'
+import { getToken } from '@@/utils/cache/cookies'
+import { router } from '@/router'
 import { useUserStore } from '@/pinia/stores/user'
 import { i18n } from '@/i18n'
 
@@ -20,7 +20,6 @@ service.interceptors.request.use(
   (config) => {
     const token = getToken()
     if (token) {
-      isHandlingUnauthorized = false
       config.headers['Authorization'] = `Bearer ${token}`
     }
     return config
@@ -32,18 +31,24 @@ service.interceptors.request.use(
   },
 )
 
-function handleUnauthorized() {
+export function handleUnauthorized() {
   if (isHandlingUnauthorized) return
   isHandlingUnauthorized = true
   ElMessage.warning(i18n.global.t('common.network.unauthorized'))
-  removeToken()
-  resetRouter()
+  const fullPath = router.currentRoute.value.fullPath
   const userStore = useUserStore()
   userStore.resetToken()
-  const fullPath = router.currentRoute.value.fullPath
   if (fullPath !== '/login') {
-    router.push(`/login?redirect=${encodeURIComponent(fullPath)}`)
+    router.replace({
+      path: '/login',
+      query: { redirect: fullPath },
+    })
   }
+}
+
+// 仅在用户重新登录成功后解除 401 处理锁，避免并发请求重复跳转。
+export function resetUnauthorizedHandling() {
+  isHandlingUnauthorized = false
 }
 
 function getLocalizedErrorMessage(status?: number) {

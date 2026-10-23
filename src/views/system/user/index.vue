@@ -54,8 +54,9 @@
         <template #icon><Icon icon="lucide:plus-circle" /></template>{{ $t('common.add') }}
       </el-button>
       <el-button type="danger" @click="handleBatchRemove">
-        <template #icon><Icon icon="lucide:trash-2" /></template
-        >{{ $t('system.user.actions.batchDelete') }} ({{ rowSelection.length }})
+        <template #icon><Icon icon="lucide:trash-2" /></template>{{ $t('common.batchDelete') }} ({{
+          rowSelection.length
+        }})
       </el-button>
       <TableColumnSetting
         :columns="tableColumns.columns.value"
@@ -378,7 +379,7 @@ const formRules: FormRules = {
   nickname: [{ required: true, trigger: 'blur', message: () => $t('system.user.form.nickname') }],
   password: [
     { required: true, trigger: 'blur', message: () => $t('system.user.form.password') },
-    { min: 6, max: 20, message: () => $t('common.validation.passwordLength'), trigger: 'blur' },
+    { min: 8, max: 16, message: () => $t('common.validation.passwordLength'), trigger: 'blur' },
   ],
   deptId: [
     { required: true, trigger: 'change', message: () => $t('system.user.formPlaceholder.deptId') },
@@ -485,7 +486,7 @@ function handleResetPwd(row: SystemUserVO) {
     {
       confirmButtonText: $t('common.confirm'),
       cancelButtonText: $t('common.cancel'),
-      inputPattern: /^.{6,20}$/,
+      inputPattern: /^.{8,16}$/,
       inputErrorMessage: $t('common.validation.passwordLength'),
       inputType: 'password',
     },

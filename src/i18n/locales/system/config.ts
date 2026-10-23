@@ -1,34 +1,24 @@
 export const zh = {
   actions: {
     add: '新增系统配置',
-    batchDelete: '批量删除',
-    clean: '清空缓存',
     delete: '删除参数',
     edit: '修改系统配置',
-    export: '参数导出',
     query: '查询',
-    reset: '重置',
   },
   columns: {
-    action: '操作',
-    configId: '参数编号',
     configKey: '配置键名',
     configName: '配置名称',
     configValue: '配置键值',
     createTime: '创建时间',
     remark: '备注',
-    status: '状态',
   },
   dialogs: {
     add: '新增系统配置',
     edit: '修改系统配置',
   },
   form: {
-    configKey: '配置键名',
-    configName: '配置名称',
     configValue: '配置键值',
     remark: '备注',
-    status: '状态',
   },
   formPlaceholder: {
     configKey: '请输入配置键名',
@@ -47,41 +37,30 @@ export const zh = {
   search: {
     configKey: '配置键名',
     configName: '配置名称',
-    status: '状态',
   },
-  title: '系统配置',
 }
+
 export const en = {
   actions: {
     add: 'Add Config',
-    batchDelete: 'Batch Delete',
-    clean: 'Clear Cache',
     delete: 'Delete Parameter',
     edit: 'Edit Config',
-    export: 'Export',
     query: 'Search',
-    reset: 'Reset',
   },
   columns: {
-    action: 'Action',
-    configId: 'Parameter ID',
     configKey: 'Config Key',
     configName: 'Config Name',
     configValue: 'Config Value',
     createTime: 'Created',
     remark: 'Remark',
-    status: 'Status',
   },
   dialogs: {
     add: 'Add Config',
     edit: 'Edit Config',
   },
   form: {
-    configKey: 'Config Key',
-    configName: 'Config Name',
     configValue: 'Config Value',
     remark: 'Remark',
-    status: 'Status',
   },
   formPlaceholder: {
     configKey: 'Please enter config key',
@@ -100,7 +79,5 @@ export const en = {
   search: {
     configKey: 'Config Key',
     configName: 'Config Name',
-    status: 'Status',
   },
-  title: 'System Config',
 }

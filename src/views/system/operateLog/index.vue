@@ -44,8 +44,7 @@
             >{{ $t('system.operateLog.actions.query') }}
           </el-button>
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template
-            >{{ $t('system.operateLog.actions.reset') }}
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('common.reset') }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -60,7 +59,7 @@
             v-permission="['system:operateLog:delete']"
           >
             <template #icon><Icon icon="lucide:trash-2" /></template>
-            {{ $t('system.operateLog.actions.batchDelete') }}
+            {{ $t('common.batchDelete') }}
           </el-button>
           <el-button
             type="danger"
@@ -149,19 +148,14 @@
             align="center"
             min-width="160"
           />
-          <el-table-column
-            fixed="right"
-            :label="$t('system.operateLog.columns.action')"
-            width="90"
-            align="center"
-          >
+          <el-table-column fixed="right" :label="$t('common.action')" width="90" align="center">
             <template #default="scope">
               <el-tooltip :content="$t('system.operateLog.actions.detail')" placement="top">
                 <el-button type="primary" text bg size="small" @click="handleDetail(scope.row)">
                   <Icon icon="lucide:eye" />
                 </el-button>
               </el-tooltip>
-              <el-tooltip :content="$t('system.operateLog.actions.delete')" placement="top">
+              <el-tooltip :content="$t('common.delete')" placement="top">
                 <el-button
                   type="danger"
                   text
@@ -200,7 +194,7 @@
         }}</el-descriptions-item>
         <el-descriptions-item :label="$t('system.operateLog.detail.operateType')">
           {{
-            getDictItem('system_operate_type', detailData.operateType)?.value ||
+            getDictItem('system_operate_type', detailData.operateType || '')?.value ||
             detailData.operateType
           }}
         </el-descriptions-item>
@@ -209,12 +203,15 @@
         }}</el-descriptions-item>
         <el-descriptions-item :label="$t('system.operateLog.detail.status')">
           <el-tag
-            :type="getDictItem('system_operate_status', detailData.status)?.listClass || 'info'"
+            :type="
+              getDictItem('system_operate_status', detailData.status || '')?.listClass || 'info'
+            "
             effect="plain"
             size="small"
           >
             {{
-              getDictItem('system_operate_status', detailData.status)?.value || detailData.status
+              getDictItem('system_operate_status', detailData.status || '')?.value ||
+              detailData.status
             }}
           </el-tag>
         </el-descriptions-item>

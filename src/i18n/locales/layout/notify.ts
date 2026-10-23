@@ -7,6 +7,7 @@ export const zh = {
   },
   tooltip: '消息通知 ⌘K',
 }
+
 export const en = {
   fallbackTitle: 'New Message',
   tabs: {

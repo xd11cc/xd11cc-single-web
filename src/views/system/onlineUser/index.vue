@@ -51,12 +51,7 @@
             align="center"
             min-width="160"
           />
-          <el-table-column
-            fixed="right"
-            :label="$t('system.onlineUser.columns.action')"
-            width="70"
-            align="center"
-          >
+          <el-table-column fixed="right" :label="$t('common.action')" width="70" align="center">
             <template #default="scope">
               <el-tooltip :content="$t('system.onlineUser.actions.forceLogout')" placement="top">
                 <el-button

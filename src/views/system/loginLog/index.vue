@@ -44,8 +44,7 @@
             >{{ $t('system.loginLog.actions.query') }}
           </el-button>
           <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template
-            >{{ $t('system.loginLog.actions.reset') }}
+            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('common.reset') }}
           </el-button>
         </el-form-item>
       </el-form>
@@ -60,7 +59,7 @@
             v-permission="['system:loginLog:delete']"
           >
             <template #icon><Icon icon="lucide:trash-2" /></template>
-            {{ $t('system.loginLog.actions.batchDelete') }}
+            {{ $t('common.batchDelete') }}
           </el-button>
           <el-button
             type="danger"
@@ -140,14 +139,9 @@
             align="center"
             min-width="160"
           />
-          <el-table-column
-            fixed="right"
-            :label="$t('system.loginLog.columns.action')"
-            width="70"
-            align="center"
-          >
+          <el-table-column fixed="right" :label="$t('common.action')" width="70" align="center">
             <template #default="scope">
-              <el-tooltip :content="$t('system.loginLog.actions.delete')" placement="top">
+              <el-tooltip :content="$t('common.delete')" placement="top">
                 <el-button
                   type="danger"
                   text

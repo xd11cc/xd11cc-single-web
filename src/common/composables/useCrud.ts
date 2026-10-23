@@ -106,8 +106,9 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
   watch(
     () => paginationData.pageSize,
     () => {
+      const wasFirstPage = paginationData.currentPage === 1
       paginationData.currentPage = 1
-      getTableData()
+      if (wasFirstPage) getTableData()
     },
   )
 
@@ -115,7 +116,11 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
   async function getTableData() {
     tableLoading.value = true
     try {
-      const { data } = await options.pageApi({ ...searchData } as Q)
+      const { data } = await options.pageApi({
+        ...searchData,
+        currentPage: paginationData.currentPage,
+        pageSize: paginationData.pageSize,
+      } as Q)
       tableData.value = data.rows
       paginationData.total = data.total
     } finally {
@@ -125,15 +130,17 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
 
   // ─── 搜索 ──────────────────────────────────────────────
   function handleSearch() {
+    const wasFirstPage = paginationData.currentPage === 1
     paginationData.currentPage = 1
-    getTableData()
+    if (wasFirstPage) getTableData()
   }
 
   function resetSearch() {
     searchFormRef.value?.resetFields?.()
     Object.assign(searchData as any, options.defaultQuery?.() || {})
+    const wasFirstPage = paginationData.currentPage === 1
     paginationData.currentPage = 1
-    getTableData()
+    if (wasFirstPage) getTableData()
   }
 
   // ─── 弹窗开关 ──────────────────────────────────────────
