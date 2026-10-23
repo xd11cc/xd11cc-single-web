@@ -86,14 +86,3 @@ export interface RejectableNodeVO {
   activityName?: string
   isStartNode?: boolean
 }
-
-/** 流程轨迹节点（历史活动） */
-export interface ActivityVO {
-  activityId?: string
-  activityName?: string
-  activityType?: string
-  assignee?: string
-  startTime?: string
-  endTime?: string
-  durationMs?: number
-}

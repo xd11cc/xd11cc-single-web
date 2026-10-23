@@ -6,10 +6,15 @@ import { useUserStore } from '@/pinia/stores/user'
 import { i18n } from '@/i18n'
 
 // 创建axios实例
+// 默认 10s：3s 对跨公网 HTTPS + 慢 SQL 的后台接口过短，易误报超时。
+// 上传/导出/Cron 试运行等长耗时接口在调用处用 LONG_REQUEST_TIMEOUT 单独覆盖。
 const BASE_URL = import.meta.env.VITE_BASE_URL + import.meta.env.VITE_PUBLIC_PATH
+const DEFAULT_REQUEST_TIMEOUT = 10_000
+export const LONG_REQUEST_TIMEOUT = 60_000
+
 const service = axios.create({
   baseURL: BASE_URL,
-  timeout: 3000,
+  timeout: DEFAULT_REQUEST_TIMEOUT,
 })
 
 // 防止 token 过期时多个并发请求同时触发 401 导致重复跳转

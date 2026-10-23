@@ -301,6 +301,7 @@ import { Icon } from '@iconify/vue'
 import { useDict } from '@/common/composables/useDict'
 import { useOssUrl } from '@@/composables/useOssUrl'
 import { usePagination } from '@@/composables/usePagination'
+import { LONG_REQUEST_TIMEOUT } from '@@/utils/request'
 import request from '@@/utils/request'
 import type { FormRules } from 'element-plus'
 import { cloneDeep } from 'lodash-es'
@@ -483,6 +484,7 @@ function handleIconUpload(options: any) {
     url: '/file/upload',
     method: 'POST',
     data: uploadFormData,
+    timeout: LONG_REQUEST_TIMEOUT,
   })
     .then((res: any) => {
       if (res.data?.fileId) {

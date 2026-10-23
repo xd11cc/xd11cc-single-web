@@ -1,4 +1,4 @@
-import request from '@@/utils/request'
+import request, { LONG_REQUEST_TIMEOUT } from '@@/utils/request'
 import { PageData, ResponseVO } from 'types/api'
 import type { TableInfoQueryVO, TableInfoVO, PreviewCodeVO } from './type'
 
@@ -16,5 +16,6 @@ export function generateCode(data: string): Promise<ResponseVO<PreviewCodeVO[]>>
   return request({
     url: `/generate/code?tableName=${data}`,
     method: 'GET',
+    timeout: LONG_REQUEST_TIMEOUT,
   })
 }

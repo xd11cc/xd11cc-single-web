@@ -1,7 +1,6 @@
 import request from '@@/utils/request'
 import type { PageData, ResponseVO } from 'types/api'
 import type {
-  ActivityVO,
   ApprovePayload,
   DelegatePayload,
   MyStartedQuery,
@@ -37,19 +36,6 @@ export function cancelProcess(
     url: '/workflow/process/cancel',
     method: 'POST',
     params: { processInstanceId, reason },
-  })
-}
-
-/** 流程轨迹（历史活动节点，分页） */
-export function getHistoricActivities(
-  processInstanceId: string,
-  pageNo = 1,
-  pageSize = 50,
-): Promise<ResponseVO<PageData<ActivityVO>>> {
-  return request({
-    url: '/workflow/process/activities',
-    method: 'POST',
-    params: { processInstanceId, pageNo, pageSize },
   })
 }
 

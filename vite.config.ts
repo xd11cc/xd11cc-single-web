@@ -80,9 +80,9 @@ export default defineConfig(({ mode }) => {
         output: {
           // 手动分包：vendor 与 Element Plus 独立，避免主 chunk 过大
           manualChunks: {
-            'vendor': ['vue', 'vue-router', 'pinia'],
+            vendor: ['vue', 'vue-router', 'pinia'],
             'element-plus': ['element-plus'],
-            'echarts': ['echarts', 'vue-echarts'],
+            echarts: ['echarts', 'vue-echarts'],
           },
           // chunk 命名
           chunkFileNames: 'assets/js/[name]-[hash].js',
@@ -104,7 +104,16 @@ export default defineConfig(({ mode }) => {
       }),
       Components({
         dts: 'types/auto/components.d.ts',
-        resolvers: [ElementPlusResolver()],
+        resolvers: [
+          // <el-table-column> 统一走本地透明包装，普通文本列自动开启 show-overflow-tooltip，
+          // 业务模板无需逐列配置，也不用改任何页面文件
+          (name: string) => {
+            if (name === 'ElTableColumn') {
+              return { from: '@@/components/TableColumn' }
+            }
+          },
+          ElementPlusResolver(),
+        ],
       }),
       // gzip 压缩：生产构建时生成 .gz 产物（Nginx 开启 gzip_static 直接返回）
       compression({
