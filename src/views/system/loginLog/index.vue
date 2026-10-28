@@ -13,7 +13,7 @@
             v-model="searchData.loginType"
             :placeholder="$t('system.loginLog.formPlaceholder.loginType')"
             clearable
-            style="width: 150px"
+            class="search-field"
           >
             <el-option
               v-for="item in getDictList('system_login_type')"
@@ -28,7 +28,7 @@
             v-model="searchData.status"
             :placeholder="$t('system.loginLog.formPlaceholder.status')"
             clearable
-            style="width: 150px"
+            class="search-field"
           >
             <el-option
               v-for="item in getDictList('system_operate_status')"
@@ -76,11 +76,7 @@
       <div class="table-wrapper">
         <el-table ref="tableRef" :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column
-            prop="username"
-            :label="$t('system.loginLog.columns.username')"
-            align="center"
-          />
+          <el-table-column prop="username" :label="$t('system.loginLog.columns.username')" />
           <el-table-column
             prop="loginType"
             :label="$t('system.loginLog.columns.loginType')"
@@ -123,16 +119,11 @@
           <el-table-column
             prop="loginIp"
             :label="$t('system.loginLog.columns.loginIp')"
-            align="center"
             width="140"
           />
-          <el-table-column
-            prop="browser"
-            :label="$t('system.loginLog.columns.browser')"
-            align="center"
-          />
-          <el-table-column prop="os" :label="$t('system.loginLog.columns.os')" align="center" />
-          <el-table-column prop="msg" :label="$t('system.loginLog.columns.msg')" align="center" />
+          <el-table-column prop="browser" :label="$t('system.loginLog.columns.browser')" />
+          <el-table-column prop="os" :label="$t('system.loginLog.columns.os')" />
+          <el-table-column prop="msg" :label="$t('system.loginLog.columns.msg')" />
           <el-table-column
             prop="loginTime"
             :label="$t('system.loginLog.columns.loginTime')"
@@ -295,27 +286,3 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
   immediate: true,
 })
 </script>
-
-<style lang="scss" scoped>
-.search-wrapper {
-  margin-bottom: 20px;
-  :deep(.el-card__body) {
-    padding-bottom: 2px;
-  }
-}
-
-.toolbar-wrapper {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.table-wrapper {
-  margin-bottom: 20px;
-}
-
-.page-wrapper {
-  display: flex;
-  justify-content: flex-end;
-}
-</style>

@@ -2,11 +2,20 @@
   <div>
     <!-- 全屏 -->
     <el-tooltip v-if="!props.content" effect="dark" :content="fullscreenTips" placement="bottom">
-      <Icon icon="lucide:maximize" class="action-icon" @click="handleFullscreenClick" />
+      <button
+        type="button"
+        class="action-trigger"
+        :aria-label="fullscreenTips"
+        @click="handleFullscreenClick"
+      >
+        <Icon icon="lucide:maximize" class="action-icon" aria-hidden="true" />
+      </button>
     </el-tooltip>
     <!-- 内容区 -->
     <el-dropdown v-else :disabled="isFullscreen">
-      <Icon icon="lucide:maximize" class="action-icon" />
+      <button type="button" class="action-trigger" :aria-label="t('layout.screenfull.contentFull')">
+        <Icon icon="lucide:maximize" class="action-icon" aria-hidden="true" />
+      </button>
       <template #dropdown>
         <el-dropdown-menu>
           <el-dropdown-item @click="handleContentLargeClick">
@@ -94,9 +103,19 @@ function handleContentFullClick() {
 </script>
 
 <style lang="scss" scoped>
+.action-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
+}
+
 .action-icon {
-  font-size: 18px;
-  outline: none;
+  font-size: var(--p-text-xl);
   cursor: pointer;
   color: var(--theme-text-secondary);
   transition: color var(--p-duration-fast);

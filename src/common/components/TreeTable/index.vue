@@ -127,11 +127,11 @@ defineExpose({ tableRef, toggleRowExpansion, toggleAll })
 
 .tree-table :deep(.el-table__expand-icon:hover) {
   background: var(--theme-accent-light);
-  color: var(--theme-accent);
+  color: var(--theme-accent-strong);
 }
 
 .tree-table :deep(.el-table__expand-icon--expanded) {
-  color: var(--theme-accent);
+  color: var(--theme-accent-strong);
 }
 
 .tree-table :deep(.el-table__body td:first-child .cell) {
@@ -179,7 +179,7 @@ defineExpose({ tableRef, toggleRowExpansion, toggleAll })
   }
 }
 
-@media (max-width: 768px) {
+@include sm {
   .tree-table-toolbar {
     min-height: 60px;
     padding: 12px 14px;

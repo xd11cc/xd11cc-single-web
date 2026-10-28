@@ -24,7 +24,7 @@
           v-model="searchData.status"
           :placeholder="$t('system.post.formPlaceholder.status')"
           clearable
-          style="width: 150px"
+          class="search-field"
         >
           <el-option
             v-for="item in getDictList('system_status')"
@@ -49,8 +49,8 @@
     <!-- 表格列 -->
     <template #table>
       <el-table-column type="selection" width="50" align="center" />
-      <el-table-column prop="postCode" :label="$t('system.post.columns.postCode')" align="center" />
-      <el-table-column prop="postName" :label="$t('system.post.columns.postName')" align="center" />
+      <el-table-column prop="postCode" :label="$t('system.post.columns.postCode')" />
+      <el-table-column prop="postName" :label="$t('system.post.columns.postName')" />
       <el-table-column
         prop="status"
         :label="$t('system.post.columns.status')"
@@ -68,7 +68,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="remark" :label="$t('system.post.columns.remark')" align="center" />
+      <el-table-column prop="remark" :label="$t('system.post.columns.remark')" />
       <el-table-column
         prop="createTime"
         :label="$t('system.post.columns.createTime')"
@@ -171,7 +171,6 @@ import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import { ref, nextTick } from 'vue'
 import type { FormRules } from 'element-plus'
-import { cloneDeep } from 'lodash-es'
 import UseCrudView from '@/common/components/useCrud/index.vue'
 import { useCrud } from '@/common/composables/useCrud'
 import { useDict } from '@/common/composables/useDict'
@@ -295,28 +294,6 @@ getDeptTree()
 </script>
 
 <style lang="scss" scoped>
-.search-wrapper {
-  margin-bottom: 20px;
-  :deep(.el-card__body) {
-    padding-bottom: 2px;
-  }
-}
-
-.toolbar-wrapper {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.table-wrapper {
-  margin-bottom: 20px;
-}
-
-.page-wrapper {
-  display: flex;
-  justify-content: flex-end;
-}
-
 .dept-tree {
   width: 100%;
   border: 1px solid var(--el-border-color);

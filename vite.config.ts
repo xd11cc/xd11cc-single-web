@@ -8,7 +8,7 @@ import { VitePWA } from 'vite-plugin-pwa'
 import compression from 'vite-plugin-compression'
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
-  const { VITE_PUBLIC_PATH } = loadEnv(mode, process.cwd(), '') as ImportMetaEnv
+  const { VITE_PUBLIC_PATH, VITE_WS_PATH } = loadEnv(mode, process.cwd(), '') as ImportMetaEnv
   const isProd = mode === 'prod'
   // PWA 离线缓存配置（仅生产环境注入）
   const pwaPlugin = isProd
@@ -52,13 +52,21 @@ export default defineConfig(({ mode }) => {
       strictPort: false,
       // 是否自动打开浏览器
       open: true,
-      // 反向代理
+      // 反向代理：把后端接口与 Druid 控制台代理到同源，
+      // 使开发环境与生产环境（同域部署）行为一致。
+      // 注意 key 必须带前导斜杠，Vite 按字符串前缀匹配路径。
       proxy: {
-        xd11cc: {
-          target: 'http://localhost:10001',
+        '/xd11cc': {
+          target: 'http://127.0.0.1:10001',
           // 是否为 WebSocket
           ws: false,
-          // 是否允许跨域
+          // 是否允许跨域：会把 Host 头改写为 target 的 host
+          changeOrigin: true,
+        },
+        // WebSocket 服务（Netty，独立端口）
+        [VITE_WS_PATH || '/ws']: {
+          target: 'ws://127.0.0.1:12001',
+          ws: true,
           changeOrigin: true,
         },
       },
@@ -94,6 +102,15 @@ export default defineConfig(({ mode }) => {
     css: {
       // 线程中运行 CSS 预处理器
       preprocessorMaxWorkers: true,
+      preprocessorOptions: {
+        scss: {
+          // 断点 mixin 全局注入。
+          // 只注入变量与 mixin 定义、不产出任何 CSS，所以不会重复打包。
+          // 之前 breakpoints.scss 只在 index.scss 里 @use，Sass 模块作用域不外溢，
+          // 结果就是全站 0 次调用、11 种手写断点各写各的。
+          additionalData: `@use '@@/assets/styles/breakpoints.scss' as *;\n`,
+        },
+      },
     },
     plugins: [
       vue(),

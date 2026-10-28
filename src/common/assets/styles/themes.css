@@ -18,7 +18,18 @@
   --p-gray-800: #222225;
   --p-gray-700: #2e2e32;
   --p-gray-600: #52525b;
+  /* gray-550 为亮色主题的辅助文字专用档。
+     muted 直接用 gray-600 会与 secondary 完全同值（都是 #52525b），
+     三级文字层级塌成两级——而 muted 全站用了 58 处、secondary 31 处。
+     #61616a 在 page(#f7f7f8) 上 5.72、surface(#fafaf9) 上 5.87，
+     既过 AA，又明显弱于 secondary，把层级还回去。 */
+  --p-gray-550: #61616a;
   --p-gray-500: #71717a;
+  /* gray-450 为暗色主题的辅助文字专用档：
+     gray-500 在暗底上仅 4.04，低于 AA 的 4.5；
+     gray-400 已达 7.63 但会与 secondary 拉平，丢失层级。
+     #84848d 在 surface/elevated/page 三种暗底上分别为 5.27/4.69/5.37，均达标且弱于 secondary。 */
+  --p-gray-450: #84848d;
   --p-gray-400: #a1a1aa;
   --p-gray-300: #d4d4d8;
   --p-gray-200: #e4e4e7;
@@ -37,6 +48,9 @@
   --p-emerald-100: #d1fae5;
   --p-emerald-50: #ecfdf5;
 
+  /* red-600 专供「白字小号计数气泡」：red-500 对白字只有 3.76 不达 AA，
+     red-600 为 4.83。气泡底色不随主题变，白字在两种主题下都要能读。 */
+  --p-red-600: #dc2626;
   --p-red-500: #ef4444;
   --p-red-400: #f87171;
   --p-amber-500: #f59e0b;
@@ -63,9 +77,11 @@
   --p-radius-full: 9999px;
 
   /* --- Typography Primitives --- */
-  --p-font-display: 'Outfit', sans-serif;
-  --p-font-body: 'DM Sans', sans-serif;
-  --p-font-mono: 'JetBrains Mono', monospace;
+  /* Outfit / DM Sans 均无中文字形，必须显式声明 CJK 回退，
+     否则中文会落到泛型 sans-serif，与 body 的字体栈不一致 */
+  --p-font-display: 'Outfit', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  --p-font-body: 'DM Sans', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  --p-font-mono: 'JetBrains Mono', 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace;
 
   --p-text-xs: 11px;
   --p-text-sm: 12px;
@@ -109,26 +125,51 @@
   --theme-bg-sunken: var(--p-gray-200);
 
   /* --- Text --- */
+  /* gray-600 在 fafaf9 上对比度 7.4，满足 WCAG AA；
+     muted 由 gray-500（4.63，接近临界）提升到 gray-600 级别的可读性 */
   --theme-text-primary: var(--p-black);
   --theme-text-secondary: var(--p-gray-600);
-  --theme-text-muted: var(--p-gray-500);
+  --theme-text-muted: var(--p-gray-550);
 
   /* --- Border --- */
   --theme-border: var(--p-gray-200);
   --theme-border-light: var(--p-gray-100);
 
   /* --- Accent --- */
+  /* “强调色用作文字”与“用作填充”分开：
+     accent(填充/图标) = emerald-600，白底对比 3.61，仅适合大字号/非文字；
+     accent-strong(文字/链接) = emerald-700，白底对比 5.25，满足 WCAG AA */
   --theme-accent: var(--p-emerald-600);
+  --theme-accent-strong: var(--p-emerald-700);
   --theme-accent-hover: var(--p-emerald-700);
   --theme-accent-light: rgba(5, 150, 105, 0.07);
   --theme-accent-gradient: linear-gradient(135deg, var(--p-emerald-500), var(--p-emerald-600));
   --theme-accent-glow: rgba(16, 185, 129, 0.12);
+
+  /* 装饰性背景层专用，与 accent-glow 分开。
+     accent-glow 用在阴影和焦点环上（14 处），跟着调会把全站发光一起放大；
+     这两个只服务于登录页的点阵与氛围辉光，可以独立调到「能看见」的量级。 */
+  --theme-bg-dots: rgba(9, 9, 11, 0.1);
+  --theme-ambient-glow: rgba(16, 185, 129, 0.18);
+
+  /* 「强调色填充」与「其上文字」的配对。
+     accent / accent-strong 解决的是「强调色当图标」和「强调色当文字」，
+     但文字压在强调色上属于第三种场景，之前没有令牌，各处只能硬写白字：
+     白字在 emerald-600 上仅 3.77，不达 AA。凡是带文字填充的强调色块
+     （主按钮、激活标签、分段控件）都必须用下面这一对。 */
+  --theme-accent-fill: var(--p-emerald-700);
+  --theme-accent-fill-hover: var(--p-emerald-800);
+  --theme-accent-on: #ffffff;
 
   /* --- Functional --- */
   --theme-success: var(--p-emerald-600);
   --theme-warning: var(--p-amber-500);
   --theme-danger: var(--p-red-500);
   --theme-info: var(--p-blue-500);
+  /* 功能色的浅底，用于标签/提示条的背景，需保证与前景文字形成足够对比 */
+  --theme-warning-light: rgba(245, 158, 11, 0.12);
+  --theme-danger-light: rgba(239, 68, 68, 0.1);
+  --theme-info-light: rgba(59, 130, 246, 0.1);
 
   /* --- Shadow --- */
   --theme-shadow-sm: var(--p-shadow-xs);
@@ -182,15 +223,15 @@
   /* --- Layout Override --- */
   --v3-sidebar-menu-bg-color: var(--p-gray-100);
   --v3-sidebar-menu-text-color: var(--p-gray-600);
-  --v3-sidebar-menu-active-text-color: var(--p-emerald-600);
+  --v3-sidebar-menu-active-text-color: var(--p-emerald-700);
   --v3-sidebar-menu-hover-bg-color: rgba(5, 150, 105, 0.05);
   --v3-sidebar-menu-tip-line-bg-color: var(--p-emerald-600);
   --v3-header-bg-color: var(--p-white);
   --v3-header-box-shadow: none;
   --v3-header-border-bottom: 1px solid var(--p-gray-200);
   --v3-tagsview-tag-bg-color: var(--p-gray-100);
-  --v3-tagsview-tag-active-bg-color: var(--p-emerald-600);
-  --v3-tagsview-tag-active-text-color: #ffffff;
+  --v3-tagsview-tag-active-bg-color: var(--theme-accent-fill);
+  --v3-tagsview-tag-active-text-color: var(--theme-accent-on);
   --v3-tagsview-tag-active-border-color: transparent;
   --v3-tagsview-tag-border-color: transparent;
 }
@@ -205,7 +246,10 @@
   /* --- Text --- */
   --theme-text-primary: #ececec;
   --theme-text-secondary: var(--p-gray-400);
-  --theme-text-muted: var(--p-gray-600);
+  /* 原值为 gray-600，在 #0c0c0e 上仅 2.53，远低于 AA 的 4.5。
+     亮色主题已把 muted 提升到 gray-600（7.4），暗色未同步——
+     暗色下灰阶方向相反，越靠后越暗，直接沿用会变成「越改越不可读」。 */
+  --theme-text-muted: var(--p-gray-450);
 
   /* --- Border --- */
   --theme-border: rgba(255, 255, 255, 0.07);
@@ -213,16 +257,31 @@
 
   /* --- Accent --- */
   --theme-accent: var(--p-emerald-500);
+  /* 暗底上 emerald-500 对比度已达 7.7，文字与填充共用同一值 */
+  --theme-accent-strong: var(--p-emerald-400);
   --theme-accent-hover: var(--p-emerald-400);
   --theme-accent-light: rgba(16, 185, 129, 0.1);
   --theme-accent-gradient: linear-gradient(135deg, var(--p-emerald-400), var(--p-emerald-500));
   --theme-accent-glow: rgba(16, 185, 129, 0.18);
+
+  /* 装饰性背景层专用，见亮色块中的说明 */
+  --theme-bg-dots: rgba(255, 255, 255, 0.16);
+  --theme-ambient-glow: rgba(16, 185, 129, 0.3);
+
+  /* 暗色下强调色本身已经够亮，改用近黑文字压在其上：
+     emerald-500 + #09090b = 7.84，比深绿底更跳，也更符合暗色 UI 的惯例 */
+  --theme-accent-fill: var(--p-emerald-500);
+  --theme-accent-fill-hover: var(--p-emerald-400);
+  --theme-accent-on: var(--p-black);
 
   /* --- Functional --- */
   --theme-success: var(--p-emerald-400);
   --theme-warning: var(--p-amber-400);
   --theme-danger: var(--p-red-400);
   --theme-info: var(--p-blue-400);
+  --theme-warning-light: rgba(251, 191, 36, 0.14);
+  --theme-danger-light: rgba(248, 113, 113, 0.14);
+  --theme-info-light: rgba(96, 165, 250, 0.14);
 
   /* --- Shadow --- */
   --theme-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
@@ -251,7 +310,7 @@
   --el-text-color-primary: #ececec;
   --el-text-color-regular: #c8c8c8;
   --el-text-color-secondary: var(--p-gray-400);
-  --el-text-color-placeholder: var(--p-gray-600);
+  --el-text-color-placeholder: var(--p-gray-450);
   --el-text-color-disabled: var(--p-gray-700);
 
   --el-border-color: rgba(255, 255, 255, 0.07);
@@ -283,8 +342,8 @@
   --v3-header-box-shadow: none;
   --v3-header-border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   --v3-tagsview-tag-bg-color: rgba(255, 255, 255, 0.04);
-  --v3-tagsview-tag-active-bg-color: var(--p-emerald-500);
-  --v3-tagsview-tag-active-text-color: #ffffff;
+  --v3-tagsview-tag-active-bg-color: var(--theme-accent-fill);
+  --v3-tagsview-tag-active-text-color: var(--theme-accent-on);
   --v3-tagsview-tag-active-border-color: transparent;
   --v3-tagsview-tag-border-color: transparent;
 }

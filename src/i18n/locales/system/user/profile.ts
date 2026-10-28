@@ -5,8 +5,11 @@ export const zh = {
     saveProfile: '保存修改',
   },
   avatar: {
+    changeAvatar: '更换头像',
     selectImage: '请选择图片',
     tip: '拖拽调整位置，滚轮缩放大小',
+    zoomIn: '放大',
+    zoomOut: '缩小',
   },
   defaultUser: '用户',
   dialogs: {
@@ -84,8 +87,11 @@ export const en = {
     saveProfile: 'Save Changes',
   },
   avatar: {
+    changeAvatar: 'Change avatar',
     selectImage: 'Please select image',
     tip: 'Drag to adjust position, scroll to zoom',
+    zoomIn: 'Zoom in',
+    zoomOut: 'Zoom out',
   },
   defaultUser: 'User',
   dialogs: {

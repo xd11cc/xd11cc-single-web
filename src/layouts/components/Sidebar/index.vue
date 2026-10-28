@@ -130,7 +130,7 @@ const sidebarMenuHoverBgColor = computed(() =>
 
 :deep(.el-menu-item.is-active) {
   background-color: var(--theme-accent-light);
-  color: var(--theme-accent);
+  color: var(--theme-accent-strong);
   font-weight: var(--p-weight-semibold);
 }
 

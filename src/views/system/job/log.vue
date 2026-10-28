@@ -13,7 +13,7 @@
             v-model="searchData.jobGroup"
             :placeholder="$t('system.job.log.searchPlaceholder.jobGroup')"
             clearable
-            style="width: 180px"
+            class="search-field-md"
           >
             <el-option
               v-for="item in getDictList('system_job_group')"
@@ -28,7 +28,7 @@
             v-model="searchData.status"
             :placeholder="$t('system.job.log.searchPlaceholder.status')"
             clearable
-            style="width: 150px"
+            class="search-field"
           >
             <el-option
               v-for="item in getDictList('system_job_log_status')"
@@ -66,26 +66,22 @@
           <el-table-column
             prop="jobName"
             :label="$t('system.job.log.columns.jobName')"
-            align="center"
             min-width="120"
           />
           <el-table-column
             prop="jobGroup"
             :label="$t('system.job.log.columns.jobGroup')"
-            align="center"
             width="120"
           />
           <el-table-column
             prop="invokeTarget"
             :label="$t('system.job.log.columns.invokeTarget')"
-            align="center"
             min-width="160"
             show-overflow-tooltip
           />
           <el-table-column
             prop="jobMessage"
             :label="$t('system.job.log.columns.jobMessage')"
-            align="center"
             min-width="200"
             show-overflow-tooltip
           />
@@ -114,7 +110,6 @@
           <el-table-column
             prop="remark"
             :label="$t('system.job.log.columns.remark')"
-            align="center"
             min-width="120"
             show-overflow-tooltip
           />
@@ -327,27 +322,3 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
   immediate: true,
 })
 </script>
-
-<style lang="scss" scoped>
-.search-wrapper {
-  margin-bottom: 20px;
-  :deep(.el-card__body) {
-    padding-bottom: 2px;
-  }
-}
-
-.toolbar-wrapper {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.table-wrapper {
-  margin-bottom: 20px;
-}
-
-.page-wrapper {
-  display: flex;
-  justify-content: flex-end;
-}
-</style>

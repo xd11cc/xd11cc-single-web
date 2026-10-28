@@ -8,7 +8,9 @@ import { i18n } from '@/i18n'
 // 创建axios实例
 // 默认 10s：3s 对跨公网 HTTPS + 慢 SQL 的后台接口过短，易误报超时。
 // 上传/导出/Cron 试运行等长耗时接口在调用处用 LONG_REQUEST_TIMEOUT 单独覆盖。
-const BASE_URL = import.meta.env.VITE_BASE_URL + import.meta.env.VITE_PUBLIC_PATH
+// 接口基址：直连地址（可空）+ 后端 context-path。
+// 不能复用 VITE_PUBLIC_PATH，那是前端的 base 路径。
+const BASE_URL = import.meta.env.VITE_BASE_URL + import.meta.env.VITE_API_PREFIX
 const DEFAULT_REQUEST_TIMEOUT = 10_000
 export const LONG_REQUEST_TIMEOUT = 60_000
 

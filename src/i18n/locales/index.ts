@@ -26,8 +26,6 @@ import { zh as LayoutSettingsZh, en as LayoutSettingsEn } from './layout/setting
 import { zh as LayoutTagsviewZh, en as LayoutTagsviewEn } from './layout/tagsView'
 import { zh as LoginZh, en as LoginEn } from './login/index'
 import { zh as LoginBindZh, en as LoginBindEn } from './login/bind'
-import { zh as LoginForgotZh, en as LoginForgotEn } from './login/forgot'
-import { zh as LoginQrcodeZh, en as LoginQrcodeEn } from './login/qrcode'
 import { zh as SystemAuthclientZh, en as SystemAuthclientEn } from './system/authClient'
 import { zh as SystemConfigZh, en as SystemConfigEn } from './system/config'
 import { zh as SystemDeptZh, en as SystemDeptEn } from './system/dept'
@@ -40,6 +38,7 @@ import { zh as SystemMenuZh, en as SystemMenuEn } from './system/menu'
 import { zh as SystemNoticeZh, en as SystemNoticeEn } from './system/notice'
 import { zh as SystemNoticeuserZh, en as SystemNoticeuserEn } from './system/noticeUser'
 import { zh as SystemOnlineuserZh, en as SystemOnlineuserEn } from './system/onlineUser'
+import { zh as SystemMqfailZh, en as SystemMqfailEn } from './system/mqFail'
 import { zh as SystemOperatelogZh, en as SystemOperatelogEn } from './system/operateLog'
 import { zh as SystemPostZh, en as SystemPostEn } from './system/post'
 import { zh as SystemRoleZh, en as SystemRoleEn } from './system/role'
@@ -88,8 +87,6 @@ export const zhCN = {
   login: {
     ...LoginZh,
     bind: LoginBindZh,
-    forgot: LoginForgotZh,
-    qrcode: LoginQrcodeZh,
   },
   system: {
     authClient: SystemAuthclientZh,
@@ -108,6 +105,7 @@ export const zhCN = {
     notice: SystemNoticeZh,
     noticeUser: SystemNoticeuserZh,
     onlineUser: SystemOnlineuserZh,
+    mqFail: SystemMqfailZh,
     operateLog: SystemOperatelogZh,
     post: SystemPostZh,
     role: SystemRoleZh,
@@ -162,8 +160,6 @@ export const enUS = {
   login: {
     ...LoginEn,
     bind: LoginBindEn,
-    forgot: LoginForgotEn,
-    qrcode: LoginQrcodeEn,
   },
   system: {
     authClient: SystemAuthclientEn,
@@ -182,6 +178,7 @@ export const enUS = {
     notice: SystemNoticeEn,
     noticeUser: SystemNoticeuserEn,
     onlineUser: SystemOnlineuserEn,
+    mqFail: SystemMqfailEn,
     operateLog: SystemOperatelogEn,
     post: SystemPostEn,
     role: SystemRoleEn,

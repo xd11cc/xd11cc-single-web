@@ -7,7 +7,7 @@
             v-model="query.title"
             clearable
             :placeholder="$t('bpm.approval.done.placeholder.title')"
-            style="width: 220px"
+            class="search-field-xl"
             @keyup.enter="handleSearch"
           />
         </el-form-item>
@@ -16,7 +16,7 @@
             v-model="query.processDefinitionKey"
             clearable
             :placeholder="$t('bpm.approval.done.placeholder.processKey')"
-            style="width: 200px"
+            class="search-field-lg"
             @keyup.enter="handleSearch"
           />
         </el-form-item>
@@ -125,10 +125,7 @@
       </div>
     </el-card>
 
-    <ApprovalDetailDrawer
-      v-model="detailVisible"
-      :process-instance-id="activeProcessInstanceId"
-    />
+    <ApprovalDetailDrawer v-model="detailVisible" :process-instance-id="activeProcessInstanceId" />
   </div>
 </template>
 

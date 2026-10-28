@@ -160,7 +160,7 @@ function handleBind() {
       color: var(--theme-text-muted);
       transition: color var(--p-duration-fast);
       &:hover {
-        color: var(--theme-accent);
+        color: var(--theme-accent-strong);
       }
     }
 
@@ -173,12 +173,12 @@ function handleBind() {
       font-family: var(--p-font-display);
       font-weight: var(--p-weight-semibold);
       font-size: var(--p-text-md);
-      background: var(--theme-accent);
-      color: #ffffff;
+      background: var(--theme-accent-fill);
+      color: var(--theme-accent-on);
       transition: all var(--p-duration-fast) var(--p-ease-out);
 
       &:hover {
-        background: var(--theme-accent-hover);
+        background: var(--theme-accent-fill-hover);
         box-shadow: 0 4px 12px var(--theme-accent-glow);
       }
 

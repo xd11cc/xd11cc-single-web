@@ -19,7 +19,7 @@
             v-model="searchData.status"
             :placeholder="$t('system.authClient.search.statusPlaceholder')"
             clearable
-            style="width: 150px"
+            class="search-field"
           >
             <el-option
               v-for="item in getDictList('system_status')"
@@ -62,16 +62,8 @@
       <div class="table-wrapper">
         <el-table ref="tableRef" :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column
-            prop="name"
-            :label="$t('system.authClient.columns.name')"
-            align="center"
-          />
-          <el-table-column
-            prop="source"
-            :label="$t('system.authClient.columns.source')"
-            align="center"
-          />
+          <el-table-column prop="name" :label="$t('system.authClient.columns.name')" />
+          <el-table-column prop="source" :label="$t('system.authClient.columns.source')" />
           <el-table-column
             prop="icon"
             :label="$t('system.authClient.columns.icon')"
@@ -82,15 +74,11 @@
               <img v-if="scope.row.icon" :src="ossUrl + scope.row.icon" class="table-icon" />
             </template>
           </el-table-column>
-          <el-table-column
-            prop="clientId"
-            :label="$t('system.authClient.columns.clientId')"
-            align="center"
-          />
+          <el-table-column prop="clientId" :label="$t('system.authClient.columns.clientId')" />
           <el-table-column
             prop="sort"
             :label="$t('system.authClient.columns.sort')"
-            align="center"
+            align="right"
             width="80"
           />
           <el-table-column
@@ -110,11 +98,7 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column
-            prop="remark"
-            :label="$t('system.authClient.columns.remark')"
-            align="center"
-          />
+          <el-table-column prop="remark" :label="$t('system.authClient.columns.remark')" />
           <el-table-column
             prop="createTime"
             :label="$t('system.authClient.columns.createTime')"
@@ -532,28 +516,6 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
 </script>
 
 <style lang="scss" scoped>
-.search-wrapper {
-  margin-bottom: 20px;
-  :deep(.el-card__body) {
-    padding-bottom: 2px;
-  }
-}
-
-.toolbar-wrapper {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.table-wrapper {
-  margin-bottom: 20px;
-}
-
-.page-wrapper {
-  display: flex;
-  justify-content: flex-end;
-}
-
 .table-icon {
   width: 24px;
   height: 24px;
@@ -562,7 +524,7 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
 }
 
 .el-upload__tip {
-  font-size: 12px;
+  font-size: var(--p-text-sm);
   color: var(--el-color-info);
   margin-top: 4px;
   line-height: 1.4;

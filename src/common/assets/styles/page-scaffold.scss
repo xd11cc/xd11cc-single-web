@@ -1,0 +1,75 @@
+// 断点 mixin 通过 vite 的 additionalData 注入到「入口文件」，
+// 但本文件是被 index.scss @use 的 partial，不经过那道注入，需显式引入。
+@use './breakpoints.scss' as *;
+
+// 列表页通用骨架：搜索区 / 工具栏 / 表格 / 分页
+//
+// 这四段样式原先在 19 个页面里各复制一份，其中 .search-wrapper 有 16 处完全相同、
+// .table-wrapper 13 处完全相同——改一次间距要改十几个文件，也是「外壳统一、页面各行其是」
+// 的根源之一。抽到全局后，页面只保留自己的业务样式，骨架由这里单点维护。
+//
+// 命名刻意保持通用（search / toolbar / table / page），与既有页面一致，迁移时无需改模板。
+
+// ===== 搜索区卡片 =====
+// 卡片底部去掉多余留白：表单末行自带行距，再加卡片 padding 会显得空。
+.search-wrapper {
+  margin-bottom: var(--p-space-5);
+
+  .el-card__body {
+    padding-bottom: 2px;
+  }
+}
+
+// ===== 工具栏（新增/批量删除等按钮行）=====
+.toolbar-wrapper {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--p-space-5);
+}
+
+// ===== 表格容器 =====
+.table-wrapper {
+  margin-bottom: var(--p-space-5);
+}
+
+// ===== 分页行 =====
+.page-wrapper {
+  display: flex;
+  justify-content: flex-end;
+}
+
+// ===== 搜索表单字段宽度 =====
+// 原先 31 处内联 style="width: Npx"，数值只有 5 档且全是「适配中文标签长度」这一个意图，
+// 收敛成档位类，避免每个页面各自拍宽度。
+$search-field-widths: (
+  'search-field': 150px,
+  'search-field-sm': 130px,
+  'search-field-md': 180px,
+  'search-field-lg': 200px,
+  'search-field-xl': 220px,
+);
+
+@each $name, $width in $search-field-widths {
+  .#{$name} {
+    width: $width;
+  }
+}
+
+// 窄屏下搜索字段不再固定宽度，与容器同宽，避免与标签一起溢出
+@include mobile {
+  .search-wrapper .el-form--inline .el-form-item {
+    margin-right: 0;
+  }
+
+  .search-wrapper .el-form--inline .el-form-item__content {
+    min-width: 0;
+
+    .search-field,
+    .search-field-sm,
+    .search-field-md,
+    .search-field-lg,
+    .search-field-xl {
+      width: 100%;
+    }
+  }
+}

@@ -23,6 +23,8 @@ export interface LayoutsConfig {
   cacheTagsView: boolean
   // 开启系统水印
   showWatermark: boolean
+  // 有新待办时弹出待办提醒
+  todoPopup: boolean
   // 是否显示灰色模式
   showGreyMode: boolean
   // 是否显示色热模式
@@ -41,6 +43,7 @@ const DEFAULT_CONFIG: LayoutsConfig = {
   showSearchMenu: true,
   cacheTagsView: false,
   showWatermark: true,
+  todoPopup: true,
   showGreyMode: false,
   showColorWeakness: false,
 }

@@ -376,19 +376,16 @@ watch(
 </script>
 
 <style lang="scss" scoped>
+// 编辑器样式统一由设计系统令牌驱动，避免与全局主题出现“两套绿色”和暗色割裂。
 .modeler-page {
-  --ink: #21313a;
-  --muted: #71818a;
-  --line: #e2e8eb;
-  --accent: #087f5b;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   width: 100%;
   height: 100%;
   min-height: 0;
   overflow: hidden;
-  color: var(--ink);
-  background: #f5f7f8;
+  color: var(--theme-text-primary);
+  background: var(--theme-bg-page);
 }
 
 .modeler-header {
@@ -399,8 +396,8 @@ watch(
   gap: 18px;
   min-height: 60px;
   padding: 8px 18px;
-  border-bottom: 1px solid var(--line);
-  background: #fff;
+  border-bottom: 1px solid var(--theme-border);
+  background: var(--theme-bg-surface);
 }
 
 .header-main,
@@ -418,18 +415,18 @@ watch(
   gap: 6px;
 }
 .publish-button {
-  --el-button-bg-color: #087f5b;
-  --el-button-border-color: #087f5b;
-  --el-button-hover-bg-color: #096e52;
-  --el-button-hover-border-color: #096e52;
+  --el-button-bg-color: var(--theme-accent);
+  --el-button-border-color: var(--theme-accent);
+  --el-button-hover-bg-color: var(--theme-accent-hover);
+  --el-button-hover-border-color: var(--theme-accent-hover);
 }
 .save-button {
-  --el-button-text-color: #087f5b;
-  --el-button-bg-color: #edf8f4;
-  --el-button-border-color: #b8dacc;
+  --el-button-text-color: var(--theme-accent-strong);
+  --el-button-bg-color: var(--theme-accent-light);
+  --el-button-border-color: var(--theme-accent-light);
   --el-button-hover-text-color: #fff;
-  --el-button-hover-bg-color: #0a8b65;
-  --el-button-hover-border-color: #0a8b65;
+  --el-button-hover-bg-color: var(--theme-accent);
+  --el-button-hover-border-color: var(--theme-accent);
 }
 
 .header-main {
@@ -443,33 +440,33 @@ watch(
   gap: 6px;
   height: 32px;
   padding: 0 10px;
-  color: #53636c;
+  color: var(--theme-text-secondary);
   font: inherit;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: var(--p-text-base);
+  font-weight: var(--p-weight-semibold);
   border: 1px solid transparent;
-  border-radius: 8px;
+  border-radius: var(--p-radius-lg);
   background: transparent;
   cursor: pointer;
   transition:
-    color 0.16s ease,
-    border-color 0.16s ease,
-    background 0.16s ease;
+    color var(--p-duration-fast) ease,
+    border-color var(--p-duration-fast) ease,
+    background var(--p-duration-fast) ease;
 }
 .back-button:hover {
-  color: var(--accent);
-  border-color: #cfe3dc;
-  background: #edf8f4;
+  color: var(--theme-accent-strong);
+  border-color: var(--theme-border);
+  background: var(--theme-accent-light);
 }
 .back-button:focus-visible {
-  outline: 2px solid rgba(8, 127, 91, 0.28);
+  outline: 2px solid var(--theme-accent);
   outline-offset: 2px;
 }
 .header-divider {
   flex: none;
   width: 1px;
   height: 28px;
-  background: var(--line);
+  background: var(--theme-border);
 }
 .process-identity {
   min-width: 0;
@@ -480,58 +477,58 @@ watch(
   width: 32px;
   height: 32px;
   place-items: center;
-  color: #0a7c5a;
-  border: 1px solid #d5e9e2;
-  border-radius: 9px;
-  background: #edf8f4;
+  color: var(--theme-accent-strong);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--p-radius-lg);
+  background: var(--theme-accent-light);
 }
 .process-name {
   width: 210px;
   padding: 0;
-  color: #2d3c44;
-  font-family: 'Outfit', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
+  color: var(--theme-text-primary);
+  font-family: var(--p-font-display);
+  font-size: var(--p-text-md);
+  font-weight: var(--p-weight-semibold);
   border: 0;
   outline: 0;
   background: transparent;
 }
 .process-key {
   margin-top: 2px;
-  color: #92a0a7;
-  font-size: 9px;
-  font-weight: 600;
+  color: var(--theme-text-muted);
+  font-size: var(--p-text-sm);
+  font-weight: var(--p-weight-semibold);
   letter-spacing: 0.08em;
 }
 .canvas-tools {
   padding: 3px;
-  border: 1px solid #dfe6e9;
-  border-radius: 9px;
-  background: #fff;
-  box-shadow: 0 2px 5px rgba(29, 48, 59, 0.04);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--p-radius-lg);
+  background: var(--theme-bg-surface);
+  box-shadow: var(--theme-shadow-sm);
 }
 .canvas-tools button {
   display: grid;
   width: 31px;
   height: 29px;
   place-items: center;
-  color: #61717a;
-  font-size: 15px;
+  color: var(--theme-text-secondary);
+  font-size: var(--p-text-lg);
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--p-radius-md);
   background: transparent;
   cursor: pointer;
-  transition: 0.16s ease;
+  transition: var(--p-duration-fast) ease;
 }
 .canvas-tools button:hover {
-  color: #087f5b;
-  background: #edf8f4;
+  color: var(--theme-accent-strong);
+  background: var(--theme-accent-light);
 }
 .tool-divider {
   width: 1px;
   height: 17px;
   margin: 0 3px;
-  background: #e2e8eb;
+  background: var(--theme-border);
 }
 
 .workspace {
@@ -542,7 +539,7 @@ watch(
 .canvas-column {
   min-width: 0;
   min-height: 0;
-  border-right: 1px solid var(--line);
+  border-right: 1px solid var(--theme-border);
 }
 .xml-dialog-toolbar {
   display: flex;
@@ -557,25 +554,30 @@ watch(
 }
 .xml-language-badge {
   padding: 4px 8px;
-  color: #087f5b;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 10px;
-  font-weight: 700;
+  color: var(--theme-accent-strong);
+  font-family: var(--p-font-mono);
+  font-size: var(--p-text-sm);
+  font-weight: var(--p-weight-bold);
   letter-spacing: 0.1em;
-  border: 1px solid #c8e2d9;
-  border-radius: 6px;
-  background: #eff8f5;
+  border: 1px solid var(--theme-border);
+  border-radius: var(--p-radius-md);
+  background: var(--theme-accent-light);
 }
 .xml-code-preview {
-  border-radius: 9px;
+  border-radius: var(--p-radius-lg);
 }
 .xml-editor :deep(textarea) {
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 12px;
+  font-family: var(--p-font-mono);
+  font-size: var(--p-text-sm);
   line-height: 1.6;
 }
 
-@media (max-width: 1100px) {
+// 设计器专属密度阈值：这是全屏编辑器，1100px 以下属性面板要从 320 收到 280、
+// 顶栏按钮要去掉文字。不能复用 mobile(991)——992~1100 区间保持文字会挤爆顶栏；
+// 也不该并到 lg(1200)——那是 min-width 档位，语义相反。
+$bp-modeler-compact: 1100px;
+
+@media (max-width: $bp-modeler-compact) {
   .header-actions :deep(.el-button span) {
     display: none;
   }
@@ -587,7 +589,7 @@ watch(
   }
 }
 
-@media (max-width: 760px) {
+@include sm {
   .modeler-header {
     min-height: 54px;
     padding: 7px 10px;

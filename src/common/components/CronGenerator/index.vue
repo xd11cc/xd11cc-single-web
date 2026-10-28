@@ -1095,7 +1095,7 @@ watch(cronExpression, calcRunTimes, { immediate: true })
 
 .cron-expr-header {
   padding: 6px 12px;
-  font-size: 12px;
+  font-size: var(--p-text-sm);
   color: var(--el-text-color-secondary);
   background: var(--el-fill-color-light);
   border-bottom: 1px solid var(--el-border-color);
@@ -1126,14 +1126,14 @@ watch(cronExpression, calcRunTimes, { immediate: true })
 }
 
 .cron-field-label {
-  font-size: 11px;
+  font-size: var(--p-text-xs);
   color: var(--el-text-color-placeholder);
   margin-bottom: 2px;
 }
 
 .cron-field-value {
   font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
-  font-size: 14px;
+  font-size: var(--p-text-md);
   font-weight: 500;
   color: var(--el-text-color-primary);
 }
@@ -1155,7 +1155,7 @@ watch(cronExpression, calcRunTimes, { immediate: true })
 
 .cron-expr-code {
   font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
-  font-size: 13px;
+  font-size: var(--p-text-base);
   font-weight: 600;
   color: var(--el-color-primary);
   white-space: nowrap;
@@ -1173,7 +1173,7 @@ watch(cronExpression, calcRunTimes, { immediate: true })
 
 .cron-run-header {
   padding: 6px 12px;
-  font-size: 12px;
+  font-size: var(--p-text-sm);
   color: var(--el-text-color-secondary);
   background: var(--el-fill-color-light);
   border-bottom: 1px solid var(--el-border-color);
@@ -1199,7 +1199,7 @@ watch(cronExpression, calcRunTimes, { immediate: true })
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  font-size: var(--p-text-xs);
   color: var(--el-text-color-secondary);
   background: var(--el-fill-color);
   border-radius: 4px;
@@ -1207,7 +1207,7 @@ watch(cronExpression, calcRunTimes, { immediate: true })
 
 .cron-run-time {
   font-family: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
-  font-size: 13px;
+  font-size: var(--p-text-base);
   color: var(--el-text-color-regular);
 }
 </style>

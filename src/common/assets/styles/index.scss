@@ -3,13 +3,15 @@
 @use './element-plus.css';
 @use './themes.css';
 @use './mixins.scss';
-@use './breakpoints.scss';
+@use './page-scaffold.scss';
+// 断点 mixin 由 vite additionalData 注入（见 vite.config.ts），此处不要再 @use，
+// 同一文件重复加载同一 Sass 模块会直接报错。
 
 // 业务页面几乎都应该在根元素上挂载 class="app-container"，以保持页面美观
 .app-container {
-  padding: 20px;
-  @media (max-width: 991px) {
-    padding: 12px;
+  padding: var(--p-space-5);
+  @include mobile {
+    padding: var(--p-space-3);
   }
 }
 
@@ -39,6 +41,9 @@ body {
     'Hiragino Sans GB',
     'Microsoft YaHei',
     sans-serif;
+  // 等宽数字：默认的比例数字里 1 比 8 窄，导致统计数字刷新时横向抖动、
+  // 表格数字列小数点对不齐。全站开启后数字占位固定，只有字形在变。
+  font-variant-numeric: tabular-nums;
   @extend %scrollbar;
 }
 
@@ -64,14 +69,61 @@ div:focus {
   outline: none;
 }
 
+// 键盘焦点环。Element Plus 组件自身带 focus-visible 规则，但 outline-color
+// 取的是 primary-light-5（emerald-100），在浅底上几乎不可见——已在下方按钮
+// 样式里改走 accent-strong。这里兜底原生可交互元素与项目内自定义的可点击容器，
+// 否则键盘用户完全看不到焦点落在哪里。
+a:focus-visible,
+button:focus-visible,
+[role='button']:focus-visible,
+[role='tab']:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--theme-accent-strong);
+  outline-offset: 2px;
+}
+
 .link-type,
 .link-type:focus {
-  color: var(--theme-accent);
+  color: var(--theme-accent-strong);
   cursor: pointer;
 
   &:hover {
     color: var(--theme-accent-hover);
   }
+}
+
+// ===== 主按钮的填充 / 其上文字配对 =====
+// Element Plus 默认用 --el-color-primary 作底配白字：本项目里是 emerald-600，
+// 对比度仅 3.77（暗色 emerald-500 更低，2.54）。更严重的是状态色：
+// hover 底走 primary-light-3 = emerald-300，白字掉到 1.52；
+// disabled 底走 light-5 = emerald-100，白字 1.13，基本看不见。
+// 统一改走 accent-fill / accent-on 令牌后，常态 5.48（暗 7.84）、
+// hover 7.68（暗 10.35），禁用态改为中性底 + 次要文字。
+// 选择器加 html 前缀是为了稳定压过 Element Plus 的同名变量声明（不依赖引入顺序）。
+html .el-button {
+  --el-button-outline-color: var(--theme-accent-strong);
+}
+
+html .el-button--primary {
+  --el-button-bg-color: var(--theme-accent-fill);
+  --el-button-border-color: var(--theme-accent-fill);
+  --el-button-text-color: var(--theme-accent-on);
+  --el-button-hover-bg-color: var(--theme-accent-fill-hover);
+  --el-button-hover-border-color: var(--theme-accent-fill-hover);
+  --el-button-hover-text-color: var(--theme-accent-on);
+  --el-button-active-bg-color: var(--theme-accent-fill-hover);
+  --el-button-active-border-color: var(--theme-accent-fill-hover);
+  --el-button-disabled-bg-color: var(--theme-bg-elevated);
+  --el-button-disabled-border-color: var(--theme-border);
+  --el-button-disabled-text-color: var(--theme-text-muted);
+}
+
+// 文字型主按钮：EP 默认用 --el-color-primary 当文字色（emerald-600，白底 3.61），
+// 属于「强调色当文字」，应走 accent-strong（5.25）。
+html .el-button--primary.is-text,
+html .el-button--primary.is-link {
+  --el-button-text-color: var(--theme-accent-strong);
+  --el-button-hover-text-color: var(--theme-accent-hover);
 }
 
 // 表格基础视觉统一
@@ -89,7 +141,7 @@ div:focus {
   height: 44px;
   border-bottom-color: var(--theme-border);
   color: var(--theme-text-secondary);
-  font-size: 12px;
+  font-size: var(--p-text-sm);
   font-weight: 600;
 }
 
@@ -199,14 +251,14 @@ div:focus {
   }
 }
 
-@media (max-width: 767px) {
+@include sm {
   .adaptive-form .el-col.el-col-12 {
     max-width: 100%;
     flex: 0 0 100%;
   }
 }
 
-@media (max-width: 575px) {
+@include phone {
   .adaptive-form {
     .el-form-item {
       display: block;
@@ -222,6 +274,96 @@ div:focus {
 
     .el-form-item__content {
       margin-left: 0 !important;
+    }
+  }
+}
+
+// ===== 消息类通知（Notify 组件 type=2 富内容通知） =====
+// ElNotification 渲染在 body 下且内容为 HTML 字符串，无法使用 scoped 样式
+.notify-message-notice {
+  cursor: pointer;
+
+  .notify-message {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .notify-message__title {
+    font-size: var(--p-text-base);
+    font-weight: 600;
+    color: var(--theme-text-primary);
+    line-height: 1.45;
+    word-break: break-word;
+  }
+
+  .notify-message__desc {
+    font-size: var(--p-text-sm);
+    color: var(--theme-text-secondary);
+    line-height: 1.55;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  &:hover {
+    background-color: var(--theme-bg-elevated);
+  }
+}
+
+.notify-message-notice .notify-message__action {
+  margin-top: 2px;
+  font-size: var(--p-text-sm);
+  font-weight: 500;
+  color: var(--theme-accent-strong);
+}
+
+// ===== 无障碍：减少动效偏好 =====
+// 之前只有 useCrud 与 TreeTable 两个文件各自处理，全站 60+ 处 transition/animation
+// 其余都照常播放。这里给一条全局兜底，把所有动效压到「几乎瞬间完成」，
+// 而不是 none —— 保留 transition 的结束事件语义，避免依赖动画结束回调的交互卡住。
+// 需要「关掉动画后换一种静态呈现」的场景（进度条、扫描线）由组件内
+// @include reduced-motion 单独处理。
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    /* 错峰入场靠 animation-delay 制造节奏，动画归零后 delay 只会让内容晚出现，
+       例如仪表盘 --delay 最大 6 档 × 80ms = 480ms 的空白。一并清零。 */
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+// ===== 窄屏表格 =====
+// 24 个含表格的页面里只有 5 个用共享 CRUD 壳，所以策略放在全局而不是组件里。
+// 注意 Element Plus 的 .el-table__cell 默认内边距本来就是 8px 0，压它没有意义；
+// 真正吃掉横向空间的是内层 .cell 的 0 12px 与 14px 的表格字号。
+// 加 html 前缀是为了稳定压过 EP 的 .el-table / .el-table .cell，
+// 不依赖两者在最终 CSS 里的先后顺序。
+// 列优先级隐藏与卡片化需要每列带 priority 元数据，属逐页改造，不在此处做。
+@include sm {
+  html .el-table {
+    font-size: var(--p-text-sm);
+
+    .cell {
+      padding: 0 var(--p-space-2);
+      line-height: 20px;
+    }
+  }
+}
+
+// 超小屏：分页器会折成三行，先让出非必要的每页条数选择与跳页
+@include xs {
+  html .el-pagination {
+    .el-pagination__sizes,
+    .el-pagination__jump {
+      display: none;
     }
   }
 }

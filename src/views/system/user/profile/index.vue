@@ -3,14 +3,19 @@
     <!-- system.user.profile.sidebar.title -->
     <aside class="profile-sidebar">
       <div class="user-card">
-        <div class="avatar-wrapper" @click="handleAvatarClick">
+        <button
+          type="button"
+          class="avatar-wrapper"
+          :aria-label="$t('system.user.profile.avatar.changeAvatar')"
+          @click="handleAvatarClick"
+        >
           <el-avatar :size="80" :src="avatarUrl" class="user-avatar">
             <span class="avatar-text">{{ avatarFallback }}</span>
           </el-avatar>
-          <div class="avatar-overlay">
+          <span class="avatar-overlay" aria-hidden="true">
             <Icon icon="lucide:camera" :width="20" :height="20" />
-          </div>
-        </div>
+          </span>
+        </button>
         <input
           ref="fileInputRef"
           type="file"
@@ -326,7 +331,14 @@
           <div class="crop-circle"></div>
         </div>
         <div v-if="previewUrl" class="crop-toolbar">
-          <Icon icon="lucide:zoom-out" class="crop-tool-icon" @click="handleZoom(-0.1)" />
+          <button
+            type="button"
+            class="crop-tool-btn"
+            :aria-label="$t('system.user.profile.avatar.zoomOut')"
+            @click="handleZoom(-0.1)"
+          >
+            <Icon icon="lucide:zoom-out" class="crop-tool-icon" aria-hidden="true" />
+          </button>
           <el-slider
             v-model="cropScale"
             :min="0.5"
@@ -335,7 +347,14 @@
             :show-tooltip="false"
             class="crop-slider"
           />
-          <Icon icon="lucide:zoom-in" class="crop-tool-icon" @click="handleZoom(0.1)" />
+          <button
+            type="button"
+            class="crop-tool-btn"
+            :aria-label="$t('system.user.profile.avatar.zoomIn')"
+            @click="handleZoom(0.1)"
+          >
+            <Icon icon="lucide:zoom-in" class="crop-tool-icon" aria-hidden="true" />
+          </button>
         </div>
         <p v-if="previewUrl" class="crop-tip">{{ $t('system.user.profile.avatar.tip') }}</p>
         <div v-if="!previewUrl" class="avatar-placeholder">
@@ -668,7 +687,9 @@ function resetPwdForm() {
   padding: var(--p-space-5);
   min-height: calc(100vh - 120px);
 
-  @media (max-width: 900px) {
+  // 与布局外壳同步降级：useResize 在 ≤992 时把侧边栏转成抽屉，
+  // 这里若继续保留两栏，会出现「外壳已是移动态、页面还是桌面两栏」的错位
+  @include mobile {
     grid-template-columns: 1fr;
   }
 }
@@ -692,11 +713,18 @@ function resetPwdForm() {
 
   .avatar-wrapper {
     position: relative;
+    display: block;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: inherit;
+    line-height: 0;
     cursor: pointer;
     margin-bottom: var(--p-space-3);
     border-radius: 50%;
 
-    &:hover .avatar-overlay {
+    &:hover .avatar-overlay,
+    &:focus-visible .avatar-overlay {
       opacity: 1;
     }
   }
@@ -716,12 +744,13 @@ function resetPwdForm() {
 
   .user-avatar {
     background: var(--theme-accent-light);
-    color: var(--theme-accent);
+    color: var(--theme-accent-strong);
 
     .avatar-text {
       font-family: var(--p-font-display);
-      font-size: 28px;
+      font-size: var(--p-text-3xl);
       font-weight: var(--p-weight-bold);
+      line-height: 1;
     }
   }
 
@@ -769,8 +798,8 @@ function resetPwdForm() {
   font-size: var(--p-text-sm);
 
   .sidebar-icon {
-    font-size: 14px;
-    color: var(--theme-accent);
+    font-size: var(--p-text-md);
+    color: var(--theme-accent-strong);
     flex-shrink: 0;
   }
 
@@ -819,7 +848,7 @@ function resetPwdForm() {
     color: var(--theme-text-muted);
 
     &.is-active {
-      color: var(--theme-accent);
+      color: var(--theme-accent-strong);
     }
 
     &:hover {
@@ -856,8 +885,8 @@ function resetPwdForm() {
   gap: var(--p-space-2);
 
   .section-icon {
-    font-size: 18px;
-    color: var(--theme-accent);
+    font-size: var(--p-text-xl);
+    color: var(--theme-accent-strong);
   }
 }
 
@@ -878,8 +907,8 @@ function resetPwdForm() {
   color: var(--theme-text-primary);
 
   .role-badge {
-    font-size: 16px;
-    color: var(--theme-accent);
+    font-size: var(--p-text-lg);
+    color: var(--theme-accent-strong);
   }
 }
 
@@ -914,8 +943,8 @@ function resetPwdForm() {
   }
 
   .security-icon {
-    font-size: 20px;
-    color: var(--theme-accent);
+    font-size: var(--p-text-2xl);
+    color: var(--theme-accent-strong);
     flex-shrink: 0;
   }
 
@@ -1001,14 +1030,24 @@ function resetPwdForm() {
     flex: 1;
   }
 
-  .crop-tool-icon {
-    font-size: 18px;
-    color: var(--theme-text-muted);
+  .crop-tool-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: inherit;
     cursor: pointer;
+  }
+
+  .crop-tool-icon {
+    font-size: var(--p-text-xl);
+    color: var(--theme-text-muted);
     transition: color var(--p-duration-fast);
 
     &:hover {
-      color: var(--theme-accent);
+      color: var(--theme-accent-strong);
     }
   }
 }
@@ -1036,7 +1075,7 @@ function resetPwdForm() {
   }
 }
 
-@media (max-width: 900px) {
+@include mobile {
   .profile-page {
     padding: var(--p-space-4);
   }

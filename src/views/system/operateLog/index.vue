@@ -13,7 +13,7 @@
             v-model="searchData.operateType"
             :placeholder="$t('system.operateLog.formPlaceholder.operateType')"
             clearable
-            style="width: 150px"
+            class="search-field"
           >
             <el-option
               v-for="item in getDictList('system_operate_type')"
@@ -28,7 +28,7 @@
             v-model="searchData.status"
             :placeholder="$t('system.operateLog.formPlaceholder.status')"
             clearable
-            style="width: 150px"
+            class="search-field"
           >
             <el-option
               v-for="item in getDictList('system_operate_status')"
@@ -76,11 +76,7 @@
       <div class="table-wrapper">
         <el-table ref="tableRef" :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column
-            prop="module"
-            :label="$t('system.operateLog.columns.module')"
-            align="center"
-          />
+          <el-table-column prop="module" :label="$t('system.operateLog.columns.module')" />
           <el-table-column
             prop="operateType"
             :label="$t('system.operateLog.columns.operateType')"
@@ -106,13 +102,11 @@
           <el-table-column
             prop="requestMethod"
             :label="$t('system.operateLog.columns.requestMethod')"
-            align="center"
             width="100"
           />
           <el-table-column
             prop="operateIp"
             :label="$t('system.operateLog.columns.operateIp')"
-            align="center"
             width="140"
           />
           <el-table-column
@@ -402,27 +396,3 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
   immediate: true,
 })
 </script>
-
-<style lang="scss" scoped>
-.search-wrapper {
-  margin-bottom: 20px;
-  :deep(.el-card__body) {
-    padding-bottom: 2px;
-  }
-}
-
-.toolbar-wrapper {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.table-wrapper {
-  margin-bottom: 20px;
-}
-
-.page-wrapper {
-  display: flex;
-  justify-content: flex-end;
-}
-</style>

@@ -6,7 +6,7 @@
           <el-select
             v-model="searchData.dictType"
             :placeholder="$t('system.dict.data.search.dictTypePlaceholder')"
-            style="width: 200px"
+            class="search-field-lg"
             @change="getTableData"
           >
             <el-option
@@ -34,7 +34,7 @@
             v-model="searchData.status"
             :placeholder="$t('system.dict.data.search.statusPlaceholder')"
             clearable
-            style="width: 200px"
+            class="search-field-lg"
             @change="getTableData"
           >
             <el-option
@@ -88,21 +88,9 @@
       <div class="table-wrapper">
         <el-table ref="tableRef" :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column
-            prop="label"
-            :label="$t('system.dict.data.columns.label')"
-            align="center"
-          />
-          <el-table-column
-            prop="value"
-            :label="$t('system.dict.data.columns.value')"
-            align="center"
-          />
-          <el-table-column
-            prop="sort"
-            :label="$t('system.dict.data.columns.sort')"
-            align="center"
-          />
+          <el-table-column prop="label" :label="$t('system.dict.data.columns.label')" />
+          <el-table-column prop="value" :label="$t('system.dict.data.columns.value')" />
+          <el-table-column prop="sort" :label="$t('system.dict.data.columns.sort')" align="right" />
           <el-table-column
             prop="status"
             :label="$t('system.dict.data.columns.status')"
@@ -118,11 +106,7 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column
-            prop="remark"
-            :label="$t('system.dict.data.columns.remark')"
-            align="center"
-          />
+          <el-table-column prop="remark" :label="$t('system.dict.data.columns.remark')" />
           <el-table-column
             prop="createTime"
             :label="$t('system.dict.data.columns.createTime')"
@@ -212,7 +196,7 @@
           />
         </el-form-item>
         <el-form-item prop="listClass" :label="$t('system.dict.data.form.listClass')">
-          <el-select v-model="formData.listClass" style="width: 150px">
+          <el-select v-model="formData.listClass" class="search-field">
             <el-option
               v-for="item in listOption"
               :key="item.value"
@@ -292,8 +276,6 @@ const searchFormRef = useTemplateRef('searchFormRef')
 const tableRef = useTemplateRef('tableRef')
 
 const formRef = useTemplateRef('formRef')
-
-// const loading = ref<boolean>(false)
 
 const dialogVisible = ref<boolean>(false)
 
@@ -463,27 +445,3 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
   immediate: true,
 })
 </script>
-
-<style lang="scss" scoped>
-.search-wrapper {
-  margin-bottom: 20px;
-  :deep(.el-card__body) {
-    padding-bottom: 2px;
-  }
-}
-
-.toolbar-wrapper {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.table-wrapper {
-  margin-bottom: 20px;
-}
-
-.page-wrapper {
-  display: flex;
-  justify-content: flex-end;
-}
-</style>

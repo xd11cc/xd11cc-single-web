@@ -56,8 +56,8 @@ const { isTop } = useLayoutMode()
   height: 28px;
 
   .icon {
-    font-size: 24px;
-    color: var(--theme-accent);
+    font-size: var(--p-text-2xl);
+    color: var(--theme-accent-strong);
   }
 }
 

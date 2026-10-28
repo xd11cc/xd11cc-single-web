@@ -122,3 +122,26 @@
     transform: translateX(200%);
   }
 }
+
+/* ── 减少动效偏好 ── */
+/* 首屏 loading 在 index.scss 之前渲染，拿不到全局兜底规则，必须自己处理。
+   注意不能只写 animation: none：bar-slide 的起点是 translateX(-100%)，
+   关掉动画后填充条会完全移出轨道，看起来像加载条消失了。 */
+@media (prefers-reduced-motion: reduce) {
+  #app-loading .loading-logo {
+    animation: none;
+  }
+
+  #app-loading .loading-ring {
+    animation: none;
+    transform: none;
+    opacity: 0.3;
+  }
+
+  #app-loading .loading-bar {
+    animation: none;
+    width: 100%;
+    transform: none;
+    opacity: 0.5;
+  }
+}

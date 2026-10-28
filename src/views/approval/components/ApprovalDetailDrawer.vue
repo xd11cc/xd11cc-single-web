@@ -89,12 +89,8 @@
                 <span v-if="node.assignee">
                   <Icon icon="lucide:user-round" />{{ node.assignee }}
                 </span>
-                <span v-if="node.time">
-                  <Icon icon="lucide:clock" />{{ node.time }}
-                </span>
-                <span v-if="node.duration">
-                  <Icon icon="lucide:timer" />{{ node.duration }}
-                </span>
+                <span v-if="node.time"> <Icon icon="lucide:clock" />{{ node.time }} </span>
+                <span v-if="node.duration"> <Icon icon="lucide:timer" />{{ node.duration }} </span>
               </div>
               <div v-if="node.comment" class="flow-node__comment">
                 <Icon icon="lucide:message-square-quote" />
@@ -173,19 +169,11 @@
       <div class="detail-footer">
         <el-button @click="visible = false">{{ $t('common.close') }}</el-button>
         <template v-if="showActions">
-          <el-button
-            v-if="actionMode !== 'reject'"
-            type="danger"
-            plain
-            @click="switchToReject"
-          >
+          <el-button v-if="actionMode !== 'reject'" type="danger" plain @click="switchToReject">
             <template #icon><Icon icon="lucide:undo-2" /></template>
             {{ $t('bpm.approval.action.reject') }}
           </el-button>
-          <el-button
-            v-if="actionMode === 'reject'"
-            @click="actionMode = 'approve'"
-          >
+          <el-button v-if="actionMode === 'reject'" @click="actionMode = 'approve'">
             {{ $t('bpm.approval.action.back') }}
           </el-button>
           <el-button
@@ -196,12 +184,7 @@
           >
             {{ $t('bpm.approval.action.confirmReject') }}
           </el-button>
-          <el-button
-            v-else
-            type="primary"
-            :loading="submitting"
-            @click="submitApprove"
-          >
+          <el-button v-else type="primary" :loading="submitting" @click="submitApprove">
             <template #icon><Icon icon="lucide:check" /></template>
             {{ $t('bpm.approval.action.approve') }}
           </el-button>
@@ -215,12 +198,7 @@
 import { Icon } from '@iconify/vue'
 import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
-import {
-  approveTask,
-  getProcessDetail,
-  getRejectableNodes,
-  rejectTask,
-} from '../apis'
+import { approveTask, getProcessDetail, getRejectableNodes, rejectTask } from '../apis'
 import type { RejectableNodeVO, WorkflowInstanceVO, WorkflowTaskVO } from '../apis/type'
 
 defineOptions({ name: 'ApprovalDetailDrawer' })
@@ -446,16 +424,16 @@ defineExpose({ open: () => (visible.value = true) })
 
 <style lang="scss" scoped>
 // ============ 设计基调 ============
-// 冷灰底 + 墨绿强调，衬线式编号制造"档案卷宗"的秩序感，
-// 与项目 Outfit / DM Sans 字体体系保持一致。
-$ink: #1c2b33;
-$muted: #6d7f88;
-$line: #e3e9ec;
-$accent: #087f5b;
-$accent-soft: rgba(8, 127, 91, 0.08);
-$danger: #c0392b;
-$danger-soft: rgba(192, 57, 43, 0.08);
-$paper: #f7f9fa;
+// 冷灰底 + 墨绿强调，衬线式编号制造"档案卷宗"的秩序感。
+// 所有颜色取自设计系统令牌，跟随亮/暗主题自动切换，不再写死色值。
+$ink: var(--theme-text-primary);
+$muted: var(--theme-text-secondary);
+$line: var(--theme-border);
+$accent: var(--theme-accent);
+$accent-soft: var(--theme-accent-light);
+$danger: var(--theme-danger);
+$danger-soft: var(--theme-danger-light);
+$paper: var(--theme-bg-page);
 
 .detail-header {
   display: flex;
@@ -469,11 +447,11 @@ $paper: #f7f9fa;
     place-items: center;
     width: 38px;
     height: 38px;
-    font-size: 19px;
+    font-size: var(--p-text-xl);
     color: #fff;
-    background: linear-gradient(135deg, $accent, #0a6a4c);
+    background: var(--theme-accent-gradient);
     border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(8, 127, 91, 0.28);
+    box-shadow: 0 4px 12px var(--theme-accent-glow);
   }
 
   &__text {
@@ -482,7 +460,7 @@ $paper: #f7f9fa;
     h3 {
       margin: 0 0 6px;
       font-family: 'Outfit', sans-serif;
-      font-size: 17px;
+      font-size: var(--p-text-xl);
       font-weight: 600;
       line-height: 1.3;
       color: $ink;
@@ -500,7 +478,7 @@ $paper: #f7f9fa;
 .meta-chip {
   padding: 2px 8px;
   font-family: 'DM Sans', sans-serif;
-  font-size: 11px;
+  font-size: var(--p-text-xs);
   color: $accent;
   letter-spacing: 0.02em;
   background: $accent-soft;
@@ -508,7 +486,7 @@ $paper: #f7f9fa;
 
   &--ghost {
     color: $muted;
-    background: rgba(109, 127, 136, 0.1);
+    background: var(--theme-bg-elevated);
   }
 }
 
@@ -534,7 +512,7 @@ $paper: #f7f9fa;
 
 .section-index {
   font-family: 'DM Sans', sans-serif;
-  font-size: 11px;
+  font-size: var(--p-text-xs);
   font-weight: 600;
   color: $accent;
   letter-spacing: 0.14em;
@@ -542,7 +520,7 @@ $paper: #f7f9fa;
 
 .section-title {
   font-family: 'Outfit', sans-serif;
-  font-size: 13px;
+  font-size: var(--p-text-base);
   font-weight: 600;
   color: $ink;
   letter-spacing: 0.06em;
@@ -553,14 +531,14 @@ $paper: #f7f9fa;
   padding: 1px 7px;
   margin-left: auto;
   font-family: 'DM Sans', sans-serif;
-  font-size: 11px;
+  font-size: var(--p-text-xs);
   color: $muted;
-  background: rgba(109, 127, 136, 0.1);
+  background: var(--theme-bg-elevated);
   border-radius: 10px;
 
   &--live {
-    color: #b26a00;
-    background: rgba(178, 106, 0, 0.12);
+    color: var(--theme-warning);
+    background: var(--theme-warning-light);
   }
 }
 
@@ -576,11 +554,11 @@ $paper: #f7f9fa;
 
   .overview-item {
     padding: 12px 14px;
-    background: #fff;
+    background: var(--theme-bg-surface);
 
     dt {
       margin-bottom: 5px;
-      font-size: 11px;
+      font-size: var(--p-text-xs);
       color: $muted;
       letter-spacing: 0.04em;
     }
@@ -588,7 +566,7 @@ $paper: #f7f9fa;
     dd {
       margin: 0;
       font-family: 'DM Sans', sans-serif;
-      font-size: 13px;
+      font-size: var(--p-text-base);
       font-weight: 500;
       color: $ink;
     }
@@ -619,7 +597,7 @@ $paper: #f7f9fa;
     place-items: center;
     width: 26px;
     height: 26px;
-    font-size: 13px;
+    font-size: var(--p-text-base);
     color: #fff;
     background: $muted;
     border-radius: 50%;
@@ -647,7 +625,7 @@ $paper: #f7f9fa;
       border-color 0.18s ease;
 
     &:hover {
-      background: #fff;
+      background: var(--theme-bg-surface);
       border-color: $line;
     }
   }
@@ -661,7 +639,7 @@ $paper: #f7f9fa;
 
   &__name {
     font-family: 'Outfit', sans-serif;
-    font-size: 13px;
+    font-size: var(--p-text-base);
     font-weight: 600;
     color: $ink;
   }
@@ -669,7 +647,7 @@ $paper: #f7f9fa;
   &__state {
     flex-shrink: 0;
     font-family: 'DM Sans', sans-serif;
-    font-size: 10px;
+    font-size: var(--p-text-xs);
     color: $muted;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -680,7 +658,7 @@ $paper: #f7f9fa;
     flex-wrap: wrap;
     gap: 12px;
     margin-top: 7px;
-    font-size: 11px;
+    font-size: var(--p-text-xs);
     color: $muted;
 
     span {
@@ -695,10 +673,10 @@ $paper: #f7f9fa;
     gap: 7px;
     padding: 7px 10px;
     margin-top: 9px;
-    font-size: 12px;
+    font-size: var(--p-text-sm);
     line-height: 1.5;
-    color: #445;
-    background: #fff;
+    color: var(--theme-text-secondary);
+    background: var(--theme-bg-surface);
     border-left: 2px solid $accent;
     border-radius: 0 4px 4px 0;
   }
@@ -706,29 +684,29 @@ $paper: #f7f9fa;
   // 状态变体
   &.is-done &__dot {
     background: $accent;
-    box-shadow: 0 2px 8px rgba(8, 127, 91, 0.3);
+    box-shadow: 0 2px 8px var(--theme-accent-glow);
   }
 
   &.is-active &__dot {
     color: $accent;
-    background: #fff;
+    background: var(--theme-bg-surface);
     border: 2px solid $accent;
     animation: pulse-ring 2s ease-in-out infinite;
   }
 
   &.is-active &__card {
     background: $accent-soft;
-    border-color: rgba(8, 127, 91, 0.2);
+    border-color: var(--theme-accent);
   }
 
   &.is-rejected &__dot {
     background: $danger;
-    box-shadow: 0 2px 8px rgba(192, 57, 43, 0.3);
+    box-shadow: 0 2px 8px var(--theme-danger);
   }
 
   &.is-rejected &__card {
     background: $danger-soft;
-    border-color: rgba(192, 57, 43, 0.18);
+    border-color: var(--theme-danger);
   }
 
   &.is-rejected &__comment {
@@ -743,11 +721,11 @@ $paper: #f7f9fa;
 @keyframes pulse-ring {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(8, 127, 91, 0.35);
+    box-shadow: 0 0 0 0 var(--theme-accent-glow);
   }
 
   50% {
-    box-shadow: 0 0 0 6px rgba(8, 127, 91, 0);
+    box-shadow: 0 0 0 6px transparent;
   }
 }
 
@@ -764,9 +742,9 @@ $paper: #f7f9fa;
   align-items: center;
   justify-content: space-between;
   padding: 11px 14px;
-  background: #fff;
+  background: var(--theme-bg-surface);
   border: 1px solid $line;
-  border-left: 3px solid #e8a33d;
+  border-left: 3px solid var(--theme-warning);
   border-radius: 6px;
 
   &__main {
@@ -779,7 +757,7 @@ $paper: #f7f9fa;
 
   &__name {
     font-family: 'Outfit', sans-serif;
-    font-size: 13px;
+    font-size: var(--p-text-base);
     font-weight: 600;
     color: $ink;
   }
@@ -788,14 +766,14 @@ $paper: #f7f9fa;
     display: inline-flex;
     gap: 4px;
     align-items: center;
-    font-size: 12px;
+    font-size: var(--p-text-sm);
     color: $muted;
   }
 
   &__time {
     flex-shrink: 0;
     font-family: 'DM Sans', sans-serif;
-    font-size: 11px;
+    font-size: var(--p-text-xs);
     color: $muted;
   }
 }
@@ -803,8 +781,8 @@ $paper: #f7f9fa;
 // ---------- 操作区 ----------
 .action-section {
   padding: 18px;
-  background: linear-gradient(180deg, rgba(8, 127, 91, 0.03), transparent);
-  border: 1px solid rgba(8, 127, 91, 0.14);
+  background: var(--theme-accent-light);
+  border: 1px solid var(--theme-border);
   border-radius: 10px;
 }
 

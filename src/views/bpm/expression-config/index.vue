@@ -40,7 +40,7 @@
         </div>
       </div>
       <el-table ref="tableRef" :data="tableData">
-        <el-table-column type="selection" width="50" />
+        <el-table-column type="selection" width="50" align="center" />
         <el-table-column
           prop="configName"
           :label="$t('bpm.expressionConfig.fields.name')"
@@ -88,7 +88,7 @@
             }}</el-tag></template
           ></el-table-column
         >
-        <el-table-column fixed="right" :label="$t('common.action')" width="120"
+        <el-table-column fixed="right" :label="$t('common.action')" width="120" align="center"
           ><template #default="{ row }"
             ><el-button link type="primary" @click="openDialog(row)">{{
               $t('bpm.expressionConfig.actions.edit')
@@ -358,13 +358,6 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
 </script>
 
 <style scoped lang="scss">
-.search-wrapper {
-  margin-bottom: 20px;
-
-  :deep(.el-card__body) {
-    padding-bottom: 2px;
-  }
-}
 .search-actions {
   margin-bottom: 18px;
 }
@@ -374,16 +367,12 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
 .template-hint {
   margin-top: 6px;
   color: var(--el-text-color-secondary);
-  font-size: 12px;
+  font-size: var(--p-text-sm);
   line-height: 1.5;
 }
-.toolbar-wrapper {
-  margin-bottom: 20px;
-}
+// .toolbar-wrapper 走全局骨架（flex + 间距）
 .page-wrapper {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 20px;
+  margin-top: var(--p-space-5);
 }
 .parameter-editor {
   width: 100%;

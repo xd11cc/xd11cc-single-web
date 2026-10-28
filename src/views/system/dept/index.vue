@@ -13,7 +13,7 @@
             v-model="searchData.status"
             :placeholder="$t('system.dept.formPlaceholder.status')"
             clearable
-            style="width: 150px"
+            class="search-field"
           >
             <el-option
               v-for="item in getDictList('system_status')"
@@ -60,11 +60,11 @@
       </template>
 
       <el-table-column prop="deptName" :label="$t('system.dept.search.deptName')" min-width="180" />
-      <el-table-column prop="deptCode" :label="$t('system.dept.columns.deptCode')" align="center" />
+      <el-table-column prop="deptCode" :label="$t('system.dept.columns.deptCode')" />
       <el-table-column
         prop="sort"
         :label="$t('system.dept.columns.sort')"
-        align="center"
+        align="right"
         width="80"
       />
       <el-table-column
@@ -84,7 +84,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="remark" :label="$t('system.dept.columns.remark')" align="center" />
+      <el-table-column prop="remark" :label="$t('system.dept.columns.remark')" />
       <el-table-column
         prop="createTime"
         :label="$t('system.dept.columns.createTime')"
@@ -398,12 +398,3 @@ function getUserList() {
 getTableData()
 getUserList()
 </script>
-
-<style lang="scss" scoped>
-.search-wrapper {
-  margin-bottom: 20px;
-  :deep(.el-card__body) {
-    padding-bottom: 2px;
-  }
-}
-</style>

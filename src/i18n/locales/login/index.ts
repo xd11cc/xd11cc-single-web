@@ -1,12 +1,13 @@
 export const zh = {
   captcha: '验证码',
-  forgotPassword: '忘记密码',
+  captchaRefresh: '点击刷新',
   formOptions: {
     rememberMe: '记住我',
   },
   login: '登 录',
   messages: {
-    loginSuccess: '登录成功',
+    welcome: '{name}，欢迎进入 {system}',
+    welcomeTitle: '欢迎回来',
   },
   placeholder: {
     captcha: '请输入验证码',
@@ -23,19 +24,19 @@ export const zh = {
   },
   validation: {
     passwordLength: '长度在 8 到 16 个字符',
-    passwordMismatch: '两次输入密码不一致',
   },
 }
 
 export const en = {
   captcha: 'Captcha',
-  forgotPassword: 'Forgot Password',
+  captchaRefresh: 'Tap to refresh',
   formOptions: {
     rememberMe: 'Remember me',
   },
   login: 'Login',
   messages: {
-    loginSuccess: 'Login successful',
+    welcome: '{name}，Welcome to {system}',
+    welcomeTitle: 'Welcome back',
   },
   placeholder: {
     captcha: 'Please enter captcha',
@@ -52,6 +53,5 @@ export const en = {
   },
   validation: {
     passwordLength: 'Length must be 8 to 16 characters',
-    passwordMismatch: 'Passwords do not match',
   },
 }

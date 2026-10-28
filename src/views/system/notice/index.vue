@@ -13,7 +13,7 @@
             v-model="searchData.type"
             :placeholder="$t('system.notice.formPlaceholder.type')"
             clearable
-            style="width: 130px"
+            class="search-field-sm"
           >
             <el-option
               v-for="item in getDictList('system_notice_type')"
@@ -28,7 +28,7 @@
             v-model="searchData.status"
             :placeholder="$t('system.notice.formPlaceholder.status')"
             clearable
-            style="width: 130px"
+            class="search-field-sm"
           >
             <el-option
               v-for="item in getDictList('system_notice_status')"
@@ -108,7 +108,6 @@
           <el-table-column
             prop="senderName"
             :label="$t('system.notice.columns.senderName')"
-            align="center"
             width="120"
           />
           <el-table-column
@@ -385,7 +384,6 @@ import { Icon } from '@iconify/vue'
 import { useDict } from '@/common/composables/useDict'
 import { usePagination } from '@@/composables/usePagination'
 import type { FormRules } from 'element-plus'
-import { cloneDeep } from 'lodash-es'
 import {
   noticePage,
   addNotice,
@@ -648,28 +646,6 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
 </script>
 
 <style lang="scss" scoped>
-.search-wrapper {
-  margin-bottom: 20px;
-  :deep(.el-card__body) {
-    padding-bottom: 2px;
-  }
-}
-
-.toolbar-wrapper {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.table-wrapper {
-  margin-bottom: 20px;
-}
-
-.page-wrapper {
-  display: flex;
-  justify-content: flex-end;
-}
-
 .scope-tree {
   width: 100%;
   border: 1px solid var(--el-border-color);

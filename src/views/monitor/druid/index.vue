@@ -8,6 +8,6 @@
 import IFrame from '@@/components/IFrame/index.vue'
 
 const url = ref<string>(
-  import.meta.env.VITE_BASE_URL + import.meta.env.VITE_PUBLIC_PATH + '/druid/login.html',
+  import.meta.env.VITE_BASE_URL + import.meta.env.VITE_API_PREFIX + '/druid/login.html',
 )
 </script>

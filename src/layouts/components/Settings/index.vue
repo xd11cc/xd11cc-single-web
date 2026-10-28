@@ -43,6 +43,7 @@ const {
   showSearchMenu,
   cacheTagsView,
   showWatermark,
+  todoPopup,
   showGreyMode,
   showColorWeakness,
 } = storeToRefs(settingsStore)
@@ -57,6 +58,7 @@ const switchSettings = computed(() => [
   { key: 'showSearchMenu', label: $t('layout.settings.showSearchMenu'), value: showSearchMenu },
   { key: 'cacheTagsView', label: $t('layout.settings.cacheTagsView'), value: cacheTagsView },
   { key: 'showWatermark', label: $t('layout.settings.showWatermark'), value: showWatermark },
+  { key: 'todoPopup', label: $t('layout.settings.todoPopup'), value: todoPopup },
   { key: 'showGreyMode', label: $t('layout.settings.showGreyMode'), value: showGreyMode },
   {
     key: 'showColorWeakness',

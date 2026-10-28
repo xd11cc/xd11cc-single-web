@@ -47,8 +47,7 @@
 
       <div class="login-body">
         <BindUserForm v-if="needBind" />
-        <ForgetPasswordForm v-else-if="currentForm === 'forget'" @back="currentForm = 'login'" />
-        <LoginForm v-else @forget-password="currentForm = 'forget'" />
+        <LoginForm v-else />
       </div>
     </div>
 
@@ -62,7 +61,6 @@ import { Icon } from '@iconify/vue'
 import { useTheme } from '@@/composables/useTheme'
 import BindUserForm from './components/BindUserForm.vue'
 import LoginForm from './components/LoginForm.vue'
-import ForgetPasswordForm from './components/ForgetPasswordForm.vue'
 
 const { isDark, toggleTheme } = useTheme()
 
@@ -72,7 +70,6 @@ function handleToggle(event: MouseEvent) {
 
 const route = useRoute()
 const needBind = computed(() => 'need-bind' in route.query)
-const currentForm = ref<'login' | 'forget'>('login')
 </script>
 
 <style lang="scss" scoped>
@@ -97,9 +94,10 @@ const currentForm = ref<'login' | 'forget'>('login')
 .bg-dots {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(circle, var(--theme-border) 1px, transparent 1px);
+  // 原先用 --theme-border（暗色下仅 7% 白）再乘 0.5 透明度，实际可见度只有 3.5%，
+  // 屏幕上基本读不出来。改用专用令牌并把透明度交还给颜色本身。
+  background-image: radial-gradient(circle, var(--theme-bg-dots) 1px, transparent 1px);
   background-size: 32px 32px;
-  opacity: 0.5;
 }
 
 .bg-gradient {
@@ -110,7 +108,7 @@ const currentForm = ref<'login' | 'forget'>('login')
   left: 50%;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  background: radial-gradient(circle, var(--theme-accent-glow) 0%, transparent 60%);
+  background: radial-gradient(circle, var(--theme-ambient-glow) 0%, transparent 60%);
   filter: blur(60px);
 }
 
@@ -134,7 +132,7 @@ const currentForm = ref<'login' | 'forget'>('login')
   transition: all var(--p-duration-fast) var(--p-ease-out);
 
   &:hover {
-    color: var(--theme-accent);
+    color: var(--theme-accent-strong);
     border-color: var(--theme-accent);
   }
 }
@@ -196,7 +194,7 @@ const currentForm = ref<'login' | 'forget'>('login')
   letter-spacing: 0.3px;
 }
 
-@media (max-width: 480px) {
+@include xs {
   .login-card {
     margin: 16px;
     padding: 28px 20px;

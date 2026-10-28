@@ -4,9 +4,16 @@ type Theme = 'light' | 'dark'
 
 const STORAGE_KEY = CacheKey.THEME
 const MEDIA_QUERY = '(prefers-color-scheme: dark)'
+const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
 
 function getSystemTheme(): Theme {
   return window.matchMedia(MEDIA_QUERY).matches ? 'dark' : 'light'
+}
+
+// 圆形扩散是 800ms 的大面积裁剪动画，对前庭敏感用户不友好。
+// 系统开启「减少动效」时直接切换主题，不走 View Transition。
+function prefersReducedMotion(): boolean {
+  return window.matchMedia(REDUCED_MOTION_QUERY).matches
 }
 
 function getStoredTheme(): Theme | null {
@@ -29,7 +36,7 @@ function toggleTheme(event?: MouseEvent) {
   const newTheme: Theme = theme.value === 'dark' ? 'light' : 'dark'
 
   // 尝试使用 View Transition API 实现圆形扩散
-  if (event && (document as any).startViewTransition) {
+  if (event && (document as any).startViewTransition && !prefersReducedMotion()) {
     const x = event.clientX
     const y = event.clientY
     const endRadius = Math.hypot(

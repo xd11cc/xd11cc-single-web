@@ -79,7 +79,7 @@ function handleDrop(index: number) {
     padding-bottom: 8px;
     margin-bottom: 8px;
     border-bottom: 1px solid var(--theme-border);
-    font-size: 13px;
+    font-size: var(--p-text-base);
     font-weight: var(--p-weight-semibold);
     color: var(--theme-text-primary);
   }
@@ -107,7 +107,7 @@ function handleDrop(index: number) {
     }
 
     .drag-handle {
-      font-size: 14px;
+      font-size: var(--p-text-md);
       color: var(--theme-text-muted);
       cursor: grab;
     }

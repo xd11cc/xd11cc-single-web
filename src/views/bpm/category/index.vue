@@ -25,7 +25,7 @@
           v-model="searchData.status"
           clearable
           :placeholder="$t('bpm.category.placeholder.status')"
-          style="width: 150px"
+          class="search-field"
         >
           <el-option
             v-for="item in getDictList('system_status')"
@@ -74,7 +74,7 @@
         prop="sort"
         :label="$t('bpm.category.columns.sort')"
         width="100"
-        align="center"
+        align="right"
       />
       <el-table-column
         prop="status"

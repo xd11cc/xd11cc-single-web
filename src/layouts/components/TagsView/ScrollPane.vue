@@ -1,16 +1,28 @@
 <template>
   <div class="scroll-container">
-    <div class="arrow left" :title="t('layout.tagsView.scrollLeft')" @click="scrollTo('left')">
+    <button
+      type="button"
+      class="arrow left"
+      :title="t('layout.tagsView.scrollLeft')"
+      :aria-label="t('layout.tagsView.scrollLeft')"
+      @click="scrollTo('left')"
+    >
       <Icon icon="lucide:chevron-left" />
-    </div>
+    </button>
     <el-scrollbar ref="scrollbarRef" @wheel.passive="wheelScroll" @scroll="scroll">
       <div ref="scrollbarContentRef" class="scrollbar-content">
         <slot />
       </div>
     </el-scrollbar>
-    <div class="arrow right" :title="t('layout.tagsView.scrollRight')" @click="scrollTo('right')">
+    <button
+      type="button"
+      class="arrow right"
+      :title="t('layout.tagsView.scrollRight')"
+      :aria-label="t('layout.tagsView.scrollRight')"
+      @click="scrollTo('right')"
+    >
       <Icon icon="lucide:chevron-right" />
-    </div>
+    </button>
     <Screenfull v-if="settingsStore.showScreenfull" :content="true" class="screenfull" />
   </div>
 </template>
@@ -152,7 +164,11 @@ listenerRouteChange(() => {
   .arrow {
     width: 40px;
     height: 100%;
-    font-size: 18px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font-size: var(--p-text-xl);
     cursor: pointer;
     display: flex;
     align-items: center;

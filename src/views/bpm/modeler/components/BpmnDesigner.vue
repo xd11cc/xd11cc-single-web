@@ -307,15 +307,18 @@ defineExpose({
 @import 'bpmn-js/dist/assets/diagram-js.css';
 @import 'bpmn-js/dist/assets/bpmn-font/css/bpmn.css';
 
+// 画布背景与网格跟随设计系统主题，暗色下不出现刺眼的白底
 .designer-shell {
+  --canvas-grid-color: color-mix(in srgb, var(--theme-border) 60%, transparent);
+
   position: relative;
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background-color: #f8fafc;
+  background-color: var(--theme-bg-page);
   background-image:
-    linear-gradient(rgba(40, 58, 74, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(40, 58, 74, 0.035) 1px, transparent 1px);
+    linear-gradient(var(--canvas-grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--canvas-grid-color) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
@@ -326,30 +329,30 @@ defineExpose({
 
 .bpmn-canvas .djs-container,
 .bpmn-canvas .djs-container svg {
-  font-family: 'DM Sans', sans-serif;
+  font-family: var(--p-font-body);
 }
 
 .bpmn-canvas .djs-palette {
   top: 22px;
   left: 22px;
   overflow: hidden;
-  border: 1px solid #dce4e9;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 12px 34px rgba(32, 53, 66, 0.12);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--p-radius-xl);
+  background: var(--theme-bg-surface);
+  box-shadow: var(--theme-shadow-lg);
 }
 
 .bpmn-canvas .djs-palette .entry:hover {
-  color: #087f5b;
+  color: var(--theme-accent-strong);
 }
 
 .bpmn-canvas .djs-context-pad {
   border-radius: 10px;
-  filter: drop-shadow(0 8px 14px rgba(32, 53, 66, 0.12));
+  filter: drop-shadow(0 8px 14px var(--theme-shadow-lg));
 }
 
 .bpmn-canvas .djs-element.selected .djs-outline {
-  stroke: #0b8f68 !important;
+  stroke: var(--theme-accent) !important;
   stroke-width: 2px !important;
 }
 
@@ -361,15 +364,15 @@ defineExpose({
   place-content: center;
   justify-items: center;
   gap: 12px;
-  color: #52636d;
-  background: rgba(248, 250, 252, 0.86);
+  color: var(--theme-text-secondary);
+  background: color-mix(in srgb, var(--theme-bg-page) 86%, transparent);
   backdrop-filter: blur(4px);
 }
 
 .state-spinner {
   width: 26px;
   height: 26px;
-  color: #087f5b;
+  color: var(--theme-accent-strong);
   animation: state-spin 0.9s linear infinite;
 }
 
@@ -381,11 +384,11 @@ defineExpose({
   align-items: center;
   gap: 7px;
   padding: 8px 12px;
-  color: #6b7b84;
-  font-size: 12px;
-  border: 1px solid rgba(214, 224, 230, 0.9);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.86);
+  color: var(--theme-text-muted);
+  font-size: var(--p-text-sm);
+  border: 1px solid var(--theme-border);
+  border-radius: var(--p-radius-full);
+  background: color-mix(in srgb, var(--theme-bg-surface) 86%, transparent);
   backdrop-filter: blur(8px);
   pointer-events: none;
 }
@@ -396,7 +399,7 @@ defineExpose({
   }
 }
 
-@media (max-width: 900px) {
+@include mobile {
   .canvas-hint {
     display: none;
   }

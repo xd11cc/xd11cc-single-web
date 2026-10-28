@@ -130,7 +130,7 @@ function logout() {
   }
   .breadcrumb {
     flex: 1;
-    @media screen and (max-width: 576px) {
+    @include phone {
       display: none;
     }
   }
@@ -143,7 +143,7 @@ function logout() {
     :deep(.el-sub-menu) {
       &.is-active {
         .el-sub-menu__title {
-          color: var(--theme-accent);
+          color: var(--theme-accent-strong);
         }
       }
     }
@@ -171,7 +171,7 @@ function logout() {
         :deep(.action-icon),
         :deep(.panel-icon),
         :deep(.notify-icon) {
-          color: var(--theme-accent);
+          color: var(--theme-accent-strong);
         }
       }
 
@@ -226,13 +226,13 @@ function logout() {
       .glyph-zh {
         top: 1px;
         left: 0;
-        font-size: 15px;
+        font-size: var(--p-text-md);
       }
 
       .glyph-en {
         right: 0;
         bottom: 1px;
-        font-size: 11px;
+        font-size: var(--p-text-xs);
       }
 
       .glyph-divider {
@@ -247,7 +247,7 @@ function logout() {
       }
 
       &:hover .locale-glyph {
-        color: var(--theme-accent);
+        color: var(--theme-accent-strong);
         transform: translateY(-1px) rotate(-3deg);
       }
     }

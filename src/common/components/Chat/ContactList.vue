@@ -103,7 +103,7 @@ const filteredContacts = computed(() => {
   flex-shrink: 0;
   background: var(--el-color-primary-light-5);
   color: #fff;
-  font-size: 13px;
+  font-size: var(--p-text-base);
 }
 
 .contact-info {
@@ -115,7 +115,7 @@ const filteredContacts = computed(() => {
 }
 
 .contact-name {
-  font-size: 13px;
+  font-size: var(--p-text-base);
   color: var(--el-text-color-primary);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -123,7 +123,7 @@ const filteredContacts = computed(() => {
 }
 
 .contact-last {
-  font-size: 11px;
+  font-size: var(--p-text-xs);
   color: var(--el-text-color-placeholder);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -137,7 +137,7 @@ const filteredContacts = computed(() => {
 .no-contacts {
   padding: 24px 12px;
   text-align: center;
-  font-size: 12px;
+  font-size: var(--p-text-sm);
   color: var(--el-text-color-placeholder);
 }
 </style>

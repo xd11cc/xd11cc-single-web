@@ -13,7 +13,7 @@
             v-model="searchData.jobGroup"
             :placeholder="$t('system.job.formPlaceholder.jobGroup')"
             clearable
-            style="width: 180px"
+            class="search-field-md"
           >
             <el-option
               v-for="item in getDictList('system_job_group')"
@@ -28,7 +28,7 @@
             v-model="searchData.status"
             :placeholder="$t('system.job.search.statusPlaceholder')"
             clearable
-            style="width: 150px"
+            class="search-field"
           >
             <el-option
               v-for="item in getDictList('system_job_status')"
@@ -70,7 +70,6 @@
           <el-table-column
             prop="jobName"
             :label="$t('system.job.columns.jobName')"
-            align="center"
             min-width="120"
           />
           <el-table-column
@@ -86,14 +85,12 @@
           <el-table-column
             prop="invokeTarget"
             :label="$t('system.job.columns.invokeTarget')"
-            align="center"
             min-width="160"
             show-overflow-tooltip
           />
           <el-table-column
             prop="cronExpression"
             :label="$t('system.job.columns.cronExpression')"
-            align="center"
             width="140"
           />
           <el-table-column
@@ -162,7 +159,6 @@
           <el-table-column
             prop="remark"
             :label="$t('system.job.columns.remark')"
-            align="center"
             min-width="120"
             show-overflow-tooltip
           />
@@ -626,26 +622,3 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
   immediate: true,
 })
 </script>
-
-<style lang="scss" scoped>
-.search-wrapper {
-  margin-bottom: 20px;
-  :deep(.el-card__body) {
-    padding-bottom: 2px;
-  }
-}
-
-.toolbar-wrapper {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.table-wrapper {
-  margin-bottom: 20px;
-}
-.page-wrapper {
-  display: flex;
-  justify-content: flex-end;
-}
-</style>

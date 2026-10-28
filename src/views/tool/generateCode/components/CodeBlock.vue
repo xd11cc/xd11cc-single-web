@@ -62,11 +62,13 @@ const handleCopy = async () => {
 
 <style lang="scss" scoped>
 .code-block-container {
+  --code-block-surface: #ffffff;
+
   position: relative;
-  border: 1px solid #ebeef5;
-  border-radius: 4px;
+  border: 1px solid var(--theme-border);
+  border-radius: var(--p-radius-md);
   overflow: hidden;
-  background: #fff;
+  background: var(--theme-bg-surface);
 }
 
 .copy-btn {
@@ -74,21 +76,24 @@ const handleCopy = async () => {
   right: 8px;
   top: 8px;
   z-index: 10;
-  color: #409eff;
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 4px;
+  color: var(--theme-accent-strong);
+  background: var(--code-block-surface);
+  border-radius: var(--p-radius-sm);
   padding: 4px 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--theme-shadow-sm);
 }
 
 :deep(.hljs) {
   max-height: v-bind('maxHeight');
   overflow: auto;
   padding: 16px;
-  font-size: 14px;
+  font-size: var(--p-text-md);
   line-height: 1.6;
-  font-family: 'Consolas', 'Monaco', 'Menlo', monospace;
-  background: #ffffff;
+  font-family: var(--p-font-mono);
+  // highlight.js 使用 vs.css（亮色语法主题），代码区固定浅底，
+  // 暗色模式下作为“纸张”悬浮于深色界面之上，避免深底深字不可读
+  background: var(--code-block-surface);
+  color: #1f2328;
   margin: 0;
 }
 </style>

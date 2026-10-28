@@ -7,7 +7,7 @@
             v-model="query.title"
             clearable
             :placeholder="$t('bpm.approval.todo.placeholder.title')"
-            style="width: 220px"
+            class="search-field-xl"
             @keyup.enter="handleSearch"
           />
         </el-form-item>
@@ -16,7 +16,7 @@
             v-model="query.processDefinitionKey"
             clearable
             :placeholder="$t('bpm.approval.todo.placeholder.processKey')"
-            style="width: 200px"
+            class="search-field-lg"
             @keyup.enter="handleSearch"
           />
         </el-form-item>
@@ -226,6 +226,8 @@ import ApprovalDetailDrawer from '../components/ApprovalDetailDrawer.vue'
 defineOptions({ name: 'bpmApprovalTodo' })
 
 const { t } = useI18n()
+const route = useRoute()
+const router = useRouter()
 
 const loading = ref(false)
 const submitLoading = ref(false)
@@ -338,8 +340,42 @@ async function submitDelegate() {
 }
 
 onMounted(() => {
-  void loadData()
+  void loadData().then(() => openFromQuery())
 })
+
+/**
+ * 支持从待办提醒弹窗 / 消息通知直达：
+ * ?processInstanceId=xxx&taskId=xxx&approve=1
+ */
+function openFromQuery() {
+  const { processInstanceId, taskId, approve } = route.query
+  const instanceId = typeof processInstanceId === 'string' ? processInstanceId : ''
+  if (!instanceId) return
+
+  const targetTaskId = typeof taskId === 'string' ? taskId : ''
+  // 在已加载列表中定位任务，拿到真实 taskId 才能展示审批操作区
+  const matched =
+    tableData.value.find((row) => row.taskId === targetTaskId) ??
+    tableData.value.find((row) => row.processInstanceId === instanceId)
+
+  activeProcessInstanceId.value = instanceId
+  activeTaskId.value = targetTaskId || matched?.taskId || ''
+
+  if (approve === '1' && matched) {
+    currentTask.value = matched
+    approveForm.comment = ''
+    approveVisible.value = true
+  } else {
+    detailVisible.value = true
+  }
+
+  // 消费掉 query，避免刷新或返回时重复触发
+  const rest = { ...route.query }
+  delete rest.processInstanceId
+  delete rest.taskId
+  delete rest.approve
+  void router.replace({ query: rest })
+}
 </script>
 
 <style lang="scss" scoped>
@@ -362,7 +398,7 @@ onMounted(() => {
 }
 .form-tip {
   margin-top: 4px;
-  font-size: 12px;
+  font-size: var(--p-text-sm);
   line-height: 1.4;
   color: var(--el-text-color-secondary);
 }

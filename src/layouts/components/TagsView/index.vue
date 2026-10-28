@@ -266,7 +266,7 @@ listenerRouteChange((route) => {
       }
       &:hover {
         background-color: var(--theme-accent-light);
-        color: var(--theme-accent);
+        color: var(--theme-accent-strong);
       }
       &.active {
         background-color: var(--v3-tagsview-tag-active-bg-color);

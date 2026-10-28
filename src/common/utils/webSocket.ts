@@ -13,13 +13,20 @@ export interface NettyMessageDTO {
 }
 
 // 通知推送 DTO（action=NEW_NOTICE/REVOKE_NOTICE 时的 data）
+// bizType / bizKey / processInstanceId / taskId 为可选字段，后端未下发时前端自动降级
 export interface NoticeWebSocketDTO {
   action: string
   noticeId: number
   title?: string
   type?: number // 1-通知 2-消息 3-待办
+  content?: string
   senderName?: string
   sendTime?: string
+  // 业务关联信息，用于“查看详情 / 快速通过”直达
+  bizType?: string
+  bizKey?: string
+  processInstanceId?: string
+  taskId?: string
 }
 
 // WebSocket 关闭码枚举
@@ -137,7 +144,6 @@ export class WebSocketClient {
       this.ws = new WebSocket(fullUrl)
 
       this.ws.onopen = () => {
-        console.log('[WebSocket] 连接成功')
         this.reconnectCount = 0
         this.setStatus(WsStatus.CONNECTED)
         this.startHeartbeat()
@@ -341,7 +347,19 @@ export class WebSocketClient {
 // 单例管理
 let wsClient: WebSocketClient | null = null
 
-const BASE_WS_URL = import.meta.env.VITE_WS_URL + import.meta.env.VITE_WS_PATH
+/**
+ * WebSocket 连接地址。
+ * <p>
+ * VITE_WS_URL 为空时按当前页面协议与主机推导（同源），
+ * 由 Vite 的 proxy ws:true 转发到后端 Netty 端口；
+ * 配置了完整地址则直接使用（生产环境通常独立域名）。
+ * </p>
+ */
+const WS_PATH = import.meta.env.VITE_WS_PATH
+const WS_ORIGIN =
+  import.meta.env.VITE_WS_URL ||
+  `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}`
+const BASE_WS_URL = WS_ORIGIN + WS_PATH
 
 export const initWebSocketInstance = (
   token: string,

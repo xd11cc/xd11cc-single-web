@@ -96,7 +96,7 @@ onMounted(() => {
   background: var(--el-fill-color-blank);
 
   .title {
-    font-size: 15px;
+    font-size: var(--p-text-lg);
     font-weight: 600;
     color: var(--el-text-color-primary);
   }

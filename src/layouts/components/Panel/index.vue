@@ -1,7 +1,14 @@
 <template>
   <div>
     <el-tooltip effect="dark" :content="t('layout.settings.title')" placement="bottom">
-      <Icon icon="lucide:settings" @click="show = true" class="panel-icon" />
+      <button
+        type="button"
+        class="panel-trigger"
+        :aria-label="t('layout.settings.title')"
+        @click="show = true"
+      >
+        <Icon icon="lucide:settings" class="panel-icon" aria-hidden="true" />
+      </button>
     </el-tooltip>
     <el-drawer v-model="show" size="300px" :with-header="false">
       <slot />
@@ -18,13 +25,21 @@ const { t } = useI18n()
 </script>
 
 <style lang="scss" scoped>
+.panel-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
+}
+
 .panel-icon {
-  font-size: 18px;
+  font-size: var(--p-text-xl);
   cursor: pointer;
   color: var(--theme-text-secondary);
   transition: color var(--p-duration-fast);
-  &:focus {
-    outline: none;
-  }
 }
 </style>

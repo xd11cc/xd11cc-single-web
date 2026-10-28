@@ -2,7 +2,19 @@ import { WebSocketClient, WsStatus } from '@@/utils/webSocket'
 import type { WsPushMessage, NettyMessageDTO } from '@@/utils/webSocket'
 import { getToken } from '@@/utils/cache/cookies'
 
-const BASE_WS_URL = import.meta.env.VITE_WS_URL + import.meta.env.VITE_WS_PATH
+/**
+ * WebSocket 连接地址。
+ * <p>
+ * VITE_WS_URL 为空时按当前页面协议与主机推导（同源），
+ * 由 Vite 的 proxy ws:true 转发到后端 Netty 端口；
+ * 配置了完整地址则直接使用（生产环境通常独立域名）。
+ * </p>
+ */
+const WS_PATH = import.meta.env.VITE_WS_PATH
+const WS_ORIGIN =
+  import.meta.env.VITE_WS_URL ||
+  `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}`
+const BASE_WS_URL = WS_ORIGIN + WS_PATH
 
 const status = ref<WsStatus>(WsStatus.DISCONNECTED)
 const lastMessage = ref<WsPushMessage | null>(null)

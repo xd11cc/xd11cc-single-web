@@ -51,16 +51,23 @@
         </div>
 
         <div class="tab-row">
-          <span :class="{ active: activeTab === 'local' }" @click="activeTab = 'local'">
+          <button
+            type="button"
+            :class="{ active: activeTab === 'local' }"
+            :aria-pressed="activeTab === 'local'"
+            @click="activeTab = 'local'"
+          >
             {{ $t('common.iconSelect.tabs.local') }}
-          </span>
-          <span
+          </button>
+          <button
             v-if="onlineResults.length > 0"
+            type="button"
             :class="{ active: activeTab === 'online' }"
+            :aria-pressed="activeTab === 'online'"
             @click="activeTab = 'online'"
           >
             {{ $t('common.iconSelect.tabs.online') }}
-          </span>
+          </button>
         </div>
 
         <div class="icon-grid">
@@ -220,20 +227,24 @@ const handleSelect = (name: string) => {
   font-size: var(--p-text-xs);
 }
 
-.tab-row span {
+.tab-row button {
+  padding: 0 0 4px;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  font-size: inherit;
   cursor: pointer;
-  padding-bottom: 4px;
   color: var(--theme-text-muted);
   transition: color var(--p-duration-fast);
 }
 
-.tab-row span.active {
-  color: var(--theme-accent);
+.tab-row button.active {
+  color: var(--theme-accent-strong);
   font-weight: var(--p-weight-medium);
   border-bottom: 2px solid var(--theme-accent);
 }
 
-.tab-row span:hover:not(.active) {
+.tab-row button:hover:not(.active) {
   color: var(--theme-text-primary);
 }
 
@@ -263,11 +274,11 @@ const handleSelect = (name: string) => {
 
 .icon-item.active {
   background-color: var(--theme-accent-light);
-  color: var(--theme-accent);
+  color: var(--theme-accent-strong);
 }
 
 .icon-item span {
-  font-size: 11px;
+  font-size: var(--p-text-xs);
   margin-top: 4px;
   word-break: break-word;
   text-align: center;

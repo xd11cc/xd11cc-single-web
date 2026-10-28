@@ -13,7 +13,7 @@
             v-model="searchData.status"
             :placeholder="$t('system.menu.formPlaceholder.status')"
             clearable
-            style="width: 200px"
+            class="search-field-lg"
           >
             <el-option
               v-for="item in getDictList('system_status')"
@@ -93,15 +93,11 @@
       <el-table-column
         prop="sort"
         :label="$t('system.menu.columns.orderNum')"
-        align="center"
+        align="right"
         width="70"
       />
-      <el-table-column prop="permission" :label="$t('system.menu.columns.perms')" align="center" />
-      <el-table-column
-        prop="component"
-        :label="$t('system.menu.columns.component')"
-        align="center"
-      />
+      <el-table-column prop="permission" :label="$t('system.menu.columns.perms')" />
+      <el-table-column prop="component" :label="$t('system.menu.columns.component')" />
       <el-table-column prop="status" :label="$t('system.menu.columns.status')" align="center">
         <template #default="scope">
           <el-tag
@@ -510,12 +506,3 @@ function handleAddChild(row: SystemMenuVO) {
   }
 }
 </script>
-
-<style lang="scss" scoped>
-.search-wrapper {
-  margin-bottom: 20px;
-  :deep(.el-card__body) {
-    padding-bottom: 2px;
-  }
-}
-</style>

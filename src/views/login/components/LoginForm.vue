@@ -50,7 +50,7 @@
             :src="captchaImg"
             @click="refreshCaptcha"
             :alt="$t('login.captcha')"
-            :title="$t('login.qrcode.refresh')"
+            :title="$t('login.captchaRefresh')"
             class="captcha-img"
           />
         </div>
@@ -60,9 +60,6 @@
           <el-checkbox v-model="loginFormData.rememberMe">{{
             $t('login.formOptions.rememberMe')
           }}</el-checkbox>
-          <!-- <el-link type="primary" underline="never" @click="handleForgetPassword">
-            {{ $t('login.forgotPassword') }}？
-          </el-link> -->
         </div>
       </el-form-item>
       <el-button class="login-btn" size="large" @click.prevent="handleLogin" :loading="loading">
@@ -97,9 +94,8 @@ import type { LoginForm, AuthClientConfigVO } from '../apis/type'
 import { getCaptcha, socialLogin, getSocialClientConfigList } from '../apis'
 import { useOssUrl } from '@@/composables/useOssUrl'
 
-const emit = defineEmits<{
-  'forget-password': []
-}>()
+// 系统名称，与页面标题、页脚、水印共用同一环境变量
+const VITE_APP_TITLE = import.meta.env.VITE_APP_TITLE
 
 const useStore = useUserStore()
 
@@ -143,11 +139,12 @@ const handleLogin = () => {
   loginFormRef.value?.validate((valid: boolean) => {
     if (!valid) return
     loading.value = true
+    const username = loginFormData.username
     useStore
       .userLogin(loginFormData)
       .then(() => {
         router.push(route.query.redirect ? decodeURIComponent(route.query.redirect as string) : '/')
-        ElMessage.success($t('login.messages.loginSuccess'))
+        showWelcome(username)
       })
       .catch(() => {
         refreshCaptcha()
@@ -156,6 +153,24 @@ const handleLogin = () => {
       .finally(() => {
         loading.value = false
       })
+  })
+}
+
+/**
+ * 登录成功后的欢迎提示。
+ * 系统名取自环境变量，用户名用登录表单输入值——此时 getInfo 尚未完成，
+ * 昵称要到路由守卫异步拉取后才有值，因此这里不依赖 userStore。
+ */
+function showWelcome(username: string) {
+  ElNotification({
+    title: $t('login.messages.welcomeTitle'),
+    message: $t('login.messages.welcome', {
+      system: VITE_APP_TITLE,
+      name: username,
+    }),
+    type: 'success',
+    duration: 4000,
+    position: 'top-right',
   })
 }
 
@@ -169,10 +184,6 @@ function handleAuthLogin(source: string) {
   socialLogin(source).then((res) => {
     window.location.href = res.data
   })
-}
-
-function handleForgetPassword() {
-  emit('forget-password')
 }
 
 onMounted(() => {
@@ -243,7 +254,7 @@ onMounted(() => {
     transition: color var(--p-duration-fast);
 
     &:hover {
-      color: var(--theme-accent);
+      color: var(--theme-accent-strong);
     }
   }
 
@@ -255,12 +266,12 @@ onMounted(() => {
     font-family: var(--p-font-display);
     font-weight: var(--p-weight-semibold);
     font-size: var(--p-text-md);
-    background: var(--theme-accent);
-    color: #ffffff;
+    background: var(--theme-accent-fill);
+    color: var(--theme-accent-on);
     transition: all var(--p-duration-fast) var(--p-ease-out);
 
     &:hover {
-      background: var(--theme-accent-hover);
+      background: var(--theme-accent-fill-hover);
       box-shadow: 0 4px 12px var(--theme-accent-glow);
     }
 

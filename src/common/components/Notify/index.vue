@@ -4,7 +4,13 @@
       <template #reference>
         <el-badge :value="totalUnread" :max="badgeMax" :hidden="totalUnread === 0">
           <el-tooltip effect="dark" :content="t('layout.notify.tooltip')" placement="bottom">
-            <Icon icon="lucide:bell" width="18" height="18" class="notify-icon" />
+            <button
+              type="button"
+              class="notify-trigger"
+              :aria-label="t('layout.notify.open')"
+            >
+              <Icon icon="lucide:bell" width="18" height="18" class="notify-icon" aria-hidden="true" />
+            </button>
           </el-tooltip>
         </el-badge>
       </template>
@@ -17,22 +23,23 @@
             </template>
             <el-scrollbar height="360px">
               <div class="notify-list">
-                <div
+                <button
                   v-for="notice in item.list"
                   :key="notice.id"
+                  type="button"
                   class="notify-item"
                   :class="{ unread: notice.readStatus === 0 }"
                   @click="handleRead(notice)"
                 >
-                  <div class="notify-item-content">
+                  <span class="notify-item-content">
                     <span class="title">{{ notice.title }}</span>
                     <span v-if="notice.content" class="description">{{ notice.content }}</span>
                     <span class="time">{{ notice.senderName }} · {{ notice.publishTime }}</span>
-                  </div>
+                  </span>
                   <el-tag v-if="notice.readStatus === 0" type="danger" size="small" effect="plain">
                     {{ t('system.noticeUser.readStatus.unread') }}
                   </el-tag>
-                </div>
+                </button>
                 <el-empty
                   v-if="!item.list.length"
                   :description="t('common.messages.noData')"
@@ -50,12 +57,19 @@
         </div>
       </template>
     </el-popover>
+
+    <!-- 待办提醒：队列化单例弹窗，同一时间只展示一条 -->
+    <TodoPopup />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
 import { useWebSocket } from '@@/composables/useWebSocket'
+import { useTodoQueue } from '@@/composables/useTodoQueue'
+import { openApprovalTodo, openNoticeCenter } from '@@/utils/notice-navigation'
+import { useSettingsStore } from '@/pinia/stores/settings'
+import type { NoticeWebSocketDTO } from '@@/utils/webSocket'
 import {
   myNoticePage,
   markAsRead,
@@ -64,6 +78,7 @@ import {
 } from '@/views/system/noticeUser/apis'
 import type { SystemNoticeUserDTO } from '@/views/system/noticeUser/apis/type'
 import { useI18n } from 'vue-i18n'
+import TodoPopup from './TodoPopup.vue'
 
 type TabName = 'notice' | 'message' | 'todo'
 
@@ -79,6 +94,8 @@ interface TabItem {
 const router = useRouter()
 const { on, off } = useWebSocket()
 const { t } = useI18n()
+const settingsStore = useSettingsStore()
+const todoQueue = useTodoQueue()
 
 const badgeMax = 99
 const popoverWidth = 360
@@ -155,28 +172,89 @@ function handleMarkAllRead() {
 }
 
 function handleHistory() {
-  router.push({ name: 'noticeUser' })
+  openNoticeCenter(router)
 }
 
-const noticeTypeMap: Record<number, { titleKey: string; type: 'info' | 'success' | 'warning' }> = {
-  1: { titleKey: 'layout.notify.tabs.notice', type: 'info' },
-  2: { titleKey: 'layout.notify.tabs.message', type: 'success' },
-  3: { titleKey: 'layout.notify.tabs.todo', type: 'warning' },
-}
-
-function onNewNotice(data: any) {
-  fetchUnreadCount()
-  if (data?.type) {
-    fetchNoticeList(data.type)
-  }
-  if (data?.title) {
-    const meta = noticeTypeMap[data.type]
-    ElNotification({
-      title: meta ? t(meta.titleKey) : t('layout.notify.fallbackTitle'),
-      message: `${data.senderName ? data.senderName + '：' : ''}${data.title}`,
-      type: meta?.type || 'info',
-      duration: 4000,
+/**
+ * 点击通知卡片后的跳转：优先使用后端下发的业务信息，缺失时退回消息中心。
+ */
+function openNotice(notice: NoticeWebSocketDTO) {
+  if (notice.processInstanceId || notice.taskId) {
+    openApprovalTodo(router, {
+      processInstanceId: notice.processInstanceId,
+      taskId: notice.taskId,
     })
+    return
+  }
+  openNoticeCenter(router)
+}
+
+/**
+ * 消息（type=2）：带摘要和“查看详情”入口的富内容通知，悬停暂停计时。
+ */
+function showMessageNotice(notice: NoticeWebSocketDTO) {
+  const content = notice.content?.trim()
+  ElNotification({
+    title: t('layout.notify.tabs.message'),
+    dangerouslyUseHTMLString: true,
+    message: `
+      <div class="notify-message">
+        <div class="notify-message__title">${escapeHtml(notice.title || '')}</div>
+        ${content ? `<div class="notify-message__desc">${escapeHtml(content)}</div>` : ''}
+        <div class="notify-message__action">${escapeHtml(t('layout.notify.actionView'))}</div>
+      </div>
+    `,
+    type: 'success',
+    duration: 6000,
+    position: 'top-right',
+    customClass: 'notify-message-notice',
+    onClick: () => openNotice(notice),
+  })
+}
+
+/**
+ * 通知（type=1）：轻量提示，4 秒自动消失，点击定位到消息中心。
+ */
+function showInfoNotice(notice: NoticeWebSocketDTO) {
+  ElNotification({
+    title: t('layout.notify.tabs.notice'),
+    message: `${notice.senderName ? notice.senderName + '：' : ''}${notice.title}`,
+    type: 'info',
+    duration: 4000,
+    position: 'top-right',
+    onClick: () => openNotice(notice),
+  })
+}
+
+function escapeHtml(value: string) {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
+
+function onNewNotice(data: NoticeWebSocketDTO) {
+  fetchUnreadCount()
+  if (!data?.type) return
+  fetchNoticeList(data.type)
+
+  switch (data.type) {
+    // 待办：走队列化单例弹窗，避免连续弹窗互相打断
+    case 3:
+      if (!settingsStore.todoPopup) break
+      todoQueue.push(data)
+      break
+    // 消息：富内容通知 + 查看详情
+    case 2:
+      showMessageNotice(data)
+      break
+    // 通知：轻量提示
+    case 1:
+    default:
+      if (data.title) showInfoNotice(data)
+      break
   }
 }
 
@@ -185,14 +263,24 @@ function onRevokeNotice() {
   tabList.value.forEach((tab) => fetchNoticeList(tab.type))
 }
 
+// 用户结束输入（失焦/回车）时，补弹此前因忙碌而被推迟的待办。
+// 监听器在文档级捕获，内部由 pendingAfterBusy 短路，无待补弹时不产生额外开销。
+function onGlobalInteractionEnd() {
+  todoQueue.flushIfIdle()
+}
+
 fetchUnreadCount()
 
 on('NEW_NOTICE', onNewNotice)
 on('REVOKE_NOTICE', onRevokeNotice)
+document.addEventListener('focusout', onGlobalInteractionEnd, true)
+document.addEventListener('keydown', onGlobalInteractionEnd, true)
 
 onUnmounted(() => {
   off('NEW_NOTICE', onNewNotice)
   off('REVOKE_NOTICE', onRevokeNotice)
+  document.removeEventListener('focusout', onGlobalInteractionEnd, true)
+  document.removeEventListener('keydown', onGlobalInteractionEnd, true)
 })
 </script>
 
@@ -210,14 +298,20 @@ onUnmounted(() => {
     justify-content: center;
   }
 
-  :deep(svg) {
-    outline: none;
+  .notify-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: inherit;
+    cursor: pointer;
   }
 
   .notify-icon {
     color: var(--theme-text-secondary);
     transition: color var(--p-duration-fast);
-    cursor: pointer;
   }
 }
 
@@ -232,8 +326,13 @@ onUnmounted(() => {
     display: flex;
     align-items: flex-start;
     gap: 12px;
+    width: 100%;
     padding: 12px 8px;
+    border: 0;
     border-bottom: 1px solid var(--el-border-color-lighter);
+    background: none;
+    font-family: inherit;
+    text-align: left;
     cursor: pointer;
     transition: background-color 0.2s;
 
@@ -258,13 +357,13 @@ onUnmounted(() => {
     gap: 4px;
 
     .title {
-      font-size: 13px;
+      font-size: var(--p-text-base);
       color: var(--el-text-color-primary);
       line-height: 1.4;
     }
 
     .description {
-      font-size: 12px;
+      font-size: var(--p-text-sm);
       color: var(--el-text-color-secondary);
       overflow: hidden;
       text-overflow: ellipsis;
@@ -272,7 +371,7 @@ onUnmounted(() => {
     }
 
     .time {
-      font-size: 12px;
+      font-size: var(--p-text-sm);
       color: var(--el-text-color-placeholder);
     }
   }

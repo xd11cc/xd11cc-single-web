@@ -44,7 +44,7 @@ function handleToggle(event: MouseEvent) {
   cursor: pointer;
 
   .toggle-icon {
-    font-size: 18px;
+    font-size: var(--p-text-xl);
     color: var(--theme-text-secondary);
     transition:
       color var(--p-duration-fast),
@@ -52,7 +52,7 @@ function handleToggle(event: MouseEvent) {
   }
 
   &:hover .toggle-icon {
-    color: var(--theme-accent);
+    color: var(--theme-accent-strong);
     transform: rotate(15deg);
   }
 }

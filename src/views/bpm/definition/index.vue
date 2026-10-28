@@ -43,14 +43,12 @@
         <el-table-column
           prop="key"
           :label="$t('bpm.definition.columns.key')"
-          align="center"
           min-width="140"
           show-overflow-tooltip
         />
         <el-table-column
           prop="name"
           :label="$t('bpm.definition.columns.name')"
-          align="center"
           min-width="160"
           show-overflow-tooltip
         />
@@ -74,7 +72,6 @@
         <el-table-column
           prop="category"
           :label="$t('bpm.definition.columns.category')"
-          align="center"
           width="110"
           show-overflow-tooltip
         />
@@ -470,7 +467,7 @@ function getStatusType(row: WorkflowDefinitionVO) {
 :deep(.version-dialog .el-dialog__header) {
   margin-right: 0;
   padding: 24px 28px 18px;
-  border-bottom: 1px solid #e8edf0;
+  border-bottom: 1px solid var(--theme-border);
 }
 :deep(.version-dialog .el-dialog__body) {
   padding: 8px 28px 28px;
@@ -482,41 +479,41 @@ function getStatusType(row: WorkflowDefinitionVO) {
   gap: 20px;
 }
 .eyebrow {
-  color: #168267;
-  font-size: 11px;
+  color: var(--theme-accent-strong);
+  font-size: var(--p-text-xs);
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
 .version-dialog-header h2 {
   margin: 6px 0 3px;
-  color: #1f3038;
-  font-size: 22px;
+  color: var(--theme-text-primary);
+  font-size: var(--p-text-2xl);
   line-height: 1.25;
 }
 .version-dialog-key {
-  color: #819098;
+  color: var(--theme-text-muted);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 12px;
+  font-size: var(--p-text-sm);
 }
 .version-count {
   display: grid;
   min-width: 76px;
   padding: 9px 12px;
-  color: #668078;
+  color: var(--theme-text-secondary);
   text-align: center;
-  border: 1px solid #dbece5;
+  border: 1px solid var(--theme-border);
   border-radius: 12px;
-  background: #f1faf6;
+  background: var(--theme-accent-light);
 }
 .version-count strong {
-  color: #087f5b;
-  font-size: 22px;
+  color: var(--theme-accent-strong);
+  font-size: var(--p-text-2xl);
   line-height: 1;
 }
 .version-count span {
   margin-top: 5px;
-  font-size: 11px;
+  font-size: var(--p-text-xs);
 }
 .version-list {
   min-height: 120px;
@@ -538,29 +535,29 @@ function getStatusType(row: WorkflowDefinitionVO) {
   width: 11px;
   height: 11px;
   margin-top: 18px;
-  border: 3px solid #fff;
+  border: 3px solid var(--theme-bg-surface);
   border-radius: 50%;
-  box-shadow: 0 0 0 2px #c9d8d3;
-  background: #8ba09a;
+  box-shadow: 0 0 0 2px var(--theme-border);
+  background: var(--theme-text-muted);
 }
 .version-dot.is-active {
-  background: #159570;
-  box-shadow: 0 0 0 2px #9ed9c5;
+  background: var(--theme-accent);
+  box-shadow: 0 0 0 2px var(--theme-accent);
 }
 .version-dot.is-suspended {
-  background: #d5922e;
-  box-shadow: 0 0 0 2px #efd3a1;
+  background: var(--theme-warning);
+  box-shadow: 0 0 0 2px var(--theme-warning-light);
 }
 .version-dot.is-conflict {
-  background: #d34d54;
-  box-shadow: 0 0 0 2px #edb4b8;
+  background: var(--theme-danger);
+  box-shadow: 0 0 0 2px var(--theme-danger-light);
 }
 .version-line {
   position: absolute;
   top: 30px;
   bottom: -18px;
   width: 1px;
-  background: #dce6e3;
+  background: var(--theme-bg-sunken);
 }
 .version-card {
   display: flex;
@@ -570,16 +567,16 @@ function getStatusType(row: WorkflowDefinitionVO) {
   gap: 16px;
   margin-bottom: 12px;
   padding: 15px 16px;
-  border: 1px solid #e2e9e7;
+  border: 1px solid var(--theme-border);
   border-radius: 13px;
-  background: #fff;
+  background: var(--theme-bg-surface);
   box-shadow: 0 4px 16px rgb(37 71 60 / 4%);
   transition:
     border-color 0.18s ease,
     box-shadow 0.18s ease;
 }
 .version-card:hover {
-  border-color: #b9dacc;
+  border-color: var(--theme-accent);
   box-shadow: 0 8px 22px rgb(37 71 60 / 8%);
 }
 .version-title,
@@ -589,20 +586,20 @@ function getStatusType(row: WorkflowDefinitionVO) {
   gap: 9px;
 }
 .version-title {
-  color: #30434a;
-  font-size: 14px;
+  color: var(--theme-text-primary);
+  font-size: var(--p-text-md);
   font-weight: 650;
 }
 .version-number {
-  color: #087f5b;
+  color: var(--theme-accent-strong);
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 13px;
+  font-size: var(--p-text-base);
   font-weight: 700;
 }
 .version-meta {
   margin-top: 8px;
-  color: #89979c;
-  font-size: 11px;
+  color: var(--theme-text-muted);
+  font-size: var(--p-text-xs);
 }
 .version-meta span {
   display: inline-flex;
@@ -614,7 +611,7 @@ function getStatusType(row: WorkflowDefinitionVO) {
   justify-items: center;
   gap: 10px;
   padding: 40px 0;
-  color: #9aa8ac;
+  color: var(--theme-text-muted);
 }
 .version-empty :deep(svg) {
   width: 30px;
@@ -630,13 +627,13 @@ function getStatusType(row: WorkflowDefinitionVO) {
   height: 28px;
   padding: 0 9px;
   border-radius: 9px;
-  font-size: 12px;
+  font-size: var(--p-text-sm);
   line-height: 1;
 }
 .version-badge {
-  color: #087f5b;
-  border: 1px solid #b8dccd;
-  background: linear-gradient(135deg, #f1faf6, #e5f5ee);
+  color: var(--theme-accent-strong);
+  border: 1px solid var(--theme-border);
+  background: linear-gradient(135deg, var(--theme-accent-light), var(--theme-accent-light));
   box-shadow: inset 0 1px rgb(255 255 255 / 80%);
 }
 .version-badge :deep(svg) {
@@ -646,14 +643,14 @@ function getStatusType(row: WorkflowDefinitionVO) {
 }
 .version-badge strong {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 13px;
+  font-size: var(--p-text-base);
   letter-spacing: 0.02em;
 }
 .version-draft-badge {
-  color: #77878c;
-  border: 1px dashed #cbd7d9;
-  background: #f7f9f9;
-  font-size: 11px;
+  color: var(--theme-text-muted);
+  border: 1px dashed var(--theme-border);
+  background: var(--theme-bg-page);
+  font-size: var(--p-text-xs);
 }
 .version-draft-badge :deep(svg) {
   width: 13px;

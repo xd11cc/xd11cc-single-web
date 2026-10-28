@@ -12,6 +12,9 @@ import '@fontsource/outfit/latin-700.css'
 import '@fontsource/dm-sans/latin-400.css'
 import '@fontsource/dm-sans/latin-500.css'
 import '@fontsource/dm-sans/latin-600.css'
+// 代码中存在 font-weight: 700 的正文（语言切换器字形、BPM 属性面板、流程定义页），
+// 缺 700 时浏览器会用 600 合成伪粗体，字重发虚
+import '@fontsource/dm-sans/latin-700.css'
 import '@@/assets/styles/index.scss'
 import 'nprogress/nprogress.css'
 

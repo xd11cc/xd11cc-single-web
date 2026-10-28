@@ -28,7 +28,7 @@
           :placeholder="$t('system.user.formPlaceholder.deptId')"
           check-strictly
           clearable
-          style="width: 180px"
+          class="search-field-md"
         />
       </el-form-item>
       <el-form-item prop="status" :label="$t('system.user.search.status')">
@@ -36,7 +36,7 @@
           v-model="searchData.status"
           :placeholder="$t('system.user.formPlaceholder.status')"
           clearable
-          style="width: 150px"
+          class="search-field"
         >
           <el-option
             v-for="item in getDictList('system_status')"
@@ -73,31 +73,26 @@
         v-if="isColumnVisible('username')"
         prop="username"
         :label="$t('system.user.columns.username')"
-        align="center"
       />
       <el-table-column
         v-if="isColumnVisible('nickname')"
         prop="nickname"
         :label="$t('system.user.form.nickname')"
-        align="center"
       />
       <el-table-column
         v-if="isColumnVisible('deptName')"
         prop="deptName"
         :label="$t('system.user.search.dept')"
-        align="center"
       />
       <el-table-column
         v-if="isColumnVisible('postName')"
         prop="postName"
         :label="$t('system.user.columns.postName')"
-        align="center"
       />
       <el-table-column
         v-if="isColumnVisible('phone')"
         prop="phone"
         :label="$t('system.user.search.phone')"
-        align="center"
       />
       <el-table-column
         v-if="isColumnVisible('status')"
@@ -313,21 +308,13 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
-import { ref, nextTick } from 'vue'
 import type { FormRules } from 'element-plus'
 import UseCrudView from '@/common/components/useCrud/index.vue'
 import { useCrud } from '@/common/composables/useCrud'
 import { useDict } from '@/common/composables/useDict'
 import { useTableColumns } from '@@/composables/useTableColumns'
 import TableColumnSetting from '@@/components/TableColumnSetting/index.vue'
-import {
-  userPage,
-  getUserById,
-  addUser,
-  modifyUserById,
-  removeUserByIds,
-  resetPassword,
-} from './apis'
+import { userPage, addUser, modifyUserById, removeUserByIds, resetPassword } from './apis'
 import type { SystemUserVO, SystemUserQueryVO } from './apis/type'
 import { deptTreeList } from '@/views/system/dept/apis'
 import { postListByDeptId } from '@/views/system/post/apis'
@@ -501,5 +488,3 @@ function handleResetPwd(row: SystemUserVO) {
 getDeptTree()
 getRoleOptions()
 </script>
-
-<style lang="scss" scoped></style>

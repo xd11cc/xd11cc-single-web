@@ -94,7 +94,7 @@ function handleRefresh() {
   margin-bottom: var(--p-space-4);
 
   .error-icon {
-    font-size: 28px;
+    font-size: var(--p-text-3xl);
     color: var(--theme-danger);
   }
 }
@@ -124,12 +124,12 @@ function handleRefresh() {
     border-radius: var(--btn-radius);
     font-family: var(--p-font-display);
     font-weight: var(--p-weight-semibold);
-    background: var(--theme-accent);
-    color: #ffffff;
+    background: var(--theme-accent-fill);
+    color: var(--theme-accent-on);
     transition: all var(--p-duration-fast) var(--p-ease-out);
 
     &:hover {
-      background: var(--theme-accent-hover);
+      background: var(--theme-accent-fill-hover);
       box-shadow: 0 4px 12px var(--theme-accent-glow);
     }
   }
@@ -145,7 +145,7 @@ function handleRefresh() {
 
     &:hover {
       border-color: var(--theme-accent);
-      color: var(--theme-accent);
+      color: var(--theme-accent-strong);
     }
   }
 }

@@ -1,0 +1,113 @@
+export const zh = {
+  actions: {
+    detail: '详情',
+    format: '格式化',
+    ignore: '忽略',
+    query: '查询',
+    replay: '重新投递',
+    replayEdit: '编辑重投',
+  },
+  columns: {
+    createTime: '失败时间',
+    messageId: '消息ID',
+    queueName: '来源队列',
+    retryCount: '重试次数',
+    status: '状态',
+  },
+  detail: {
+    createTime: '失败时间',
+    data: '原始消息',
+    errorMsg: '异常摘要',
+    messageId: '消息ID',
+    queueName: '来源队列',
+    replayTime: '重放时间',
+    retryCount: '重试次数',
+    status: '状态',
+  },
+  dialogs: {
+    detail: '失败消息详情',
+    replayEdit: '编辑消息体后重投',
+  },
+  formPlaceholder: {
+    data: '请输入合法的 JSON 消息体',
+    messageId: '请输入消息ID',
+    queueName: '请选择来源队列',
+    status: '请选择状态',
+  },
+  messages: {
+    dataEmpty: '消息内容不能为空',
+    dataInvalid: '消息内容不是合法的 JSON',
+    editTip: '修改后的消息体会覆盖原记录并立即投递，请谨慎操作。',
+    ignoreConfirm: '确认忽略该条失败消息？忽略后不会再重投。',
+    ignoreSuccess: '已忽略',
+    replayConfirm: '确认重新投递该条消息？重投后将立即被消费者处理。',
+    replaySuccess: '重放成功',
+  },
+  search: {
+    messageId: '消息ID',
+    queueName: '来源队列',
+    status: '状态',
+  },
+  status: {
+    ignored: '已忽略',
+    pending: '待处理',
+    replayed: '已重放',
+  },
+}
+
+export const en = {
+  actions: {
+    detail: 'Detail',
+    format: 'Format',
+    ignore: 'Ignore',
+    query: 'Query',
+    replay: 'Replay',
+    replayEdit: 'Edit & Replay',
+  },
+  columns: {
+    createTime: 'Failed At',
+    messageId: 'Message ID',
+    queueName: 'Queue',
+    retryCount: 'Retries',
+    status: 'Status',
+  },
+  detail: {
+    createTime: 'Failed At',
+    data: 'Original Message',
+    errorMsg: 'Error Message',
+    messageId: 'Message ID',
+    queueName: 'Queue',
+    replayTime: 'Replayed At',
+    retryCount: 'Retries',
+    status: 'Status',
+  },
+  dialogs: {
+    detail: 'Failed Message Details',
+    replayEdit: 'Edit Message and Replay',
+  },
+  formPlaceholder: {
+    data: 'Please enter a valid JSON message body',
+    messageId: 'Please enter message ID',
+    queueName: 'Please select queue',
+    status: 'Please select status',
+  },
+  messages: {
+    dataEmpty: 'Message body cannot be empty',
+    dataInvalid: 'Message body is not valid JSON',
+    editTip: 'The edited body overwrites the record and is sent immediately. Proceed with care.',
+    ignoreConfirm: 'Ignore this failed message? It will not be replayed.',
+    ignoreSuccess: 'Ignored successfully',
+    replayConfirm: 'Replay this message? It will be consumed immediately.',
+    replaySuccess: 'Replayed successfully',
+  },
+  search: {
+    messageId: 'Message ID',
+    queueName: 'Queue',
+    status: 'Status',
+  },
+  status: {
+    ignored: 'Ignored',
+    pending: 'Pending',
+    replayed: 'Replayed',
+  },
+}

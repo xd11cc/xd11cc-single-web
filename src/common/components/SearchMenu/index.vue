@@ -1,7 +1,14 @@
 <template>
   <div>
     <el-tooltip effect="dark" :content="$t('layout.searchMenu.tooltip.open')" placement="bottom">
-      <Icon icon="lucide:search" class="action-icon" @click="open" />
+      <button
+        type="button"
+        class="action-trigger"
+        :aria-label="$t('layout.searchMenu.tooltip.open')"
+        @click="open"
+      >
+        <Icon icon="lucide:search" class="action-icon" aria-hidden="true" />
+      </button>
     </el-tooltip>
     <Teleport to="body">
       <Transition name="cmd">
@@ -203,9 +210,19 @@ watch(query, () => {
 </script>
 
 <style lang="scss" scoped>
+.action-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  cursor: pointer;
+}
+
 .action-icon {
-  font-size: 18px;
-  outline: none;
+  font-size: var(--p-text-xl);
   cursor: pointer;
   color: var(--theme-text-secondary);
   transition: color var(--p-duration-fast);
@@ -244,7 +261,7 @@ watch(query, () => {
   border-bottom: 1px solid var(--theme-border);
 
   .cmd-input-icon {
-    font-size: 18px;
+    font-size: var(--p-text-xl);
     color: var(--theme-text-muted);
     flex-shrink: 0;
   }
@@ -254,7 +271,7 @@ watch(query, () => {
     border: none;
     outline: none;
     background: transparent;
-    font-size: 15px;
+    font-size: var(--p-text-lg);
     color: var(--theme-text-primary);
     font-family: var(--p-font-body);
 
@@ -266,7 +283,7 @@ watch(query, () => {
   .cmd-kbd {
     padding: 2px 6px;
     border-radius: 4px;
-    font-size: 11px;
+    font-size: var(--p-text-xs);
     font-family: var(--p-font-body);
     background: var(--theme-bg-elevated);
     color: var(--theme-text-muted);
@@ -288,7 +305,7 @@ watch(query, () => {
 
 .cmd-group-label {
   padding: 4px 8px;
-  font-size: 11px;
+  font-size: var(--p-text-xs);
   font-weight: var(--p-weight-semibold);
   color: var(--theme-text-muted);
   text-transform: uppercase;
@@ -313,7 +330,7 @@ watch(query, () => {
   }
 
   .cmd-item-icon {
-    font-size: 16px;
+    font-size: var(--p-text-lg);
     color: var(--theme-text-muted);
     flex-shrink: 0;
   }
@@ -326,18 +343,18 @@ watch(query, () => {
   }
 
   .cmd-item-title {
-    font-size: 14px;
+    font-size: var(--p-text-md);
     color: var(--theme-text-primary);
     font-weight: var(--p-weight-medium);
   }
 
   .cmd-item-breadcrumb {
-    font-size: 12px;
+    font-size: var(--p-text-sm);
     color: var(--theme-text-muted);
   }
 
   .cmd-item-enter {
-    font-size: 14px;
+    font-size: var(--p-text-md);
     color: var(--theme-text-muted);
     opacity: 0;
     transition: opacity var(--p-duration-fast);
@@ -350,13 +367,13 @@ watch(query, () => {
   color: var(--theme-text-muted);
 
   .cmd-empty-icon {
-    font-size: 32px;
+    font-size: var(--p-text-3xl);
     margin-bottom: 8px;
   }
 
   p {
     margin: 0;
-    font-size: 14px;
+    font-size: var(--p-text-md);
   }
 }
 
@@ -365,13 +382,13 @@ watch(query, () => {
   gap: 16px;
   padding: 10px 16px;
   border-top: 1px solid var(--theme-border);
-  font-size: 12px;
+  font-size: var(--p-text-sm);
   color: var(--theme-text-muted);
 
   kbd {
     padding: 1px 4px;
     border-radius: 3px;
-    font-size: 11px;
+    font-size: var(--p-text-xs);
     background: var(--theme-bg-elevated);
     border: 1px solid var(--theme-border);
     margin-right: 2px;

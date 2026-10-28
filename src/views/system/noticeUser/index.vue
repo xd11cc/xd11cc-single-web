@@ -13,7 +13,7 @@
             v-model="searchData.type"
             :placeholder="$t('system.noticeUser.formPlaceholder.type')"
             clearable
-            style="width: 130px"
+            class="search-field-sm"
           >
             <el-option
               v-for="item in getDictList('system_notice_type')"
@@ -28,7 +28,7 @@
             v-model="searchData.readStatus"
             :placeholder="$t('system.noticeUser.formPlaceholder.readStatus')"
             clearable
-            style="width: 130px"
+            class="search-field-sm"
           >
             <el-option :value="0" :label="$t('system.noticeUser.readStatus.unread')" />
             <el-option :value="1" :label="$t('system.noticeUser.readStatus.read')" />
@@ -91,7 +91,6 @@
           <el-table-column
             prop="senderName"
             :label="$t('system.noticeUser.columns.senderName')"
-            align="center"
             width="120"
           />
           <el-table-column
@@ -245,22 +244,6 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
 </script>
 
 <style lang="scss" scoped>
-.search-wrapper {
-  margin-bottom: 20px;
-  :deep(.el-card__body) {
-    padding-bottom: 2px;
-  }
-}
-
-.table-wrapper {
-  margin-bottom: 20px;
-}
-
-.page-wrapper {
-  display: flex;
-  justify-content: flex-end;
-}
-
 .unread-title {
   font-weight: 600;
 }

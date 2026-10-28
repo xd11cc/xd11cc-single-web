@@ -35,14 +35,17 @@
         <div class="card-header">
           <h3>{{ t('dashboard.charts.visitTrend') }}</h3>
           <div class="card-actions">
-            <span
+            <button
               v-for="p in periods"
               :key="p.value"
+              type="button"
               class="period"
               :class="{ active: activePeriod === p.value }"
+              :aria-pressed="activePeriod === p.value"
               @click="activePeriod = p.value"
-              >{{ p.label }}</span
             >
+              {{ p.label }}
+            </button>
           </div>
         </div>
         <v-chart :option="lineOption" autoresize class="chart" />
@@ -86,15 +89,16 @@
 
     <!-- 快捷入口 -->
     <section class="quick-grid" style="--delay: 9">
-      <div
+      <button
         v-for="action in quickActions"
         :key="action.label"
+        type="button"
         class="quick-card"
         @click="handleQuickAction(action.path)"
       >
         <Icon :icon="action.icon" class="quick-icon" />
         <span class="quick-label">{{ action.label }}</span>
-      </div>
+      </button>
     </section>
   </div>
 </template>
@@ -179,15 +183,25 @@ const weekDays = computed(() => {
   )
 })
 
-const textColor = computed(() => (isDark.value ? '#a1a1aa' : '#71717a'))
+// ECharts canvas 渲染读不到 CSS 变量，集中维护与 --theme-* 对应的图表调色板
+const chartPalette = computed(() => ({
+  text: isDark.value ? '#a1a1aa' : '#52525b',
+  tooltipBg: isDark.value ? '#27272a' : '#ffffff',
+  tooltipText: isDark.value ? '#e4e4e7' : '#18181b',
+  accent: isDark.value ? '#10b981' : '#059669',
+  contrast: isDark.value ? '#60a5fa' : '#3b82f6',
+  warning: isDark.value ? '#fbbf24' : '#f59e0b',
+  info: isDark.value ? '#22d3ee' : '#06b6d4',
+}))
+const textColor = computed(() => chartPalette.value.text)
 const borderColor = computed(() => (isDark.value ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'))
 
 const lineOption = computed(() => ({
   tooltip: {
     trigger: 'axis',
-    backgroundColor: isDark.value ? '#27272a' : '#fff',
+    backgroundColor: chartPalette.value.tooltipBg,
     borderColor: borderColor.value,
-    textStyle: { color: isDark.value ? '#e4e4e7' : '#18181b' },
+    textStyle: { color: chartPalette.value.tooltipText },
   },
   grid: { top: 20, right: 20, bottom: 30, left: 50 },
   xAxis: {
@@ -215,13 +229,13 @@ const lineOption = computed(() => ({
           x2: 0,
           y2: 1,
           colorStops: [
-            { offset: 0, color: 'rgba(124, 58, 237, 0.25)' },
-            { offset: 1, color: 'rgba(124, 58, 237, 0)' },
+            { offset: 0, color: 'rgba(59, 130, 246, 0.25)' },
+            { offset: 1, color: 'rgba(59, 130, 246, 0)' },
           ],
         },
       },
-      lineStyle: { color: '#7c3aed', width: 2 },
-      itemStyle: { color: '#7c3aed' },
+      lineStyle: { color: chartPalette.value.contrast, width: 2 },
+      itemStyle: { color: chartPalette.value.contrast },
       symbol: 'circle',
       symbolSize: 6,
     },
@@ -243,8 +257,8 @@ const lineOption = computed(() => ({
           ],
         },
       },
-      lineStyle: { color: '#10b981', width: 2 },
-      itemStyle: { color: '#10b981' },
+      lineStyle: { color: chartPalette.value.accent, width: 2 },
+      itemStyle: { color: chartPalette.value.accent },
       symbol: 'circle',
       symbolSize: 6,
     },
@@ -254,9 +268,9 @@ const lineOption = computed(() => ({
 const pieOption = computed(() => ({
   tooltip: {
     trigger: 'item',
-    backgroundColor: isDark.value ? '#27272a' : '#fff',
+    backgroundColor: chartPalette.value.tooltipBg,
     borderColor: borderColor.value,
-    textStyle: { color: isDark.value ? '#e4e4e7' : '#18181b' },
+    textStyle: { color: chartPalette.value.tooltipText },
   },
   legend: {
     orient: 'vertical',
@@ -275,17 +289,25 @@ const pieOption = computed(() => ({
         label: { show: true, fontSize: 14, fontWeight: 'bold' },
       },
       data: [
-        { value: 148, name: t('dashboard.charts.sources.direct'), itemStyle: { color: '#7c3aed' } },
-        { value: 86, name: t('dashboard.charts.sources.search'), itemStyle: { color: '#10b981' } },
+        {
+          value: 148,
+          name: t('dashboard.charts.sources.direct'),
+          itemStyle: { color: chartPalette.value.contrast },
+        },
+        {
+          value: 86,
+          name: t('dashboard.charts.sources.search'),
+          itemStyle: { color: chartPalette.value.accent },
+        },
         {
           value: 53,
           name: t('dashboard.charts.sources.referral'),
-          itemStyle: { color: '#f59e0b' },
+          itemStyle: { color: chartPalette.value.warning },
         },
         {
           value: 42,
           name: t('dashboard.charts.sources.favorites'),
-          itemStyle: { color: '#06b6d4' },
+          itemStyle: { color: chartPalette.value.info },
         },
       ],
     },
@@ -295,9 +317,9 @@ const pieOption = computed(() => ({
 const barOption = computed(() => ({
   tooltip: {
     trigger: 'axis',
-    backgroundColor: isDark.value ? '#27272a' : '#fff',
+    backgroundColor: chartPalette.value.tooltipBg,
     borderColor: borderColor.value,
-    textStyle: { color: isDark.value ? '#e4e4e7' : '#18181b' },
+    textStyle: { color: chartPalette.value.tooltipText },
   },
   grid: { top: 20, right: 20, bottom: 30, left: 50 },
   xAxis: {
@@ -323,8 +345,8 @@ const barOption = computed(() => ({
           x2: 0,
           y2: 1,
           colorStops: [
-            { offset: 0, color: '#7c3aed' },
-            { offset: 1, color: 'rgba(124, 58, 237, 0.4)' },
+            { offset: 0, color: chartPalette.value.contrast },
+            { offset: 1, color: 'rgba(59, 130, 246, 0.4)' },
           ],
         },
         borderRadius: [4, 4, 0, 0],
@@ -432,10 +454,10 @@ function handleQuickAction(path: string) {
   gap: var(--p-space-4);
   margin-bottom: var(--p-space-6);
 
-  @media (max-width: 991px) {
+  @include mobile {
     grid-template-columns: repeat(2, 1fr);
   }
-  @media (max-width: 480px) {
+  @include xs {
     grid-template-columns: 1fr;
   }
 }
@@ -508,7 +530,7 @@ function handleQuickAction(path: string) {
   gap: var(--p-space-4);
   margin-bottom: var(--p-space-6);
 
-  @media (max-width: 991px) {
+  @include mobile {
     grid-template-columns: 1fr;
   }
 }
@@ -519,7 +541,7 @@ function handleQuickAction(path: string) {
   gap: var(--p-space-4);
   margin-bottom: var(--p-space-6);
 
-  @media (max-width: 991px) {
+  @include mobile {
     grid-template-columns: 1fr;
   }
 }
@@ -547,16 +569,20 @@ function handleQuickAction(path: string) {
 
     .period {
       padding: 3px 8px;
+      border: 0;
+      background: none;
+      font-family: inherit;
       font-size: var(--p-text-xs);
       font-weight: var(--p-weight-medium);
+      line-height: 1.5;
       border-radius: var(--p-radius-sm);
       cursor: pointer;
       color: var(--theme-text-muted);
       transition: all var(--p-duration-fast);
 
       &.active {
-        background: var(--theme-accent);
-        color: #fff;
+        background: var(--theme-accent-fill);
+        color: var(--theme-accent-on);
       }
 
       &:hover:not(.active) {
@@ -627,7 +653,7 @@ function handleQuickAction(path: string) {
   grid-template-columns: repeat(4, 1fr);
   gap: var(--p-space-3);
 
-  @media (max-width: 768px) {
+  @include sm {
     grid-template-columns: repeat(2, 1fr);
   }
 }
@@ -637,10 +663,12 @@ function handleQuickAction(path: string) {
   flex-direction: column;
   align-items: center;
   gap: var(--p-space-2);
+  width: 100%;
   padding: var(--p-space-5) var(--p-space-4);
   border-radius: var(--card-radius);
   background: var(--theme-bg-surface);
   border: 1px solid var(--theme-border);
+  font-family: inherit;
   cursor: pointer;
   transition: all var(--p-duration-fast) var(--p-ease-out);
 
@@ -651,8 +679,8 @@ function handleQuickAction(path: string) {
   }
 
   .quick-icon {
-    font-size: 20px;
-    color: var(--theme-accent);
+    font-size: var(--p-text-2xl);
+    color: var(--theme-accent-strong);
   }
 
   .quick-label {
@@ -662,7 +690,7 @@ function handleQuickAction(path: string) {
   }
 }
 
-@media (max-width: 768px) {
+@include sm {
   .dashboard {
     padding: var(--p-space-4);
   }

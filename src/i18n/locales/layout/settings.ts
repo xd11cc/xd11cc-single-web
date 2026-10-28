@@ -13,6 +13,7 @@ export const zh = {
   showTagsView: '显示标签栏',
   showWatermark: '开启系统水印',
   title: '布局配置',
+  todoPopup: '待办弹窗提醒',
   topMode: '顶部模式',
 }
 
@@ -31,5 +32,6 @@ export const en = {
   showTagsView: 'Show Tags View',
   showWatermark: 'Enable Watermark',
   title: 'Layout Configuration',
+  todoPopup: 'Todo Popup Reminder',
   topMode: 'Top Layout',
 }

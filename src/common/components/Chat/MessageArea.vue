@@ -100,7 +100,7 @@ onMounted(() => {
 .message-header {
   padding: 10px 16px;
   border-bottom: 1px solid var(--el-border-color-lighter);
-  font-size: 14px;
+  font-size: var(--p-text-md);
   font-weight: 500;
   color: var(--el-text-color-primary);
 }
@@ -119,7 +119,7 @@ onMounted(() => {
 .no-messages {
   text-align: center;
   padding: 40px 0;
-  font-size: 12px;
+  font-size: var(--p-text-sm);
   color: var(--el-text-color-placeholder);
 }
 
@@ -146,7 +146,7 @@ onMounted(() => {
   flex-shrink: 0;
   background: var(--el-fill-color-darker);
   color: #fff;
-  font-size: 12px;
+  font-size: var(--p-text-sm);
 
   .self & {
     background: var(--el-color-primary-light-3);
@@ -165,13 +165,13 @@ onMounted(() => {
   border-radius: 8px;
   background: var(--el-fill-color-light);
   color: var(--el-text-color-primary);
-  font-size: 13px;
+  font-size: var(--p-text-base);
   line-height: 1.5;
   word-break: break-word;
 }
 
 .msg-time {
-  font-size: 11px;
+  font-size: var(--p-text-xs);
   color: var(--el-text-color-placeholder);
 }
 

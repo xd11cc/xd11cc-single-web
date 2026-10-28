@@ -29,15 +29,10 @@
       <div class="table-wrapper">
         <el-table ref="tableRef" :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column
-            prop="tableName"
-            :label="$t('tool.generateCode.columns.tableName')"
-            align="center"
-          />
+          <el-table-column prop="tableName" :label="$t('tool.generateCode.columns.tableName')" />
           <el-table-column
             prop="tableComment"
             :label="$t('tool.generateCode.columns.tableComment')"
-            align="center"
           />
           <el-table-column
             prop="createTime"
@@ -212,7 +207,7 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
   }
 }
 
-@media (max-width: 768px) {
+@include sm {
   .generate-code-dialog {
     width: 94% !important;
   }

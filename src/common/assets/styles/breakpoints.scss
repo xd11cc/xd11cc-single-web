@@ -1,10 +1,33 @@
+// 断点标尺
+//
+// 这里只放「布局在哪个宽度上换形态」的档位，不放「某个组件在哪一行折行」的微调。
+// 组件专属阈值（例如 BPM 设计器的密度切换）应在组件内用局部变量声明，
+// 并写清为什么不能复用下面任一档位。
+//
+// 选档顺序（从窄到宽）：xs → phone → sm → mobile → lg
+//   xs      480   超小屏手机（竖屏 iPhone SE 级别）
+//   phone   576   小屏手机：表单标签换行、面包屑让位
+//   sm      768   平板竖屏：多列网格降为单列
+//   mobile  992   平板横屏 / 窄桌面：布局外壳降级（侧边栏转抽屉）
+//   lg      1200  桌面（min-width，向上生效）
+//
+// 用法：@include sm { ... }
+// 这些 mixin 由 vite.config.ts 的 additionalData 全局注入，无需在每个文件里 @use。
+
 $breakpoint-xs: 480px;
+$breakpoint-phone: 576px;
 $breakpoint-sm: 768px;
 $breakpoint-md: 992px;
 $breakpoint-lg: 1200px;
 
 @mixin xs {
   @media (max-width: #{$breakpoint-xs}) {
+    @content;
+  }
+}
+
+@mixin phone {
+  @media (max-width: #{$breakpoint-phone}) {
     @content;
   }
 }
@@ -29,6 +52,15 @@ $breakpoint-lg: 1200px;
 
 @mixin lg {
   @media (min-width: #{$breakpoint-lg}) {
+    @content;
+  }
+}
+
+// 无障碍：减少动效偏好。
+// 全局兜底规则在 index.scss，这里提供 mixin 供需要「关闭动画后换一种呈现」的场景使用，
+// 比如动画本身承载了信息（进度条、扫描线）时，不能简单置零而要换成静态态。
+@mixin reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
     @content;
   }
 }

@@ -50,26 +50,10 @@
       <div class="table-wrapper">
         <el-table ref="tableRef" :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column
-            prop="configName"
-            :label="$t('system.config.columns.configName')"
-            align="center"
-          />
-          <el-table-column
-            prop="configKey"
-            :label="$t('system.config.columns.configKey')"
-            align="center"
-          />
-          <el-table-column
-            prop="configValue"
-            :label="$t('system.config.columns.configValue')"
-            align="center"
-          />
-          <el-table-column
-            prop="remark"
-            :label="$t('system.config.columns.remark')"
-            align="center"
-          />
+          <el-table-column prop="configName" :label="$t('system.config.columns.configName')" />
+          <el-table-column prop="configKey" :label="$t('system.config.columns.configKey')" />
+          <el-table-column prop="configValue" :label="$t('system.config.columns.configValue')" />
+          <el-table-column prop="remark" :label="$t('system.config.columns.remark')" />
           <el-table-column
             prop="createTime"
             :label="$t('system.config.columns.createTime')"
@@ -342,27 +326,3 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
   immediate: true,
 })
 </script>
-
-<style lang="scss" scoped>
-.search-wrapper {
-  margin-bottom: 20px;
-  :deep(.el-card__body) {
-    padding-bottom: 2px;
-  }
-}
-
-.toolbar-wrapper {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.table-wrapper {
-  margin-bottom: 20px;
-}
-
-.page-wrapper {
-  display: flex;
-  justify-content: flex-end;
-}
-</style>

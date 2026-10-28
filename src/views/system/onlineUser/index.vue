@@ -28,23 +28,14 @@
             width="60"
             align="center"
           />
-          <el-table-column
-            prop="username"
-            :label="$t('system.onlineUser.columns.username')"
-            align="center"
-          />
+          <el-table-column prop="username" :label="$t('system.onlineUser.columns.username')" />
           <el-table-column
             prop="ipAddr"
             :label="$t('system.onlineUser.columns.ipAddr')"
-            align="center"
             width="140"
           />
-          <el-table-column
-            prop="browser"
-            :label="$t('system.onlineUser.columns.browser')"
-            align="center"
-          />
-          <el-table-column prop="os" :label="$t('system.onlineUser.columns.os')" align="center" />
+          <el-table-column prop="browser" :label="$t('system.onlineUser.columns.browser')" />
+          <el-table-column prop="os" :label="$t('system.onlineUser.columns.os')" />
           <el-table-column
             prop="loginTime"
             :label="$t('system.onlineUser.columns.loginTime')"
@@ -137,16 +128,3 @@ function getTableData() {
 
 getTableData()
 </script>
-
-<style lang="scss" scoped>
-.search-wrapper {
-  margin-bottom: 20px;
-  :deep(.el-card__body) {
-    padding-bottom: 2px;
-  }
-}
-
-.table-wrapper {
-  margin-bottom: 20px;
-}
-</style>

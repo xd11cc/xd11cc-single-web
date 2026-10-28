@@ -57,11 +57,7 @@
       <div class="table-wrapper">
         <el-table ref="tableRef" :data="tableData">
           <el-table-column type="selection" width="50" align="center" />
-          <el-table-column
-            prop="dictName"
-            :label="$t('system.dict.search.dictName')"
-            align="center"
-          />
+          <el-table-column prop="dictName" :label="$t('system.dict.search.dictName')" />
           <el-table-column
             prop="dictType"
             :label="$t('system.dict.search.dictType')"
@@ -76,7 +72,7 @@
               </router-link>
             </template>
           </el-table-column>
-          <el-table-column prop="remark" :label="$t('system.dict.columns.remark')" align="center" />
+          <el-table-column prop="remark" :label="$t('system.dict.columns.remark')" />
           <el-table-column
             prop="createTime"
             :label="$t('system.dict.columns.createTime')"
@@ -326,27 +322,3 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
   immediate: true,
 })
 </script>
-
-<style lang="scss" scoped>
-.search-wrapper {
-  margin-bottom: 20px;
-  :deep(.el-card__body) {
-    padding-bottom: 2px;
-  }
-}
-
-.toolbar-wrapper {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.table-wrapper {
-  margin-bottom: 20px;
-}
-
-.page-wrapper {
-  display: flex;
-  justify-content: flex-end;
-}
-</style>
