@@ -1,7 +1,6 @@
 export const zh = {
   actions: {
     generate: '生成代码',
-    query: '查询',
   },
   columns: {
     createTime: '创建时间',
@@ -22,7 +21,6 @@ export const zh = {
 export const en = {
   actions: {
     generate: 'Generate Code',
-    query: 'Search',
   },
   columns: {
     createTime: 'Created Time',

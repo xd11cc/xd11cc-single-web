@@ -38,18 +38,14 @@
     </template>
 
     <!-- 工具栏按钮 -->
-    <template #actions>
-      <el-button
-        type="primary"
-        @click="crud.methods.handleAdd"
-        v-permission="['auth:clientConfig:add']"
-      >
+    <template #actions="{ handleAdd, handleBatchRemove }">
+      <el-button type="primary" @click="handleAdd" v-permission="['auth:clientConfig:add']">
         <template #icon><Icon icon="lucide:plus-circle" /></template>
         {{ $t('common.add') }}
       </el-button>
       <el-button
         type="danger"
-        @click="crud.methods.handleBatchRemove"
+        @click="handleBatchRemove"
         v-permission="['auth:clientConfig:delete']"
       >
         <template #icon><Icon icon="lucide:trash-2" /></template>

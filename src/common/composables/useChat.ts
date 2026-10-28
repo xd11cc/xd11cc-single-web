@@ -17,6 +17,8 @@ export interface ChatContact {
   unread: number
   lastMessage?: string
   lastTime?: number
+  /** 是否在线：列表里会显示绿点，离线但有过历史消息的联系人仍保留在列表中 */
+  online?: boolean
 }
 
 const panelVisible = ref(false)
@@ -158,13 +160,20 @@ export function useChat() {
       data.forEach((user) => {
         if (user.userId === userStore.userId) return
         const existing = contacts.value.find((c) => c.userId === user.userId)
-        if (!existing) {
+        if (existing) {
+          existing.online = true
+        } else {
           contacts.value.push({
             userId: user.userId!,
             username: user.username!,
             unread: 0,
+            online: true,
           })
         }
+      })
+      // 保留有历史消息的离线联系人，但标记为离线
+      contacts.value.forEach((contact) => {
+        if (!onlineIds.has(contact.userId)) contact.online = false
       })
       contacts.value = contacts.value.filter(
         (c) =>

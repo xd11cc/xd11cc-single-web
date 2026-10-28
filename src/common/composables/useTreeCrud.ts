@@ -41,6 +41,11 @@ export interface UseTreeCrudOptions<Q = any, T = any> {
    * 例：有子节点时不允许删除 → 返回「请先删除子节点」
    */
   removeGuard?: (row: any) => string | undefined
+  /**
+   * 弹窗打开后的钩子（新增 / 新增子级 / 编辑共用），用于回填联动数据。
+   * 需要操作弹窗内组件时请自行 nextTick。
+   */
+  onDialogOpen?: (context: { isAdd: boolean; form: Record<string, any>; parent?: any }) => void
   /** 主键字段名，默认 id */
   idKey?: string
   /** 子节点字段名，默认 children */
@@ -108,6 +113,7 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
     formData.value = form
     parentRow.value = parent
     dialogVisible.value = true
+    options.onDialogOpen?.({ isAdd: !form?.[idKey], form, parent: parent ?? undefined })
   }
 
   function handleAdd() {
@@ -204,19 +210,10 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
     },
   } as UseTreeCrudSlotProps)
 
+  // 与 useCrud 保持同一套对外契约：slotProps / refresh / state
   return {
-    state: { treeData, loading, submitLoading, dialogVisible, formData, searchData, parentRow },
-    methods: {
-      getTreeData,
-      handleSearch,
-      resetSearch,
-      handleAdd,
-      handleAddChild,
-      handleEdit,
-      handleRemove,
-      handleClose,
-      handleSubmit,
-    },
     slotProps,
+    refresh: getTreeData,
+    state: { formData, dialogVisible },
   }
 }

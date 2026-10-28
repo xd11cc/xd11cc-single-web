@@ -23,20 +23,12 @@
     </template>
 
     <!-- 工具栏：左侧增删，右侧导出 -->
-    <template #actions>
-      <el-button
-        type="primary"
-        @click="crud.methods.handleAdd"
-        v-permission="['system:dictType:add']"
-      >
+    <template #actions="{ handleAdd, handleBatchRemove }">
+      <el-button type="primary" @click="handleAdd" v-permission="['system:dictType:add']">
         <template #icon><Icon icon="lucide:plus-circle" /></template>
         {{ $t('common.add') }}
       </el-button>
-      <el-button
-        type="danger"
-        @click="crud.methods.handleBatchRemove"
-        v-permission="['system:dictType:delete']"
-      >
+      <el-button type="danger" @click="handleBatchRemove" v-permission="['system:dictType:delete']">
         <template #icon><Icon icon="lucide:trash-2" /></template>
         {{ $t('common.batchDelete') }}
       </el-button>

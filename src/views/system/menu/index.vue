@@ -33,8 +33,8 @@
     </template>
 
     <!-- 工具栏：新增按钮；展开/收起由壳统一提供 -->
-    <template #actions>
-      <el-button type="primary" @click="crud.methods.handleAdd" v-permission="['system:menu:add']">
+    <template #actions="{ handleAdd }">
+      <el-button type="primary" @click="handleAdd" v-permission="['system:menu:add']">
         <template #icon><Icon icon="lucide:plus-circle" /></template>
         {{ $t('system.menu.actions.add') }}
       </el-button>
@@ -348,6 +348,6 @@ const formRules = computed<FormRules<SystemMenuVO>>(() => {
   }
 })
 
-// 树数据在挂载时加载
-crud.methods.getTreeData()
+// 树数据在挂载时加载（树形壳不自动拉取，需要页面显式触发）
+crud.refresh()
 </script>

@@ -41,15 +41,17 @@ export const useDict = (dictTypes: string | string[]) => {
   }
 
   /**
-   * 获取字典映射（value -> label）
-   * @param dictType
-   * @returns
+   * 获取字典映射（编码 -> 展示文案）。
+   *
+   * 本项目的存储约定与字段名直觉相反：label 存编码、value 存展示文案
+   * （与 getDictItem 的匹配方式一致）。因此映射必须写成 map[label] = value；
+   * 反过来写不会报错，但会得到一张「中文 -> 编码」的反向表，排查很费时间。
    */
   const getDictMap = (dictType: string): DictMap => {
     const list = dictData.value[dictType] || []
     return list.reduce((map, item) => {
-      if (item.value && item.label) {
-        map[item.value] = item.label
+      if (item.label !== undefined && item.value !== undefined) {
+        map[String(item.label)] = String(item.value)
       }
       return map
     }, {} as DictMap)

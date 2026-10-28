@@ -46,7 +46,7 @@
           </el-table>
         </div>
       </div>
-      <div class="page-wrapper">
+      <div v-if="!hidePagination" class="page-wrapper">
         <el-pagination
           background
           :layout="slotProps.paginationData.layout"
@@ -88,6 +88,12 @@
         </el-button>
       </template>
     </el-dialog>
+
+    <!-- 页面自有弹窗、抽屉放这里。
+         不要放在壳的同级：那会让页面变成多根节点（fragment），
+         而 <transition mode="out-in"> + <keep-alive> 要求单一元素根，
+         否则进入动画挂不上、页面直接空白。 -->
+    <slot name="extra" />
   </div>
 </template>
 
@@ -120,6 +126,8 @@ const props = defineProps<{
   labelWidth?: string
   /** 表单标签位置，默认 left */
   labelPosition?: 'left' | 'right' | 'top'
+  /** 后端无分页接口的列表（如在线用户）隐藏分页区 */
+  hidePagination?: boolean
 }>()
 
 const labelWidth = computed(() => props.labelWidth ?? '168px')

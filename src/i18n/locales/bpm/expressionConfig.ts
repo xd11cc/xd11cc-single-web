@@ -10,14 +10,13 @@ export const zh = {
     remark: '备注',
     preview: '模板预览',
   },
-  actions: { query: '查询', addParameter: '添加参数', edit: '编辑', delete: '删除' },
+  actions: { addParameter: '添加参数', delete: '删除' },
   status: { enabled: '正常', disabled: '停用' },
   dialog: { add: '新增表达式配置', edit: '编辑表达式配置' },
   parameter: { key: '参数 Key', name: '参数名称', type: '参数类型', required: '必填' },
   messages: {
     required: '请输入{name}',
     completeParameters: '请完善参数定义',
-    selectFirst: '请先选择配置',
     deleteConfirm: '确认删除该表达式配置？',
     batchDeleteConfirm: '确认删除选中的 {count} 条配置？',
     keyHint: '小写字母开头',
@@ -38,7 +37,7 @@ export const en = {
     remark: 'Remark',
     preview: 'Template Preview',
   },
-  actions: { query: 'Search', addParameter: 'Add Parameter', edit: 'Edit', delete: 'Delete' },
+  actions: { addParameter: 'Add Parameter', delete: 'Delete' },
   status: { enabled: 'Enabled', disabled: 'Disabled' },
   dialog: { add: 'Add Expression Configuration', edit: 'Edit Expression Configuration' },
   parameter: {
@@ -50,7 +49,6 @@ export const en = {
   messages: {
     required: 'Please enter {name}',
     completeParameters: 'Please complete the parameter definitions',
-    selectFirst: 'Select at least one configuration',
     deleteConfirm: 'Delete this expression configuration?',
     batchDeleteConfirm: 'Delete the selected {count} configurations?',
     keyHint: 'Start with a lowercase letter',

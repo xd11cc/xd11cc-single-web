@@ -37,18 +37,14 @@
       </el-form-item>
     </template>
 
-    <template #actions>
-      <el-button
-        type="primary"
-        @click="crud.methods.handleAdd"
-        v-permission="['workflow:category:add']"
-      >
+    <template #actions="{ handleAdd, handleBatchRemove }">
+      <el-button type="primary" @click="handleAdd" v-permission="['workflow:category:add']">
         <template #icon><Icon icon="lucide:plus-circle" /></template>
         {{ $t('common.add') }}
       </el-button>
       <el-button
         type="danger"
-        @click="crud.methods.handleBatchRemove"
+        @click="handleBatchRemove"
         v-permission="['workflow:category:delete']"
       >
         <template #icon><Icon icon="lucide:trash-2" /></template>
@@ -56,7 +52,7 @@
       </el-button>
     </template>
 
-    <template #table>
+    <template #table="{ handleEdit, handleRemove }">
       <el-table-column type="selection" width="50" align="center" />
       <el-table-column
         prop="categoryCode"
@@ -110,7 +106,7 @@
           <el-button
             link
             type="primary"
-            @click="crud.methods.handleEdit(row)"
+            @click="handleEdit(row)"
             v-permission="['workflow:category:update']"
           >
             {{ $t('common.edit') }}
@@ -118,7 +114,7 @@
           <el-button
             link
             type="danger"
-            @click="crud.methods.handleRemove(row)"
+            @click="handleRemove(row)"
             v-permission="['workflow:category:delete']"
           >
             {{ $t('common.delete') }}

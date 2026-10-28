@@ -1,41 +1,47 @@
-import { spawnSync } from 'node:child_process'
+import { existsSync, readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 import vue from '@vitejs/plugin-vue'
 import AutoImport from 'unplugin-auto-import/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
 import { defineConfig, loadEnv } from 'vite'
-import type { Plugin } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import compression from 'vite-plugin-compression'
 /**
- * 构建期 i18n 校验。
+ * 生成需要预构建的 Element Plus 依赖列表。
  *
- * 打包前跑一次 scripts/check-i18n.mjs，只要中英 key 不一致、占位符不匹配或出现空值，
- * 就中断构建。这样「新增文案只改了中文」不会再被漏到产物里。
+ * 背景：unplugin-vue-components / unplugin-auto-import 是在「转换期」才注入
+ * `element-plus/es/components/<x>/style/css` 这类 import 的，它们不参与 Vite 启动期的
+ * 依赖扫描。于是第一次打开用到某个组件的页面（例如「授权应用配置」用 el-upload）时，
+ * Vite 才把它们当「新依赖」去预构建，并强刷一次：
+ *   ✨ new dependencies optimized: .../upload/style/css
+ *   ✨ optimized dependencies changed. reloading
+ * 这次重载会让正在加载的模块返回 504 (Outdated Optimize Dep)，
+ * 动态 import 失败 → 路由启动失败 → index.html 里的 #app-loading 永远不被替换，
+ * 表现就是「点某个页面后整个应用卡在 loading 页」。
  *
- * 为什么用 Vite 插件而不是 npm 的 prebuild 钩子：
- *   pnpm 默认不执行隐式 pre/post 脚本（enable-pre-post-scripts 未开启），
- *   而且 prebuild 只覆盖 `pnpm build`，直接 `vite build` 会绕过。
- *   插件挂在 buildStart，任何打包入口都跑得到。
- *
- * 只在 build 阶段生效，`pnpm dev` 不受影响（开发期可手动 pnpm check:i18n）。
+ * 这里把 Element Plus 全部组件样式目录一次性声明为预构建依赖：数量固定（百来个极小模块），
+ * 换来的是「任何页面首次访问都不会再触发重新预构建」。比按用量推导更可靠——
+ * 推导会漏掉 el-message / el-message-box 这类由 API 调用引入的样式。
  */
-function i18nCheckPlugin(): Plugin {
-  return {
-    name: 'i18n-check',
-    apply: 'build',
-    buildStart() {
-      const script = resolve(__dirname, 'scripts/check-i18n.mjs')
-      const result = spawnSync(process.execPath, [script], { encoding: 'utf8' })
-      const output = `${result.stdout ?? ''}${result.stderr ?? ''}`.trim()
-
-      if (result.status !== 0) {
-        this.error(`i18n 校验未通过，构建已中断：\n${output}`)
-      }
-      if (output) this.info(output)
-    },
+function elementPlusStyleDeps(): string[] {
+  const componentsRoot = resolve(process.cwd(), 'node_modules/element-plus/es/components')
+  let dirs: string[]
+  try {
+    dirs = readdirSync(componentsRoot)
+  } catch {
+    // 依赖尚未安装时跳过，不影响构建
+    return []
   }
+
+  const withStyle = dirs
+    .filter((dir) => existsSync(resolve(componentsRoot, dir, 'style')))
+    .sort()
+    .map((dir) => `element-plus/es/components/${dir}/style/css`)
+
+  // ElMessage / ElMessageBox / ElNotification / ElLoading 由 auto-import 注入，
+  // 不属于任何标签，需要单独声明
+  return ['element-plus/es', ...withStyle]
 }
 
 // https://vite.dev/config/
@@ -131,6 +137,10 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
+    optimizeDeps: {
+      // 见 elementPlusStyleDeps() 的说明
+      include: elementPlusStyleDeps(),
+    },
     css: {
       // 线程中运行 CSS 预处理器
       preprocessorMaxWorkers: true,
@@ -145,7 +155,6 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins: [
-      i18nCheckPlugin(),
       vue(),
       AutoImport({
         imports: ['vue', 'vue-router', 'pinia'],

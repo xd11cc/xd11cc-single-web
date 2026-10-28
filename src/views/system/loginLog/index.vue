@@ -1,175 +1,133 @@
 <template>
-  <div class="app-container">
-    <el-card shadow="never" class="search-wrapper">
-      <el-form ref="searchFormRef" :inline="true" :model="searchData">
-        <el-form-item prop="username" :label="$t('system.loginLog.search.username')">
-          <el-input
-            v-model="searchData.username"
-            :placeholder="$t('system.loginLog.formPlaceholder.username')"
-          />
-        </el-form-item>
-        <el-form-item prop="loginType" :label="$t('system.loginLog.search.loginType')">
-          <el-select
-            v-model="searchData.loginType"
-            :placeholder="$t('system.loginLog.formPlaceholder.loginType')"
-            clearable
-            class="search-field"
-          >
-            <el-option
-              v-for="item in getDictList('system_login_type')"
-              :key="item.id"
-              :label="item.value"
-              :value="item.label!"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item prop="status" :label="$t('system.loginLog.search.status')">
-          <el-select
-            v-model="searchData.status"
-            :placeholder="$t('system.loginLog.formPlaceholder.status')"
-            clearable
-            class="search-field"
-          >
-            <el-option
-              v-for="item in getDictList('system_operate_status')"
-              :key="item.id"
-              :label="item.value"
-              :value="item.label!"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleSearch">
-            <template #icon><Icon icon="lucide:search" /></template
-            >{{ $t('system.loginLog.actions.query') }}
-          </el-button>
-          <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('common.reset') }}
-          </el-button>
-        </el-form-item>
-      </el-form>
-    </el-card>
-
-    <el-card v-table-loading="loading" shadow="never">
-      <div class="toolbar-wrapper">
-        <div>
-          <el-button
-            type="danger"
-            @click="handleBatchRemove"
-            v-permission="['system:loginLog:delete']"
-          >
-            <template #icon><Icon icon="lucide:trash-2" /></template>
-            {{ $t('common.batchDelete') }}
-          </el-button>
-          <el-button
-            type="danger"
-            plain
-            @click="handleClean"
-            v-permission="['system:loginLog:clean']"
-          >
-            <template #icon><Icon icon="lucide:trash" /></template>
-            {{ $t('system.loginLog.actions.clean') }}
-          </el-button>
-        </div>
-      </div>
-
-      <div class="table-wrapper">
-        <el-table ref="tableRef" :data="tableData">
-          <el-table-column type="selection" width="50" align="center" />
-          <el-table-column prop="username" :label="$t('system.loginLog.columns.username')" />
-          <el-table-column
-            prop="loginType"
-            :label="$t('system.loginLog.columns.loginType')"
-            align="center"
-            width="100"
-          >
-            <template #default="scope">
-              <el-tag
-                :type="getDictItem('system_login_type', scope.row.loginType)?.listClass || 'info'"
-                effect="plain"
-                size="small"
-                disable-transitions
-              >
-                {{
-                  getDictItem('system_login_type', scope.row.loginType)?.value ||
-                  scope.row.loginType
-                }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="status"
-            :label="$t('system.loginLog.columns.status')"
-            align="center"
-            width="80"
-          >
-            <template #default="scope">
-              <el-tag
-                :type="getDictItem('system_operate_status', scope.row.status)?.listClass || 'info'"
-                effect="plain"
-                size="small"
-                disable-transitions
-              >
-                {{
-                  getDictItem('system_operate_status', scope.row.status)?.value || scope.row.status
-                }}
-              </el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column
-            prop="loginIp"
-            :label="$t('system.loginLog.columns.loginIp')"
-            width="140"
-          />
-          <el-table-column prop="browser" :label="$t('system.loginLog.columns.browser')" />
-          <el-table-column prop="os" :label="$t('system.loginLog.columns.os')" />
-          <el-table-column prop="msg" :label="$t('system.loginLog.columns.msg')" />
-          <el-table-column
-            prop="loginTime"
-            :label="$t('system.loginLog.columns.loginTime')"
-            align="center"
-            min-width="160"
-          />
-          <el-table-column fixed="right" :label="$t('common.action')" width="70" align="center">
-            <template #default="scope">
-              <el-tooltip :content="$t('common.delete')" placement="top">
-                <el-button
-                  type="danger"
-                  text
-                  bg
-                  size="small"
-                  @click="handleRemove(scope.row)"
-                  v-permission="['system:loginLog:delete']"
-                >
-                  <Icon icon="lucide:trash-2" />
-                </el-button>
-              </el-tooltip>
-            </template>
-          </el-table-column>
-        </el-table>
-      </div>
-
-      <div class="page-wrapper">
-        <el-pagination
-          background
-          :layout="paginationData.layout"
-          :page-sizes="paginationData.pageSizes"
-          :total="paginationData.total"
-          :page-size="paginationData.pageSize"
-          :current-page="paginationData.currentPage"
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
+  <UseCrudView :slotProps="crud.slotProps" readonly>
+    <!-- 搜索区字段 -->
+    <template #search-form="{ searchData }">
+      <el-form-item prop="username" :label="$t('system.loginLog.search.username')">
+        <el-input
+          v-model="searchData.username"
+          :placeholder="$t('system.loginLog.formPlaceholder.username')"
         />
-      </div>
-    </el-card>
-  </div>
+      </el-form-item>
+      <el-form-item prop="loginType" :label="$t('system.loginLog.search.loginType')">
+        <el-select
+          v-model="searchData.loginType"
+          :placeholder="$t('system.loginLog.formPlaceholder.loginType')"
+          clearable
+          class="search-field"
+        >
+          <el-option
+            v-for="item in getDictList('system_login_type')"
+            :key="item.id"
+            :label="item.value"
+            :value="item.label!"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item prop="status" :label="$t('system.loginLog.search.status')">
+        <el-select
+          v-model="searchData.status"
+          :placeholder="$t('system.loginLog.formPlaceholder.status')"
+          clearable
+          class="search-field"
+        >
+          <el-option
+            v-for="item in getDictList('system_operate_status')"
+            :key="item.id"
+            :label="item.value"
+            :value="item.label!"
+          />
+        </el-select>
+      </el-form-item>
+    </template>
+
+    <!-- 工具栏：批量删除 + 清空（只读列表没有新增） -->
+    <template #actions="{ handleBatchRemove }">
+      <el-button type="danger" @click="handleBatchRemove" v-permission="['system:loginLog:delete']">
+        <template #icon><Icon icon="lucide:trash-2" /></template>
+        {{ $t('common.batchDelete') }}
+      </el-button>
+      <el-button type="danger" plain @click="handleClean" v-permission="['system:loginLog:clean']">
+        <template #icon><Icon icon="lucide:trash" /></template>
+        {{ $t('system.loginLog.actions.clean') }}
+      </el-button>
+    </template>
+
+    <!-- 表格列 -->
+    <template #table="{ handleRemove }">
+      <el-table-column type="selection" width="50" align="center" />
+      <el-table-column prop="username" :label="$t('system.loginLog.columns.username')" />
+      <el-table-column
+        prop="loginType"
+        :label="$t('system.loginLog.columns.loginType')"
+        align="center"
+        width="100"
+      >
+        <template #default="scope">
+          <el-tag
+            :type="getDictItem('system_login_type', scope.row.loginType)?.listClass || 'info'"
+            effect="plain"
+            size="small"
+            disable-transitions
+          >
+            {{
+              getDictItem('system_login_type', scope.row.loginType)?.value || scope.row.loginType
+            }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="status"
+        :label="$t('system.loginLog.columns.status')"
+        align="center"
+        width="80"
+      >
+        <template #default="scope">
+          <el-tag
+            :type="getDictItem('system_operate_status', scope.row.status)?.listClass || 'info'"
+            effect="plain"
+            size="small"
+            disable-transitions
+          >
+            {{ getDictItem('system_operate_status', scope.row.status)?.value || scope.row.status }}
+          </el-tag>
+        </template>
+      </el-table-column>
+      <el-table-column prop="loginIp" :label="$t('system.loginLog.columns.loginIp')" width="140" />
+      <el-table-column prop="browser" :label="$t('system.loginLog.columns.browser')" />
+      <el-table-column prop="os" :label="$t('system.loginLog.columns.os')" />
+      <el-table-column prop="msg" :label="$t('system.loginLog.columns.msg')" />
+      <el-table-column
+        prop="loginTime"
+        :label="$t('system.loginLog.columns.loginTime')"
+        align="center"
+        min-width="160"
+      />
+      <el-table-column fixed="right" :label="$t('common.action')" width="70" align="center">
+        <template #default="scope">
+          <el-tooltip :content="$t('common.delete')" placement="top">
+            <el-button
+              type="danger"
+              text
+              bg
+              size="small"
+              @click="handleRemove(scope.row)"
+              v-permission="['system:loginLog:delete']"
+            >
+              <Icon icon="lucide:trash-2" />
+            </el-button>
+          </el-tooltip>
+        </template>
+      </el-table-column>
+    </template>
+  </UseCrudView>
 </template>
 
 <script lang="ts" setup>
-import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
+import { useI18n } from 'vue-i18n'
+import UseCrudView from '@/common/components/useCrud/index.vue'
+import { useCrud } from '@/common/composables/useCrud'
 import { useDict } from '@/common/composables/useDict'
-import { usePagination } from '@@/composables/usePagination'
 import { loginLogPage, removeLoginLogByIds, cleanLoginLog } from './apis'
 import type { SystemLoginLogQueryVO, SystemLoginLogVO } from './apis/type'
 
@@ -182,68 +140,13 @@ defineOptions({
 
 const { getDictList, getDictItem } = useDict(['system_login_type', 'system_operate_status'])
 
-const { paginationData, handleCurrentChange, handleSizeChange } = usePagination()
-
-const loading = ref(false)
-
-const searchFormRef = useTemplateRef('searchFormRef')
-const searchData = reactive<SystemLoginLogQueryVO>({})
-
-const tableRef = useTemplateRef('tableRef')
-const tableData = ref<SystemLoginLogVO[]>([])
-
-function handleSearch() {
-  paginationData.currentPage = 1
-  getTableData()
-}
-
-function resetSearch() {
-  searchFormRef.value?.resetFields()
-  paginationData.currentPage = 1
-  getTableData()
-}
-
-function handleRemove(row: SystemLoginLogVO) {
-  ElMessageBox.confirm(
-    $t('system.loginLog.messages.deleteConfirm'),
-    $t('common.messages.confirmTitle'),
-    {
-      confirmButtonText: $t('common.confirm'),
-      cancelButtonText: $t('common.cancel'),
-      type: 'warning',
-    },
-  ).then(() => {
-    if (row.id) {
-      removeLoginLogByIds(String(row.id)).then((data) => {
-        ElMessage.success(data.msg || $t('system.loginLog.messages.deleteSuccess'))
-        getTableData()
-      })
-    }
-  })
-}
-
-function handleBatchRemove() {
-  const selectedRows = (tableRef.value?.getSelectionRows() as SystemLoginLogVO[]) || []
-  if (selectedRows.length === 0) {
-    ElMessage.warning($t('system.loginLog.messages.selectFirst'))
-    return
-  }
-  const ids = selectedRows.map((row) => row.id).join(',')
-  ElMessageBox.confirm(
-    $t('system.loginLog.messages.batchDeleteConfirm', { count: selectedRows.length }),
-    $t('common.messages.confirmTitle'),
-    {
-      confirmButtonText: $t('common.confirm'),
-      cancelButtonText: $t('common.cancel'),
-      type: 'warning',
-    },
-  ).then(() => {
-    removeLoginLogByIds(ids).then((data) => {
-      ElMessage.success(data.msg || $t('system.loginLog.messages.deleteSuccess'))
-      getTableData()
-    })
-  })
-}
+// 只读列表：只有查询与删除，没有新增/编辑
+const crud = useCrud<SystemLoginLogQueryVO, SystemLoginLogVO>({
+  pageApi: (query) => loginLogPage(query),
+  removeApi: (ids) => removeLoginLogByIds(ids),
+  removeConfirmText: () => $t('system.loginLog.messages.deleteConfirm'),
+  batchRemoveConfirmText: (count) => $t('system.loginLog.messages.batchDeleteConfirm', { count }),
+})
 
 function handleClean() {
   ElMessageBox.confirm(
@@ -257,32 +160,8 @@ function handleClean() {
   ).then(() => {
     cleanLoginLog().then(() => {
       ElMessage.success($t('system.loginLog.messages.cleanSuccess'))
-      getTableData()
+      crud.refresh()
     })
   })
 }
-
-function getTableData() {
-  loading.value = true
-  const params = {
-    ...searchData,
-    currentPage: paginationData.currentPage,
-    pageSize: paginationData.pageSize,
-  }
-  loginLogPage(params)
-    .then(({ data }) => {
-      tableData.value = data.rows
-      paginationData.total = data.total
-    })
-    .catch(() => {
-      tableData.value = []
-    })
-    .finally(() => {
-      loading.value = false
-    })
-}
-
-watch([() => paginationData.currentPage, () => paginationData.pageSize], getTableData, {
-  immediate: true,
-})
 </script>

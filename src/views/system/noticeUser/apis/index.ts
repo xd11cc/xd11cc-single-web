@@ -27,7 +27,7 @@ export function markAsRead(noticeId: number): Promise<ResponseVO<void>> {
   })
 }
 
-export function markAllAsRead(type?: number): Promise<ResponseVO<void>> {
+export function markAllAsRead(type?: string): Promise<ResponseVO<void>> {
   return request({
     url: '/system/notice-user/markAllAsRead',
     method: 'POST',

@@ -30,7 +30,7 @@
                   :key="notice.id"
                   type="button"
                   class="notify-item"
-                  :class="{ unread: notice.readStatus === 0 }"
+                  :class="{ unread: notice.readStatus === READ_STATUS.UNREAD }"
                   @click="handleRead(notice)"
                 >
                   <span class="notify-item-content">
@@ -38,7 +38,12 @@
                     <span v-if="notice.content" class="description">{{ notice.content }}</span>
                     <span class="time">{{ notice.senderName }} · {{ notice.publishTime }}</span>
                   </span>
-                  <el-tag v-if="notice.readStatus === 0" type="danger" size="small" effect="plain">
+                  <el-tag
+                    v-if="notice.readStatus === READ_STATUS.UNREAD"
+                    type="danger"
+                    size="small"
+                    effect="plain"
+                  >
                     {{ t('system.noticeUser.readStatus.unread') }}
                   </el-tag>
                 </button>
@@ -82,12 +87,18 @@ import type { SystemNoticeUserDTO } from '@/views/system/noticeUser/apis/type'
 import { useI18n } from 'vue-i18n'
 import TodoPopup from './TodoPopup.vue'
 
+/** 已读状态（char(2)，必须字符串比较） */
+const READ_STATUS = {
+  UNREAD: '0',
+  READ: '1',
+} as const
+
 type TabName = 'notice' | 'message' | 'todo'
 
 interface TabItem {
   name: TabName
   labelKey: string
-  type: number
+  type: string
   badgeType: 'primary' | 'danger' | 'warning'
   unread: number
   list: SystemNoticeUserDTO[]
@@ -108,7 +119,7 @@ const tabList = ref<TabItem[]>([
   {
     name: 'notice',
     labelKey: 'layout.notify.tabs.notice',
-    type: 1,
+    type: '1',
     badgeType: 'primary',
     unread: 0,
     list: [],
@@ -116,7 +127,7 @@ const tabList = ref<TabItem[]>([
   {
     name: 'message',
     labelKey: 'layout.notify.tabs.message',
-    type: 2,
+    type: '2',
     badgeType: 'danger',
     unread: 0,
     list: [],
@@ -124,7 +135,7 @@ const tabList = ref<TabItem[]>([
   {
     name: 'todo',
     labelKey: 'layout.notify.tabs.todo',
-    type: 3,
+    type: '3',
     badgeType: 'warning',
     unread: 0,
     list: [],
@@ -141,7 +152,7 @@ function fetchUnreadCount() {
   })
 }
 
-function fetchNoticeList(type: number) {
+function fetchNoticeList(type: string) {
   const tab = tabList.value.find((t) => t.type === type)
   if (!tab) return
   myNoticePage({ type, currentPage: 1, pageSize: 20 }).then(({ data }) => {
@@ -155,9 +166,9 @@ function handlePopoverShow() {
 }
 
 function handleRead(notice: SystemNoticeUserDTO) {
-  if (notice.readStatus === 0 && notice.noticeId) {
+  if (notice.readStatus === READ_STATUS.UNREAD && notice.noticeId) {
     markAsRead(notice.noticeId).then(() => {
-      notice.readStatus = 1
+      notice.readStatus = READ_STATUS.READ
       const tab = tabList.value.find((t) => t.type === notice.type)
       if (tab && tab.unread > 0) tab.unread--
     })
@@ -169,7 +180,7 @@ function handleMarkAllRead() {
   if (!tab) return
   markAllAsRead(tab.type).then(() => {
     tab.unread = 0
-    tab.list.forEach((item) => (item.readStatus = 1))
+    tab.list.forEach((item) => (item.readStatus = READ_STATUS.READ))
   })
 }
 
@@ -244,16 +255,16 @@ function onNewNotice(data: NoticeWebSocketDTO) {
 
   switch (data.type) {
     // 待办：走队列化单例弹窗，避免连续弹窗互相打断
-    case 3:
+    case '3':
       if (!settingsStore.todoPopup) break
       todoQueue.push(data)
       break
     // 消息：富内容通知 + 查看详情
-    case 2:
+    case '2':
       showMessageNotice(data)
       break
     // 通知：轻量提示
-    case 1:
+    case '1':
     default:
       if (data.title) showInfoNotice(data)
       break

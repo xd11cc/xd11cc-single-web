@@ -1,6 +1,6 @@
 export interface SystemNoticeUserQueryVO {
-  type?: number
-  readStatus?: number
+  type?: string
+  readStatus?: string
   title?: string
   currentPage?: number
   pageSize?: number
@@ -9,11 +9,11 @@ export interface SystemNoticeUserQueryVO {
 export interface SystemNoticeUserDTO {
   id?: number
   noticeId?: number
-  readStatus?: number
+  readStatus?: string
   readTime?: string
   title?: string
   content?: string
-  type?: number
+  type?: string
   senderName?: string
   publishTime?: string
 }

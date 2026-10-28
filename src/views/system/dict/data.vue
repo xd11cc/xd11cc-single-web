@@ -7,13 +7,13 @@
     dialog-width="min(600px, calc(100vw - 32px))"
   >
     <!-- 搜索区字段 -->
-    <template #search-form="{ searchData }">
+    <template #search-form="{ searchData, refresh }">
       <el-form-item prop="dictType" :label="$t('system.dict.data.search.dictType')">
         <el-select
           v-model="searchData.dictType"
           :placeholder="$t('system.dict.data.search.dictTypePlaceholder')"
           class="search-field-lg"
-          @change="crud.methods.getTableData"
+          @change="refresh"
         >
           <el-option
             v-for="item in dictTypeOptions"
@@ -41,7 +41,7 @@
           :placeholder="$t('system.dict.data.search.statusPlaceholder')"
           clearable
           class="search-field-lg"
-          @change="crud.methods.getTableData"
+          @change="refresh"
         >
           <el-option
             v-for="item in getDictList('system_status')"
@@ -54,20 +54,12 @@
     </template>
 
     <!-- 工具栏：左侧增删，右侧导出 -->
-    <template #actions>
-      <el-button
-        type="primary"
-        @click="crud.methods.handleAdd"
-        v-permission="['system:dictData:add']"
-      >
+    <template #actions="{ handleAdd, handleBatchRemove }">
+      <el-button type="primary" @click="handleAdd" v-permission="['system:dictData:add']">
         <template #icon><Icon icon="lucide:plus-circle" /></template>
         {{ $t('system.dict.data.actions.addData') }}
       </el-button>
-      <el-button
-        type="danger"
-        @click="crud.methods.handleBatchRemove"
-        v-permission="['system:dictData:delete']"
-      >
+      <el-button type="danger" @click="handleBatchRemove" v-permission="['system:dictData:delete']">
         <template #icon><Icon icon="lucide:trash-2" /></template>
         {{ $t('common.batchDelete') }}
       </el-button>

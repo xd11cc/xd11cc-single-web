@@ -1,7 +1,7 @@
 import type { LayoutsConfig } from '@/layouts/config'
 import { setItem, removeItem, getItem } from '@@/utils/storage'
 import { CacheKey } from '@@/constants/cache-key'
-import { sidebarOpend, sidebarClosed } from '@@/constants/app-key'
+import { sidebarOpened, sidebarClosed } from '@@/constants/app-key'
 import { TagView } from '@/pinia/stores/tags-view'
 
 // 系统布局
@@ -18,7 +18,7 @@ export function getLayoutsConfig() {
 }
 
 // 侧边栏状态
-export function setSidebarStatus(sidebarStatus: sidebarOpend | sidebarClosed) {
+export function setSidebarStatus(sidebarStatus: sidebarOpened | sidebarClosed) {
   setItem(CacheKey.SIDEBAR_STATUS, sidebarStatus)
 }
 

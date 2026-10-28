@@ -37,8 +37,8 @@
     </template>
 
     <!-- 工具栏按钮 -->
-    <template #actions>
-      <el-button type="primary" @click="crud.methods.handleAdd" v-permission="['system:role:add']">
+    <template #actions="{ handleAdd, handleBatchRemove }">
+      <el-button type="primary" @click="handleAdd" v-permission="['system:role:add']">
         <template #icon><Icon icon="lucide:plus-circle" /></template>{{ $t('common.add') }}
       </el-button>
       <el-button type="danger" @click="handleBatchRemove" v-permission="['system:role:delete']">
@@ -47,7 +47,7 @@
     </template>
 
     <!-- 表格列 -->
-    <template #table>
+    <template #table="{ handleEdit, handleRemove }">
       <el-table-column type="selection" width="50" align="center" />
       <el-table-column prop="roleName" :label="$t('system.role.search.roleName')" />
       <el-table-column prop="roleCode" :label="$t('system.role.search.roleKey')" />
@@ -83,7 +83,7 @@
               text
               bg
               size="small"
-              @click="crud.methods.handleEdit(scope.row)"
+              @click="handleEdit(scope.row)"
               v-permission="['system:role:update']"
             >
               <Icon icon="lucide:pencil" />
@@ -95,7 +95,7 @@
               text
               bg
               size="small"
-              @click="crud.methods.handleRemove(scope.row)"
+              @click="handleRemove(scope.row)"
               v-permission="['system:role:delete']"
             >
               <Icon icon="lucide:trash-2" />
@@ -229,6 +229,31 @@ const { getDictList, getDictItem } = useDict(['system_status'])
 // ─── CRUD 核心（状态 + 搜索/分页/删除/弹窗生命周期） ──────
 const crud = useCrud<SystemRoleQueryVO, SystemRoleVO>({
   pageApi: (query) => rolePage(query),
+  removeConfirmText: (row) => $t('system.role.messages.deleteConfirm', { roleName: row?.roleName }),
+  batchRemoveConfirmText: (count) => $t('system.role.messages.batchDeleteConfirm', { count }),
+  // 编辑时回填菜单/部门勾选、补 dataScope 默认值（模块特有逻辑）
+  onDialogOpen: ({ isAdd, form, row }) => {
+    if (isAdd) return
+    if (!form.dataScope) form.dataScope = '1'
+    nextTick(() => {
+      menuTreeRef.value?.setCheckedKeys([])
+      deptTreeRef.value?.setCheckedKeys([])
+      if (row?.id) {
+        getRoleMenuIds(row.id).then(({ data }) => {
+          data.forEach((id) => {
+            menuTreeRef.value?.setChecked(id, true, false)
+          })
+        })
+        if (form.dataScope === '5') {
+          getRoleDeptIds(row.id).then(({ data }) => {
+            data.forEach((id) => {
+              deptTreeRef.value?.setChecked(id, true, false)
+            })
+          })
+        }
+      }
+    })
+  },
   addApi: (data) => addRole(data),
   updateApi: (data) => modifyRoleById(data),
   removeApi: (ids) => removeRoleByIds(ids),
@@ -286,33 +311,6 @@ function getDeptTree() {
   })
 }
 
-// ─── 编辑时回填菜单/部门选中状态（模块特有逻辑） ──────────
-const originalHandleEdit = crud.methods.handleEdit
-crud.methods.handleEdit = (row: SystemRoleVO) => {
-  originalHandleEdit(row)
-  if (!crud.state.formData.value.dataScope) {
-    crud.state.formData.value.dataScope = '1'
-  }
-  nextTick(() => {
-    menuTreeRef.value?.setCheckedKeys([])
-    deptTreeRef.value?.setCheckedKeys([])
-    if (row.id) {
-      getRoleMenuIds(row.id).then(({ data }) => {
-        data.forEach((id) => {
-          menuTreeRef.value?.setChecked(id, true, false)
-        })
-      })
-      if (crud.state.formData.value.dataScope === '5') {
-        getRoleDeptIds(row.id).then(({ data }) => {
-          data.forEach((id) => {
-            deptTreeRef.value?.setChecked(id, true, false)
-          })
-        })
-      }
-    }
-  })
-}
-
 // dataScope 切换为自定义且正在编辑时，加载部门选中状态
 watch(
   () => crud.state.formData.value.dataScope,
@@ -329,49 +327,6 @@ watch(
     }
   },
 )
-
-// ─── 自定义单条删除（保留角色名称提示文案） ──────────────────
-const originalHandleRemove = crud.methods.handleRemove
-crud.methods.handleRemove = (row: SystemRoleVO) => {
-  ElMessageBox.confirm(
-    $t('system.role.messages.deleteConfirm', { roleName: row.roleName }),
-    $t('common.messages.confirmTitle'),
-    {
-      confirmButtonText: $t('common.confirm'),
-      cancelButtonText: $t('common.cancel'),
-      type: 'warning',
-    },
-  ).then(() => {
-    removeRoleByIds(String(row.id)).then((res) => {
-      ElMessage.success(res.msg || $t('common.messages.operationSuccess'))
-      crud.methods.getTableData()
-    })
-  })
-}
-
-// ─── 自定义批量删除（保留原始提示文案） ──────────────────────
-function handleBatchRemove() {
-  const selectedRows = crud.slotProps.rowSelection
-  if (selectedRows.length === 0) {
-    ElMessage.warning($t('common.messages.selectFirst'))
-    return
-  }
-  const ids = selectedRows.map((r: any) => r.id).join(',')
-  ElMessageBox.confirm(
-    $t('system.role.messages.batchDeleteConfirm', { count: selectedRows.length }),
-    $t('common.messages.confirmTitle'),
-    {
-      confirmButtonText: $t('common.confirm'),
-      cancelButtonText: $t('common.cancel'),
-      type: 'warning',
-    },
-  ).then(() => {
-    removeRoleByIds(ids).then((res) => {
-      ElMessage.success(res.msg || $t('common.messages.operationSuccess'))
-      crud.methods.getTableData()
-    })
-  })
-}
 
 // ─── 初始化依赖数据 ──────────────────────────────────────
 getMenuTree()

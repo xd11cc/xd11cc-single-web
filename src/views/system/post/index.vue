@@ -37,8 +37,8 @@
     </template>
 
     <!-- 工具栏按钮 -->
-    <template #actions>
-      <el-button type="primary" @click="crud.methods.handleAdd" v-permission="['system:post:add']">
+    <template #actions="{ handleAdd, handleBatchRemove }">
+      <el-button type="primary" @click="handleAdd" v-permission="['system:post:add']">
         <template #icon><Icon icon="lucide:plus-circle" /></template>{{ $t('common.add') }}
       </el-button>
       <el-button type="danger" @click="handleBatchRemove" v-permission="['system:post:delete']">
@@ -47,7 +47,7 @@
     </template>
 
     <!-- 表格列 -->
-    <template #table>
+    <template #table="{ handleEdit, handleRemove }">
       <el-table-column type="selection" width="50" align="center" />
       <el-table-column prop="postCode" :label="$t('system.post.columns.postCode')" />
       <el-table-column prop="postName" :label="$t('system.post.columns.postName')" />
@@ -83,7 +83,7 @@
               text
               bg
               size="small"
-              @click="crud.methods.handleEdit(scope.row)"
+              @click="handleEdit(scope.row)"
               v-permission="['system:post:update']"
             >
               <Icon icon="lucide:pencil" />
@@ -95,7 +95,7 @@
               text
               bg
               size="small"
-              @click="crud.methods.handleRemove(scope.row)"
+              @click="handleRemove(scope.row)"
               v-permission="['system:post:delete']"
             >
               <Icon icon="lucide:trash-2" />
@@ -194,6 +194,8 @@ const crud = useCrud<SystemPostQueryVO, SystemPostVO>({
   updateApi: (data) => modifyPostById(data),
   removeApi: (ids) => removePostByIds(ids),
   defaultForm: () => ({ status: '0' }),
+  removeConfirmText: (row) => $t('system.post.messages.deleteConfirm', { postName: row?.postName }),
+  batchRemoveConfirmText: (count) => $t('system.post.messages.batchDeleteConfirm', { count }),
   transformPayload: (form, isAdd) => {
     const checkedKeys = (deptTreeRef.value?.getCheckedKeys(false) as number[]) || []
     const halfCheckedKeys = (deptTreeRef.value?.getHalfCheckedKeys() as number[]) || []
@@ -209,6 +211,20 @@ const crud = useCrud<SystemPostQueryVO, SystemPostVO>({
       payload.id = form.id
     }
     return payload
+  },
+  // 编辑时回填部门勾选（模块特有逻辑），替代原先对 handleEdit 的 monkey-patch
+  onDialogOpen: ({ isAdd, row }) => {
+    if (isAdd) return
+    nextTick(() => {
+      deptTreeRef.value?.setCheckedKeys([])
+      if (row?.id) {
+        getPostDeptIds(row.id).then(({ data }) => {
+          data.forEach((id) => {
+            deptTreeRef.value?.setChecked(id, true, false)
+          })
+        })
+      }
+    })
   },
 })
 
@@ -227,65 +243,6 @@ const formRules: FormRules = {
 function getDeptTree() {
   deptTreeList({}).then(({ data }) => {
     deptTreeData.value = data
-  })
-}
-
-// ─── 编辑时回填部门选中状态（模块特有逻辑） ───────────────
-const originalHandleEdit = crud.methods.handleEdit
-crud.methods.handleEdit = (row: SystemPostVO) => {
-  originalHandleEdit(row)
-  nextTick(() => {
-    deptTreeRef.value?.setCheckedKeys([])
-    if (row.id) {
-      getPostDeptIds(row.id).then(({ data }) => {
-        data.forEach((id) => {
-          deptTreeRef.value?.setChecked(id, true, false)
-        })
-      })
-    }
-  })
-}
-
-// ─── 自定义单条删除（保留岗位名称提示文案） ──────────────────
-const originalHandleRemove = crud.methods.handleRemove
-crud.methods.handleRemove = (row: SystemPostVO) => {
-  ElMessageBox.confirm(
-    $t('system.post.messages.deleteConfirm', { postName: row.postName }),
-    $t('common.messages.confirmTitle'),
-    {
-      confirmButtonText: $t('common.confirm'),
-      cancelButtonText: $t('common.cancel'),
-      type: 'warning',
-    },
-  ).then(() => {
-    removePostByIds(String(row.id)).then((res) => {
-      ElMessage.success(res.msg || $t('common.messages.operationSuccess'))
-      crud.methods.getTableData()
-    })
-  })
-}
-
-// ─── 自定义批量删除（保留原始提示文案） ──────────────────────
-function handleBatchRemove() {
-  const selectedRows = crud.slotProps.rowSelection
-  if (selectedRows.length === 0) {
-    ElMessage.warning($t('common.messages.selectFirst'))
-    return
-  }
-  const ids = selectedRows.map((r: any) => r.id).join(',')
-  ElMessageBox.confirm(
-    $t('system.post.messages.batchDeleteConfirm', { count: selectedRows.length }),
-    $t('common.messages.confirmTitle'),
-    {
-      confirmButtonText: $t('common.confirm'),
-      cancelButtonText: $t('common.cancel'),
-      type: 'warning',
-    },
-  ).then(() => {
-    removePostByIds(ids).then((res) => {
-      ElMessage.success(res.msg || $t('common.messages.operationSuccess'))
-      crud.methods.getTableData()
-    })
   })
 }
 

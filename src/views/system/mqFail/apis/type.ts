@@ -4,7 +4,7 @@
 export interface SystemMqFailQueryVO {
   messageId?: string
   queueName?: string
-  status?: number
+  status?: string
 }
 
 /**
@@ -18,7 +18,7 @@ export interface SystemMqFailVO {
   messageType?: string
   errorMsg?: string
   retryCount?: number
-  status?: number
+  status?: string
   tenantId?: number
   createUserId?: number
   createTime?: string

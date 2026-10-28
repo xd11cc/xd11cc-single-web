@@ -76,12 +76,13 @@ onMounted(() => {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  width: 680px;
-  height: 480px;
-  background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color);
+  // 桌面 680×480，视口不够时自动收缩（原来写死尺寸，手机/小窗会超出屏幕）
+  width: min(680px, calc(100vw - 32px));
+  height: min(480px, calc(100vh - 120px));
+  background: var(--theme-bg-surface);
+  border: 1px solid var(--theme-border);
   border-radius: var(--p-radius-xl);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--theme-shadow-lg);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -92,13 +93,13 @@ onMounted(() => {
   align-items: center;
   justify-content: space-between;
   padding: var(--p-space-3) var(--p-space-4);
-  border-bottom: 1px solid var(--el-border-color-lighter);
-  background: var(--el-fill-color-blank);
+  border-bottom: 1px solid var(--theme-border-light);
+  background: var(--theme-bg-surface);
 
   .title {
     font-size: var(--p-text-lg);
     font-weight: 600;
-    color: var(--el-text-color-primary);
+    color: var(--theme-text-primary);
   }
 
   .actions {
@@ -108,10 +109,10 @@ onMounted(() => {
 
   .action-btn {
     cursor: pointer;
-    color: var(--el-text-color-secondary);
+    color: var(--theme-text-secondary);
     transition: color var(--p-duration-normal);
     &:hover {
-      color: var(--el-text-color-primary);
+      color: var(--theme-text-primary);
     }
   }
 }
@@ -122,6 +123,17 @@ onMounted(() => {
   overflow: hidden;
 }
 
+// 手机/窄窗口下占满整屏，避免 680px 面板溢出视口
+@include mobile {
+  .chat-panel {
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 0;
+  }
+}
+
 .empty-chat {
   flex: 1;
   display: flex;
@@ -129,6 +141,6 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   gap: var(--p-space-3);
-  color: var(--el-text-color-placeholder);
+  color: var(--theme-text-muted);
 }
 </style>

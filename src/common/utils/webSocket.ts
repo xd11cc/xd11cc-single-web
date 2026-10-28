@@ -18,7 +18,7 @@ export interface NoticeWebSocketDTO {
   action: string
   noticeId: number
   title?: string
-  type?: number // 1-通知 2-消息 3-待办
+  type?: string // '1'-通知 '2'-消息 '3'-待办（后端 char，与 Notify 的 switch 分支一致）
   content?: string
   senderName?: string
   sendTime?: string
@@ -75,7 +75,7 @@ export class WebSocketClient {
   private isManualClose = false
   private status: WsStatus = WsStatus.DISCONNECTED
   private token: string | null = null
-  private visiblityHandler: (() => void) | null = null
+  private visibilityHandler: (() => void) | null = null
   private onStatusChange?: (status: WsStatus) => void
 
   // 事件订阅：action -> callback[]
@@ -241,7 +241,7 @@ export class WebSocketClient {
   private startVisibilityListener() {
     this.stopVisibilityListener()
 
-    this.visiblityHandler = () => {
+    this.visibilityHandler = () => {
       if (!document.hidden) {
         if (this.ws?.readyState === WebSocket.OPEN) {
           this.ws.send('PING')
@@ -256,16 +256,16 @@ export class WebSocketClient {
       }
     }
 
-    document.addEventListener('visibilitychange', this.visiblityHandler)
+    document.addEventListener('visibilitychange', this.visibilityHandler)
   }
 
   /**
    * 停止页面可见性监听
    */
   private stopVisibilityListener() {
-    if (this.visiblityHandler) {
-      document.removeEventListener('visibilitychange', this.visiblityHandler)
-      this.visiblityHandler = null
+    if (this.visibilityHandler) {
+      document.removeEventListener('visibilitychange', this.visibilityHandler)
+      this.visibilityHandler = null
     }
   }
 

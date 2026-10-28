@@ -53,11 +53,11 @@ src/views/<domain>/<module>/
    └─ 数据是层级结构（children）？
       ├─ 是 ──→ 树形表格 → TreeCrudView + useTreeCrud  （§3.2）
       └─ 否 ──→ 是否只读/无增删改？
-         ├─ 是 ──→ 普通表格 + readonly                （§3.1.5）
+         ├─ 是 ──→ 普通表格 + readonly                （§3.1.6）
          └─ 否 ──→ 手写表格                          （§3.3）
 ```
 
-当前分布：普通表格 9 个、树形表格 2 个、手写表格 11 个。
+当前分布：普通表格 14 个（含 5 个只读列表）、树形表格 2 个、手写表格 6 个。
 
 ---
 
@@ -83,16 +83,12 @@ src/views/<domain>/<module>/
       </el-form-item>
     </template>
 
-    <template #actions>
-      <el-button type="primary" @click="crud.methods.handleAdd" v-permission="['system:demo:add']">
+    <template #actions="{ handleAdd, handleBatchRemove }">
+      <el-button type="primary" @click="handleAdd" v-permission="['system:demo:add']">
         <template #icon><Icon icon="lucide:plus-circle" /></template>
         {{ $t('common.add') }}
       </el-button>
-      <el-button
-        type="danger"
-        @click="crud.methods.handleBatchRemove"
-        v-permission="['system:demo:delete']"
-      >
+      <el-button type="danger" @click="handleBatchRemove" v-permission="['system:demo:delete']">
         <template #icon><Icon icon="lucide:trash-2" /></template>
         {{ $t('common.batchDelete') }}
       </el-button>
@@ -203,6 +199,7 @@ const crud = useCrud<DemoQueryVO, DemoVO>({
 | `tableProps`             | `object`                 | —                                | 透传 `el-table` 属性，如 `{ border: true, height: '520px' }` |
 | `labelWidth`             | `string`                 | `168px`                          | 窄标签可传 `144px`                                           |
 | `labelPosition`          | `'left'\|'right'\|'top'` | `left`                           |                                                              |
+| `hidePagination`         | `boolean`                | `false`                          | 后端无分页接口时隐藏分页区                                   |
 
 #### 3.1.3 插槽
 
@@ -228,7 +225,33 @@ const crud = useCrud<DemoQueryVO, DemoVO>({
 
 删除接口**必须**接收逗号拼接的 id 字符串：`removeApi: (ids) => removeXxxByIds(ids)`。
 
-#### 3.1.5 只读列表
+#### 3.1.5 对外接口只有三条路径
+
+```ts
+const crud = useCrud({ … })
+crud.slotProps   // 模板：绑定给壳；动作从插槽作用域取
+crud.refresh()   // 脚本：自定义动作后重新拉数据
+crud.state       // 脚本：读写 formData / dialogVisible（回填联动）
+```
+
+| 路径        | 用途                 | 典型场景                                    |
+| ----------- | -------------------- | ------------------------------------------- |
+| `slotProps` | 模板消费             | `<UseCrudView :slotProps="crud.slotProps">` |
+| `refresh()` | 脚本主动刷新         | 行内状态开关、执行一次等自定义动作后        |
+| `state`     | 脚本读写弹窗内部状态 | 编辑时回填树勾选、监听 `dataScope` 变化     |
+
+**禁止**通过替换返回对象上的方法来扩展行为：
+
+```ts
+// ❌ 禁止：slotProps 里保存的是原函数引用，替换不会生效，
+//    而且绕过了 onDialogOpen 这份显式契约
+const original = crud.methods.handleEdit
+crud.methods.handleEdit = (row) => { … }
+```
+
+需要「编辑时做额外处理」用 `onDialogOpen`；需要「自定义删除文案」用 `removeConfirmText`。
+
+#### 3.1.6 只读列表
 
 无增删改的列表（日志、在线用户、消息记录）**必须**用壳 + `readonly`，**禁止**手写：
 
@@ -245,6 +268,26 @@ const crud = useCrud<DemoQueryVO, DemoVO>({
 ```ts
 const crud = useCrud({ pageApi: (q) => logPage(q), removeApi: (ids) => removeLogByIds(ids) })
 ```
+
+**后端没有分页接口时**（如在线用户，一次返回全量数组），在 `pageApi` 里做一层适配，同时用
+`hide-pagination` 隐藏分页区——不要为了一个页面手写整套骨架：
+
+```ts
+const crud = useCrud<{ username?: string }, OnlineUserVO>({
+  pageApi: async (query) => {
+    const res = await onlineUserList(query.username)
+    const rows = res.data ?? []
+    return { ...res, data: { rows, total: rows.length } }
+  },
+})
+```
+
+```vue
+<UseCrudView :slotProps="crud.slotProps" readonly hide-pagination> … </UseCrudView>
+```
+
+只读列表的工具栏只放「批量删除 / 清空 / 全部已读」这类动作，行内只放「详情 / 强制下线 / 重投」，
+属于**动作**而非新增编辑，因此不需要 `addApi` / `updateApi`。
 
 ### 3.2 树形表格：`TreeCrudView` + `useTreeCrud`
 
@@ -326,15 +369,29 @@ crud.methods.getTreeData()
 - 父级选择必须用 `#form-fields` 作用域里的 `treeData`，不要另外请求一次
 - 子级默认值有业务规则时用 `childForm(parent)`（参考菜单：目录下加菜单、菜单下加按钮）
 
-### 3.3 无法套用壳的表格
+### 3.3 手写表格
 
-满足以下**任一**条件才允许手写：
+**先排除这三种「以为不能用、其实能用」的情况：**
 
-| 条件                                     | 示例                                                       |
-| ---------------------------------------- | ---------------------------------------------------------- |
-| 不是 CRUD 流程（含审批动作、代码预览等） | `approval/*`、`tool/generateCode`、`bpm/expression-config` |
-| 布局需要双栏/分屏等壳不支持的结构        | 字典类型 + 字典数据联动                                    |
-| 表格内嵌编辑器等非标准单元格交互         | BPM 属性面板                                               |
+| 情况                                               | 正确做法                                           |
+| -------------------------------------------------- | -------------------------------------------------- |
+| 没有新增/编辑（日志、消息、审批记录、代码生成表）  | `readonly`（§3.1.6）                               |
+| 操作是审批、生成、导出、撤销这类**动作**而非增删改 | 动作按钮放 `#actions` 或行内，弹窗放 `#extra` 插槽 |
+| 后端没有分页接口                                   | `hide-pagination` + `pageApi` 里做适配（§3.1.6）   |
+
+只有当**壳在结构上表达不了**时才允许手写：
+
+| 真正的阻碍                           | 典型形态                                              |
+| ------------------------------------ | ----------------------------------------------------- |
+| 一页里有多个互相独立的列表           | 主从双表（上表选中 → 下表联动，且两者都要自己的分页） |
+| 表格内嵌可编辑单元格                 | 点击单元格原地编辑，不弹窗                            |
+| 非分页语义                           | 无限滚动、游标翻页                                    |
+| 页面骨架不是「搜索 + 工具栏 + 表格」 | 看板、树 + 详情双栏                                   |
+
+> **存量待迁移（6 个）**：`approval/started`、`approval/todo`、`approval/done`、
+> `tool/generateCode`、`bpm/expression-config`、`system/notice`。
+> 技术上**都可以迁移**——前 4 个没有增删改，用 `readonly`；后 2 个是标准 CRUD，用普通壳。
+> 它们目前是手写的，属于历史遗留，**不是设计上的豁免**。
 
 **手写不等于自由发挥**，以下仍为强制项：
 
@@ -461,12 +518,12 @@ export const zh = {
 
 ### 5.4 校验
 
-```bash
-pnpm check:i18n          # 手动
-pnpm build:dev           # 构建时自动执行，失败即中断
-```
+目前是**人工校验**（未接入自动化脚本）：
 
-校验项：key 集合一致、占位符一致、无空值。允许为空的情况必须在 `scripts/check-i18n.mjs` 的 `ALLOW_EMPTY` 显式登记并注明原因，**禁止**用空格绕过。
+1. 新增文案后左右切换一次中英文，确认没有显示成 key 原文、也没有中文残留
+2. 检查同一个 key 在中英两个对象里都存在
+3. 含占位符（`{name}` / `{count}`）的文案，中英占位符必须一致
+4. 模板插值必须是 `{{ $t('x') }}`——**单花括号 `{ $t('x') }` 会被当纯文本原样显示**，且构建、`vue-tsc` 都不会报错
 
 ---
 
@@ -572,21 +629,21 @@ pnpm build:dev           # 构建时自动执行，失败即中断
 | 字段布局     | 壳的 `#form-fields` 外层已有 `el-row`，每个字段必须包 `el-col`（`:span="12"` 半宽 / `:span="24"` 整行） |
 | 窄屏降级     | `.adaptive-form` 已处理，页面禁止写断点                                                                 |
 | 校验规则     | 通过 `formRules` 传给壳；动态规则用 `computed`                                                          |
-| 额外弹窗     | 详情抽屉、生成器等等放壳的**同级**（Vue 3 多根节点），不要塞进 `#form-fields`                           |
+| 额外弹窗     | 详情抽屉、生成器等等放壳的 **`#extra` 插槽**，不要塞进 `#form-fields`，也**不要放在壳的同级**           |
 | 弹窗内写表单 | 模板里用 `#form-fields` 的 `formData`；脚本里用 `crud.state.formData.value`                             |
 
 ---
 
 ## 10. 代码质量
 
-| 项              | 要求                                                             |
-| --------------- | ---------------------------------------------------------------- |
-| 调试残留        | 禁止 `console.log`（`console.warn` / `error` 可用）              |
-| 注释掉的代码    | 禁止提交；确实需要保留的用 TODO + 说明                           |
-| 未使用导入/导出 | 禁止                                                             |
-| 死组件 / 死页面 | 后端接口不存在时禁止新增页面；功能下线时同步删除前端             |
-| 无效样式        | 被更高优先级覆盖、实际不生效的声明必须删除                       |
-| 提交前          | `vue-tsc --noEmit`、`pnpm build:dev`、`pnpm check:i18n` 全部通过 |
+| 项              | 要求                                                            |
+| --------------- | --------------------------------------------------------------- |
+| 调试残留        | 禁止 `console.log`（`console.warn` / `error` 可用）             |
+| 注释掉的代码    | 禁止提交；确实需要保留的用 TODO + 说明                          |
+| 未使用导入/导出 | 禁止                                                            |
+| 死组件 / 死页面 | 后端接口不存在时禁止新增页面；功能下线时同步删除前端            |
+| 无效样式        | 被更高优先级覆盖、实际不生效的声明必须删除                      |
+| 提交前          | `vue-tsc --noEmit`、`pnpm build:dev` 通过，且手工点过受影响页面 |
 
 ---
 
@@ -599,7 +656,7 @@ pnpm build:dev           # 构建时自动执行，失败即中断
 - [ ] `zh` / `en` 两套 key 一致
 - [ ] 暗色主题检查过
 - [ ] 移动端（≤375px）检查过
-- [ ] `vue-tsc` / `build:dev` / `check:i18n` 通过
+- [ ] `vue-tsc` / `build:dev` 通过，中英文各切换一次确认无 key 原文
 
 ### 11.2 普通表格
 
@@ -639,7 +696,10 @@ pnpm build:dev           # 构建时自动执行，失败即中断
 7. **页面根节点自己加 `.app-container`** —— 壳内部已有，会双倍内边距
 8. **在 `#table` 里再包 `el-table`** —— 只放 `el-table-column`
 9. **组件 `name` 与路由 `name` 大小写不一致** —— keep-alive 匹配区分大小写，缓存会静默失效
-10. **提交被更高优先级覆盖的"无效样式"** —— 例如给 `type="primary"` 的按钮写 `--el-button-bg-color`，会被 `html .el-button--primary` 压制
+10. **在壳的同级再放弹窗、抽屉** —— 会让页面变成多根节点（fragment），而 `<transition mode="out-in">` + `<keep-alive>` 要求单一元素根：进入动画挂不上、`class` 也无法继承，**表现是右侧内容区直接空白**，且构建与 `vue-tsc` 都不报错。页面自有弹窗一律放进壳的 `#extra` 插槽，**且构建与 `vue-tsc` 都不会报错，只能靠这条规则**
+11. **在 `<keep-alive>` / `<transition>` 里用 `v-if` / `v-else` 放多个分支** —— 两者都要求**恰好一个**子节点。Vue 校验发生在**运行时**，`pnpm build:dev` 不会报错，只在浏览器里抛 `<KeepAlive> expects exactly one child component`。需要分支时把判断提到外层（如 `v-else-if` 与 `router-view` 并列），或让 `:is` 指向一个兜底组件
+12. **patch 壳返回对象上的方法**（`crud.methods.handleEdit = …`）—— 用 `onDialogOpen` / `removeConfirmText` 等显式配置项，patch 既不生效也破坏契约
+13. **提交被更高优先级覆盖的"无效样式"** —— 例如给 `type="primary"` 的按钮写 `--el-button-bg-color`，会被 `html .el-button--primary` 压制
 
 ---
 
@@ -655,3 +715,42 @@ pnpm build:dev           # 构建时自动执行，失败即中断
 | 树形表格（默认展开 + 删除拦截） | `src/views/system/dept/index.vue`       |
 | 树形表格（子级类型推导）        | `src/views/system/menu/index.vue`       |
 | 手写表格（合规范本）            | `src/views/system/notice/index.vue`     |
+
+---
+
+## 14. 开发环境说明
+
+### 14.1 依赖预构建（optimizeDeps）
+
+`unplugin-vue-components` / `unplugin-auto-import` 是在**转换期**才注入
+`element-plus/es/components/<x>/style/css` 这类 import 的，它们不参与 Vite 启动期的依赖扫描。
+
+结果就是「第一次打开用到某个组件的页面」时，Vite 把它当新依赖去预构建并强制刷新：
+
+```
+✨ new dependencies optimized: .../components/upload/style/css
+✨ optimized dependencies changed. reloading
+```
+
+这次重载会让正在加载的模块返回 `504 (Outdated Optimize Dep)`，动态 import 失败 →
+路由启动失败 → `index.html` 里的 `#app-loading` 永远不被替换 → **整个应用卡在 loading 页**。
+
+因此 `vite.config.ts` 里用 `elementPlusStyleDeps()` 把 Element Plus **全部组件样式目录**
+声明为预构建依赖（`optimizeDeps.include`）。不要改成「按用量推导」——会漏掉
+`ElMessage` / `ElMessageBox` / `ElNotification` 这类由 API 调用而非标签引入的样式。
+
+**改动 `vite.config.ts` 后必须重启 `pnpm dev`**，配置不会热更新。
+
+### 14.2 改了 vite 配置或依赖后的标准动作
+
+```bash
+rm -rf node_modules/.vite   # 清理旧预构建缓存
+pnpm dev                    # 重新预构建并启动
+```
+
+### 14.3 两个已修的开发期坑
+
+| 现象                                     | 原因                                                                                    | 处理                                                                                          |
+| ---------------------------------------- | --------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
+| 点新页面后整页卡在 loading               | 上述重优化导致 504，`router.isReady()` 失败后 `app.mount()` 从未执行                    | `main.ts` 在 `isReady` 失败时也挂载；`guard.ts` 的 chunk 恢复在 dev 下延迟 800ms 等预构建完成 |
+| 提示 `ElMessageBox` 找不到（仅类型报错） | 临时启动 dev server 会按「已扫描到的模块」重写 `types/auto/auto-imports.d.ts`，声明残缺 | 跑一次完整构建重新生成：`pnpm build:dev`                                                      |

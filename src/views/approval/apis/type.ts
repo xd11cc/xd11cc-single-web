@@ -17,15 +17,23 @@ export interface ApprovalPageQuery {
 
 /** 「我发起的」查询参数 */
 export interface MyStartedQuery extends ApprovalPageQuery {
-  /** 0-进行中 1-已完成 2-已取消 3-已驳回 */
-  status?: number
+  /** 状态码，与后端 workflow_instance.status 一致：'0'-进行中 '1'-已完成 '2'-已取消 '3'-已驳回 */
+  status?: InstanceStatus
 }
 
 /** 「我的审批 / 我已审批」查询参数 */
 export type MyTaskQuery = ApprovalPageQuery
 
-/** 流程实例状态 */
-export type InstanceStatus = 0 | 1 | 2 | 3
+/** 流程实例状态（后端 char(2)，必须用字符串比较） */
+export type InstanceStatus = '0' | '1' | '2' | '3'
+
+/** 流程实例状态取值常量 */
+export const INSTANCE_STATUS = {
+  RUNNING: '0',
+  COMPLETED: '1',
+  CANCELLED: '2',
+  REJECTED: '3',
+} as const
 
 /** 任务明细（待办/已办通用） */
 export interface WorkflowTaskVO {

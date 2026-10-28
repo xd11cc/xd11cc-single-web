@@ -4,7 +4,6 @@ export const zh = {
     delete: '删除通知',
     edit: '修改通知',
     publish: '发布',
-    query: '查询',
     revoke: '撤回',
   },
   columns: {
@@ -40,13 +39,10 @@ export const zh = {
   messages: {
     batchDeleteConfirm: '正在删除 {count} 条通知数据，确认删除？',
     deleteConfirm: '正在删除通知「{title}」，确认删除？',
-    deleteSuccess: '删除成功',
-    operationSuccess: '操作成功',
     publishConfirm: '确认发布通知「{title}」？',
     publishSuccess: '发布成功',
     revokeConfirm: '确认撤回通知「{title}」？',
     revokeSuccess: '撤回成功',
-    selectFirst: '请选择要删除的数据',
   },
   search: {
     status: '状态',
@@ -66,7 +62,6 @@ export const en = {
     delete: 'Delete Notice',
     edit: 'Edit Notice',
     publish: 'Publish',
-    query: 'Query',
     revoke: 'Revoke',
   },
   columns: {
@@ -102,13 +97,10 @@ export const en = {
   messages: {
     batchDeleteConfirm: 'Deleting {count} notices. Confirm?',
     deleteConfirm: 'Deleting notice "{title}". Confirm?',
-    deleteSuccess: 'Deleted successfully',
-    operationSuccess: 'Operation succeeded',
     publishConfirm: 'Publish notice "{title}"?',
     publishSuccess: 'Publish successful',
     revokeConfirm: 'Revoke notice "{title}"?',
     revokeSuccess: 'Revoke successful',
-    selectFirst: 'Please select data to delete first',
   },
   search: {
     status: 'Status',

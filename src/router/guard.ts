@@ -26,17 +26,30 @@ function isChunkLoadError(error: unknown) {
   )
 }
 
-function getChunkReloadTarget() {
+/**
+ * 记录上次为哪个目标做过 chunk 恢复，以及发生时间。
+ * 只记录目标（不记时间）会让「同一路径第二次失败」被永久跳过，
+ * 用户就只能看到空白页并手动刷新——这正是之前的现象。
+ */
+interface ChunkReloadRecord {
+  target: string
+  at: number
+}
+
+function getChunkReloadRecord(): ChunkReloadRecord | null {
   try {
-    return sessionStorage.getItem(CHUNK_RELOAD_KEY)
+    const raw = sessionStorage.getItem(CHUNK_RELOAD_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as ChunkReloadRecord
+    return typeof parsed?.target === 'string' && typeof parsed?.at === 'number' ? parsed : null
   } catch {
     return null
   }
 }
 
-function setChunkReloadTarget(target: string) {
+function setChunkReloadRecord(target: string) {
   try {
-    sessionStorage.setItem(CHUNK_RELOAD_KEY, target)
+    sessionStorage.setItem(CHUNK_RELOAD_KEY, JSON.stringify({ target, at: Date.now() }))
   } catch {
     // sessionStorage 不可用时仍保留原始错误日志，避免刷新循环
   }
@@ -124,9 +137,20 @@ export function registerNavigationGuard(router: Router) {
     if (!isChunkLoadError(error)) return
 
     const target = to.fullPath
-    if (getChunkReloadTarget() === target) return
+    const record = getChunkReloadRecord()
+    // 同一目标 10 秒内只自动恢复一次，既避免刷新死循环，
+    // 又不会因为一次历史失败导致之后再也无法自愈
+    if (record?.target === target && Date.now() - record.at < 10_000) return
 
-    setChunkReloadTarget(target)
-    window.location.assign(router.resolve(target).href)
+    setChunkReloadRecord(target)
+    const href = router.resolve(target).href
+    // 开发期 Vite 正在重新预构建依赖时，旧 dep URL 会短暂 504。
+    // 立刻刷新会再次命中，稍等让预构建完成再跳转。
+    const delay = import.meta.env.DEV ? 800 : 0
+    if (delay) {
+      window.setTimeout(() => window.location.assign(href), delay)
+    } else {
+      window.location.assign(href)
+    }
   })
 }

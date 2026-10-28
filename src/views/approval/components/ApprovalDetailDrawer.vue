@@ -199,7 +199,14 @@ import { Icon } from '@iconify/vue'
 import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
 import { approveTask, getProcessDetail, getRejectableNodes, rejectTask } from '../apis'
-import type { RejectableNodeVO, WorkflowInstanceVO, WorkflowTaskVO } from '../apis/type'
+import { INSTANCE_STATUS } from '../apis/type'
+import { useDict } from '@/common/composables/useDict'
+import type {
+  InstanceStatus,
+  RejectableNodeVO,
+  WorkflowInstanceVO,
+  WorkflowTaskVO,
+} from '../apis/type'
 
 defineOptions({ name: 'ApprovalDetailDrawer' })
 
@@ -237,28 +244,16 @@ const rejectableNodes = ref<RejectableNodeVO[]>([])
 
 const showActions = computed(() => Boolean(props.taskId))
 
-const instanceStatusOptions = computed(() => [
-  { value: 0, label: t('bpm.approval.status.running') },
-  { value: 1, label: t('bpm.approval.status.completed') },
-  { value: 2, label: t('bpm.approval.status.cancelled') },
-  { value: 3, label: t('bpm.approval.status.rejected') },
-])
+// 状态文案与标签色由字典 workflow_status 提供（后端 char(2)，必须字符串比较）
+const { getDictItem: getStatusDictItem } = useDict(['workflow_status'])
 
-function statusLabel(status?: number) {
-  return instanceStatusOptions.value.find((item) => item.value === status)?.label ?? '-'
+function statusLabel(status?: InstanceStatus) {
+  if (!status) return '-'
+  return getStatusDictItem('workflow_status', status)?.value ?? status
 }
 
-function statusTagType(status?: number) {
-  switch (status) {
-    case 1:
-      return 'success'
-    case 2:
-      return 'info'
-    case 3:
-      return 'danger'
-    default:
-      return 'warning'
-  }
+function statusTagType(status?: InstanceStatus) {
+  return getStatusDictItem('workflow_status', status ?? '')?.listClass ?? 'info'
 }
 
 /** 审批耗时：优先用 endTime - createTime，未结束则留空 */
@@ -681,7 +676,6 @@ $paper: var(--theme-bg-page);
     border-radius: 0 var(--p-radius-sm) var(--p-radius-sm) 0;
   }
 
-  // 状态变体
   &.is-done &__dot {
     background: $accent;
     box-shadow: 0 2px 8px var(--theme-accent-glow);

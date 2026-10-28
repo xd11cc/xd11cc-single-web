@@ -49,8 +49,8 @@
     </template>
 
     <!-- 工具栏按钮 -->
-    <template #actions="{ rowSelection }">
-      <el-button type="primary" @click="crud.methods.handleAdd" v-permission="['system:user:add']">
+    <template #actions="{ rowSelection, handleAdd, handleBatchRemove }">
+      <el-button type="primary" @click="handleAdd" v-permission="['system:user:add']">
         <template #icon><Icon icon="lucide:plus-circle" /></template>{{ $t('common.add') }}
       </el-button>
       <el-button type="danger" @click="handleBatchRemove">
@@ -67,7 +67,7 @@
     </template>
 
     <!-- 表格列 -->
-    <template #table>
+    <template #table="{ handleEdit, handleRemove }">
       <el-table-column type="selection" width="50" align="center" />
       <el-table-column
         v-if="isColumnVisible('username')"
@@ -127,7 +127,7 @@
               text
               bg
               size="small"
-              @click="crud.methods.handleEdit(scope.row)"
+              @click="handleEdit(scope.row)"
               v-permission="['system:user:update']"
             >
               <Icon icon="lucide:pencil" />
@@ -139,7 +139,7 @@
               text
               bg
               size="small"
-              @click="crud.methods.handleRemove(scope.row)"
+              @click="handleRemove(scope.row)"
               v-permission="['system:user:delete']"
             >
               <Icon icon="lucide:trash-2" />
@@ -342,6 +342,14 @@ const crud = useCrud<SystemUserQueryVO, SystemUserVO>({
   updateApi: (data) => modifyUserById(data),
   removeApi: (ids) => removeUserByIds(ids),
   defaultForm: () => ({ status: '0', roleIds: [] }),
+  batchRemoveConfirmText: (count) => $t('system.user.messages.batchDeleteConfirm', { count }),
+  // 编辑时补加载岗位列表（模块特有逻辑）
+  onDialogOpen: ({ isAdd, row }) => {
+    if (isAdd || !row?.deptId) return
+    postListByDeptId(row.deptId).then(({ data }) => {
+      postList.value = data
+    })
+  },
 })
 
 // ─── 表格列配置 ────────────────────────────────────────────
@@ -435,41 +443,6 @@ function handlePostChange(postId: number | undefined) {
   } else {
     crud.state.formData.value.postName = undefined
   }
-}
-
-// 编辑时回填：composable 的 handleEdit 会设置 formData，这里补充加载岗位列表
-const originalHandleEdit = crud.methods.handleEdit
-crud.methods.handleEdit = (row: SystemUserVO) => {
-  originalHandleEdit(row)
-  if (row.deptId) {
-    postListByDeptId(row.deptId).then(({ data }) => {
-      postList.value = data
-    })
-  }
-}
-
-// ─── 自定义批量删除（保留原始提示文案） ──────────────────────
-function handleBatchRemove() {
-  const selectedRows = crud.slotProps.rowSelection
-  if (selectedRows.length === 0) {
-    ElMessage.warning($t('common.messages.selectFirst'))
-    return
-  }
-  const ids = selectedRows.map((r: any) => r.id).join(',')
-  ElMessageBox.confirm(
-    $t('system.user.messages.batchDeleteConfirm', { count: selectedRows.length }),
-    $t('common.messages.confirmTitle'),
-    {
-      confirmButtonText: $t('common.confirm'),
-      cancelButtonText: $t('common.cancel'),
-      type: 'warning',
-    },
-  ).then(() => {
-    removeUserByIds(ids).then((res) => {
-      ElMessage.success(res.msg || $t('common.messages.operationSuccess'))
-      crud.methods.getTableData()
-    })
-  })
 }
 
 // ─── 重置密码（模块特有，保留在父组件） ──────────────────

@@ -37,6 +37,17 @@ export interface UseCrudOptions<Q = any, T = any> {
   removeConfirmText?: (row: any) => string
   /** 批量删除的确认文案，默认使用通用文案 */
   batchRemoveConfirmText?: (count: number) => string
+  /**
+   * 弹窗打开后的钩子（新增 / 编辑共用）。
+   *
+   * 用于「表单需要按当前行回填联动数据」的场景：部门树勾选、岗位下拉列表、
+   * dataScope 默认值等。调用时机是 formData 已赋值、dialogVisible 已置 true、
+   * 但 DOM 尚未更新——需要操作弹窗内组件时请自行 nextTick。
+   *
+   * 不要通过替换返回对象上的方法来扩展行为：那会绕过这份契约，
+   * 且 slotProps 里保存的仍是原函数引用，替换不会生效。
+   */
+  onDialogOpen?: (context: { isAdd: boolean; form: Record<string, any>; row?: any }) => void
 }
 
 /**
@@ -44,6 +55,8 @@ export interface UseCrudOptions<Q = any, T = any> {
  */
 export interface UseCrudSlotProps {
   searchData: any
+  /** 主动重新拉取当前页数据（自定义动作后刷新用） */
+  refresh: () => Promise<void>
   handleSearch: () => void
   resetSearch: () => void
   tableData: any[]
@@ -156,11 +169,13 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
   function handleAdd() {
     formData.value = options.defaultForm?.() || {}
     dialogVisible.value = true
+    options.onDialogOpen?.({ isAdd: true, form: formData.value })
   }
 
   function handleEdit(row: T) {
     formData.value = { ...row }
     dialogVisible.value = true
+    options.onDialogOpen?.({ isAdd: false, form: formData.value, row })
   }
 
   function handleClose() {
@@ -170,8 +185,7 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
 
   // ─── 单条删除 ──────────────────────────────────────────
   function handleRemove(row: any) {
-    const confirmText =
-      options.removeConfirmText?.(row) ?? t('common.messages.deleteConfirm')
+    const confirmText = options.removeConfirmText?.(row) ?? t('common.messages.deleteConfirm')
     ElMessageBox.confirm(confirmText, t('common.messages.confirmTitle'), {
       confirmButtonText: t('common.confirm'),
       cancelButtonText: t('common.cancel'),
@@ -196,17 +210,12 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
     }
     const count = tableSelection.value.length
     const confirmText =
-      options.batchRemoveConfirmText?.(count) ??
-      t('common.messages.deleteSelected', { count })
-    ElMessageBox.confirm(
-      confirmText,
-      t('common.messages.confirmTitle'),
-      {
-        confirmButtonText: t('common.confirm'),
-        cancelButtonText: t('common.cancel'),
-        type: 'warning',
-      },
-    ).then(() => {
+      options.batchRemoveConfirmText?.(count) ?? t('common.messages.deleteSelected', { count })
+    ElMessageBox.confirm(confirmText, t('common.messages.confirmTitle'), {
+      confirmButtonText: t('common.confirm'),
+      cancelButtonText: t('common.cancel'),
+      type: 'warning',
+    }).then(() => {
       options
         .removeApi?.(ids)
         .then((res) => {
@@ -253,6 +262,7 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
   // 始终返回 ref 的最新值，而非构造时快照。Vue 模板内 ref 自动解包。
   const slotProps = reactive({
     searchData,
+    refresh: getTableData,
     handleSearch,
     resetSearch,
     get tableData() {
@@ -288,30 +298,13 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
     },
   } as UseCrudSlotProps)
 
+  // 对外只暴露三条路径，避免同一能力暴露多次：
+  //   slotProps —— 模板消费（绑定到壳、或从插槽作用域取动作）
+  //   refresh   —— 脚本里主动重新拉取（自定义动作后刷新）
+  //   state     —— 脚本里读写弹窗内部状态（回填联动数据、监听切换）
   return {
-    state: {
-      tableData,
-      tableLoading,
-      tableSelection,
-      paginationData,
-      searchData,
-      dialogVisible,
-      formData,
-    },
-    methods: {
-      getTableData,
-      handleSearch,
-      resetSearch,
-      handleAdd,
-      handleEdit,
-      handleClose,
-      handleRemove,
-      handleBatchRemove,
-      handleSubmit,
-      handleCurrentChange,
-      handleSizeChange,
-      handleSelectionChange,
-    },
     slotProps,
+    refresh: getTableData,
+    state: { formData, dialogVisible },
   }
 }

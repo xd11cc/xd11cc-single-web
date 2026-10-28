@@ -1,7 +1,7 @@
 export interface SystemNoticeQueryVO {
   title?: string
-  type?: number
-  status?: number
+  type?: string
+  status?: string
   currentPage?: number
   pageSize?: number
 }
@@ -10,13 +10,13 @@ export interface SystemNoticeVO {
   id?: number
   title?: string
   content?: string
-  type?: number
-  scope?: number
+  type?: string
+  scope?: string
   scopeDeptIds?: string
   scopeUserIds?: string
   senderId?: number
   senderName?: string
-  status?: number
+  status?: string
   publishTime?: string
   remark?: string
   createTime?: string
@@ -25,8 +25,8 @@ export interface SystemNoticeVO {
 export interface SystemNoticeAddVO {
   title: string
   content?: string
-  type: number
-  scope: number
+  type: string
+  scope: string
   scopeDeptIds?: number[]
   scopeUserIds?: number[]
   remark?: string
@@ -36,8 +36,8 @@ export interface SystemNoticeUpdateVO {
   id: number
   title: string
   content?: string
-  type: number
-  scope: number
+  type: string
+  scope: string
   scopeDeptIds?: number[]
   scopeUserIds?: number[]
   remark?: string

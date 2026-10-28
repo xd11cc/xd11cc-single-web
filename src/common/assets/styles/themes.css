@@ -181,6 +181,15 @@
   --theme-skeleton-base: var(--p-gray-200);
   --theme-skeleton-highlight: rgba(255, 255, 255, 0.75);
 
+  /* 头像色盘：按 userId 哈希取色，用来区分不同联系人。
+     全部取值与白字对比度 ≥ 5.0（AA 要求 4.5），亮暗主题共用同一套。 */
+  --theme-avatar-1: #047857; /* emerald-700 · 5.48 */
+  --theme-avatar-2: #1d4ed8; /* blue-700    · 6.70 */
+  --theme-avatar-3: #6d28d9; /* violet-700  · 7.10 */
+  --theme-avatar-4: #be123c; /* rose-700    · 6.29 */
+  --theme-avatar-5: #0f766e; /* teal-700    · 5.47 */
+  --theme-avatar-6: #b45309; /* amber-700   · 5.02 */
+
   /* 「强调色填充」与「其上文字」的配对。
      accent / accent-strong 解决的是「强调色当图标」和「强调色当文字」，
      但文字压在强调色上属于第三种场景，之前没有令牌，各处只能硬写白字：
@@ -305,6 +314,14 @@
   /* 骨架屏：暗底上用浅一档的面层 + 极淡扫光 */
   --theme-skeleton-base: var(--p-gray-850);
   --theme-skeleton-highlight: rgba(255, 255, 255, 0.07);
+
+  /* 头像色盘（暗色下沿用同一组，白字对比度已满足 AA） */
+  --theme-avatar-1: #047857;
+  --theme-avatar-2: #1d4ed8;
+  --theme-avatar-3: #6d28d9;
+  --theme-avatar-4: #be123c;
+  --theme-avatar-5: #0f766e;
+  --theme-avatar-6: #b45309;
 
   /* 暗色下强调色本身已经够亮，改用近黑文字压在其上：
      emerald-500 + #09090b = 7.84，比深绿底更跳，也更符合暗色 UI 的惯例 */

@@ -34,8 +34,8 @@
     </template>
 
     <!-- 工具栏：新增按钮；展开/收起由壳统一提供 -->
-    <template #actions>
-      <el-button type="primary" @click="crud.methods.handleAdd" v-permission="['system:dept:add']">
+    <template #actions="{ handleAdd }">
+      <el-button type="primary" @click="handleAdd" v-permission="['system:dept:add']">
         <template #icon><Icon icon="lucide:plus-circle" /></template>
         {{ $t('system.dept.actions.add') }}
       </el-button>
@@ -254,6 +254,6 @@ function getUserList() {
 }
 
 // 树数据与负责人下拉在挂载时加载
-crud.methods.getTreeData()
+crud.refresh()
 getUserList()
 </script>

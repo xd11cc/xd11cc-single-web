@@ -11,7 +11,7 @@ import type { NoticeWebSocketDTO } from '@@/utils/webSocket'
  * - 不抢占：用户正在输入/编辑时会推迟弹出，避免打断录入
  */
 
-export type TodoNotice = NoticeWebSocketDTO & { type: 3 }
+export type TodoNotice = NoticeWebSocketDTO & { type: '3' }
 
 // 一次弹出允许收集待办的时间窗口，超出窗口的后续待办并入下一轮
 const COLLECT_WINDOW = 800

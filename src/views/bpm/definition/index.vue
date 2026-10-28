@@ -310,7 +310,7 @@ async function deleteDraft(row: WorkflowDefinitionVO) {
     )
     await removeWorkflowDraft(row.id)
     ElMessage.success($t('common.messages.deleteSuccess'))
-    crud.methods.getTableData()
+    crud.refresh()
   } catch {
     // 取消确认或请求失败时由交互层处理。
   }
@@ -330,7 +330,7 @@ async function changeDefinitionStatus(row: WorkflowDefinitionVO, action: 'suspen
     if (action === 'suspend') await suspendWorkflowDefinition(row.processDefinitionId)
     else await activateWorkflowDefinition(row.processDefinitionId)
     ElMessage.success($t('common.messages.operationSuccess'))
-    crud.methods.getTableData()
+    crud.refresh()
   } catch {
     // 取消确认或请求失败时由交互层处理。
   }
@@ -413,7 +413,7 @@ async function handleBatchRemove() {
   } catch {
     // 请求层已统一处理错误提示
   } finally {
-    crud.methods.getTableData()
+    crud.refresh()
   }
 }
 

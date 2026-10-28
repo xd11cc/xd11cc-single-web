@@ -42,16 +42,12 @@ export function cancelProcess(
 // ==================== 我的审批 / 我已审批 ====================
 
 /** 我的待办 */
-export function getMyTodoTasks(
-  data: MyTaskQuery,
-): Promise<ResponseVO<PageData<WorkflowTaskVO>>> {
+export function getMyTodoTasks(data: MyTaskQuery): Promise<ResponseVO<PageData<WorkflowTaskVO>>> {
   return request({ url: '/workflow/task/todo', method: 'POST', data })
 }
 
 /** 我的已办 */
-export function getMyDoneTasks(
-  data: MyTaskQuery,
-): Promise<ResponseVO<PageData<WorkflowTaskVO>>> {
+export function getMyDoneTasks(data: MyTaskQuery): Promise<ResponseVO<PageData<WorkflowTaskVO>>> {
   return request({ url: '/workflow/task/done', method: 'POST', data })
 }
 
@@ -71,8 +67,6 @@ export function delegateTask(data: DelegatePayload): Promise<ResponseVO<void>> {
 }
 
 /** 获取当前任务可退回节点 */
-export function getRejectableNodes(
-  taskId: string,
-): Promise<ResponseVO<RejectableNodeVO[]>> {
+export function getRejectableNodes(taskId: string): Promise<ResponseVO<RejectableNodeVO[]>> {
   return request({ url: '/workflow/task/rejectable-nodes', method: 'GET', params: { taskId } })
 }

@@ -28,8 +28,8 @@ export const useAppStore = defineStore('app', () => {
   // 监听侧边栏opend状态
   watch(
     () => sidebar.opened,
-    (opend) => {
-      handleSidebarStatus(opend)
+    (opened) => {
+      handleSidebarStatus(opened)
     },
   )
 

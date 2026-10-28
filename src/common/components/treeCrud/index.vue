@@ -75,6 +75,9 @@
         </el-button>
       </template>
     </el-dialog>
+
+    <!-- 页面自有弹窗、抽屉放这里，保证壳只有一个根节点（理由同 UseCrudView） -->
+    <slot name="extra" />
   </div>
 </template>
 

@@ -23,20 +23,12 @@
     </template>
 
     <!-- 工具栏按钮 -->
-    <template #actions>
-      <el-button
-        type="primary"
-        @click="crud.methods.handleAdd"
-        v-permission="['system:config:add']"
-      >
+    <template #actions="{ handleAdd, handleBatchRemove }">
+      <el-button type="primary" @click="handleAdd" v-permission="['system:config:add']">
         <template #icon><Icon icon="lucide:plus-circle" /></template>
         {{ $t('system.config.actions.add') }}
       </el-button>
-      <el-button
-        type="danger"
-        @click="crud.methods.handleBatchRemove"
-        v-permission="['system:config:delete']"
-      >
+      <el-button type="danger" @click="handleBatchRemove" v-permission="['system:config:delete']">
         <template #icon><Icon icon="lucide:trash-2" /></template>
         {{ $t('common.batchDelete') }}
       </el-button>
