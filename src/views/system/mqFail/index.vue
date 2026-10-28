@@ -44,7 +44,7 @@
       </el-form>
     </el-card>
 
-    <el-card v-loading="loading" shadow="never">
+    <el-card v-table-loading="loading" shadow="never">
       <div class="table-wrapper">
         <el-table :data="tableData">
           <el-table-column

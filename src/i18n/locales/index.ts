@@ -31,8 +31,6 @@ import { zh as SystemConfigZh, en as SystemConfigEn } from './system/config'
 import { zh as SystemDeptZh, en as SystemDeptEn } from './system/dept'
 import { zh as SystemDictZh, en as SystemDictEn } from './system/dict/type'
 import { zh as SystemDictDataZh, en as SystemDictDataEn } from './system/dict/data'
-import { zh as SystemJobZh, en as SystemJobEn } from './system/job/index'
-import { zh as SystemJobLogZh, en as SystemJobLogEn } from './system/job/log'
 import { zh as SystemLoginlogZh, en as SystemLoginlogEn } from './system/loginLog'
 import { zh as SystemMenuZh, en as SystemMenuEn } from './system/menu'
 import { zh as SystemNoticeZh, en as SystemNoticeEn } from './system/notice'
@@ -44,7 +42,6 @@ import { zh as SystemPostZh, en as SystemPostEn } from './system/post'
 import { zh as SystemRoleZh, en as SystemRoleEn } from './system/role'
 import { zh as SystemUserZh, en as SystemUserEn } from './system/user/index'
 import { zh as SystemUserProfileZh, en as SystemUserProfileEn } from './system/user/profile'
-import { zh as ToolCrongeneratorZh, en as ToolCrongeneratorEn } from './tool/cronGenerator'
 import { zh as ToolGeneratecodeZh, en as ToolGeneratecodeEn } from './tool/generateCode'
 
 export const zhCN = {
@@ -96,10 +93,6 @@ export const zhCN = {
       ...SystemDictZh,
       data: SystemDictDataZh,
     },
-    job: {
-      ...SystemJobZh,
-      log: SystemJobLogZh,
-    },
     loginLog: SystemLoginlogZh,
     menu: SystemMenuZh,
     notice: SystemNoticeZh,
@@ -115,7 +108,6 @@ export const zhCN = {
     },
   },
   tool: {
-    cronGenerator: ToolCrongeneratorZh,
     generateCode: ToolGeneratecodeZh,
   },
 }
@@ -169,10 +161,6 @@ export const enUS = {
       ...SystemDictEn,
       data: SystemDictDataEn,
     },
-    job: {
-      ...SystemJobEn,
-      log: SystemJobLogEn,
-    },
     loginLog: SystemLoginlogEn,
     menu: SystemMenuEn,
     notice: SystemNoticeEn,
@@ -188,7 +176,6 @@ export const enUS = {
     },
   },
   tool: {
-    cronGenerator: ToolCrongeneratorEn,
     generateCode: ToolGeneratecodeEn,
   },
 }

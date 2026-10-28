@@ -1,63 +1,47 @@
 <template>
-  <div class="app-container">
-    <el-card shadow="never" class="search-wrapper">
-      <el-form ref="searchFormRef" :inline="true" :model="searchData">
-        <el-form-item prop="menuName" :label="$t('system.menu.search.menuName')">
-          <el-input
-            v-model="searchData.menuName"
-            :placeholder="$t('system.menu.formPlaceholder.menuName')"
+  <TreeCrudView
+    :slotProps="crud.slotProps"
+    :formRules="formRules"
+    :add-title="$t('system.menu.dialogs.add')"
+    :edit-title="$t('system.menu.dialogs.edit')"
+    label-width="144px"
+    :default-expanded="false"
+  >
+    <!-- 搜索区字段 -->
+    <template #search-form="{ searchData }">
+      <el-form-item prop="menuName" :label="$t('system.menu.search.menuName')">
+        <el-input
+          v-model="searchData.menuName"
+          :placeholder="$t('system.menu.formPlaceholder.menuName')"
+        />
+      </el-form-item>
+      <el-form-item prop="status" :label="$t('system.menu.search.status')">
+        <el-select
+          v-model="searchData.status"
+          :placeholder="$t('system.menu.formPlaceholder.status')"
+          clearable
+          class="search-field-lg"
+        >
+          <el-option
+            v-for="item in getDictList('system_status')"
+            :key="item.id"
+            :label="item.value"
+            :value="item.label!"
           />
-        </el-form-item>
-        <el-form-item prop="status" :label="$t('system.menu.search.status')">
-          <el-select
-            v-model="searchData.status"
-            :placeholder="$t('system.menu.formPlaceholder.status')"
-            clearable
-            class="search-field-lg"
-          >
-            <el-option
-              v-for="item in getDictList('system_status')"
-              :key="item.id"
-              :label="item.value"
-              :value="item.label!"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleSearch">
-            <template #icon><Icon icon="lucide:search" /></template
-            >{{ $t('common.search') }}</el-button
-          >
-          <el-button @click="resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template
-            >{{ $t('common.reset') }}</el-button
-          >
-        </el-form-item>
-      </el-form>
-    </el-card>
-    <TreeTableView
-      ref="treeTableRef"
-      :data="tableData"
-      :loading="loading"
-      row-key="id"
-      @row-click="handleRowClick"
-    >
-      <template #toolbar>
-        <div>
-          <el-button type="primary" @click="handleAdd" v-permission="['system:menu:add']">
-            <template #icon><Icon icon="lucide:plus-circle" /></template
-            >{{ $t('system.menu.actions.add') }}</el-button
-          >
-          <el-button @click="toggleExpand">
-            <template #icon><Icon icon="lucide:arrow-up-down" /></template
-            >{{
-              isExpanded
-                ? $t('system.menu.actions.collapseAll')
-                : $t('system.menu.actions.expandAll')
-            }}</el-button
-          >
-        </div>
-      </template>
+        </el-select>
+      </el-form-item>
+    </template>
+
+    <!-- 工具栏：新增按钮；展开/收起由壳统一提供 -->
+    <template #actions>
+      <el-button type="primary" @click="crud.methods.handleAdd" v-permission="['system:menu:add']">
+        <template #icon><Icon icon="lucide:plus-circle" /></template>
+        {{ $t('system.menu.actions.add') }}
+      </el-button>
+    </template>
+
+    <!-- 表格列 -->
+    <template #table="{ handleAddChild, handleEdit, handleRemove }">
       <el-table-column
         prop="menuName"
         :label="$t('system.menu.columns.menuName')"
@@ -139,7 +123,7 @@
               text
               bg
               size="small"
-              @click="handleModify(scope.row)"
+              @click="handleEdit(scope.row)"
               v-permission="['system:menu:update']"
             >
               <Icon icon="lucide:pencil" />
@@ -159,196 +143,165 @@
           </el-tooltip>
         </template>
       </el-table-column>
-    </TreeTableView>
-    <el-dialog
-      v-model="dialogVisible"
-      :title="
-        formData.id === undefined ? $t('system.menu.dialogs.add') : $t('system.menu.dialogs.edit')
-      "
-      width="min(760px, calc(100vw - 32px))"
-      destroy-on-close
-      @close="handleClose"
-    >
-      <el-form
-        ref="formRef"
-        class="adaptive-form"
-        :model="formData"
-        :rules="formRules"
-        label-width="144px"
-      >
-        <el-row :gutter="20">
-          <el-col :span="24" v-show="formData.menuType != 'M'">
-            <el-form-item prop="parentId" :label="$t('system.menu.form.parentMenu')">
-              <el-tree-select
-                v-model="formData.parentId"
-                :data="tableData"
-                :props="{ label: 'menuName', children: 'children' }"
-                value-key="id"
-                :placeholder="$t('system.menu.formPlaceholder.parentId')"
-                check-strictly
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="24">
-            <el-form-item prop="menuType" :label="$t('system.menu.form.menuType')">
-              <el-radio-group v-model="formData.menuType">
-                <el-radio
-                  v-for="item in getDictList('system_menu_type')"
-                  :key="item.id"
-                  :value="item.label"
-                >
-                  {{ item.value }}
-                </el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12" v-show="formData.menuType != 'B'">
-            <el-form-item prop="icon" :label="$t('system.menu.form.icon')">
-              <icon-select v-model="formData.icon" />
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12">
-            <el-form-item prop="sort" :label="$t('system.menu.form.orderNum')">
-              <el-input-number
-                v-model="formData.sort"
-                :min="0"
-                controls-position="right"
-                style="width: 100%"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12">
-            <el-form-item prop="menuName" :label="$t('system.menu.form.menuName')">
-              <el-input
-                v-model="formData.menuName"
-                :placeholder="$t('system.menu.formPlaceholder.menuName')"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12" v-show="formData.menuType != 'B'">
-            <el-form-item prop="component">
-              <template #label>
-                <span>
-                  <el-tooltip :content="$t('system.menu.tooltip.component')" placement="top">
-                    <Icon icon="lucide:help-circle" />
-                  </el-tooltip>
-                  {{ $t('system.menu.columns.component') }}
-                </span>
-              </template>
-              <el-input
-                v-model="formData.component"
-                :placeholder="$t('system.menu.formPlaceholder.component')"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12" v-show="formData.menuType != 'B'">
-            <el-form-item prop="routeName" :label="$t('system.menu.form.routeName')">
-              <el-input
-                v-model="formData.routeName"
-                :placeholder="$t('system.menu.formPlaceholder.routeName')"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12" v-show="formData.menuType != 'B'">
-            <el-form-item prop="path">
-              <template #label>
-                <span>
-                  <el-tooltip :content="$t('system.menu.tooltip.path')" placement="top">
-                    <Icon icon="lucide:help-circle" />
-                  </el-tooltip>
-                  {{ $t('system.menu.form.path') }}
-                </span>
-              </template>
-              <el-input
-                v-model="formData.path"
-                :placeholder="$t('system.menu.formPlaceholder.path')"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12" v-show="formData.menuType != 'M'">
-            <el-form-item prop="permission" :label="$t('system.menu.form.perms')">
-              <el-input
-                v-model="formData.permission"
-                :placeholder="$t('system.menu.formPlaceholder.permission')"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12" v-show="formData.menuType == 'C'">
-            <el-form-item prop="query" :label="$t('system.menu.form.query')">
-              <el-input
-                v-model="formData.query"
-                :placeholder="$t('system.menu.formPlaceholder.query')"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12">
-            <el-form-item prop="visible" :label="$t('system.menu.form.isVisible')">
-              <el-radio-group v-model="formData.visible">
-                <el-radio
-                  v-for="item in getDictList('system_visible')"
-                  :key="item.id"
-                  :value="item.label"
-                >
-                  {{ item.value }}
-                </el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-          <el-col :xs="24" :sm="12">
-            <el-form-item prop="status" :label="$t('system.menu.form.status')">
-              <el-radio-group v-model="formData.status">
-                <el-radio
-                  v-for="item in getDictList('system_status')"
-                  :key="item.id"
-                  :value="item.label"
-                >
-                  {{ item.value }}
-                </el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-      <template #footer>
-        <el-button @click="dialogVisible = false">{{ $t('common.cancel') }}</el-button>
-        <el-button type="primary" :loading="loading" @click="handleCreateOrUpdate">{{
-          $t('common.confirm')
-        }}</el-button>
-      </template>
-    </el-dialog>
-  </div>
+    </template>
+
+    <!-- 新增/修改表单字段 -->
+    <template #form-fields="{ formData, treeData }">
+      <el-col v-show="formData.menuType != 'M'" :span="24">
+        <el-form-item prop="parentId" :label="$t('system.menu.form.parentMenu')">
+          <el-tree-select
+            v-model="formData.parentId"
+            :data="treeData"
+            :props="{ label: 'menuName', children: 'children' }"
+            value-key="id"
+            :placeholder="$t('system.menu.formPlaceholder.parentId')"
+            check-strictly
+          />
+        </el-form-item>
+      </el-col>
+      <el-col :span="24">
+        <el-form-item prop="menuType" :label="$t('system.menu.form.menuType')">
+          <el-radio-group v-model="formData.menuType">
+            <el-radio
+              v-for="item in getDictList('system_menu_type')"
+              :key="item.id"
+              :value="item.label"
+            >
+              {{ item.value }}
+            </el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </el-col>
+      <el-col v-show="formData.menuType != 'B'" :xs="24" :sm="12">
+        <el-form-item prop="icon" :label="$t('system.menu.form.icon')">
+          <IconSelect v-model="formData.icon" />
+        </el-form-item>
+      </el-col>
+      <el-col :xs="24" :sm="12">
+        <el-form-item prop="sort" :label="$t('system.menu.form.orderNum')">
+          <el-input-number
+            v-model="formData.sort"
+            :min="0"
+            controls-position="right"
+            style="width: 100%"
+          />
+        </el-form-item>
+      </el-col>
+      <el-col :xs="24" :sm="12">
+        <el-form-item prop="menuName" :label="$t('system.menu.form.menuName')">
+          <el-input
+            v-model="formData.menuName"
+            :placeholder="$t('system.menu.formPlaceholder.menuName')"
+          />
+        </el-form-item>
+      </el-col>
+      <el-col v-show="formData.menuType != 'B'" :xs="24" :sm="12">
+        <el-form-item prop="component">
+          <template #label>
+            <span>
+              <el-tooltip :content="$t('system.menu.tooltip.component')" placement="top">
+                <Icon icon="lucide:help-circle" />
+              </el-tooltip>
+              {{ $t('system.menu.columns.component') }}
+            </span>
+          </template>
+          <el-input
+            v-model="formData.component"
+            :placeholder="$t('system.menu.formPlaceholder.component')"
+          />
+        </el-form-item>
+      </el-col>
+      <el-col v-show="formData.menuType != 'B'" :xs="24" :sm="12">
+        <el-form-item prop="routeName" :label="$t('system.menu.form.routeName')">
+          <el-input
+            v-model="formData.routeName"
+            :placeholder="$t('system.menu.formPlaceholder.routeName')"
+          />
+        </el-form-item>
+      </el-col>
+      <el-col v-show="formData.menuType != 'B'" :xs="24" :sm="12">
+        <el-form-item prop="path">
+          <template #label>
+            <span>
+              <el-tooltip :content="$t('system.menu.tooltip.path')" placement="top">
+                <Icon icon="lucide:help-circle" />
+              </el-tooltip>
+              {{ $t('system.menu.form.path') }}
+            </span>
+          </template>
+          <el-input v-model="formData.path" :placeholder="$t('system.menu.formPlaceholder.path')" />
+        </el-form-item>
+      </el-col>
+      <el-col v-show="formData.menuType != 'M'" :xs="24" :sm="12">
+        <el-form-item prop="permission" :label="$t('system.menu.form.perms')">
+          <el-input
+            v-model="formData.permission"
+            :placeholder="$t('system.menu.formPlaceholder.permission')"
+          />
+        </el-form-item>
+      </el-col>
+      <el-col v-show="formData.menuType == 'C'" :xs="24" :sm="12">
+        <el-form-item prop="query" :label="$t('system.menu.form.query')">
+          <el-input
+            v-model="formData.query"
+            :placeholder="$t('system.menu.formPlaceholder.query')"
+          />
+        </el-form-item>
+      </el-col>
+      <el-col :xs="24" :sm="12">
+        <el-form-item prop="visible" :label="$t('system.menu.form.isVisible')">
+          <el-radio-group v-model="formData.visible">
+            <el-radio
+              v-for="item in getDictList('system_visible')"
+              :key="item.id"
+              :value="item.label"
+            >
+              {{ item.value }}
+            </el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </el-col>
+      <el-col :xs="24" :sm="12">
+        <el-form-item prop="status" :label="$t('system.menu.form.status')">
+          <el-radio-group v-model="formData.status">
+            <el-radio
+              v-for="item in getDictList('system_status')"
+              :key="item.id"
+              :value="item.label"
+            >
+              {{ item.value }}
+            </el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </el-col>
+    </template>
+  </TreeCrudView>
 </template>
 
 <script lang="ts" setup>
-import { useI18n } from 'vue-i18n'
-import { useDict } from '@/common/composables/useDict'
 import { Icon } from '@iconify/vue'
+import { useI18n } from 'vue-i18n'
 import type { FormRules } from 'element-plus'
-import { addMenu, modifyById, removeById, treeList } from './apis'
-import type { SystemMenuVO, SystemMenuQueryVO, SystemMenuTreeVO } from './apis/type'
-import { cloneDeep } from 'lodash-es'
+import TreeCrudView from '@/common/components/treeCrud/index.vue'
+import { useTreeCrud } from '@/common/composables/useTreeCrud'
+import { useDict } from '@/common/composables/useDict'
 import IconSelect from '@@/components/IconSelect/index.vue'
 import MenuIcon from '@@/components/MenuIcon/index.vue'
-import TreeTableView from '@/common/components/TreeTable/index.vue'
+import { addMenu, modifyById, removeById, treeList } from './apis'
+import type { SystemMenuVO, SystemMenuQueryVO, SystemMenuTreeVO } from './apis/type'
 
 const { t } = useI18n()
 const $t = t
 
-const { loading, getDictList, getDictItem } = useDict([
+defineOptions({
+  name: 'Menu',
+})
+
+const { getDictList, getDictItem } = useDict([
   'system_status',
   'system_menu_type',
   'system_visible',
 ])
-
-const searchFormRef = useTemplateRef('searchFormRef')
-
-const treeTableRef = useTemplateRef<InstanceType<typeof TreeTableView>>('treeTableRef')
-
-const formRef = useTemplateRef('formRef')
-
-const searchData: SystemMenuQueryVO = reactive({})
-
-const tableData = ref<SystemMenuTreeVO[]>([])
 
 const menuTypeTagMap: Record<string, 'info' | 'primary' | 'warning'> = {
   M: 'info',
@@ -360,15 +313,26 @@ function menuTypeTag(type?: string) {
   return menuTypeTagMap[type || ''] || 'info'
 }
 
-const formData = ref<SystemMenuVO>({
-  menuType: 'M',
-  visible: '0',
-  status: '0',
-  icon: '',
+const crud = useTreeCrud<SystemMenuQueryVO, SystemMenuTreeVO>({
+  treeApi: (query) => treeList(query),
+  addApi: (data) => addMenu(data),
+  updateApi: (data) => modifyById(data),
+  removeApi: (id) => removeById(id as number),
+  defaultForm: () => ({ menuType: 'M', visible: '0', status: '0', icon: '', sort: 0 }),
+  // 目录下只能加菜单，菜单下只能加按钮
+  childForm: (parent) => ({
+    menuType: parent?.menuType === 'M' ? 'C' : 'B',
+    visible: '0',
+    status: '0',
+    icon: '',
+    parentId: parent?.id,
+  }),
+  removeConfirmText: (row) => $t('system.menu.messages.deleteConfirm', { menuName: row?.menuName }),
 })
 
+// 按钮类型不需要「组件路径 / 路由名 / 路由路径」，校验规则随类型变化
 const formRules = computed<FormRules<SystemMenuVO>>(() => {
-  const isButton = formData.value.menuType === 'B'
+  const isButton = crud.state.formData.value?.menuType === 'B'
   return {
     sort: [{ required: true, trigger: 'blur', message: () => $t('system.menu.form.orderNum') }],
     menuName: [{ required: true, trigger: 'blur', message: () => $t('system.menu.form.menuName') }],
@@ -384,125 +348,6 @@ const formRules = computed<FormRules<SystemMenuVO>>(() => {
   }
 })
 
-const dialogVisible = ref<boolean>(false)
-
-function handleSearch() {
-  getTableData()
-}
-
-function resetSearch() {
-  searchFormRef.value?.resetFields()
-  getTableData()
-}
-
-function handleAdd() {
-  formData.value = { menuType: 'M', visible: '0', status: '0', icon: '' }
-  dialogVisible.value = true
-  nextTick(() => {
-    formRef.value?.clearValidate()
-  })
-}
-
-function handleRowClick(row: SystemMenuTreeVO, _column: any, event: Event) {
-  if ((event.target as HTMLElement).closest('.el-button')) return
-  if (row.children?.length) {
-    treeTableRef.value?.toggleRowExpansion(row)
-  }
-}
-
-function handleModify(row: SystemMenuVO) {
-  dialogVisible.value = true
-  formData.value = cloneDeep(row)
-}
-
-function handleRemove(row: SystemMenuVO) {
-  ElMessageBox.confirm(
-    $t('system.menu.messages.deleteConfirm', { menuName: row.menuName }),
-    $t('common.messages.confirmTitle'),
-    {
-      confirmButtonText: $t('common.confirm'),
-      cancelButtonText: $t('common.cancel'),
-      type: 'warning',
-    },
-  ).then(() => {
-    if (row.id) {
-      removeById(row.id).then((data) => {
-        ElMessage.success(data.msg || $t('common.messages.deleteSuccess'))
-        getTableData()
-      })
-    }
-  })
-}
-
-function handleClose() {
-  formData.value = { menuType: 'M', visible: '0', status: '0' }
-  formRef.value?.clearValidate()
-}
-
-function handleCreateOrUpdate() {
-  formRef.value?.validate((valid) => {
-    if (!valid) {
-      ElMessage.error($t('system.menu.messages.formError'))
-      return
-    }
-    loading.value = true
-    const api = formData.value.id === undefined ? addMenu : modifyById
-    api(formData.value)
-      .then((data) => {
-        ElMessage.success(data.msg || $t('common.messages.operationSuccess'))
-        dialogVisible.value = false
-        getTableData()
-      })
-      .finally(() => {
-        loading.value = false
-      })
-  })
-}
-
-function getTableData() {
-  loading.value = true
-  const requestParam = {
-    ...searchData,
-  }
-  treeList(requestParam)
-    .then(({ data }) => {
-      tableData.value = data
-    })
-    .catch(() => {
-      tableData.value = []
-    })
-    .finally(() => {
-      loading.value = false
-    })
-}
-
-getTableData()
-
-const isExpanded = ref(false)
-
-function toggleExpand() {
-  isExpanded.value = !isExpanded.value
-  const table = treeTableRef.value
-  if (!table) return
-  const toggleRows = (rows: SystemMenuTreeVO[]) => {
-    rows.forEach((row) => {
-      table.toggleRowExpansion(row, isExpanded.value)
-      if (row.children?.length) {
-        toggleRows(row.children)
-      }
-    })
-  }
-  toggleRows(tableData.value)
-}
-
-function handleAddChild(row: SystemMenuVO) {
-  dialogVisible.value = true
-  formData.value = {
-    menuType: row.menuType === 'M' ? 'C' : 'B',
-    visible: '0',
-    status: '0',
-    parentId: row.id,
-    icon: '',
-  }
-}
+// 树数据在挂载时加载
+crud.methods.getTreeData()
 </script>

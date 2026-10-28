@@ -21,6 +21,7 @@ const themeToggleTip = computed(() =>
 )
 
 function handleToggle(event: MouseEvent) {
+  // 传入事件坐标，toggleTheme 用它计算圆形扩散的圆心
   toggleTheme(event)
 }
 </script>

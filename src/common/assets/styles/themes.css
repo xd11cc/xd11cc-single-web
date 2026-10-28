@@ -12,7 +12,11 @@
 :root {
   /* --- Color Primitives --- */
   --p-black: #09090b;
-  --p-gray-950: #0c0c0e;
+  /* 暗色 surface。原值 #0c0c0e 与页面 #09090b 只差 3/255，
+     卡片在低亮度屏/投影上几乎与背景融成一片；
+     提到 #101013 后差 7/255，配合边框即可稳定分辨，
+     且 muted(#84848d) 在其上仍有 5.12 对比度，不影响文字可读性。 */
+  --p-gray-950: #101013;
   --p-gray-900: #141416;
   --p-gray-850: #1a1a1d;
   --p-gray-800: #222225;
@@ -59,21 +63,34 @@
   --p-blue-400: #60a5fa;
 
   /* --- Spacing Primitives --- */
+  /* 以 4px 为基准的倍数命名：space-1 = 1×4px。
+     0.5 档用于密集组件（标签、徽标、图标按钮）的微间距，
+     这些位置在 4px 栅格上会显得松散，但又不宜各处硬写像素值。 */
+  --p-space-0-5: 2px;
   --p-space-1: 4px;
+  --p-space-1-5: 6px;
   --p-space-2: 8px;
+  --p-space-2-5: 10px;
   --p-space-3: 12px;
+  --p-space-3-5: 14px;
   --p-space-4: 16px;
+  --p-space-4-5: 18px;
   --p-space-5: 20px;
   --p-space-6: 24px;
+  --p-space-7: 28px;
   --p-space-8: 32px;
   --p-space-10: 40px;
   --p-space-12: 48px;
 
   /* --- Radius Primitives --- */
+  /* xs / 2xl 是按实际使用补的档位：标签、徽标用 2px，
+     较大的面板/卡片用 16px，之前只能各处硬写。 */
+  --p-radius-xs: 2px;
   --p-radius-sm: 4px;
   --p-radius-md: 6px;
   --p-radius-lg: 8px;
   --p-radius-xl: 12px;
+  --p-radius-2xl: 16px;
   --p-radius-full: 9999px;
 
   /* --- Typography Primitives --- */
@@ -91,6 +108,9 @@
   --p-text-xl: 18px;
   --p-text-2xl: 22px;
   --p-text-3xl: 28px;
+  /* 展示级字号：页面上唯一用到的是错误页的大号状态码（64px），
+     之前只能硬编码，导致字阶在 28px 处断裂。 */
+  --p-text-display: 64px;
 
   --p-weight-normal: 400;
   --p-weight-medium: 500;
@@ -151,6 +171,15 @@
      这两个只服务于登录页的点阵与氛围辉光，可以独立调到「能看见」的量级。 */
   --theme-bg-dots: rgba(9, 9, 11, 0.1);
   --theme-ambient-glow: rgba(16, 185, 129, 0.18);
+
+  /* 亮色下卡片靠边框和阴影已足够，高光保持透明 */
+  --theme-card-highlight: transparent;
+
+  /* 骨架屏：底色比卡片略深一档，扫光用高透明度白色。
+     之前扫光是写死的 rgba(255,255,255,0.08)，叠在 #f0f0f2 上几乎不可见，
+     等于亮色主题根本没有动画；这里把底色压深、扫光提亮，两种主题都成立。 */
+  --theme-skeleton-base: var(--p-gray-200);
+  --theme-skeleton-highlight: rgba(255, 255, 255, 0.75);
 
   /* 「强调色填充」与「其上文字」的配对。
      accent / accent-strong 解决的是「强调色当图标」和「强调色当文字」，
@@ -252,8 +281,9 @@
   --theme-text-muted: var(--p-gray-450);
 
   /* --- Border --- */
-  --theme-border: rgba(255, 255, 255, 0.07);
-  --theme-border-light: rgba(255, 255, 255, 0.04);
+  /* 7% 白在暗底上过淡，卡片边缘容易糊；10% 仍属"发丝线"量级，但边界清晰 */
+  --theme-border: rgba(255, 255, 255, 0.1);
+  --theme-border-light: rgba(255, 255, 255, 0.05);
 
   /* --- Accent --- */
   --theme-accent: var(--p-emerald-500);
@@ -267,6 +297,14 @@
   /* 装饰性背景层专用，见亮色块中的说明 */
   --theme-bg-dots: rgba(255, 255, 255, 0.16);
   --theme-ambient-glow: rgba(16, 185, 129, 0.3);
+
+  /* 卡片顶边高光：暗色下纯靠边框区分面层偏平，
+     加一道极淡的顶部受光边可强化"卡片浮于页面之上"的层感 */
+  --theme-card-highlight: rgba(255, 255, 255, 0.06);
+
+  /* 骨架屏：暗底上用浅一档的面层 + 极淡扫光 */
+  --theme-skeleton-base: var(--p-gray-850);
+  --theme-skeleton-highlight: rgba(255, 255, 255, 0.07);
 
   /* 暗色下强调色本身已经够亮，改用近黑文字压在其上：
      emerald-500 + #09090b = 7.84，比深绿底更跳，也更符合暗色 UI 的惯例 */
@@ -313,8 +351,8 @@
   --el-text-color-placeholder: var(--p-gray-450);
   --el-text-color-disabled: var(--p-gray-700);
 
-  --el-border-color: rgba(255, 255, 255, 0.07);
-  --el-border-color-light: rgba(255, 255, 255, 0.05);
+  --el-border-color: rgba(255, 255, 255, 0.1);
+  --el-border-color-light: rgba(255, 255, 255, 0.06);
   --el-border-color-lighter: rgba(255, 255, 255, 0.03);
   --el-border-color-dark: rgba(255, 255, 255, 0.1);
 

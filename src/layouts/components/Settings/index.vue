@@ -83,7 +83,7 @@ const resetLayoutConfig = () => {
 @use '@@/assets/styles/mixins.scss';
 
 .setting-container {
-  padding: 20px;
+  padding: var(--p-space-5);
   .setting-item {
     font-size: var(--p-text-sm);
     color: var(--el-text-color-regular);
@@ -96,7 +96,7 @@ const resetLayoutConfig = () => {
     }
   }
   .el-button {
-    margin-top: 40px;
+    margin-top: var(--p-space-10);
     width: 100%;
   }
 }

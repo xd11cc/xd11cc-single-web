@@ -215,13 +215,13 @@ onMounted(() => {
   }
 
   :deep(.el-form-item) {
-    margin-bottom: 18px;
+    margin-bottom: var(--p-space-4-5);
   }
 
   .captcha-row {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--p-space-2-5);
     width: 100%;
   }
 
@@ -284,13 +284,13 @@ onMounted(() => {
     font-size: var(--p-text-xs);
     color: var(--theme-text-muted);
     background-color: var(--theme-bg-surface);
-    padding: 0 10px;
+    padding: 0 var(--p-space-2-5);
   }
 
   .social-login {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: var(--p-space-2-5);
 
     .social-item {
       width: 34px;

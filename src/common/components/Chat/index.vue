@@ -82,8 +82,8 @@ onUnmounted(() => {
     justify-content: center;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     transition:
-      transform 0.2s,
-      box-shadow 0.2s;
+      transform var(--p-duration-normal),
+      box-shadow var(--p-duration-normal);
 
     &:hover {
       transform: scale(1.08);
@@ -99,9 +99,9 @@ onUnmounted(() => {
     box-sizing: border-box;
     min-width: 16px;
     height: 16px;
-    padding: 0 4px;
+    padding: 0 var(--p-space-1);
     border: 1px solid var(--theme-bg-surface);
-    border-radius: 8px;
+    border-radius: var(--p-radius-lg);
     background: var(--p-red-600);
     color: #fff;
     font-family: var(--p-font-body);
@@ -115,8 +115,8 @@ onUnmounted(() => {
 .chat-fade-enter-active,
 .chat-fade-leave-active {
   transition:
-    opacity 0.2s,
-    transform 0.2s;
+    opacity var(--p-duration-normal),
+    transform var(--p-duration-normal);
 }
 
 .chat-fade-enter-from,

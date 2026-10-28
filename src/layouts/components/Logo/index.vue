@@ -34,7 +34,7 @@ const { isTop } = useLayoutMode()
   justify-content: center;
   overflow: hidden;
   border-bottom: 1px solid var(--theme-border-light);
-  transition: border-color 0.3s ease;
+  transition: border-color var(--p-duration-normal) ease;
 }
 
 .layout-mode-top {
@@ -44,7 +44,7 @@ const { isTop } = useLayoutMode()
 .logo-link {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--p-space-2);
   text-decoration: none;
 }
 

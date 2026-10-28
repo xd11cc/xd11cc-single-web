@@ -76,8 +76,8 @@ function handleDrop(index: number) {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: 8px;
-    margin-bottom: 8px;
+    padding-bottom: var(--p-space-2);
+    margin-bottom: var(--p-space-2);
     border-bottom: 1px solid var(--theme-border);
     font-size: var(--p-text-base);
     font-weight: var(--p-weight-semibold);
@@ -92,8 +92,8 @@ function handleDrop(index: number) {
   .column-setting-item {
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px 0;
+    gap: var(--p-space-1-5);
+    padding: var(--p-space-1) 0;
     cursor: grab;
     border-radius: var(--p-radius-sm);
     transition: background var(--p-duration-fast);

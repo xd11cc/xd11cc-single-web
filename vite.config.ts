@@ -1,11 +1,43 @@
+import { spawnSync } from 'node:child_process'
 import { resolve } from 'node:path'
 import vue from '@vitejs/plugin-vue'
 import AutoImport from 'unplugin-auto-import/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
 import { defineConfig, loadEnv } from 'vite'
+import type { Plugin } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import compression from 'vite-plugin-compression'
+/**
+ * 构建期 i18n 校验。
+ *
+ * 打包前跑一次 scripts/check-i18n.mjs，只要中英 key 不一致、占位符不匹配或出现空值，
+ * 就中断构建。这样「新增文案只改了中文」不会再被漏到产物里。
+ *
+ * 为什么用 Vite 插件而不是 npm 的 prebuild 钩子：
+ *   pnpm 默认不执行隐式 pre/post 脚本（enable-pre-post-scripts 未开启），
+ *   而且 prebuild 只覆盖 `pnpm build`，直接 `vite build` 会绕过。
+ *   插件挂在 buildStart，任何打包入口都跑得到。
+ *
+ * 只在 build 阶段生效，`pnpm dev` 不受影响（开发期可手动 pnpm check:i18n）。
+ */
+function i18nCheckPlugin(): Plugin {
+  return {
+    name: 'i18n-check',
+    apply: 'build',
+    buildStart() {
+      const script = resolve(__dirname, 'scripts/check-i18n.mjs')
+      const result = spawnSync(process.execPath, [script], { encoding: 'utf8' })
+      const output = `${result.stdout ?? ''}${result.stderr ?? ''}`.trim()
+
+      if (result.status !== 0) {
+        this.error(`i18n 校验未通过，构建已中断：\n${output}`)
+      }
+      if (output) this.info(output)
+    },
+  }
+}
+
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
   const { VITE_PUBLIC_PATH, VITE_WS_PATH } = loadEnv(mode, process.cwd(), '') as ImportMetaEnv
@@ -113,6 +145,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     plugins: [
+      i18nCheckPlugin(),
       vue(),
       AutoImport({
         imports: ['vue', 'vue-router', 'pinia'],

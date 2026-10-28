@@ -4,7 +4,7 @@
       <slot name="toolbar" />
     </div>
 
-    <div class="tree-table-frame" :aria-busy="loading">
+    <div v-table-loading="loading" class="tree-table-frame" :aria-busy="loading">
       <el-table
         ref="tableRef"
         :data="data"
@@ -16,14 +16,6 @@
       >
         <slot />
       </el-table>
-
-      <div
-        class="tree-table-loading"
-        :class="{ 'is-active': loading }"
-        role="status"
-        :aria-label="$t('common.loading')"
-        aria-live="polite"
-      />
     </div>
   </el-card>
 </template>
@@ -88,13 +80,13 @@ defineExpose({ tableRef, toggleRowExpansion, toggleAll })
   align-items: center;
   justify-content: space-between;
   min-height: 68px;
-  padding: 14px 20px;
+  padding: var(--p-space-3-5) var(--p-space-5);
   border-bottom: 1px solid var(--theme-border-light);
   background: color-mix(in srgb, var(--theme-bg-surface) 92%, var(--theme-accent-light));
 }
 
 .tree-table-toolbar :deep(.el-button + .el-button) {
-  margin-left: 8px;
+  margin-left: var(--p-space-2);
 }
 
 .tree-table-frame {
@@ -115,9 +107,9 @@ defineExpose({ tableRef, toggleRowExpansion, toggleAll })
   width: 22px;
   height: 22px;
   place-items: center;
-  margin-right: 4px;
+  margin-right: var(--p-space-1);
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: var(--p-radius-md);
   color: var(--theme-text-muted);
   transition:
     color 160ms ease,
@@ -143,57 +135,16 @@ defineExpose({ tableRef, toggleRowExpansion, toggleAll })
   background: var(--theme-bg-surface);
 }
 
-.tree-table-loading {
-  position: absolute;
-  inset: 0;
-  z-index: 4;
-  border-top: 2px solid transparent;
-  background: color-mix(in srgb, var(--theme-bg-surface) 90%, transparent);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 180ms ease;
-}
-
-.tree-table-loading::before {
-  position: absolute;
-  top: -2px;
-  left: -32%;
-  width: 32%;
-  height: 2px;
-  content: '';
-  background: linear-gradient(90deg, transparent, var(--theme-accent), transparent);
-}
-
-.tree-table-loading.is-active {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.tree-table-loading.is-active::before {
-  animation: tree-table-loading-sweep 1.1s var(--p-ease-in-out) infinite;
-}
-
-@keyframes tree-table-loading-sweep {
-  to {
-    transform: translateX(412%);
-  }
-}
-
 @include sm {
   .tree-table-toolbar {
     min-height: 60px;
-    padding: 12px 14px;
+    padding: var(--p-space-3) var(--p-space-3-5);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tree-table :deep(.el-table__expand-icon),
-  .tree-table-loading {
+  .tree-table :deep(.el-table__expand-icon) {
     transition: none;
-  }
-
-  .tree-table-loading.is-active::before {
-    animation: none;
   }
 }
 </style>

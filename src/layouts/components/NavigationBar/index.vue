@@ -120,7 +120,7 @@ function logout() {
   color: var(--theme-text-primary);
   display: flex;
   justify-content: space-between;
-  transition: color 0.3s ease;
+  transition: color var(--p-duration-normal) ease;
   .hamburger {
     display: flex;
     align-items: center;
@@ -149,7 +149,7 @@ function logout() {
     }
   }
   .right-menu {
-    margin-right: 10px;
+    margin-right: var(--p-space-2-5);
     height: 100%;
     display: flex;
     align-items: center;
@@ -159,7 +159,7 @@ function logout() {
       justify-content: center;
       width: 32px;
       height: 32px;
-      margin: 0 4px;
+      margin: 0 var(--p-space-1);
       border-radius: var(--p-radius-md);
       cursor: pointer;
       transition: background-color var(--p-duration-fast) var(--p-ease-out);
@@ -176,7 +176,7 @@ function logout() {
       }
 
       &:last-child {
-        margin-left: 10px;
+        margin-left: var(--p-space-2-5);
       }
     }
     .user {
@@ -185,9 +185,9 @@ function logout() {
       display: flex;
       align-items: center;
       border-radius: var(--p-radius-md);
-      padding: 4px 8px;
+      padding: var(--p-space-1) var(--p-space-2);
       .el-avatar {
-        margin-right: 10px;
+        margin-right: var(--p-space-2-5);
       }
       span {
         font-size: var(--p-text-sm);
@@ -201,6 +201,9 @@ function logout() {
       width: 100%;
       height: 100%;
       padding: 0;
+      // button 默认是箭头光标，不会继承父级 .right-menu-item 的 pointer，
+      // 少了这行悬浮时看起来「不可点」
+      cursor: pointer;
       color: var(--theme-text-secondary);
       border: 0;
       background: transparent;

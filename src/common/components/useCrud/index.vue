@@ -20,23 +20,31 @@
     <!-- 表格区 -->
     <el-card shadow="never">
       <div class="toolbar-wrapper">
-        <div>
+        <div class="toolbar-actions-left">
           <slot name="actions" v-bind="slotProps" />
         </div>
+        <div class="toolbar-actions-right">
+          <slot name="actions-right" v-bind="slotProps" />
+        </div>
       </div>
-      <div class="table-wrapper" :aria-busy="slotProps.tableLoading">
+      <div
+        v-table-loading="slotProps.tableLoading"
+        class="table-wrapper"
+        :aria-busy="slotProps.tableLoading"
+      >
         <div class="table-page-shell">
-          <el-table :data="slotProps.tableData" @selection-change="slotProps.handleSelectionChange">
+          <el-table
+            v-bind="tableProps"
+            :data="slotProps.tableData"
+            @selection-change="slotProps.handleSelectionChange"
+            @row-click="handleRowClick"
+          >
             <slot name="table" v-bind="slotProps" />
+            <template v-if="$slots.empty" #empty>
+              <slot name="empty" />
+            </template>
           </el-table>
         </div>
-        <div
-          class="table-loading-mask"
-          :class="{ 'is-active': slotProps.tableLoading }"
-          role="status"
-          :aria-label="$t('common.loading')"
-          aria-live="polite"
-        ></div>
       </div>
       <div class="page-wrapper">
         <el-pagination
@@ -54,9 +62,10 @@
 
     <!-- 新增/修改弹窗 -->
     <el-dialog
+      v-if="!readonly"
       v-model="slotProps.dialogVisible"
       :title="dialogTitle"
-      width="min(760px, calc(100vw - 32px))"
+      :width="dialogWidth || 'min(760px, calc(100vw - 32px))'"
       destroy-on-close
       @close="slotProps.handleClose"
     >
@@ -65,8 +74,8 @@
         class="adaptive-form"
         :model="slotProps.formData"
         :rules="formRules"
-        label-width="168px"
-        label-position="left"
+        :label-width="labelWidth"
+        :label-position="labelPosition"
       >
         <el-row :gutter="20">
           <slot name="form-fields" v-bind="slotProps" />
@@ -96,14 +105,35 @@ const $t = t
 
 const props = defineProps<{
   slotProps: UseCrudSlotProps
-  /** 新增/修改共用表单校验规则，由父组件传入 */
-  formRules: FormRules
+  /** 新增/修改共用表单校验规则；只读列表可不传 */
+  formRules?: FormRules
   /** 弹窗标题，不传则自动根据新增/修改生成 */
   addTitle?: string
   editTitle?: string
+  /** 只读列表：不渲染新增/修改弹窗，仅保留搜索、表格、分页 */
+  readonly?: boolean
+  /** 弹窗宽度，默认 min(760px, calc(100vw - 32px)) */
+  dialogWidth?: string
+  /** 透传给 el-table 的属性，如 { border: true, height: '520px' } */
+  tableProps?: Record<string, unknown>
+  /** 表单标签宽度，默认 168px；窄标签页面（如 notice）可传 144px */
+  labelWidth?: string
+  /** 表单标签位置，默认 left */
+  labelPosition?: 'left' | 'right' | 'top'
+}>()
+
+const labelWidth = computed(() => props.labelWidth ?? '168px')
+const labelPosition = computed(() => props.labelPosition ?? 'left')
+
+const emit = defineEmits<{
+  rowClick: [row: any, column: any, event: Event]
 }>()
 
 const formRef = ref<any>(null)
+
+function handleRowClick(row: any, column: any, event: Event) {
+  emit('rowClick', row, column, event)
+}
 const submitLoading = ref(false)
 
 const dialogTitle = computed(() => {
@@ -134,73 +164,3 @@ watch(
   },
 )
 </script>
-
-<style scoped>
-.table-page-shell {
-  min-height: 120px;
-}
-
-.table-wrapper {
-  position: relative;
-}
-
-.table-loading-mask {
-  position: absolute;
-  inset: 0;
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  border-radius: 8px;
-  background: color-mix(in srgb, var(--theme-bg-surface) 92%, transparent);
-  backdrop-filter: blur(0.5px);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 180ms ease;
-}
-
-.table-loading-mask::before {
-  position: absolute;
-  top: 0;
-  left: -35%;
-  width: 35%;
-  height: 2px;
-  content: '';
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--theme-accent),
-    color-mix(in srgb, var(--theme-accent) 35%, transparent),
-    transparent
-  );
-  opacity: 0;
-  transform: translateX(0);
-}
-
-.table-loading-mask.is-active {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.table-loading-mask.is-active::before {
-  opacity: 1;
-  animation: table-loading-sweep 1.15s var(--p-ease-in-out) infinite;
-}
-
-@keyframes table-loading-sweep {
-  to {
-    transform: translateX(385%);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .table-loading-mask {
-    transition: none;
-  }
-
-  .table-loading-mask.is-active::before {
-    animation: none;
-  }
-}
-</style>

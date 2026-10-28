@@ -210,25 +210,25 @@ const handleSelect = (name: string) => {
 
 <style scoped>
 .icon-selector-popup {
-  padding: 4px;
+  padding: var(--p-space-1);
 }
 
 .search-row {
   display: flex;
-  gap: 8px;
+  gap: var(--p-space-2);
 }
 
 .tab-row {
   display: flex;
-  gap: 16px;
-  margin-top: 8px;
-  padding-bottom: 6px;
+  gap: var(--p-space-4);
+  margin-top: var(--p-space-2);
+  padding-bottom: var(--p-space-1-5);
   border-bottom: 1px solid var(--theme-border);
   font-size: var(--p-text-xs);
 }
 
 .tab-row button {
-  padding: 0 0 4px;
+  padding: 0 0 var(--p-space-1);
   border: 0;
   background: none;
   font-family: inherit;
@@ -251,10 +251,10 @@ const handleSelect = (name: string) => {
 .icon-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+  gap: var(--p-space-2);
   max-height: 260px;
   overflow-y: auto;
-  margin-top: 8px;
+  margin-top: var(--p-space-2);
 }
 
 .icon-item {
@@ -262,7 +262,7 @@ const handleSelect = (name: string) => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 8px 4px;
+  padding: var(--p-space-2) var(--p-space-1);
   border-radius: var(--p-radius-md);
   cursor: pointer;
   transition: background var(--p-duration-fast);
@@ -279,7 +279,7 @@ const handleSelect = (name: string) => {
 
 .icon-item span {
   font-size: var(--p-text-xs);
-  margin-top: 4px;
+  margin-top: var(--p-space-1);
   word-break: break-word;
   text-align: center;
   width: 100%;
@@ -291,7 +291,7 @@ const handleSelect = (name: string) => {
 .empty-state {
   grid-column: 1 / -1;
   text-align: center;
-  padding: 20px 0;
+  padding: var(--p-space-5) 0;
   color: var(--theme-text-muted);
   font-size: var(--p-text-sm);
 }

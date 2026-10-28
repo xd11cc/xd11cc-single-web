@@ -11,7 +11,8 @@
     "build:dev": "vite build --mode dev",
     "build:test": "vite build --mode test",
     "preview": "vite preview",
-    "format": "prettier --write src/"
+    "format": "prettier --write src/",
+    "check:i18n": "node scripts/check-i18n.mjs"
   },
   "dependencies": {
     "@fontsource/dm-sans": "^5.2.8",

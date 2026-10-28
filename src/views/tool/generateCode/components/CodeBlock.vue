@@ -79,14 +79,14 @@ const handleCopy = async () => {
   color: var(--theme-accent-strong);
   background: var(--code-block-surface);
   border-radius: var(--p-radius-sm);
-  padding: 4px 8px;
+  padding: var(--p-space-1) var(--p-space-2);
   box-shadow: var(--theme-shadow-sm);
 }
 
 :deep(.hljs) {
   max-height: v-bind('maxHeight');
   overflow: auto;
-  padding: 16px;
+  padding: var(--p-space-4);
   font-size: var(--p-text-md);
   line-height: 1.6;
   font-family: var(--p-font-mono);

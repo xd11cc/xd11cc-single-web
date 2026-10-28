@@ -16,7 +16,7 @@
   margin-bottom: var(--p-space-5);
 
   .el-card__body {
-    padding-bottom: 2px;
+    padding-bottom: var(--p-space-0-5);
   }
 }
 
@@ -49,9 +49,16 @@ $search-field-widths: (
   'search-field-xl': 220px,
 );
 
+// 关键：必须提高优先级。
+// Element Plus 的 .el-select / .el-input 自身就有 width: var(--el-select-width/--el-input-width)，
+// 与单个类选择器同优先级（0,1,0）；而 EP 的样式在打包产物中排在本文件之后，
+// 同权重下后者生效 —— 结果是这些筛选项的宽度被 100% 覆盖，看起来「宽度没了」。
+// 加 html 前缀升到 (0,1,1)，并把 EP 的自定义宽度变量一起覆盖。
 @each $name, $width in $search-field-widths {
-  .#{$name} {
-    width: $width;
+  html .#{$name} {
+    --el-select-width: #{$width};
+    --el-input-width: #{$width};
+    width: #{$width};
   }
 }
 
@@ -64,11 +71,14 @@ $search-field-widths: (
   .search-wrapper .el-form--inline .el-form-item__content {
     min-width: 0;
 
-    .search-field,
-    .search-field-sm,
-    .search-field-md,
-    .search-field-lg,
-    .search-field-xl {
+    // 同样需要 html 前缀，否则压不过上面那条 (0,1,1) 的固定宽度
+    html & .search-field,
+    html & .search-field-sm,
+    html & .search-field-md,
+    html & .search-field-lg,
+    html & .search-field-xl {
+      --el-select-width: 100%;
+      --el-input-width: 100%;
       width: 100%;
     }
   }

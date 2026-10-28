@@ -1,6 +1,6 @@
 <template>
-  <div class="skeleton-wrapper" :class="{ 'is-animated': animated }">
-    <slot v-if="!loading" />
+  <div class="skeleton-wrapper" :class="{ 'is-animated': animated }" :aria-busy="showSkeleton">
+    <slot v-if="!showSkeleton" />
     <template v-else>
       <slot name="skeleton">
         <div v-if="variant === 'card'" class="skeleton-card">
@@ -32,7 +32,7 @@
         <div v-else class="skeleton-page">
           <div class="skeleton-box skeleton-heading"></div>
           <div class="skeleton-stats">
-            <div v-for="n in 4" :key="n" class="skeleton-box skeleton-stat"></div>
+            <div v-for="n in stats" :key="n" class="skeleton-box skeleton-stat"></div>
           </div>
           <div class="skeleton-content-grid">
             <div class="skeleton-box skeleton-block"></div>
@@ -45,13 +45,25 @@
 </template>
 
 <script lang="ts" setup>
-withDefaults(
+const props = withDefaults(
   defineProps<{
+    /** 是否处于加载中 */
     loading?: boolean
+    /** 是否播放扫光动画 */
     animated?: boolean
     variant?: 'page' | 'card' | 'table' | 'list'
+    /** table / list 的行数 */
     rows?: number
+    /** table 的列数 */
     columns?: number
+    /** page 形态下统计卡的数量 */
+    stats?: number
+    /**
+     * 延迟多久（ms）再显示骨架。
+     * 接口很快返回时，直接闪一下骨架比不闪更难受，所以默认等 180ms，
+     * 期间数据就回来了则完全不出骨架。设为 0 表示立即显示。
+     */
+    delay?: number
   }>(),
   {
     loading: true,
@@ -59,8 +71,35 @@ withDefaults(
     variant: 'page',
     rows: 5,
     columns: 4,
+    stats: 4,
+    delay: 180,
   },
 )
+
+// 实际是否渲染骨架（受 delay 控制）
+const showSkeleton = ref(false)
+let delayTimer: ReturnType<typeof setTimeout> | undefined
+
+watch(
+  () => props.loading,
+  (loading) => {
+    clearTimeout(delayTimer)
+    if (!loading) {
+      showSkeleton.value = false
+      return
+    }
+    if (props.delay <= 0) {
+      showSkeleton.value = true
+      return
+    }
+    delayTimer = setTimeout(() => {
+      showSkeleton.value = true
+    }, props.delay)
+  },
+  { immediate: true },
+)
+
+onUnmounted(() => clearTimeout(delayTimer))
 </script>
 
 <style lang="scss" scoped>
@@ -69,7 +108,8 @@ withDefaults(
 }
 
 .skeleton-box {
-  background: var(--theme-bg-elevated);
+  // 走主题令牌：亮色用略深的灰、暗色用略浅的面层，两种主题都能看出"占位"感
+  background: var(--theme-skeleton-base);
   border-radius: var(--p-radius-md);
   position: relative;
   overflow: hidden;
@@ -82,7 +122,7 @@ withDefaults(
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.08) 50%,
+    var(--theme-skeleton-highlight) 50%,
     transparent 100%
   );
   animation: skeleton-shimmer 1.5s infinite;
@@ -94,6 +134,14 @@ withDefaults(
   }
   100% {
     transform: translateX(100%);
+  }
+}
+
+// 减少动效偏好下不播扫光，保留静态灰块即可
+@media (prefers-reduced-motion: reduce) {
+  .is-animated .skeleton-box::after {
+    animation: none;
+    opacity: 0;
   }
 }
 
@@ -111,7 +159,10 @@ withDefaults(
 
   .skeleton-stats {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    // 列数由渲染出的卡片数量决定，避免 repeat(var(--n), 1fr) 这类
+    // 「变量参与 repeat 计数」的写法在部分引擎上不生效
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
     gap: var(--p-space-4);
     margin-bottom: var(--p-space-6);
   }
@@ -186,7 +237,7 @@ withDefaults(
   .skeleton-table-row {
     display: flex;
     gap: var(--p-space-3);
-    padding: 12px 16px;
+    padding: var(--p-space-3) var(--p-space-4);
     border-top: 1px solid var(--theme-border);
   }
 

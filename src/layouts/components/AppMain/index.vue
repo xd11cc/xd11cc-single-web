@@ -57,14 +57,14 @@ const route = useRoute()
 
 .page-slide-enter-active {
   transition:
-    opacity 0.25s ease,
-    transform 0.25s ease;
+    opacity var(--p-duration-normal) ease,
+    transform var(--p-duration-normal) ease;
 }
 
 .page-slide-leave-active {
   transition:
-    opacity 0.15s ease,
-    transform 0.15s ease;
+    opacity var(--p-duration-fast) ease,
+    transform var(--p-duration-fast) ease;
 }
 
 .page-slide-enter-from {

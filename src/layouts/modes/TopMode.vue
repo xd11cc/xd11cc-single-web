@@ -29,7 +29,7 @@ const { showTagsView, showLogo } = storeToRefs(settingsStore)
 
 <style lang="scss" scoped>
 @use '@@/assets/styles/layout-common.scss';
-$transition-time: 0.35s;
+$transition-time: var(--p-duration-slow);
 
 .fixed-header {
   position: fixed;

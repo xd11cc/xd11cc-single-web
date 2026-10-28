@@ -28,13 +28,19 @@
         </el-form-item>
       </el-form>
     </el-card>
-    <el-card v-loading="loading" shadow="never">
+    <el-card v-table-loading="loading" shadow="never">
       <div class="toolbar-wrapper">
         <div>
-          <el-button type="primary" @click="openDialog()"
+          <el-button
+            type="primary"
+            @click="openDialog()"
+            v-permission="['workflow:expression-config:add']"
             ><Icon icon="lucide:plus-circle" /> {{ $t('common.add') }}</el-button
           >
-          <el-button type="danger" @click="batchRemove"
+          <el-button
+            type="danger"
+            @click="batchRemove"
+            v-permission="['workflow:expression-config:delete']"
             ><Icon icon="lucide:trash-2" /> {{ $t('common.batchDelete') }}</el-button
           >
         </div>
@@ -90,12 +96,19 @@
         >
         <el-table-column fixed="right" :label="$t('common.action')" width="120" align="center"
           ><template #default="{ row }"
-            ><el-button link type="primary" @click="openDialog(row)">{{
-              $t('bpm.expressionConfig.actions.edit')
-            }}</el-button
-            ><el-button link type="danger" @click="removeOne(row)">{{
-              $t('bpm.expressionConfig.actions.delete')
-            }}</el-button></template
+            ><el-button
+              link
+              type="primary"
+              @click="openDialog(row)"
+              v-permission="['workflow:expression-config:update']"
+              >{{ $t('bpm.expressionConfig.actions.edit') }}</el-button
+            ><el-button
+              link
+              type="danger"
+              @click="removeOne(row)"
+              v-permission="['workflow:expression-config:delete']"
+              >{{ $t('bpm.expressionConfig.actions.delete') }}</el-button
+            ></template
           ></el-table-column
         >
       </el-table>
@@ -359,13 +372,13 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
 
 <style scoped lang="scss">
 .search-actions {
-  margin-bottom: 18px;
+  margin-bottom: var(--p-space-4-5);
 }
 .search-select {
   width: 180px;
 }
 .template-hint {
-  margin-top: 6px;
+  margin-top: var(--p-space-1-5);
   color: var(--el-text-color-secondary);
   font-size: var(--p-text-sm);
   line-height: 1.5;
@@ -380,8 +393,8 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
 .parameter-row {
   display: grid;
   grid-template-columns: 1fr 1fr 150px 70px 48px;
-  gap: 8px;
+  gap: var(--p-space-2);
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: var(--p-space-2-5);
 }
 </style>

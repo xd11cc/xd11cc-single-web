@@ -196,7 +196,7 @@
           </div>
         </div>
       </template>
-      <div v-loading="versionLoading" class="version-list">
+      <div v-table-loading="versionLoading" class="version-list">
         <div v-if="!versionLoading && !versionRows.length" class="version-empty">
           <Icon icon="lucide:layers-3" />
           <span>{{ $t('bpm.definition.versionDialog.empty') }}</span>
@@ -432,7 +432,7 @@ function getStatusType(row: WorkflowDefinitionVO) {
 .action-icons {
   display: inline-flex;
   flex-wrap: nowrap;
-  gap: 6px;
+  gap: var(--p-space-1-5);
   align-items: center;
   justify-content: center;
 
@@ -442,21 +442,21 @@ function getStatusType(row: WorkflowDefinitionVO) {
 }
 
 :deep(.search-wrapper) {
-  margin-bottom: 20px;
+  margin-bottom: var(--p-space-5);
 }
 
 :deep(.search-wrapper .el-card__body) {
-  padding-bottom: 2px;
+  padding-bottom: var(--p-space-0-5);
 }
 
 :deep(.toolbar-wrapper) {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
+  margin-bottom: var(--p-space-5);
 }
 
 :deep(.table-wrapper) {
-  margin-bottom: 20px;
+  margin-bottom: var(--p-space-5);
 }
 
 :deep(.page-wrapper) {
@@ -466,17 +466,17 @@ function getStatusType(row: WorkflowDefinitionVO) {
 
 :deep(.version-dialog .el-dialog__header) {
   margin-right: 0;
-  padding: 24px 28px 18px;
+  padding: var(--p-space-6) var(--p-space-7) var(--p-space-4-5);
   border-bottom: 1px solid var(--theme-border);
 }
 :deep(.version-dialog .el-dialog__body) {
-  padding: 8px 28px 28px;
+  padding: var(--p-space-2) var(--p-space-7) var(--p-space-7);
 }
 .version-dialog-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 20px;
+  gap: var(--p-space-5);
 }
 .eyebrow {
   color: var(--theme-accent-strong);
@@ -503,7 +503,7 @@ function getStatusType(row: WorkflowDefinitionVO) {
   color: var(--theme-text-secondary);
   text-align: center;
   border: 1px solid var(--theme-border);
-  border-radius: 12px;
+  border-radius: var(--p-radius-xl);
   background: var(--theme-accent-light);
 }
 .version-count strong {
@@ -517,11 +517,11 @@ function getStatusType(row: WorkflowDefinitionVO) {
 }
 .version-list {
   min-height: 120px;
-  padding-top: 12px;
+  padding-top: var(--p-space-3);
 }
 .version-item {
   display: flex;
-  gap: 14px;
+  gap: var(--p-space-3-5);
 }
 .version-rail {
   position: relative;
@@ -534,7 +534,7 @@ function getStatusType(row: WorkflowDefinitionVO) {
   z-index: 1;
   width: 11px;
   height: 11px;
-  margin-top: 18px;
+  margin-top: var(--p-space-4-5);
   border: 3px solid var(--theme-bg-surface);
   border-radius: 50%;
   box-shadow: 0 0 0 2px var(--theme-border);
@@ -564,16 +564,16 @@ function getStatusType(row: WorkflowDefinitionVO) {
   flex: 1;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 12px;
+  gap: var(--p-space-4);
+  margin-bottom: var(--p-space-3);
   padding: 15px 16px;
   border: 1px solid var(--theme-border);
-  border-radius: 13px;
+  border-radius: var(--p-radius-xl);
   background: var(--theme-bg-surface);
   box-shadow: 0 4px 16px rgb(37 71 60 / 4%);
   transition:
-    border-color 0.18s ease,
-    box-shadow 0.18s ease;
+    border-color var(--p-duration-normal) ease,
+    box-shadow var(--p-duration-normal) ease;
 }
 .version-card:hover {
   border-color: var(--theme-accent);
@@ -597,20 +597,20 @@ function getStatusType(row: WorkflowDefinitionVO) {
   font-weight: 700;
 }
 .version-meta {
-  margin-top: 8px;
+  margin-top: var(--p-space-2);
   color: var(--theme-text-muted);
   font-size: var(--p-text-xs);
 }
 .version-meta span {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: var(--p-space-1);
 }
 .version-empty {
   display: grid;
   justify-items: center;
-  gap: 10px;
-  padding: 40px 0;
+  gap: var(--p-space-2-5);
+  padding: var(--p-space-10) 0;
   color: var(--theme-text-muted);
 }
 .version-empty :deep(svg) {
@@ -626,7 +626,7 @@ function getStatusType(row: WorkflowDefinitionVO) {
   min-width: 54px;
   height: 28px;
   padding: 0 9px;
-  border-radius: 9px;
+  border-radius: var(--p-radius-lg);
   font-size: var(--p-text-sm);
   line-height: 1;
 }

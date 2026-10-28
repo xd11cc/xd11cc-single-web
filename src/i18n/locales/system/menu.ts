@@ -2,10 +2,8 @@ export const zh = {
   actions: {
     add: '新增菜单',
     addChild: '新增',
-    collapseAll: '收起全部',
     delete: '删除菜单',
     edit: '修改菜单',
-    expandAll: '展开全部',
   },
   columns: {
     component: '组件路径',
@@ -63,10 +61,8 @@ export const en = {
   actions: {
     add: 'Add Menu',
     addChild: 'Add',
-    collapseAll: 'Collapse All',
     delete: 'Delete Menu',
     edit: 'Edit Menu',
-    expandAll: 'Expand All',
   },
   columns: {
     component: 'Component Path',

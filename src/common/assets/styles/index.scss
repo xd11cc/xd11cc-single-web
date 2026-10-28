@@ -126,6 +126,82 @@ html .el-button--primary.is-link {
   --el-button-hover-text-color: var(--theme-accent-hover);
 }
 
+// ===== 统一加载态（v-table-loading 指令）=====
+// 全站唯一的「正在加载」视觉：浅色遮罩 + 一条沿顶边扫过的强调色细线。
+// 取代了 Element Plus 的 v-loading（深色遮罩 + 转圈），
+// 也比此前共享壳 / TreeTable 各自复制的两份实现更轻、更克制。
+// 遮罩节点由指令创建，这里只负责长相。
+.v-table-loading {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+  background: color-mix(in srgb, var(--theme-bg-surface) 90%, transparent);
+  backdrop-filter: blur(0.5px);
+  transition: opacity var(--p-duration-normal) var(--p-ease-out);
+
+  &::before {
+    position: absolute;
+    top: 0;
+    left: -35%;
+    width: 35%;
+    height: 2px;
+    content: '';
+    opacity: 0;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--theme-accent),
+      color-mix(in srgb, var(--theme-accent) 35%, transparent),
+      transparent
+    );
+    transform: translateX(0);
+  }
+
+  &.is-active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  &.is-active::before {
+    opacity: 1;
+    animation: table-loading-sweep 1.15s var(--p-ease-in-out) infinite;
+  }
+}
+
+@keyframes table-loading-sweep {
+  to {
+    transform: translateX(385%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .v-table-loading {
+    transition: none;
+  }
+
+  // 扫描线本身承载「正在加载」的信息，不能直接关掉，
+  // 改为静止的一段高亮，避免看起来像卡住了。
+  .v-table-loading.is-active::before {
+    left: 0;
+    width: 100%;
+    opacity: 0.4;
+    animation: none;
+  }
+}
+
+// ===== 卡片 =====
+// 全站 24 处 <el-card shadow="never">，之前完全依赖 EP 默认样式：
+// 暗色下 surface 与页面仅差 3/255，卡片边界几乎不可辨。
+// 这里统一边框与背景来源，并在暗色下补一道顶部高光强化层次。
+.el-card {
+  border-color: var(--theme-border);
+  background-color: var(--theme-bg-surface);
+  box-shadow: inset 0 1px 0 var(--theme-card-highlight);
+}
+
 // 表格基础视觉统一
 .el-table {
   --el-table-border-color: var(--theme-border-light);
@@ -146,7 +222,7 @@ html .el-button--primary.is-link {
 }
 
 .el-table .el-table__body tr {
-  transition: background-color 160ms ease;
+  transition: background-color var(--p-duration-normal) ease;
 }
 
 .el-table .el-table__body td {
@@ -161,6 +237,21 @@ html .el-button--primary.is-link {
   white-space: nowrap;
 }
 
+// 表头例外：允许换行，不截断。
+// 原因：Element Plus 的 show-overflow-tooltip 只作用于数据单元格（renderCell），
+// 表头渲染（renderHeader）没有任何 tooltip 机制；而中文列名短、英文列名长
+// （如 "Authorization Application Configuration"），单行截断后在切换英文时
+// 表头只剩省略号、又没有任何办法看到全称。表头是静态标签，换行即可完整可读，
+// 也不依赖 hover（触摸端没有 hover）。
+// 提升选择器权重以压过上面那条 .cell 规则。
+.el-table .el-table__header-wrapper .el-table__cell .cell {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.35;
+}
+
 // 固定在右侧的列用于放置操作按钮，不能按普通文本单元格裁剪。
 // 否则按钮总宽度稍大于列宽时，浏览器绘制的省略号会盖住被裁掉的按钮，
 // 省略号本身又不是可交互元素，最终表现为“看得见但点不动”。
@@ -168,7 +259,7 @@ html .el-button--primary.is-link {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: var(--p-space-1);
   overflow: visible;
   text-overflow: clip;
   white-space: normal;
@@ -222,7 +313,7 @@ html .el-button--primary.is-link {
     > span {
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: var(--p-space-1);
       white-space: nowrap;
     }
   }
@@ -242,7 +333,7 @@ html .el-button--primary.is-link {
   .el-radio-group {
     min-width: 0;
     flex-wrap: wrap;
-    row-gap: 8px;
+    row-gap: var(--p-space-2);
   }
 
   .el-form-item__error {
@@ -267,7 +358,7 @@ html .el-button--primary.is-link {
     .el-form-item__label {
       width: auto !important;
       height: auto;
-      margin-bottom: 6px;
+      margin-bottom: var(--p-space-1-5);
       line-height: 20px;
       justify-content: flex-start;
     }
@@ -286,7 +377,7 @@ html .el-button--primary.is-link {
   .notify-message {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: var(--p-space-1);
   }
 
   .notify-message__title {
@@ -314,7 +405,7 @@ html .el-button--primary.is-link {
 }
 
 .notify-message-notice .notify-message__action {
-  margin-top: 2px;
+  margin-top: var(--p-space-0-5);
   font-size: var(--p-text-sm);
   font-weight: 500;
   color: var(--theme-accent-strong);
@@ -335,18 +426,20 @@ html .el-button--primary.is-link {
        例如仪表盘 --delay 最大 6 档 × 80ms = 480ms 的空白。一并清零。 */
     animation-delay: 0s !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    transition-duration: var(--p-duration-fast) !important;
     scroll-behavior: auto !important;
   }
 }
 
-// ===== 窄屏表格 =====
+// ===== 窄屏 / 移动端 =====
 // 24 个含表格的页面里只有 5 个用共享 CRUD 壳，所以策略放在全局而不是组件里。
-// 注意 Element Plus 的 .el-table__cell 默认内边距本来就是 8px 0，压它没有意义；
-// 真正吃掉横向空间的是内层 .cell 的 0 12px 与 14px 的表格字号。
+//
+// 移动端的核心矛盾：触摸设备没有 hover，Element Plus 的 show-overflow-tooltip
+// 在手机上完全失效 —— 单行省略后的内容再也看不到。因此窄屏不能沿用
+// 「单行截断 + 悬浮看全文」，必须换成「多行截断」，让信息本身可见。
+//
 // 加 html 前缀是为了稳定压过 EP 的 .el-table / .el-table .cell，
 // 不依赖两者在最终 CSS 里的先后顺序。
-// 列优先级隐藏与卡片化需要每列带 priority 元数据，属逐页改造，不在此处做。
 @include sm {
   html .el-table {
     font-size: var(--p-text-sm);
@@ -355,6 +448,82 @@ html .el-button--primary.is-link {
       padding: 0 var(--p-space-2);
       line-height: 20px;
     }
+  }
+
+  // 普通单元格改为两行截断（触摸端唯一可读的兜底）
+  // 操作列排除在外：它需要保持 flex 单行，见下方既有规则。
+  html .el-table .el-table__body td:not(.el-table-fixed-column--right) > .cell {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    white-space: normal;
+    overflow: hidden;
+    word-break: break-word;
+  }
+
+  // 行高交给内容决定，避免两行文本被固定 52px 裁掉
+  html .el-table .el-table__body td {
+    height: auto;
+    padding-top: var(--p-space-2);
+    padding-bottom: var(--p-space-2);
+  }
+
+  // 窄屏表头同样不禁用换行：英文长列名在手机上更放不下，
+  // 宁可表头占两行，也不要只剩省略号
+  html .el-table .el-table__header-wrapper th {
+    min-height: 40px;
+    height: auto;
+  }
+
+  // 工具栏按钮较多时换行，而不是挤出容器
+  .toolbar-wrapper {
+    flex-wrap: wrap;
+    gap: var(--p-space-2);
+  }
+
+  // 分页在窄屏居中，右对齐会让最后几个页码挤到屏幕边缘
+  .page-wrapper {
+    justify-content: center;
+  }
+
+  // 搜索区：每个条件独占一行，标签在上、控件在下，
+  // 避免「标签 + 控件」在一行里被反复挤压
+  .search-wrapper .el-form--inline {
+    .el-form-item {
+      display: block;
+      margin-right: 0;
+      margin-bottom: var(--p-space-3);
+    }
+
+    .el-form-item__label {
+      display: block;
+      float: none;
+      width: auto !important;
+      height: auto;
+      margin-bottom: var(--p-space-1);
+      line-height: 20px;
+      justify-content: flex-start;
+    }
+
+    .el-form-item__content {
+      margin-left: 0 !important;
+    }
+  }
+}
+
+// 小屏手机：弹窗内边距收紧，把宽度让给内容
+@include phone {
+  .el-dialog__header {
+    padding: var(--p-space-4) var(--p-space-4) var(--p-space-3);
+  }
+
+  .el-dialog__body {
+    padding: var(--p-space-4);
+  }
+
+  .el-dialog__footer {
+    padding: var(--p-space-3) var(--p-space-4) var(--p-space-4);
   }
 }
 

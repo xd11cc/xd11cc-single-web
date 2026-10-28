@@ -98,7 +98,7 @@ onMounted(() => {
 }
 
 .message-header {
-  padding: 10px 16px;
+  padding: var(--p-space-2-5) var(--p-space-4);
   border-bottom: 1px solid var(--el-border-color-lighter);
   font-size: var(--p-text-md);
   font-weight: 500;
@@ -110,15 +110,15 @@ onMounted(() => {
 }
 
 .message-list-inner {
-  padding: 12px 16px;
+  padding: var(--p-space-3) var(--p-space-4);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--p-space-3);
 }
 
 .no-messages {
   text-align: center;
-  padding: 40px 0;
+  padding: var(--p-space-10) 0;
   font-size: var(--p-text-sm);
   color: var(--el-text-color-placeholder);
 }
@@ -126,7 +126,7 @@ onMounted(() => {
 .message-item {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: var(--p-space-2);
 
   &.self {
     flex-direction: row-reverse;
@@ -157,12 +157,12 @@ onMounted(() => {
   max-width: 70%;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--p-space-0-5);
 }
 
 .msg-bubble {
-  padding: 8px 12px;
-  border-radius: 8px;
+  padding: var(--p-space-2) var(--p-space-3);
+  border-radius: var(--p-radius-lg);
   background: var(--el-fill-color-light);
   color: var(--el-text-color-primary);
   font-size: var(--p-text-base);
@@ -177,8 +177,8 @@ onMounted(() => {
 
 .message-input {
   display: flex;
-  gap: 8px;
-  padding: 12px;
+  gap: var(--p-space-2);
+  padding: var(--p-space-3);
   border-top: 1px solid var(--el-border-color-lighter);
 }
 </style>

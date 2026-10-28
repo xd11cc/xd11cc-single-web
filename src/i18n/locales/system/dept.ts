@@ -2,10 +2,8 @@ export const zh = {
   actions: {
     add: '新增部门',
     addChild: '新增',
-    collapseAll: '收起全部',
     delete: '删除部门',
     edit: '修改部门',
-    expandAll: '展开全部',
   },
   columns: {
     createTime: '创建时间',
@@ -49,10 +47,8 @@ export const en = {
   actions: {
     add: 'Add Department',
     addChild: 'Add',
-    collapseAll: 'Collapse All',
     delete: 'Delete Department',
     edit: 'Edit Department',
-    expandAll: 'Expand All',
   },
   columns: {
     createTime: 'Created',

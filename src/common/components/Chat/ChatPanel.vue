@@ -80,7 +80,7 @@ onMounted(() => {
   height: 480px;
   background: var(--el-bg-color);
   border: 1px solid var(--el-border-color);
-  border-radius: 12px;
+  border-radius: var(--p-radius-xl);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
   display: flex;
   flex-direction: column;
@@ -91,7 +91,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: var(--p-space-3) var(--p-space-4);
   border-bottom: 1px solid var(--el-border-color-lighter);
   background: var(--el-fill-color-blank);
 
@@ -103,13 +103,13 @@ onMounted(() => {
 
   .actions {
     display: flex;
-    gap: 8px;
+    gap: var(--p-space-2);
   }
 
   .action-btn {
     cursor: pointer;
     color: var(--el-text-color-secondary);
-    transition: color 0.2s;
+    transition: color var(--p-duration-normal);
     &:hover {
       color: var(--el-text-color-primary);
     }
@@ -128,7 +128,7 @@ onMounted(() => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: var(--p-space-3);
   color: var(--el-text-color-placeholder);
 }
 </style>

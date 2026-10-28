@@ -1,6 +1,6 @@
 @use '@@/assets/styles/mixins.scss';
 
-$transition-time: 0.35s;
+$transition-time: var(--p-duration-slow);
 
 /**
 * LeftMode.vue、TopMode.vue、LeftTopMode.vue公共样式
@@ -16,6 +16,6 @@ $transition-time: 0.35s;
   box-shadow: var(--v3-header-box-shadow);
   border-bottom: var(--v3-header-border-bottom);
   transition:
-    background-color 0.3s ease,
-    border-color 0.3s ease;
+    background-color var(--p-duration-normal) ease,
+    border-color var(--p-duration-normal) ease;
 }

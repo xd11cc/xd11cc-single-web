@@ -3,6 +3,6 @@ input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus {
   -webkit-text-fill-color: var(--el-input-text-color, var(--el-text-color-regular)) !important;
-  transition: background-color 5000s ease-in-out 0s !important;
+  transition: background-color var(--p-duration-slow) ease-in-out var(--p-duration-fast) !important;
   background-color: transparent !important;
 }

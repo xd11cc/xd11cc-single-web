@@ -50,6 +50,7 @@ export const zh = {
     statusPlaceholder: '状态',
   },
   upload: {
+    limit: '只能上传一个图标文件',
     tip: '仅支持上传 png、jpg、jpeg、ico 格式，且只能上传一个文件',
   },
 }
@@ -106,6 +107,7 @@ export const en = {
     statusPlaceholder: 'Status',
   },
   upload: {
+    limit: 'Only one icon file can be uploaded',
     tip: 'Only png, jpg, jpeg, ico formats supported. Single file only.',
   },
 }

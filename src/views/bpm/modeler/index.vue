@@ -76,12 +76,7 @@
         >
           <Icon v-if="!saveLoading" icon="lucide:save" />{{ t('common.save') }}
         </el-button>
-        <el-button
-          type="primary"
-          class="publish-button"
-          :loading="publishLoading"
-          @click="publishProcess"
-        >
+        <el-button type="primary" :loading="publishLoading" @click="publishProcess">
           <Icon v-if="!publishLoading" icon="lucide:rocket" />{{ t('bpm.modeler.actions.publish') }}
         </el-button>
       </div>
@@ -393,9 +388,9 @@ watch(
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
+  gap: var(--p-space-4-5);
   min-height: 60px;
-  padding: 8px 18px;
+  padding: var(--p-space-2) var(--p-space-4-5);
   border-bottom: 1px solid var(--theme-border);
   background: var(--theme-bg-surface);
 }
@@ -409,17 +404,14 @@ watch(
 }
 .header-actions {
   min-width: 0;
-  gap: 8px;
+  gap: var(--p-space-2);
 }
 .header-actions :deep(.el-button) {
-  gap: 6px;
+  gap: var(--p-space-1-5);
 }
-.publish-button {
-  --el-button-bg-color: var(--theme-accent);
-  --el-button-border-color: var(--theme-accent);
-  --el-button-hover-bg-color: var(--theme-accent-hover);
-  --el-button-hover-border-color: var(--theme-accent-hover);
-}
+// 发布按钮曾在此覆盖 --el-button-bg-color，但全局
+// `html .el-button--primary`（0,1,1）优先级高于 `.publish-button`（0,1,0），
+// 这段声明从未生效；主按钮配色已由全局 accent-fill / accent-on 统一接管，故移除。
 .save-button {
   --el-button-text-color: var(--theme-accent-strong);
   --el-button-bg-color: var(--theme-accent-light);
@@ -431,15 +423,15 @@ watch(
 
 .header-main {
   min-width: 0;
-  gap: 14px;
+  gap: var(--p-space-3-5);
 }
 .back-button {
   display: inline-flex;
   flex: none;
   align-items: center;
-  gap: 6px;
+  gap: var(--p-space-1-5);
   height: 32px;
-  padding: 0 10px;
+  padding: 0 var(--p-space-2-5);
   color: var(--theme-text-secondary);
   font: inherit;
   font-size: var(--p-text-base);
@@ -494,7 +486,7 @@ watch(
   background: transparent;
 }
 .process-key {
-  margin-top: 2px;
+  margin-top: var(--p-space-0-5);
   color: var(--theme-text-muted);
   font-size: var(--p-text-sm);
   font-weight: var(--p-weight-semibold);
@@ -545,15 +537,15 @@ watch(
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  margin-bottom: var(--p-space-3);
 }
 .xml-dialog-toolbar :deep(.el-radio-button__inner) {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--p-space-1-5);
 }
 .xml-language-badge {
-  padding: 4px 8px;
+  padding: var(--p-space-1) var(--p-space-2);
   color: var(--theme-accent-strong);
   font-family: var(--p-font-mono);
   font-size: var(--p-text-sm);
@@ -595,7 +587,7 @@ $bp-modeler-compact: 1100px;
     padding: 7px 10px;
   }
   .header-main {
-    gap: 8px;
+    gap: var(--p-space-2);
   }
   .back-button {
     width: 32px;

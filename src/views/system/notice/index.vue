@@ -50,7 +50,7 @@
       </el-form>
     </el-card>
 
-    <el-card v-loading="loading" shadow="never">
+    <el-card v-table-loading="loading" shadow="never">
       <div class="toolbar-wrapper">
         <div>
           <el-button type="primary" @click="handleAdd" v-permission="['system:notice:add']">
@@ -649,8 +649,8 @@ watch([() => paginationData.currentPage, () => paginationData.pageSize], getTabl
 .scope-tree {
   width: 100%;
   border: 1px solid var(--el-border-color);
-  border-radius: 4px;
-  padding: 8px;
+  border-radius: var(--p-radius-sm);
+  padding: var(--p-space-2);
   max-height: 300px;
   overflow-y: auto;
 }

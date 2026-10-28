@@ -562,10 +562,10 @@ function handleQuickAction(path: string) {
 
   .card-actions {
     display: flex;
-    gap: 2px;
+    gap: var(--p-space-0-5);
     background: var(--theme-bg-elevated);
     border-radius: var(--p-radius-md);
-    padding: 2px;
+    padding: var(--p-space-0-5);
 
     .period {
       padding: 3px 8px;

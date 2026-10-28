@@ -50,7 +50,7 @@
 
     <!-- 工具栏按钮 -->
     <template #actions="{ rowSelection }">
-      <el-button type="primary" @click="crud.methods.handleAdd">
+      <el-button type="primary" @click="crud.methods.handleAdd" v-permission="['system:user:add']">
         <template #icon><Icon icon="lucide:plus-circle" /></template>{{ $t('common.add') }}
       </el-button>
       <el-button type="danger" @click="handleBatchRemove">
@@ -146,7 +146,14 @@
             </el-button>
           </el-tooltip>
           <el-tooltip :content="$t('system.user.actions.resetPassword')" placement="top">
-            <el-button type="primary" text bg size="small" @click="handleResetPwd(scope.row)">
+            <el-button
+              type="primary"
+              text
+              bg
+              size="small"
+              @click="handleResetPwd(scope.row)"
+              v-permission="['system:user:resetPassword']"
+            >
               <Icon icon="lucide:key-round" />
             </el-button>
           </el-tooltip>

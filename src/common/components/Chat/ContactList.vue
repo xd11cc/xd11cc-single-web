@@ -74,7 +74,7 @@ const filteredContacts = computed(() => {
 }
 
 .search-box {
-  padding: 8px;
+  padding: var(--p-space-2);
   border-bottom: 1px solid var(--el-border-color-lighter);
 }
 
@@ -85,10 +85,10 @@ const filteredContacts = computed(() => {
 .contact-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
+  gap: var(--p-space-2);
+  padding: var(--p-space-2-5) var(--p-space-3);
   cursor: pointer;
-  transition: background-color 0.15s;
+  transition: background-color var(--p-duration-fast);
 
   &:hover {
     background-color: var(--el-fill-color-light);
@@ -111,7 +111,7 @@ const filteredContacts = computed(() => {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--p-space-0-5);
 }
 
 .contact-name {
@@ -135,7 +135,7 @@ const filteredContacts = computed(() => {
 }
 
 .no-contacts {
-  padding: 24px 12px;
+  padding: var(--p-space-6) var(--p-space-3);
   text-align: center;
   font-size: var(--p-text-sm);
   color: var(--el-text-color-placeholder);

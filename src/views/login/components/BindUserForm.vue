@@ -152,7 +152,7 @@ function handleBind() {
     }
 
     :deep(.el-form-item) {
-      margin-bottom: 18px;
+      margin-bottom: var(--p-space-4-5);
     }
 
     .password-icon {

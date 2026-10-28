@@ -4,12 +4,14 @@
       <template #reference>
         <el-badge :value="totalUnread" :max="badgeMax" :hidden="totalUnread === 0">
           <el-tooltip effect="dark" :content="t('layout.notify.tooltip')" placement="bottom">
-            <button
-              type="button"
-              class="notify-trigger"
-              :aria-label="t('layout.notify.open')"
-            >
-              <Icon icon="lucide:bell" width="18" height="18" class="notify-icon" aria-hidden="true" />
+            <button type="button" class="notify-trigger" :aria-label="t('layout.notify.open')">
+              <Icon
+                icon="lucide:bell"
+                width="18"
+                height="18"
+                class="notify-icon"
+                aria-hidden="true"
+              />
             </button>
           </el-tooltip>
         </el-badge>
@@ -325,16 +327,16 @@ onUnmounted(() => {
   .notify-item {
     display: flex;
     align-items: flex-start;
-    gap: 12px;
+    gap: var(--p-space-3);
     width: 100%;
-    padding: 12px 8px;
+    padding: var(--p-space-3) var(--p-space-2);
     border: 0;
     border-bottom: 1px solid var(--el-border-color-lighter);
     background: none;
     font-family: inherit;
     text-align: left;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: background-color var(--p-duration-normal);
 
     &:hover {
       background-color: var(--el-fill-color-light);
@@ -354,7 +356,7 @@ onUnmounted(() => {
     min-width: 0;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: var(--p-space-1);
 
     .title {
       font-size: var(--p-text-base);
@@ -380,7 +382,7 @@ onUnmounted(() => {
 .notify-footer {
   display: flex;
   justify-content: space-between;
-  padding-top: 12px;
+  padding-top: var(--p-space-3);
   border-top: 1px solid var(--el-border-color);
 }
 </style>

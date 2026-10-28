@@ -252,11 +252,11 @@ listenerRouteChange((route) => {
       border: none;
       border-radius: var(--p-radius-md);
       background-color: var(--v3-tagsview-tag-bg-color);
-      padding: 0 10px;
+      padding: 0 var(--p-space-2-5);
       font-size: var(--p-text-xs);
       font-weight: var(--p-weight-medium);
-      margin-left: 4px;
-      margin-top: 4px;
+      margin-left: var(--p-space-1);
+      margin-top: var(--p-space-1);
       transition: all var(--p-duration-fast) var(--p-ease-out);
       &:first-of-type {
         margin-left: 5px;
@@ -288,7 +288,7 @@ listenerRouteChange((route) => {
     z-index: 3000;
     position: fixed;
     list-style-type: none;
-    padding: 4px;
+    padding: var(--p-space-1);
     border-radius: var(--p-radius-lg);
     font-size: var(--p-text-xs);
     color: var(--v3-tagsview-contextmenu-text-color);
@@ -297,7 +297,7 @@ listenerRouteChange((route) => {
     border: 1px solid var(--theme-border);
     li {
       margin: 0;
-      padding: 6px 12px;
+      padding: var(--p-space-1-5) var(--p-space-3);
       cursor: pointer;
       border-radius: var(--p-radius-sm);
       &:hover {

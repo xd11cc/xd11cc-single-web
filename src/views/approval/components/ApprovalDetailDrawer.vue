@@ -32,7 +32,7 @@
       </div>
     </template>
 
-    <div v-loading="loading" class="detail-body">
+    <div v-table-loading="loading" class="detail-body">
       <!-- 概览 -->
       <section class="detail-section">
         <div class="section-head">
@@ -437,9 +437,9 @@ $paper: var(--theme-bg-page);
 
 .detail-header {
   display: flex;
-  gap: 14px;
+  gap: var(--p-space-3-5);
   align-items: flex-start;
-  padding-right: 12px;
+  padding-right: var(--p-space-3);
 
   &__mark {
     display: grid;
@@ -450,7 +450,7 @@ $paper: var(--theme-bg-page);
     font-size: var(--p-text-xl);
     color: #fff;
     background: var(--theme-accent-gradient);
-    border-radius: 10px;
+    border-radius: var(--p-radius-lg);
     box-shadow: 0 4px 12px var(--theme-accent-glow);
   }
 
@@ -458,7 +458,7 @@ $paper: var(--theme-bg-page);
     min-width: 0;
 
     h3 {
-      margin: 0 0 6px;
+      margin: 0 0 var(--p-space-1-5);
       font-family: 'Outfit', sans-serif;
       font-size: var(--p-text-xl);
       font-weight: 600;
@@ -470,19 +470,19 @@ $paper: var(--theme-bg-page);
   &__meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: var(--p-space-1-5);
     align-items: center;
   }
 }
 
 .meta-chip {
-  padding: 2px 8px;
+  padding: var(--p-space-0-5) var(--p-space-2);
   font-family: 'DM Sans', sans-serif;
   font-size: var(--p-text-xs);
   color: $accent;
   letter-spacing: 0.02em;
   background: $accent-soft;
-  border-radius: 4px;
+  border-radius: var(--p-radius-sm);
 
   &--ghost {
     color: $muted;
@@ -493,8 +493,8 @@ $paper: var(--theme-bg-page);
 .detail-body {
   display: flex;
   flex-direction: column;
-  gap: 28px;
-  padding: 4px 4px 8px;
+  gap: var(--p-space-7);
+  padding: var(--p-space-1) var(--p-space-1) var(--p-space-2);
 }
 
 .detail-section {
@@ -503,10 +503,10 @@ $paper: var(--theme-bg-page);
 
 .section-head {
   display: flex;
-  gap: 10px;
+  gap: var(--p-space-2-5);
   align-items: baseline;
-  padding-bottom: 10px;
-  margin-bottom: 16px;
+  padding-bottom: var(--p-space-2-5);
+  margin-bottom: var(--p-space-4);
   border-bottom: 1px solid $line;
 }
 
@@ -534,7 +534,7 @@ $paper: var(--theme-bg-page);
   font-size: var(--p-text-xs);
   color: $muted;
   background: var(--theme-bg-elevated);
-  border-radius: 10px;
+  border-radius: var(--p-radius-lg);
 
   &--live {
     color: var(--theme-warning);
@@ -550,10 +550,10 @@ $paper: var(--theme-bg-page);
   overflow: hidden;
   background: $line;
   border: 1px solid $line;
-  border-radius: 8px;
+  border-radius: var(--p-radius-lg);
 
   .overview-item {
-    padding: 12px 14px;
+    padding: var(--p-space-3) var(--p-space-3-5);
     background: var(--theme-bg-surface);
 
     dt {
@@ -581,14 +581,14 @@ $paper: var(--theme-bg-page);
 
 .flow-node {
   display: flex;
-  gap: 14px;
+  gap: var(--p-space-3-5);
 
   &__rail {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 26px;
-    padding-top: 2px;
+    padding-top: var(--p-space-0-5);
   }
 
   &__dot {
@@ -601,28 +601,28 @@ $paper: var(--theme-bg-page);
     color: #fff;
     background: $muted;
     border-radius: 50%;
-    transition: transform 0.18s ease;
+    transition: transform var(--p-duration-normal) ease;
   }
 
   &__line {
     flex: 1;
     width: 2px;
     min-height: 18px;
-    margin: 4px 0;
+    margin: var(--p-space-1) 0;
     background: linear-gradient($line, $line) no-repeat;
   }
 
   &__card {
     flex: 1;
     min-width: 0;
-    padding: 10px 14px 12px;
-    margin-bottom: 12px;
+    padding: var(--p-space-2-5) var(--p-space-3-5) var(--p-space-3);
+    margin-bottom: var(--p-space-3);
     background: $paper;
     border: 1px solid transparent;
-    border-radius: 8px;
+    border-radius: var(--p-radius-lg);
     transition:
-      background 0.18s ease,
-      border-color 0.18s ease;
+      background var(--p-duration-normal) ease,
+      border-color var(--p-duration-normal) ease;
 
     &:hover {
       background: var(--theme-bg-surface);
@@ -632,7 +632,7 @@ $paper: var(--theme-bg-page);
 
   &__top {
     display: flex;
-    gap: 10px;
+    gap: var(--p-space-2-5);
     align-items: center;
     justify-content: space-between;
   }
@@ -656,14 +656,14 @@ $paper: var(--theme-bg-page);
   &__meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: var(--p-space-3);
     margin-top: 7px;
     font-size: var(--p-text-xs);
     color: $muted;
 
     span {
       display: inline-flex;
-      gap: 4px;
+      gap: var(--p-space-1);
       align-items: center;
     }
   }
@@ -678,7 +678,7 @@ $paper: var(--theme-bg-page);
     color: var(--theme-text-secondary);
     background: var(--theme-bg-surface);
     border-left: 2px solid $accent;
-    border-radius: 0 4px 4px 0;
+    border-radius: 0 var(--p-radius-sm) var(--p-radius-sm) 0;
   }
 
   // 状态变体
@@ -733,24 +733,24 @@ $paper: var(--theme-bg-page);
 .pending-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--p-space-2);
 }
 
 .pending-item {
   display: flex;
-  gap: 12px;
+  gap: var(--p-space-3);
   align-items: center;
   justify-content: space-between;
   padding: 11px 14px;
   background: var(--theme-bg-surface);
   border: 1px solid $line;
   border-left: 3px solid var(--theme-warning);
-  border-radius: 6px;
+  border-radius: var(--p-radius-md);
 
   &__main {
     display: flex;
     flex-wrap: wrap;
-    gap: 10px;
+    gap: var(--p-space-2-5);
     align-items: center;
     min-width: 0;
   }
@@ -764,7 +764,7 @@ $paper: var(--theme-bg-page);
 
   &__assignee {
     display: inline-flex;
-    gap: 4px;
+    gap: var(--p-space-1);
     align-items: center;
     font-size: var(--p-text-sm);
     color: $muted;
@@ -780,10 +780,10 @@ $paper: var(--theme-bg-page);
 
 // ---------- 操作区 ----------
 .action-section {
-  padding: 18px;
+  padding: var(--p-space-4-5);
   background: var(--theme-accent-light);
   border: 1px solid var(--theme-border);
-  border-radius: 10px;
+  border-radius: var(--p-radius-lg);
 }
 
 .action-form :deep(.el-form-item:last-child) {
@@ -792,7 +792,7 @@ $paper: var(--theme-bg-page);
 
 .detail-footer {
   display: flex;
-  gap: 8px;
+  gap: var(--p-space-2);
   justify-content: flex-end;
 }
 </style>

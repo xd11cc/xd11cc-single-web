@@ -82,7 +82,7 @@ function resolvePath(routePath: string) {
 
 .el-icon {
   width: 1em !important;
-  margin-right: 12px !important;
+  margin-right: var(--p-space-3) !important;
   font-size: var(--p-text-xl);
 }
 

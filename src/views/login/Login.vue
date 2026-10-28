@@ -159,13 +159,13 @@ const needBind = computed(() => 'need-bind' in route.query)
 
 .login-header {
   text-align: center;
-  margin-bottom: 28px;
+  margin-bottom: var(--p-space-7);
 
   .logo-mark {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 16px;
+    margin-bottom: var(--p-space-4);
 
     svg {
       filter: drop-shadow(0 4px 12px var(--theme-accent-glow));
@@ -173,7 +173,7 @@ const needBind = computed(() => 'need-bind' in route.query)
   }
 
   .subtitle {
-    margin: 4px 0 0;
+    margin: var(--p-space-1) 0 0;
     font-size: var(--p-text-sm);
     color: var(--theme-text-muted);
     letter-spacing: 0.5px;
@@ -188,7 +188,7 @@ const needBind = computed(() => 'need-bind' in route.query)
 .login-footer {
   position: relative;
   z-index: 5;
-  margin-top: 24px;
+  margin-top: var(--p-space-6);
   font-size: var(--p-text-xs);
   color: var(--theme-text-muted);
   letter-spacing: 0.3px;
@@ -196,8 +196,8 @@ const needBind = computed(() => 'need-bind' in route.query)
 
 @include xs {
   .login-card {
-    margin: 16px;
-    padding: 28px 20px;
+    margin: var(--p-space-4);
+    padding: var(--p-space-7) var(--p-space-5);
   }
 }
 </style>

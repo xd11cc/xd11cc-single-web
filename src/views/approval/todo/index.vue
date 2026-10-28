@@ -34,7 +34,7 @@
     </el-card>
 
     <el-card shadow="never" class="table-card">
-      <el-table v-loading="loading" :data="tableData" border stripe>
+      <el-table v-table-loading="loading" :data="tableData" border stripe>
         <el-table-column
           prop="taskName"
           :label="$t('bpm.approval.todo.columns.taskName')"
@@ -382,8 +382,8 @@ function openFromQuery() {
 .approval-page {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 16px;
+  gap: var(--p-space-3);
+  padding: var(--p-space-4);
 }
 .search-card :deep(.el-form-item) {
   margin-bottom: 0;
@@ -394,17 +394,17 @@ function openFromQuery() {
 .pagination-bar {
   display: flex;
   justify-content: flex-end;
-  padding: 12px 16px;
+  padding: var(--p-space-3) var(--p-space-4);
 }
 .form-tip {
-  margin-top: 4px;
+  margin-top: var(--p-space-1);
   font-size: var(--p-text-sm);
   line-height: 1.4;
   color: var(--el-text-color-secondary);
 }
 .action-icons {
   display: inline-flex;
-  gap: 6px;
+  gap: var(--p-space-1-5);
   align-items: center;
   justify-content: center;
 

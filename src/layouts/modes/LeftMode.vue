@@ -60,7 +60,7 @@ function handleClickOutside() {
 
 <style lang="scss" scoped>
 @use '@@/assets/styles/layout-common.scss';
-$transition-time: 0.35s;
+$transition-time: var(--p-duration-slow);
 
 .drawer-bg {
   background-color: rgba(0, 0, 0, 0.3);
@@ -75,7 +75,7 @@ $transition-time: 0.35s;
   background-color: var(--v3-sidebar-menu-bg-color);
   transition:
     width $transition-time,
-    background-color 0.3s ease;
+    background-color var(--p-duration-normal) ease;
   width: var(--v3-sidebar-width);
   height: 100%;
   position: fixed;
@@ -91,7 +91,7 @@ $transition-time: 0.35s;
   min-height: 100%;
   transition:
     margin-left $transition-time,
-    background-color 0.3s ease;
+    background-color var(--p-duration-normal) ease;
   margin-left: var(--v3-sidebar-width);
   position: relative;
   background-color: var(--theme-bg-page);
@@ -163,7 +163,7 @@ $transition-time: 0.35s;
   &.hideSidebar {
     .sidebar-container {
       pointer-events: none;
-      transition-duration: 0.3s;
+      transition-duration: var(--p-duration-normal);
       transform: translate3d(calc(0px - var(--v3-sidebar-width)), 0, 0);
     }
   }

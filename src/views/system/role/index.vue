@@ -382,8 +382,8 @@ getDeptTree()
 .menu-tree {
   width: 100%;
   border: 1px solid var(--el-border-color);
-  border-radius: 4px;
-  padding: 8px;
+  border-radius: var(--p-radius-sm);
+  padding: var(--p-space-2);
   max-height: 300px;
   overflow-y: auto;
 }

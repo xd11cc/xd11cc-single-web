@@ -116,7 +116,7 @@ function handleClosed() {
 .todo-popup-heading {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--p-space-2-5);
 }
 
 .todo-popup-title {
@@ -128,13 +128,13 @@ function handleClosed() {
 .todo-popup-body {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--p-space-3);
 }
 
 .todo-popup-meta {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--p-space-2);
   font-size: var(--p-text-base);
   color: var(--theme-text-secondary);
 }
@@ -144,8 +144,8 @@ function handleClosed() {
 }
 
 .todo-popup-subject {
-  padding: 14px 16px;
-  border-radius: 8px;
+  padding: var(--p-space-3-5) var(--p-space-4);
+  border-radius: var(--p-radius-lg);
   background: var(--theme-bg-elevated);
   border-left: 3px solid var(--theme-warning);
   font-size: var(--p-text-lg);
@@ -170,23 +170,23 @@ function handleClosed() {
 .todo-popup-progress {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--p-space-2-5);
   font-size: var(--p-text-sm);
   color: var(--theme-text-muted);
 
   .todo-popup-bar {
     flex: 1;
     height: 4px;
-    border-radius: 2px;
+    border-radius: var(--p-radius-xs);
     background: var(--theme-bg-sunken);
     overflow: hidden;
 
     i {
       display: block;
       height: 100%;
-      border-radius: 2px;
+      border-radius: var(--p-radius-xs);
       background: var(--theme-warning);
-      transition: width 0.25s ease;
+      transition: width var(--p-duration-normal) ease;
     }
   }
 }
@@ -194,6 +194,6 @@ function handleClosed() {
 .todo-popup-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: var(--p-space-2);
 }
 </style>

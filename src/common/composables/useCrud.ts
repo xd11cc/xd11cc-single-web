@@ -19,11 +19,11 @@ export interface UseCrudOptions<Q = any, T = any> {
   /** 分页查询接口 */
   pageApi: (query: Q) => Promise<ResponseVO<PageData<T>>>
   /** 新增接口 */
-  addApi?: (data: any) => Promise<ResponseVO<number>>
+  addApi?: (data: any) => Promise<ResponseVO<any>>
   /** 修改接口 */
-  updateApi?: (data: any) => Promise<ResponseVO<number>>
+  updateApi?: (data: any) => Promise<ResponseVO<any>>
   /** 删除接口（接收逗号拼接的 id 字符串） */
-  removeApi?: (ids: string) => Promise<ResponseVO<number>>
+  removeApi?: (ids: string) => Promise<ResponseVO<any>>
   /**
    * 提交前转换 formData 为 API 需要的载荷
    * 用于补充 deptName / postName 等关联字段
@@ -33,6 +33,10 @@ export interface UseCrudOptions<Q = any, T = any> {
   defaultForm?: () => Record<string, any>
   /** 查询条件默认值 */
   defaultQuery?: () => Q
+  /** 单条删除的确认文案，默认使用通用文案 */
+  removeConfirmText?: (row: any) => string
+  /** 批量删除的确认文案，默认使用通用文案 */
+  batchRemoveConfirmText?: (count: number) => string
 }
 
 /**
@@ -62,7 +66,7 @@ export interface UseCrudSlotProps {
   handleRemove: (row: any) => void
   handleBatchRemove: () => void
   handleClose: () => void
-  handleSubmit: (isAdd: boolean) => Promise<ResponseVO<number> | void>
+  handleSubmit: (isAdd: boolean) => Promise<ResponseVO<any> | void>
   rowSelection: any[]
 }
 
@@ -88,12 +92,11 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
     total: 0,
     currentPage: 1,
     pageSize: 10,
-    pageSizes: [10, 20, 50, 100],
+    pageSizes: [10, 20, 50],
     layout: 'total, sizes, prev, pager, next, jumper',
   })
 
   // ─── 搜索 ─────────────────────────────────────────────
-  const searchFormRef = ref<any>(null)
   const searchData = reactive(options.defaultQuery?.() || {}) as Q
 
   // ─── 弹窗 ─────────────────────────────────────────────
@@ -136,7 +139,13 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
   }
 
   function resetSearch() {
-    searchFormRef.value?.resetFields?.()
+    // 逐个删除而不是依赖 el-form 的 resetFields：
+    // 1) resetFields 只处理声明了 prop 的字段，未声明 prop 的条件会残留；
+    // 2) 此前组合式函数里的 searchFormRef 从未绑定到 <el-form>，
+    //    resetFields 一直没执行，导致「重置」按钮点了没反应。
+    Object.keys(searchData as any).forEach((key) => {
+      delete (searchData as any)[key]
+    })
     Object.assign(searchData as any, options.defaultQuery?.() || {})
     const wasFirstPage = paginationData.currentPage === 1
     paginationData.currentPage = 1
@@ -161,7 +170,9 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
 
   // ─── 单条删除 ──────────────────────────────────────────
   function handleRemove(row: any) {
-    ElMessageBox.confirm(t('common.messages.deleteConfirm'), t('common.messages.confirmTitle'), {
+    const confirmText =
+      options.removeConfirmText?.(row) ?? t('common.messages.deleteConfirm')
+    ElMessageBox.confirm(confirmText, t('common.messages.confirmTitle'), {
       confirmButtonText: t('common.confirm'),
       cancelButtonText: t('common.cancel'),
       type: 'warning',
@@ -183,8 +194,12 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
       ElMessage.warning(t('common.messages.selectFirst'))
       return
     }
+    const count = tableSelection.value.length
+    const confirmText =
+      options.batchRemoveConfirmText?.(count) ??
+      t('common.messages.deleteSelected', { count })
     ElMessageBox.confirm(
-      t('common.messages.deleteSelected', { count: tableSelection.value.length }),
+      confirmText,
       t('common.messages.confirmTitle'),
       {
         confirmButtonText: t('common.confirm'),
@@ -204,7 +219,7 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
   }
 
   // ─── 提交（校验 + API 调用 + 成功/失败处理） ──────────
-  function handleSubmit(isAdd: boolean): Promise<ResponseVO<number> | void> {
+  function handleSubmit(isAdd: boolean): Promise<ResponseVO<any> | void> {
     const api = isAdd ? options.addApi : options.updateApi
     if (!api) return Promise.resolve()
     const payload = options.transformPayload?.(formData.value, isAdd) ?? { ...formData.value }
@@ -279,7 +294,6 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
       tableLoading,
       tableSelection,
       paginationData,
-      searchFormRef,
       searchData,
       dialogVisible,
       formData,

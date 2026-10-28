@@ -104,7 +104,7 @@ const sidebarMenuHoverBgColor = computed(() =>
   height: v-bind(sidebarMenuItemHeight);
   line-height: v-bind(sidebarMenuItemHeight);
   border-radius: var(--sidebar-item-radius);
-  margin: 2px 8px;
+  margin: var(--p-space-0-5) var(--p-space-2);
   width: calc(100% - 16px);
   &.is-active,
   &:hover {
@@ -137,7 +137,7 @@ const sidebarMenuHoverBgColor = computed(() =>
 .el-menu--collapse {
   :deep(.el-menu-item),
   :deep(.el-sub-menu__title) {
-    margin: 2px 4px;
+    margin: var(--p-space-0-5) var(--p-space-1);
     width: calc(100% - 8px);
   }
   :deep(.el-sub-menu.is-active) {

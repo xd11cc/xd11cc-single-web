@@ -347,7 +347,7 @@ defineExpose({
 }
 
 .bpmn-canvas .djs-context-pad {
-  border-radius: 10px;
+  border-radius: var(--p-radius-lg);
   filter: drop-shadow(0 8px 14px var(--theme-shadow-lg));
 }
 
@@ -363,7 +363,7 @@ defineExpose({
   display: grid;
   place-content: center;
   justify-items: center;
-  gap: 12px;
+  gap: var(--p-space-3);
   color: var(--theme-text-secondary);
   background: color-mix(in srgb, var(--theme-bg-page) 86%, transparent);
   backdrop-filter: blur(4px);
@@ -383,7 +383,7 @@ defineExpose({
   display: flex;
   align-items: center;
   gap: 7px;
-  padding: 8px 12px;
+  padding: var(--p-space-2) var(--p-space-3);
   color: var(--theme-text-muted);
   font-size: var(--p-text-sm);
   border: 1px solid var(--theme-border);

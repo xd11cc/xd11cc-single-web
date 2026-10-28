@@ -40,7 +40,7 @@
     </el-card>
 
     <el-card shadow="never" class="table-card">
-      <el-table v-loading="loading" :data="tableData" border stripe>
+      <el-table v-table-loading="loading" :data="tableData" border stripe>
         <el-table-column
           prop="title"
           :label="$t('bpm.approval.started.columns.title')"
@@ -257,8 +257,8 @@ onMounted(() => {
 .approval-page {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 16px;
+  gap: var(--p-space-3);
+  padding: var(--p-space-4);
 }
 .search-card :deep(.el-form-item) {
   margin-bottom: 0;
@@ -269,11 +269,11 @@ onMounted(() => {
 .pagination-bar {
   display: flex;
   justify-content: flex-end;
-  padding: 12px 16px;
+  padding: var(--p-space-3) var(--p-space-4);
 }
 .action-icons {
   display: inline-flex;
-  gap: 6px;
+  gap: var(--p-space-1-5);
   align-items: center;
   justify-content: center;
 

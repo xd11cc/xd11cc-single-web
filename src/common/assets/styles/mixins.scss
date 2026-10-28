@@ -16,7 +16,7 @@
   }
   // 滚动条上的滚动滑块
   &::-webkit-scrollbar-thumb {
-    border-radius: 4px;
+    border-radius: var(--p-radius-sm);
     background-color: #90939955;
   }
   &::-webkit-scrollbar-thumb:hover {

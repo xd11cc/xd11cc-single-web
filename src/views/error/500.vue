@@ -65,12 +65,12 @@ function handleRefresh() {
 
 .error-code {
   display: flex;
-  gap: 4px;
+  gap: var(--p-space-1);
   margin-bottom: var(--p-space-4);
 
   .digit {
     font-family: var(--p-font-display);
-    font-size: 64px;
+    font-size: var(--p-text-display);
     font-weight: var(--p-weight-bold);
     color: var(--theme-text-primary);
     line-height: 1;

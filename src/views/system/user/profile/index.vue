@@ -766,7 +766,7 @@ function resetPwdForm() {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 6px;
+    gap: var(--p-space-1-5);
   }
 }
 
@@ -915,7 +915,7 @@ function resetPwdForm() {
 .permission-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--p-space-2);
 }
 
 // system.user.profile.tabs.security
@@ -956,7 +956,7 @@ function resetPwdForm() {
   }
 
   .security-desc {
-    margin: 2px 0 0;
+    margin: var(--p-space-0-5) 0 0;
     font-size: var(--p-text-xs);
     color: var(--theme-text-muted);
   }

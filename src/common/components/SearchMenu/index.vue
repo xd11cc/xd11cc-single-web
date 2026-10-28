@@ -256,8 +256,8 @@ watch(query, () => {
 .cmd-input-wrapper {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 16px;
+  gap: var(--p-space-2-5);
+  padding: var(--p-space-3-5) var(--p-space-4);
   border-bottom: 1px solid var(--theme-border);
 
   .cmd-input-icon {
@@ -281,8 +281,8 @@ watch(query, () => {
   }
 
   .cmd-kbd {
-    padding: 2px 6px;
-    border-radius: 4px;
+    padding: var(--p-space-0-5) var(--p-space-1-5);
+    border-radius: var(--p-radius-sm);
     font-size: var(--p-text-xs);
     font-family: var(--p-font-body);
     background: var(--theme-bg-elevated);
@@ -294,17 +294,17 @@ watch(query, () => {
 .cmd-list {
   flex: 1;
   overflow-y: auto;
-  padding: 8px;
+  padding: var(--p-space-2);
 }
 
 .cmd-group {
   &:not(:first-child) {
-    margin-top: 8px;
+    margin-top: var(--p-space-2);
   }
 }
 
 .cmd-group-label {
-  padding: 4px 8px;
+  padding: var(--p-space-1) var(--p-space-2);
   font-size: var(--p-text-xs);
   font-weight: var(--p-weight-semibold);
   color: var(--theme-text-muted);
@@ -315,8 +315,8 @@ watch(query, () => {
 .cmd-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px 10px;
+  gap: var(--p-space-2-5);
+  padding: var(--p-space-2) var(--p-space-2-5);
   border-radius: var(--p-radius-md);
   cursor: pointer;
   transition: background var(--p-duration-fast);
@@ -362,13 +362,13 @@ watch(query, () => {
 }
 
 .cmd-empty {
-  padding: 40px 20px;
+  padding: var(--p-space-10) var(--p-space-5);
   text-align: center;
   color: var(--theme-text-muted);
 
   .cmd-empty-icon {
     font-size: var(--p-text-3xl);
-    margin-bottom: 8px;
+    margin-bottom: var(--p-space-2);
   }
 
   p {
@@ -379,38 +379,38 @@ watch(query, () => {
 
 .cmd-footer {
   display: flex;
-  gap: 16px;
-  padding: 10px 16px;
+  gap: var(--p-space-4);
+  padding: var(--p-space-2-5) var(--p-space-4);
   border-top: 1px solid var(--theme-border);
   font-size: var(--p-text-sm);
   color: var(--theme-text-muted);
 
   kbd {
     padding: 1px 4px;
-    border-radius: 3px;
+    border-radius: var(--p-radius-xs);
     font-size: var(--p-text-xs);
     background: var(--theme-bg-elevated);
     border: 1px solid var(--theme-border);
-    margin-right: 2px;
+    margin-right: var(--p-space-0-5);
   }
 }
 
 // Transition
 .cmd-enter-active {
-  transition: opacity 0.15s ease;
+  transition: opacity var(--p-duration-fast) ease;
   .cmd-palette {
     transition:
-      transform 0.15s ease,
-      opacity 0.15s ease;
+      transform var(--p-duration-fast) ease,
+      opacity var(--p-duration-fast) ease;
   }
 }
 
 .cmd-leave-active {
-  transition: opacity 0.1s ease;
+  transition: opacity var(--p-duration-fast) ease;
   .cmd-palette {
     transition:
-      transform 0.1s ease,
-      opacity 0.1s ease;
+      transform var(--p-duration-fast) ease,
+      opacity var(--p-duration-fast) ease;
   }
 }
 
