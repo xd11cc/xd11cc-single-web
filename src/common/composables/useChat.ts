@@ -46,61 +46,54 @@ export function useChat() {
     off('BUSINESS', handleBusinessMessage)
   }
 
-  function handleBusinessMessage(data: any) {
-    if (!data?.content) return
-    try {
-      const payload = JSON.parse(data.content)
-      if (payload.type !== 'CHAT') return
+  function handleBusinessMessage(data: any, message?: { from?: { userId: number; username: string } | null }) {
+    // data 已是结构化对象（后端不再套 JSON 字符串）；发送者身份取自信封 from，不采信报文自述
+    if (!data || data.type !== 'CHAT') return
+    const from = message?.from
+    if (!from?.userId) return
 
-      const { senderId, senderName, text, timestamp } = payload
-      if (!senderId || senderId === userStore.userId) return
+    const senderId = from.userId
+    const senderName = from.username
+    const { text, timestamp } = data
+    if (senderId === userStore.userId) return
 
-      const msg: ChatMessage = {
-        id: `${timestamp}-${Math.random().toString(36).slice(2, 8)}`,
-        senderId,
-        senderName,
-        text,
-        timestamp,
-        isSelf: false,
-      }
-
-      if (!messagesMap[senderId]) {
-        messagesMap[senderId] = []
-      }
-      messagesMap[senderId].push(msg)
-
-      let contact = contacts.value.find((c) => c.userId === senderId)
-      if (!contact) {
-        contact = { userId: senderId, username: senderName, unread: 0 }
-        contacts.value.unshift(contact)
-      }
-      contact.lastMessage = text
-      contact.lastTime = timestamp
-
-      if (activeContactId.value !== senderId || !panelVisible.value) {
-        contact.unread++
-      }
-
-      moveContactToTop(senderId)
-    } catch {
-      // not a chat message
+    const msg: ChatMessage = {
+      id: `${timestamp}-${Math.random().toString(36).slice(2, 8)}`,
+      senderId,
+      senderName,
+      text,
+      timestamp,
+      isSelf: false,
     }
-  }
+
+    if (!messagesMap[senderId]) {
+      messagesMap[senderId] = []
+    }
+    messagesMap[senderId].push(msg)
+
+    let contact = contacts.value.find((c) => c.userId === senderId)
+    if (!contact) {
+      contact = { userId: senderId, username: senderName, unread: 0 }
+      contacts.value.unshift(contact)
+    }
+    contact.lastMessage = text
+    contact.lastTime = timestamp
+
+    if (activeContactId.value !== senderId || !panelVisible.value) {
+      contact.unread++
+    }
+
+    moveContactToTop(senderId)
+    }
 
   function send(targetUserId: number, text: string) {
     const timestamp = Date.now()
-    const content = JSON.stringify({
-      type: 'CHAT',
-      senderId: userStore.userId,
-      senderName: userStore.username,
-      text,
-      timestamp,
-    })
+    // 载荷只放业务内容；发送者身份由服务端按连接注入信封 from
+    const payload = { type: 'CHAT', text, timestamp }
 
     const success = sendMessage({
-      webSocketEnum: 'USER',
       userId: targetUserId,
-      content,
+      data: payload,
     })
 
     if (success) {

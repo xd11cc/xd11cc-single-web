@@ -9,7 +9,7 @@ import type { Router, RouteLocationRaw } from 'vue-router'
 
 // 审批中心（待办）期望的 path，需与后端菜单配置保持一致
 const APPROVAL_TODO_PATH = '/approval/todo'
-const NOTICE_CENTER_PATH = '/system/noticeUser'
+const NOTICE_CENTER_PATH = '/system/notice-user'
 
 function buildQuery(source: Record<string, unknown>) {
   const query: Record<string, string> = {}
@@ -42,7 +42,7 @@ function pushWithFallback(router: Router, targets: RouteLocationRaw[]) {
 
 /** 打开消息中心（通知/消息的兜底落点） */
 export function openNoticeCenter(router: Router) {
-  return pushWithFallback(router, [{ name: 'noticeUser' }, { path: NOTICE_CENTER_PATH }])
+  return pushWithFallback(router, [{ name: 'NoticeUser' }, { path: NOTICE_CENTER_PATH }])
 }
 
 /**
@@ -60,9 +60,9 @@ export function openApprovalTodo(
     approve: options.quickApprove ? '1' : undefined,
   })
   return pushWithFallback(router, [
-    { name: 'bpmApprovalTodo', query },
+    { name: 'ApprovalTodo', query },
     { path: APPROVAL_TODO_PATH, query },
-    { name: 'noticeUser' },
+    { name: 'NoticeUser' },
     { path: NOTICE_CENTER_PATH },
   ])
 }

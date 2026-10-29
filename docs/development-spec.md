@@ -38,7 +38,10 @@ src/views/<domain>/<module>/
 
 **组件 `name` 必须与后端菜单的 `route_name` 完全一致（区分大小写）**——标签栏缓存通过 `<keep-alive :include>` 匹配组件 `name`，大小写不一致会导致缓存静默失效。
 
-> 存量债务：现有页面多为小写（`post` / `config`），而后端 `route_name` 是首字母大写（`Post` / `Config`）。目前 `meta.keepAlive` 无来源、缓存未启用，所以未暴露。**新增页面按后端实际值写**，存量等开启缓存时统一。
+> 现状：24 个菜单页面的组件 `name` 已与后端 `route_name` 全部对齐（PascalCase，例如 `Config` / `Dict` / `ApprovalTodo`）。
+> 视图路由的 `meta.keepAlive` 由 `transformBackendRoutes` 默认置为 `true`（目录为 `false`），因此**新增页面必须写对 `name`**，否则该页面的标签栏缓存失效。
+>
+> 缓存生效需要四个条件同时成立：菜单 `route_name` = 组件 `name` → 转换层写 `meta.keepAlive` → `tags-view` 记入 `cachedViews` → `AppMain` 的 `<keep-alive :include>` 命中。
 
 ---
 

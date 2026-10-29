@@ -50,7 +50,7 @@
             <Icon icon="lucide:venus-and-mars" class="sidebar-icon" />
             <span class="sidebar-label">{{ $t('system.user.profile.sidebar.sex') }}</span>
             <span class="sidebar-value">{{
-              getDictItem('system_user_sex', userStore.sex)?.value || '-'
+              getDictItem('system_user_sex', userStore.sex)?.label || '-'
             }}</span>
           </div>
           <div class="sidebar-item">
@@ -123,9 +123,9 @@
                       <el-radio
                         v-for="item in getDictList('system_user_sex')"
                         :key="item.id"
-                        :value="item.label"
+                        :value="item.value"
                       >
-                        {{ item.value }}
+                        {{ item.label }}
                       </el-radio>
                     </el-radio-group>
                   </el-form-item>
@@ -384,6 +384,8 @@ import { useOssUrl } from '@@/composables/useOssUrl'
 import { useDict } from '@/common/composables/useDict'
 import { changePassword, modifyUserById } from '../apis'
 import type { FormRules } from 'element-plus'
+
+defineOptions({ name: 'Profile' })
 
 const route = useRoute()
 const router = useRouter()

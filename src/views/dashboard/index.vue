@@ -119,6 +119,8 @@ import { useUserStore } from '@/pinia/stores/user'
 import { useTheme } from '@@/composables/useTheme'
 import { useI18n } from 'vue-i18n'
 
+defineOptions({ name: 'Dashboard' })
+
 use([
   CanvasRenderer,
   LineChart,

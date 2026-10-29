@@ -18,8 +18,8 @@
           <el-option
             v-for="item in getDictList('system_notice_type')"
             :key="item.id"
-            :label="String(item.value)"
-            :value="String(item.label)"
+            :label="String(item.label)"
+            :value="String(item.value)"
           />
         </el-select>
       </el-form-item>
@@ -33,8 +33,8 @@
           <el-option
             v-for="item in getDictList('system_read_status')"
             :key="item.id"
-            :label="String(item.value)"
-            :value="String(item.label)"
+            :label="String(item.label)"
+            :value="String(item.value)"
           />
         </el-select>
       </el-form-item>
@@ -167,7 +167,7 @@ const READ_STATUS = {
 } as const
 
 defineOptions({
-  name: 'noticeUser',
+  name: 'NoticeUser',
 })
 
 const { getDictList, getDictItem } = useDict(['system_notice_type', 'system_read_status'])

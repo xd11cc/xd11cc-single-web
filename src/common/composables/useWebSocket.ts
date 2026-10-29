@@ -1,6 +1,7 @@
 import { WebSocketClient, WsStatus } from '@@/utils/webSocket'
 import type { WsPushMessage, NettyMessageDTO } from '@@/utils/webSocket'
 import { getToken } from '@@/utils/cache/cookies'
+import { ElMessage } from 'element-plus'
 
 /**
  * WebSocket 连接地址。
@@ -52,20 +53,25 @@ export function useWebSocket() {
       lastMessage.value = message
     })
 
+    // 服务端错误帧统一提示；后端已改为 JSON 信封，不再有裸文本错误
+    wsClient.on('ERROR', (data: { message?: string }) => {
+      ElMessage.warning(data?.message || 'WebSocket 请求失败')
+    })
+
     wsClient.initConnect()
   }
 
   /**
    * 订阅指定 action 的消息
    */
-  const on = (action: string, callback: (data: any) => void) => {
+  const on = (action: string, callback: (data: any, message?: WsPushMessage) => void) => {
     wsClient?.on(action, callback)
   }
 
   /**
    * 取消订阅
    */
-  const off = (action: string, callback?: (data: any) => void) => {
+  const off = (action: string, callback?: (data: any, message?: WsPushMessage) => void) => {
     wsClient?.off(action, callback)
   }
 

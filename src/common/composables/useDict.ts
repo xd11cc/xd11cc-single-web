@@ -43,15 +43,15 @@ export const useDict = (dictTypes: string | string[]) => {
   /**
    * 获取字典映射（编码 -> 展示文案）。
    *
-   * 本项目的存储约定与字段名直觉相反：label 存编码、value 存展示文案
-   * （与 getDictItem 的匹配方式一致）。因此映射必须写成 map[label] = value；
-   * 反过来写不会报错，但会得到一张「中文 -> 编码」的反向表，排查很费时间。
+   * 后端 system_dict_data 的语义：label 存展示文案、value 存编码（与业务列取值对应）。
+   * 因此映射必须写成 map[value] = label。反过来写不会报错，但会得到一张
+   * 「中文 -> 编码」的反向表，查出来全是错的。
    */
   const getDictMap = (dictType: string): DictMap => {
     const list = dictData.value[dictType] || []
     return list.reduce((map, item) => {
       if (item.label !== undefined && item.value !== undefined) {
-        map[String(item.label)] = String(item.value)
+        map[String(item.value)] = String(item.label)
       }
       return map
     }, {} as DictMap)
@@ -68,14 +68,14 @@ export const useDict = (dictTypes: string | string[]) => {
   }
 
   /**
-   * 根据value获取字典项的完整信息
-   * @param dictType
-   * @param label
-   * @returns
+   * 根据编码获取字典项的完整信息。
+   *
+   * @param dictType 字典类型
+   * @param code     字典编码（对应后端 value 字段，与业务表存的取值一致）
    */
-  const getDictItem = (dictType: string, label: string | number): SystemDictDataVO | undefined => {
+  const getDictItem = (dictType: string, code: string | number): SystemDictDataVO | undefined => {
     const list = dictData.value[dictType] || []
-    const item = list.find((item) => String(item.label) === String(label))
+    const item = list.find((item) => String(item.value) === String(code))
     if (!item) return undefined
     return { ...item, listClass: validDataComponentType(item?.listClass) }
   }

@@ -41,8 +41,8 @@
           <el-option
             v-for="item in getDictList('system_status')"
             :key="item.id"
-            :label="item.value"
-            :value="item.label!"
+            :label="item.label"
+            :value="item.value!"
           />
         </el-select>
       </el-form-item>
@@ -108,7 +108,7 @@
             size="small"
             disable-transitions
           >
-            {{ getDictItem('system_status', scope.row.status)?.value }}
+            {{ getDictItem('system_status', scope.row.status)?.label }}
           </el-tag>
         </template>
       </el-table-column>
@@ -233,8 +233,8 @@
             <el-option
               v-for="item in getDictList('system_user_sex')"
               :key="item.id"
-              :label="item.value"
-              :value="item.label!"
+              :label="item.label"
+              :value="item.value!"
             />
           </el-select>
         </el-form-item>
@@ -289,9 +289,9 @@
             <el-radio
               v-for="item in getDictList('system_status')"
               :key="item.id"
-              :value="item.label"
+              :value="item.value"
             >
-              {{ item.value }}
+              {{ item.label }}
             </el-radio>
           </el-radio-group>
         </el-form-item>
@@ -330,7 +330,7 @@ import { roleList } from '@/views/system/role/apis'
 const { t } = useI18n()
 const $t = t
 
-defineOptions({ name: 'user' })
+defineOptions({ name: 'User' })
 
 // ─── 字典 ─────────────────────────────────────────────────
 const { getDictList, getDictItem } = useDict(['system_status', 'system_user_sex'])

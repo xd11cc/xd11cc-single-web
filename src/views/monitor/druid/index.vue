@@ -5,6 +5,7 @@
 </template>
 
 <script lang="ts" setup>
+defineOptions({ name: 'Druid' })
 import IFrame from '@@/components/IFrame/index.vue'
 
 const url = ref<string>(

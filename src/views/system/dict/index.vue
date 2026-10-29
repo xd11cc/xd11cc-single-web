@@ -138,7 +138,7 @@ const { t } = useI18n()
 const $t = t
 
 defineOptions({
-  name: 'dictType',
+  name: 'Dict',
 })
 
 const formRules: FormRules<SystemDictTypeVO> = {

@@ -2,7 +2,6 @@ import type { RouteRecordRaw } from 'vue-router'
 import { createRouter } from 'vue-router'
 import { routerConfig } from './config'
 import { registerNavigationGuard } from './guard'
-import { flatMultiLevelRoutes } from './helper'
 
 const Layouts = () => import('@/layouts/index.vue')
 
@@ -36,6 +35,9 @@ export const publicRoutes: RouteRecordRaw[] = [
     component: Layouts,
     redirect: '/dashboard',
     children: [
+      // 历史 URL 兼容：菜单 path 曾拼写成 notic / notic-user，旧书签与已发出的通知链接仍可访问
+      { path: 'system/notic', redirect: '/system/notice', meta: { hidden: true } },
+      { path: 'system/notic-user', redirect: '/system/notice-user', meta: { hidden: true } },
       {
         path: 'dashboard',
         name: 'Dashboard',
@@ -44,6 +46,7 @@ export const publicRoutes: RouteRecordRaw[] = [
           title: '首页',
           icon: 'lucide:home',
           affix: true,
+          keepAlive: true,
         },
       },
       {
@@ -90,7 +93,7 @@ const publicRouteNames = new Set(
  */
 export const router = createRouter({
   history: routerConfig.history,
-  routes: routerConfig.thirdLevelRouteCache ? flatMultiLevelRoutes(publicRoutes) : publicRoutes,
+  routes: publicRoutes,
 })
 
 /**

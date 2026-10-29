@@ -41,7 +41,7 @@ const DEFAULT_CONFIG: LayoutsConfig = {
   showLogo: true,
   showScreenfull: true,
   showSearchMenu: true,
-  cacheTagsView: false,
+  cacheTagsView: true,
   showWatermark: true,
   todoPopup: true,
   showGreyMode: false,

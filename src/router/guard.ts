@@ -5,7 +5,6 @@ import { usePermissionStore } from '@/pinia/stores/permission'
 import { isWhiteList } from '@/router/whitelist'
 import NProgress from 'nprogress'
 import { setRouteChange } from '@@/composables/useRouteListener'
-import { routerConfig } from './config'
 import { i18n } from '@/i18n'
 
 NProgress.configure({ showSpinner: false })
@@ -95,13 +94,9 @@ export function registerNavigationGuard(router: Router) {
           if (userStore.roles.length === 0) {
             await userStore.getInfo()
           }
-          // 注意：角色必须是一个数组！例如：["admin"] 或 ["developer", "editor"]
-          const roles = userStore.roles
-          // 生成可访问的 Routes
-          routerConfig.dynamic
-            ? await permissionStore.generateRoutes(roles)
-            : permissionStore.setAllRoutes()
-          // 将“有访问权限的动态路由”添加到 Router 中
+          // 后端只返回当前用户有权限的菜单，因此这里不再做前端角色过滤
+          await permissionStore.generateRoutes()
+          // 将后端返回的动态路由添加到 Router 中
           permissionStore.addRoutes.forEach((route) => router.addRoute(route))
           permissionStore.markRoutesReady()
         })().finally(() => {

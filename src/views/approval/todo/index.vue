@@ -201,7 +201,7 @@ import { approveTask, delegateTask, getMyTodoTasks } from '../apis'
 import type { MyTaskQuery, WorkflowTaskVO } from '../apis/type'
 import ApprovalDetailDrawer from '../components/ApprovalDetailDrawer.vue'
 
-defineOptions({ name: 'bpmApprovalTodo' })
+defineOptions({ name: 'ApprovalTodo' })
 
 const { t } = useI18n()
 const route = useRoute()

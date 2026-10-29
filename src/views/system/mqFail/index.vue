@@ -244,7 +244,7 @@ const { t } = useI18n()
 const $t = t
 
 defineOptions({
-  name: 'mqFail',
+  name: 'SystemMqFail',
 })
 
 // 只读列表：失败消息只能重投/忽略，没有新增/编辑整条记录
@@ -270,17 +270,17 @@ const { getDictList, getDictItem } = useDict(['mq_fail_status'])
  */
 const STATUS_PENDING = '0'
 
-/** 状态下拉选项：label 存编码、value 存文案 */
+/** 状态下拉选项：后端 label=展示文案、value=编码 */
 const statusOptions = computed(() =>
   getDictList('mq_fail_status').map((item) => ({
-    value: String(item.label),
-    label: String(item.value),
+    value: String(item.value),
+    label: String(item.label),
   })),
 )
 
 function statusLabel(status?: string) {
   if (status === undefined || status === null || status === '') return '-'
-  return getDictItem('mq_fail_status', status)?.value ?? status
+  return getDictItem('mq_fail_status', status)?.label ?? status
 }
 
 function statusTagType(status?: string) {

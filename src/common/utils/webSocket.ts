@@ -1,15 +1,16 @@
 // 后端 WsPushMessage 统一信封格式
 export interface WsPushMessage {
   action: string
+  /** 发送者。仅客户端转发的消息有值，服务端事件推送为 null */
+  from?: { userId: number; username: string } | null
   data: any
 }
 
-// 后端 NettyMessageDTO 对应 TS 类型（action=BUSINESS 时的 data）
+// 后端 NettyMessageDTO 对应 TS 类型（客户端上行报文）
+// 只有「发给谁 + 发什么」两个字段：协议层面没有广播表达方式，越权入口不存在
 export interface NettyMessageDTO {
-  webSocketEnum: 'USER' | 'TENANT' | 'GLOBAL'
-  userId?: number
-  tenantId?: number
-  content: string
+  userId: number
+  data: unknown
 }
 
 // 通知推送 DTO（action=NEW_NOTICE/REVOKE_NOTICE 时的 data）
@@ -64,7 +65,7 @@ export enum WsStatus {
 }
 
 // 事件回调类型
-type WsEventCallback = (data: any) => void
+type WsEventCallback = (data: any, message?: WsPushMessage) => void
 
 export class WebSocketClient {
   private ws: WebSocket | null = null
@@ -213,7 +214,8 @@ export class WebSocketClient {
 
     const callbacks = this.listeners.get(action)
     if (callbacks && callbacks.length > 0) {
-      callbacks.forEach((cb) => cb(data))
+      // 第二个参数传完整信封：发送者身份由服务端注入在 from 上，业务侧不应从 data 里读
+      callbacks.forEach((cb) => cb(data, message))
     }
 
     // 同时触发通配符 '*' 监听（用于全局监控/日志）

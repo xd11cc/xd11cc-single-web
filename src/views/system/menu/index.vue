@@ -25,8 +25,8 @@
           <el-option
             v-for="item in getDictList('system_status')"
             :key="item.id"
-            :label="item.value"
-            :value="item.label!"
+            :label="item.label"
+            :value="item.value!"
           />
         </el-select>
       </el-form-item>
@@ -70,7 +70,7 @@
             size="small"
             disable-transitions
           >
-            {{ getDictItem('system_menu_type', scope.row.menuType)?.value || scope.row.menuType }}
+            {{ getDictItem('system_menu_type', scope.row.menuType)?.label || scope.row.menuType }}
           </el-tag>
         </template>
       </el-table-column>
@@ -89,7 +89,7 @@
             effect="plain"
             disable-transitions
           >
-            {{ getDictItem('system_status', scope.row.status)?.value }}
+            {{ getDictItem('system_status', scope.row.status)?.label }}
           </el-tag>
         </template>
       </el-table-column>
@@ -165,9 +165,9 @@
             <el-radio
               v-for="item in getDictList('system_menu_type')"
               :key="item.id"
-              :value="item.label"
+              :value="item.value"
             >
-              {{ item.value }}
+              {{ item.label }}
             </el-radio>
           </el-radio-group>
         </el-form-item>
@@ -254,9 +254,9 @@
             <el-radio
               v-for="item in getDictList('system_visible')"
               :key="item.id"
-              :value="item.label"
+              :value="item.value"
             >
-              {{ item.value }}
+              {{ item.label }}
             </el-radio>
           </el-radio-group>
         </el-form-item>
@@ -267,9 +267,9 @@
             <el-radio
               v-for="item in getDictList('system_status')"
               :key="item.id"
-              :value="item.label"
+              :value="item.value"
             >
-              {{ item.value }}
+              {{ item.label }}
             </el-radio>
           </el-radio-group>
         </el-form-item>

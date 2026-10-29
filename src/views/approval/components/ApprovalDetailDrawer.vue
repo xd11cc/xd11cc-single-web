@@ -249,7 +249,7 @@ const { getDictItem: getStatusDictItem } = useDict(['workflow_status'])
 
 function statusLabel(status?: InstanceStatus) {
   if (!status) return '-'
-  return getStatusDictItem('workflow_status', status)?.value ?? status
+  return getStatusDictItem('workflow_status', status)?.label ?? status
 }
 
 function statusTagType(status?: InstanceStatus) {

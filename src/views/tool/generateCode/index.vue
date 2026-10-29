@@ -83,7 +83,7 @@ const { t } = useI18n()
 const $t = t
 
 defineOptions({
-  name: 'generateCode',
+  name: 'GenerateCode',
 })
 
 // 只读列表：代码生成没有新增/编辑，只有「生成并预览」这一动作

@@ -30,8 +30,8 @@
           <el-option
             v-for="item in getDictList('system_status')"
             :key="item.id"
-            :label="item.value"
-            :value="item.label!"
+            :label="item.label"
+            :value="item.value!"
           />
         </el-select>
       </el-form-item>
@@ -85,7 +85,7 @@
             size="small"
             disable-transitions
           >
-            {{ getDictItem('system_status', row.status)?.value || row.status || '-' }}
+            {{ getDictItem('system_status', row.status)?.label || row.status || '-' }}
           </el-tag>
         </template>
       </el-table-column>
@@ -160,8 +160,8 @@
             <el-radio
               v-for="item in getDictList('system_status')"
               :key="item.id"
-              :value="item.label"
-              >{{ item.value }}</el-radio
+              :value="item.value"
+              >{{ item.label }}</el-radio
             >
           </el-radio-group>
         </el-form-item>
@@ -201,7 +201,7 @@ const { t } = useI18n()
 const $t = t
 const { getDictList, getDictItem } = useDict('system_status')
 
-defineOptions({ name: 'bpmCategory' })
+defineOptions({ name: 'Category' })
 
 const crud = useCrud<WorkflowCategoryQueryVO, WorkflowCategoryVO>({
   pageApi: workflowCategoryPage,

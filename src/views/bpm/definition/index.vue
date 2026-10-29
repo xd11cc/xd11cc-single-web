@@ -279,7 +279,7 @@ const versionRows = ref<WorkflowDefinitionVersionVO[]>([])
 const versionDialogKey = ref('')
 const versionDialogName = ref('')
 
-defineOptions({ name: 'bpmDefinition' })
+defineOptions({ name: 'Definition' })
 
 const crud = useCrud<WorkflowDefinitionQueryVO, WorkflowDefinitionVO>({
   pageApi: (query) => getDefinitionPage(query),

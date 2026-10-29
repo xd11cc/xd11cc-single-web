@@ -25,8 +25,8 @@
           <el-option
             v-for="item in getDictList('workflow_expression_type')"
             :key="item.id"
-            :label="item.value"
-            :value="item.label!"
+            :label="item.label"
+            :value="item.value!"
           />
         </el-select>
       </el-form-item>
@@ -72,7 +72,7 @@
       >
         <template #default="{ row }">
           {{
-            getDictItem('workflow_expression_type', row.expressionType || '')?.value ||
+            getDictItem('workflow_expression_type', row.expressionType || '')?.label ||
             row.expressionType
           }}
         </template>
@@ -84,7 +84,7 @@
       >
         <template #default="{ row }">
           {{
-            getDictItem('workflow_expression_return_type', row.returnType || '')?.value ||
+            getDictItem('workflow_expression_return_type', row.returnType || '')?.label ||
             row.returnType
           }}
         </template>
@@ -162,8 +162,8 @@
             <el-option
               v-for="item in getDictList('workflow_expression_type')"
               :key="item.id"
-              :label="item.value"
-              :value="item.label!"
+              :label="item.label"
+              :value="item.value!"
             />
           </el-select>
         </el-form-item>
@@ -174,8 +174,8 @@
             <el-option
               v-for="item in getDictList('workflow_expression_return_type')"
               :key="item.id"
-              :label="item.value"
-              :value="item.label!"
+              :label="item.label"
+              :value="item.value!"
             />
           </el-select>
         </el-form-item>
@@ -238,6 +238,7 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'ExpressionConfig' })
 import { Icon } from '@iconify/vue'
 import type { FormRules } from 'element-plus'
 import { useI18n } from 'vue-i18n'

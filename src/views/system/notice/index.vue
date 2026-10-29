@@ -25,8 +25,8 @@
           <el-option
             v-for="item in getDictList('system_notice_type')"
             :key="item.id"
-            :label="String(item.value)"
-            :value="String(item.label)"
+            :label="String(item.label)"
+            :value="String(item.value)"
           />
         </el-select>
       </el-form-item>
@@ -40,8 +40,8 @@
           <el-option
             v-for="item in getDictList('system_notice_status')"
             :key="item.id"
-            :label="String(item.value)"
-            :value="String(item.label)"
+            :label="String(item.label)"
+            :value="String(item.value)"
           />
         </el-select>
       </el-form-item>
@@ -216,8 +216,8 @@
             <el-option
               v-for="item in getDictList('system_notice_type')"
               :key="item.id"
-              :label="String(item.value)"
-              :value="String(item.label)"
+              :label="String(item.label)"
+              :value="String(item.value)"
             />
           </el-select>
         </el-form-item>
@@ -232,8 +232,8 @@
             <el-option
               v-for="item in getDictList('system_notice_scope')"
               :key="item.id"
-              :label="String(item.value)"
-              :value="String(item.label)"
+              :label="String(item.label)"
+              :value="String(item.value)"
             />
           </el-select>
         </el-form-item>
@@ -360,7 +360,7 @@ const { t } = useI18n()
 const $t = t
 
 defineOptions({
-  name: 'notice',
+  name: 'Notice',
 })
 
 /**
@@ -397,7 +397,7 @@ const detailData = ref<SystemNoticeVO>({})
 // scope 展示文案由字典 system_notice_scope 提供
 function scopeLabel(scope?: string) {
   if (!scope) return '-'
-  return getDictItem('system_notice_scope', scope)?.value ?? scope
+  return getDictItem('system_notice_scope', scope)?.label ?? scope
 }
 
 const formRules: FormRules = {

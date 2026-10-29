@@ -132,7 +132,7 @@ const { t } = useI18n()
 const $t = t
 
 defineOptions({
-  name: 'config',
+  name: 'Config',
 })
 
 const formRules: FormRules<SystemConfigVO> = {

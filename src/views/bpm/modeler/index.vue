@@ -165,7 +165,7 @@ import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { deployWorkflowDraft, getWorkflowDraft, saveWorkflowDraft } from './apis'
 
-defineOptions({ name: 'BpmModeler' })
+defineOptions({ name: 'Modeler' })
 
 const { t } = useI18n()
 const route = useRoute()

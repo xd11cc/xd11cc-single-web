@@ -27,9 +27,12 @@ export function getSidebarStatus() {
 }
 
 // 标签栏
-export function getVisitedViews() {
-  const json = getItem(CacheKey.VISITED_VIEW)
-  return JSON.parse(json ?? '[]') as TagView[]
+// 注意：getItem 内部已经 JSON.parse 过，这里不能再 parse 一次。
+// 二次 parse 时，空数组会被 String([]) 转成空串，触发
+// `SyntaxError: Unexpected end of JSON input`，进而在 store 初始化阶段炸掉整个布局。
+export function getVisitedViews(): TagView[] {
+  const views = getItem<TagView[]>(CacheKey.VISITED_VIEW)
+  return Array.isArray(views) ? views : []
 }
 
 export function setVisitedViews(views: TagView[]) {
@@ -38,14 +41,14 @@ export function setVisitedViews(views: TagView[]) {
     delete view.matched
     delete view.redirectedFrom
   })
-  setItem(CacheKey.VISITED_VIEW, JSON.stringify(views))
+  setItem(CacheKey.VISITED_VIEW, views)
 }
 
-export function getCachedViews() {
-  const json = getItem(CacheKey.CACHED_VIEW)
-  return JSON.parse(json ?? '[]') as string[]
+export function getCachedViews(): string[] {
+  const views = getItem<string[]>(CacheKey.CACHED_VIEW)
+  return Array.isArray(views) ? views.filter((name) => typeof name === 'string') : []
 }
 
 export function setCachedViews(views: string[]) {
-  setItem(CacheKey.CACHED_VIEW, JSON.stringify(views))
+  setItem(CacheKey.CACHED_VIEW, views)
 }

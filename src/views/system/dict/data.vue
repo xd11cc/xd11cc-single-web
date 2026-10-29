@@ -46,8 +46,8 @@
           <el-option
             v-for="item in getDictList('system_status')"
             :key="item.id"
-            :label="item.value"
-            :value="item.label!"
+            :label="item.label"
+            :value="item.value!"
           />
         </el-select>
       </el-form-item>
@@ -75,8 +75,8 @@
     <!-- 表格列 -->
     <template #table="{ handleEdit, handleRemove }">
       <el-table-column type="selection" width="50" align="center" />
-      <el-table-column prop="label" :label="$t('system.dict.data.columns.label')" />
       <el-table-column prop="value" :label="$t('system.dict.data.columns.value')" />
+      <el-table-column prop="label" :label="$t('system.dict.data.columns.label')" />
       <el-table-column prop="sort" :label="$t('system.dict.data.columns.sort')" align="right" />
       <el-table-column prop="status" :label="$t('system.dict.data.columns.status')" align="center">
         <template #default="scope">
@@ -85,7 +85,7 @@
             effect="plain"
             disable-transitions
           >
-            {{ getDictItem('system_status', scope.row.status)?.value }}
+            {{ getDictItem('system_status', scope.row.status)?.label }}
           </el-tag>
         </template>
       </el-table-column>
@@ -134,18 +134,18 @@
         </el-form-item>
       </el-col>
       <el-col :span="24">
-        <el-form-item prop="label" :label="$t('system.dict.data.form.label')">
-          <el-input
-            v-model="formData.label"
-            :placeholder="$t('system.dict.data.formPlaceholder.label')"
-          />
-        </el-form-item>
-      </el-col>
-      <el-col :span="24">
         <el-form-item prop="value" :label="$t('system.dict.data.form.value')">
           <el-input
             v-model="formData.value"
             :placeholder="$t('system.dict.data.formPlaceholder.value')"
+          />
+        </el-form-item>
+      </el-col>
+      <el-col :span="24">
+        <el-form-item prop="label" :label="$t('system.dict.data.form.label')">
+          <el-input
+            v-model="formData.label"
+            :placeholder="$t('system.dict.data.formPlaceholder.label')"
           />
         </el-form-item>
       </el-col>
@@ -180,9 +180,9 @@
             <el-radio
               v-for="item in getDictList('system_status')"
               :key="item.id"
-              :value="item.label"
+              :value="item.value"
             >
-              {{ item.value }}
+              {{ item.label }}
             </el-radio>
           </el-radio-group>
         </el-form-item>
@@ -223,7 +223,7 @@ const { t } = useI18n()
 const $t = t
 
 defineOptions({
-  name: 'dictData',
+  name: 'DictData',
 })
 
 const { getDictItem, getDictList } = useDict(['system_status'])

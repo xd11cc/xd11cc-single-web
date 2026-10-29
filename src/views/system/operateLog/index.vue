@@ -18,8 +18,8 @@
           <el-option
             v-for="item in getDictList('system_operate_type')"
             :key="item.id"
-            :label="item.value"
-            :value="item.label!"
+            :label="item.label"
+            :value="item.value!"
           />
         </el-select>
       </el-form-item>
@@ -33,8 +33,8 @@
           <el-option
             v-for="item in getDictList('system_operate_status')"
             :key="item.id"
-            :label="item.value"
-            :value="item.label!"
+            :label="item.label"
+            :value="item.value!"
           />
         </el-select>
       </el-form-item>
@@ -79,7 +79,7 @@
             disable-transitions
           >
             {{
-              getDictItem('system_operate_type', scope.row.operateType)?.value ||
+              getDictItem('system_operate_type', scope.row.operateType)?.label ||
               scope.row.operateType
             }}
           </el-tag>
@@ -108,7 +108,7 @@
             size="small"
             disable-transitions
           >
-            {{ getDictItem('system_operate_status', scope.row.status)?.value || scope.row.status }}
+            {{ getDictItem('system_operate_status', scope.row.status)?.label || scope.row.status }}
           </el-tag>
         </template>
       </el-table-column>
@@ -164,7 +164,7 @@
           }}</el-descriptions-item>
           <el-descriptions-item :label="$t('system.operateLog.detail.operateType')">
             {{
-              getDictItem('system_operate_type', detailData.operateType || '')?.value ||
+              getDictItem('system_operate_type', detailData.operateType || '')?.label ||
               detailData.operateType
             }}
           </el-descriptions-item>
@@ -180,7 +180,7 @@
               size="small"
             >
               {{
-                getDictItem('system_operate_status', detailData.status || '')?.value ||
+                getDictItem('system_operate_status', detailData.status || '')?.label ||
                 detailData.status
               }}
             </el-tag>
@@ -257,7 +257,7 @@ const { t } = useI18n()
 const $t = t
 
 defineOptions({
-  name: 'operateLog',
+  name: 'OperateLog',
 })
 
 const { getDictList, getDictItem } = useDict(['system_operate_type', 'system_operate_status'])

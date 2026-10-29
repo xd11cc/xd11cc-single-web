@@ -60,7 +60,7 @@ const { t } = useI18n()
 const $t = t
 
 defineOptions({
-  name: 'onlineUser',
+  name: 'OnlineUser',
 })
 
 // 在线用户是「一次性返回全量」的接口，没有分页。

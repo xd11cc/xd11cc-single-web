@@ -132,7 +132,7 @@ import { INSTANCE_STATUS } from '../apis/type'
 import type { InstanceStatus, MyStartedQuery, WorkflowInstanceVO } from '../apis/type'
 import ApprovalDetailDrawer from '../components/ApprovalDetailDrawer.vue'
 
-defineOptions({ name: 'bpmApprovalStarted' })
+defineOptions({ name: 'ApprovalStarted' })
 
 const { t } = useI18n()
 
@@ -154,14 +154,15 @@ const { getDictList: getStatusDictList, getDictItem: getStatusDictItem } = useDi
 /** 状态下拉选项：label 存编码、value 存文案 */
 const instanceStatusOptions = computed(() =>
   getStatusDictList('workflow_status').map((item) => ({
-    value: String(item.label),
-    label: String(item.value),
+    // 后端 system_dict_data：label=展示文案、value=编码
+    value: String(item.value),
+    label: String(item.label),
   })),
 )
 
 function statusLabel(status?: InstanceStatus) {
   if (!status) return '-'
-  return getStatusDictItem('workflow_status', status)?.value ?? status
+  return getStatusDictItem('workflow_status', status)?.label ?? status
 }
 
 function statusTagType(status?: InstanceStatus) {

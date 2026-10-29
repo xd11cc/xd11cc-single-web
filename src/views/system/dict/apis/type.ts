@@ -14,7 +14,9 @@ export interface SystemDictTypeVO {
 export interface SystemDictDataVO {
   id?: number
   dictType?: string
+  /** 展示文案 */
   label?: string
+  /** 编码，与业务列的取值对应 */
   value?: string
   cssClass?: string
   listClass?: ElComponentType
@@ -31,7 +33,7 @@ export interface SystemDictDataQueryVO {
 }
 
 /**
- * 字典映射（键值对）：value -> label
+ * 字典映射：编码（value） -> 展示文案（label）
  */
 export type DictMap = Record<string | number, string>
 

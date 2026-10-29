@@ -120,7 +120,7 @@ import { getMyDoneTasks } from '../apis'
 import type { MyTaskQuery, WorkflowTaskVO } from '../apis/type'
 import ApprovalDetailDrawer from '../components/ApprovalDetailDrawer.vue'
 
-defineOptions({ name: 'bpmApprovalDone' })
+defineOptions({ name: 'ApprovalDone' })
 
 const { t } = useI18n()
 const $t = t
