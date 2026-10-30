@@ -46,6 +46,7 @@ export const zh = {
     targetUserId: '转办需填写数字用户ID，非数字会被后端拒绝',
   },
   messages: {
+    missingTask: '缺少任务信息，请刷新后重试',
     noRejectableNode: '当前任务没有可退回的节点',
     selectTargetNode: '请选择退回节点',
     inputTargetUser: '请输入目标用户ID',
@@ -149,6 +150,7 @@ export const en = {
     targetUserId: 'Delegation requires a numeric user ID; non-numeric values are rejected',
   },
   messages: {
+    missingTask: 'Task information is missing, please refresh and retry',
     noRejectableNode: 'No rejectable node available for this task',
     selectTargetNode: 'Please select a target node',
     inputTargetUser: 'Please enter target user ID',

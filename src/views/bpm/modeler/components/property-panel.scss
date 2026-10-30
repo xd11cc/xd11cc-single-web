@@ -1,0 +1,375 @@
+// 属性面板的全部样式。
+//
+// 为什么不放在各子组件的 scoped 样式里：
+// 面板拆成 6 个组件后，scoped 样式只在各自组件内生效，
+// 共享的 .panel-section / .section-title / .field-help 无法跨组件复用，
+// 漏一处就会掉样式（监听器区块就踩过）。统一挂到 .property-panel 作用域下，
+// 既保持与拆分前一致的层叠顺序，也不会把通用类名泄漏到全局。
+//
+// 注意：这里不能用 :deep()——它只在 scoped 样式中被 Vue 处理，
+// 全局样式里会被当作非法选择器丢弃（这也是一次掉样式的真实原因）。
+
+.property-panel {
+  height: 100%;
+  overflow: auto;
+  color: var(--theme-text-primary);
+  background: #fff;
+}
+
+// 各区块规则，统一收敛在面板作用域内
+.property-panel {
+  .panel-heading {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--p-space-5) var(--p-space-5) var(--p-space-4);
+    border-bottom: 1px solid var(--theme-border-light);
+    background: var(--theme-bg-surface);
+    backdrop-filter: blur(8px);
+
+    h2 {
+      margin: 3px 0 0;
+      font-size: var(--p-text-xl);
+      letter-spacing: -0.02em;
+    }
+  }
+
+  .eyebrow {
+    color: var(--theme-accent-strong);
+    font-size: var(--p-text-xs);
+    font-weight: 700;
+    letter-spacing: 0.16em;
+  }
+  .type-pill {
+    padding: 5px 8px;
+    color: var(--theme-accent-strong);
+    font-size: var(--p-text-xs);
+    font-weight: 600;
+    border-radius: var(--p-radius-md);
+    background: var(--theme-accent-light);
+  }
+
+  .empty-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 80px 28px 0;
+    text-align: center;
+
+    strong {
+      margin-top: var(--p-space-4);
+      font-size: var(--p-text-lg);
+    }
+    p {
+      max-width: 220px;
+      margin: var(--p-space-2) 0;
+      color: var(--theme-text-muted);
+      font-size: var(--p-text-sm);
+      line-height: 1.7;
+    }
+  }
+
+  .empty-icon {
+    display: grid;
+    width: 52px;
+    height: 52px;
+    place-items: center;
+    color: var(--theme-accent-strong);
+    font-size: var(--p-text-2xl);
+    border: 1px solid var(--theme-border);
+    border-radius: var(--p-radius-2xl);
+    background: var(--theme-accent-light);
+  }
+
+  .property-form {
+    padding-bottom: var(--p-space-6);
+  }
+  .panel-section {
+    padding: var(--p-space-4-5) var(--p-space-5) var(--p-space-1);
+    border-bottom: 1px solid var(--theme-border-light);
+  }
+  .section-title {
+    margin-bottom: 15px;
+    color: var(--theme-text-secondary);
+    font-size: var(--p-text-xs);
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .field-help {
+    margin-top: 5px;
+    color: var(--theme-text-muted);
+    font-size: var(--p-text-xs);
+    line-height: 1.5;
+  }
+  .field-help code {
+    color: var(--theme-accent-strong);
+    font-size: var(--p-text-xs);
+  }
+  .approval-mode-grid {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+  }
+  .approval-mode-card {
+    display: flex;
+    align-items: center;
+    gap: var(--p-space-2);
+    min-height: 52px;
+    padding: 9px 10px;
+    color: var(--theme-text-secondary);
+    text-align: left;
+    border: 1px solid var(--theme-border);
+    border-radius: var(--p-radius-lg);
+    background: #fff;
+    cursor: pointer;
+    transition: var(--p-duration-normal) ease;
+  }
+  .approval-mode-card > svg {
+    flex: 0 0 auto;
+    font-size: var(--p-text-xl);
+  }
+  .approval-mode-card span {
+    display: grid;
+    color: var(--theme-text-muted);
+    font-size: var(--p-text-xs);
+    line-height: 1.35;
+  }
+  .approval-mode-card strong {
+    color: var(--theme-text-primary);
+    font-size: var(--p-text-xs);
+  }
+  .approval-mode-card:hover {
+    border-color: var(--theme-accent);
+    background: var(--theme-bg-elevated);
+  }
+  .approval-mode-card.active {
+    color: var(--theme-accent-strong);
+    border-color: var(--theme-accent);
+    background: var(--theme-accent-light);
+    box-shadow: 0 0 0 1px var(--theme-accent-glow);
+  }
+  .approval-mode-card.active strong {
+    color: var(--theme-accent-strong);
+  }
+  .approval-runtime-note {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--p-space-2);
+    margin: -4px 0 17px;
+    padding: 9px 10px;
+    color: var(--theme-text-secondary);
+    font-size: var(--p-text-xs);
+    line-height: 1.5;
+    border-radius: var(--p-radius-lg);
+    background: var(--theme-bg-elevated);
+  }
+  .approval-runtime-note > svg {
+    flex: 0 0 auto;
+    margin-top: 1px;
+    color: var(--theme-accent-strong);
+  }
+  .approval-runtime-note code {
+    color: var(--theme-accent-strong);
+    font-weight: 600;
+  }
+  .condition-section {
+    padding-bottom: var(--p-space-2);
+    background: linear-gradient(180deg, var(--theme-bg-surface) 0%, #fff 100%);
+  }
+  .condition-badge {
+    display: grid;
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    place-items: center;
+    color: var(--theme-accent-strong);
+    font-size: var(--p-text-md);
+    border: 1px solid var(--theme-border);
+    border-radius: var(--p-radius-lg);
+    background: var(--theme-accent-light);
+  }
+  .section-heading-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--p-space-3);
+    margin-bottom: var(--p-space-3-5);
+  }
+  .section-heading-row .section-title {
+    margin-bottom: 3px;
+  }
+  .section-caption {
+    color: var(--theme-text-muted);
+    font-size: var(--p-text-xs);
+  }
+  .listener-section {
+    padding-bottom: var(--p-space-4-5);
+  }
+  .listener-list {
+    display: grid;
+    gap: var(--p-space-2);
+  }
+  .listener-card {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--p-space-2);
+    padding: 11px;
+    border: 1px solid var(--theme-border);
+    border-radius: var(--p-radius-lg);
+    background: var(--theme-bg-surface);
+    transition: var(--p-duration-normal) ease;
+  }
+  .listener-card:hover {
+    border-color: var(--theme-accent);
+    box-shadow: 0 5px 14px var(--theme-shadow-md);
+  }
+  .listener-card-main {
+    display: flex;
+    min-width: 0;
+    gap: 9px;
+  }
+  .listener-kind {
+    flex: 0 0 auto;
+    height: 21px;
+    padding: 3px 6px;
+    color: var(--theme-accent-strong);
+    font-size: var(--p-text-xs);
+    font-weight: 700;
+    border-radius: var(--p-radius-sm);
+    background: var(--theme-accent-light);
+  }
+  .listener-kind.execution {
+    color: var(--theme-warning);
+    background: var(--theme-warning-light);
+  }
+  .listener-copy {
+    min-width: 0;
+  }
+  .listener-event {
+    color: var(--theme-text-primary);
+    font-size: var(--p-text-sm);
+    font-weight: 650;
+  }
+  .listener-implementation {
+    max-width: 165px;
+    margin-top: 3px;
+    overflow: hidden;
+    color: var(--theme-text-secondary);
+    font-size: var(--p-text-xs);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .listener-fields {
+    margin-top: var(--p-space-1);
+    color: var(--theme-accent-strong);
+    font-size: var(--p-text-xs);
+  }
+  .listener-actions {
+    display: flex;
+    flex: 0 0 auto;
+    gap: var(--p-space-0-5);
+  }
+  .listener-actions button,
+  .field-remove {
+    display: grid;
+    width: 25px;
+    height: 25px;
+    place-items: center;
+    color: var(--theme-text-secondary);
+    border: 0;
+    border-radius: var(--p-radius-md);
+    background: transparent;
+    cursor: pointer;
+  }
+  .listener-actions button:hover {
+    color: var(--theme-accent-strong);
+    background: var(--theme-accent-light);
+  }
+  .listener-actions button.danger:hover,
+  .field-remove:hover {
+    color: var(--theme-danger);
+    background: var(--theme-danger-light);
+  }
+  .listener-empty {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: var(--p-space-2-5);
+    padding: 13px 11px;
+    color: var(--theme-accent-strong);
+    text-align: left;
+    border: 1px dashed var(--theme-border);
+    border-radius: var(--p-radius-lg);
+    background: var(--theme-bg-elevated);
+    cursor: pointer;
+  }
+  .listener-empty > svg:last-child {
+    margin-left: auto;
+  }
+  .listener-empty span {
+    display: grid;
+    color: var(--theme-text-muted);
+    font-size: var(--p-text-xs);
+  }
+  .listener-empty strong {
+    margin-bottom: var(--p-space-0-5);
+    color: var(--theme-text-primary);
+    font-size: var(--p-text-xs);
+  }
+  .metadata-section {
+    border-bottom: 0;
+  }
+  .metadata-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--p-space-2-5);
+    padding-bottom: var(--p-space-3-5);
+    color: var(--theme-text-secondary);
+    font-size: var(--p-text-sm);
+  }
+  .metadata-row code {
+    color: var(--theme-text-secondary);
+    font-size: var(--p-text-xs);
+    word-break: break-all;
+  }
+
+  .el-form-item {
+    align-items: flex-start;
+    margin-bottom: var(--p-space-3);
+  }
+  .el-form-item__label {
+    min-height: 32px;
+    padding-right: var(--p-space-1);
+    color: var(--theme-text-secondary);
+    font-size: var(--p-text-xs);
+    font-weight: 600;
+    line-height: 32px;
+    // 点击范围收窄到控件本身：label 默认带 for，点标签会聚焦到输入框/下拉框，
+    // 在左侧字段名区域误触时会抢焦点。这里只禁用鼠标命中，
+    // label 与控件的 for / aria 关联仍保留，屏幕阅读器与键盘 Tab 不受影响。
+    pointer-events: none;
+  }
+  .el-form-item__content {
+    min-width: 0;
+  }
+  .el-input__wrapper,
+  .el-textarea__inner {
+    box-shadow: 0 0 0 1px var(--theme-border) inset;
+  }
+  .el-input__wrapper.is-focus,
+  .el-textarea__inner:focus {
+    box-shadow: 0 0 0 1px var(--theme-accent) inset;
+  }
+}
+
+// 下拉框铺满（面板与弹窗共用）
+.property-panel .full-width {
+  width: 100%;
+}

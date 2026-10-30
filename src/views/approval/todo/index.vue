@@ -149,7 +149,11 @@
         </el-form>
         <template #footer>
           <el-button @click="approveVisible = false">{{ $t('common.cancel') }}</el-button>
-          <el-button type="success" :loading="submitLoading" @click="submitApprove">
+          <el-button
+            type="success"
+            :loading="submitting && pendingAction === 'approve'"
+            @click="submitApprove"
+          >
             {{ $t('common.confirm') }}
           </el-button>
         </template>
@@ -183,7 +187,11 @@
         </el-form>
         <template #footer>
           <el-button @click="delegateVisible = false">{{ $t('common.cancel') }}</el-button>
-          <el-button type="warning" :loading="submitLoading" @click="submitDelegate">
+          <el-button
+            type="warning"
+            :loading="submitting && pendingAction === 'delegate'"
+            @click="submitDelegate"
+          >
             {{ $t('common.confirm') }}
           </el-button>
         </template>
@@ -197,7 +205,8 @@ import { Icon } from '@iconify/vue'
 import { useI18n } from 'vue-i18n'
 import UseCrudView from '@/common/components/useCrud/index.vue'
 import { useCrud } from '@/common/composables/useCrud'
-import { approveTask, delegateTask, getMyTodoTasks } from '../apis'
+import { getMyTodoTasks } from '../apis'
+import { useApprovalActions } from '../composables/useApprovalActions'
 import type { MyTaskQuery, WorkflowTaskVO } from '../apis/type'
 import ApprovalDetailDrawer from '../components/ApprovalDetailDrawer.vue'
 
@@ -223,8 +232,6 @@ const approveForm = reactive({ comment: '' })
 const delegateVisible = ref(false)
 const delegateForm = reactive({ targetUserId: '', comment: '' })
 
-const submitLoading = ref(false)
-
 /** 携带 taskId 时会显示「通过 / 驳回」操作区 */
 function openDetail(row: WorkflowTaskVO) {
   if (!row.processInstanceId) return
@@ -246,41 +253,28 @@ function openDelegate(row: WorkflowTaskVO) {
   delegateVisible.value = true
 }
 
-async function submitApprove() {
-  if (!currentTask.value?.taskId) return
-  submitLoading.value = true
-  try {
-    await approveTask({
-      taskId: currentTask.value.taskId,
-      comment: approveForm.comment || undefined,
-    })
-    ElMessage.success(t('common.messages.operationSuccess'))
-    approveVisible.value = false
+// 审批动作统一走 useApprovalActions：成功后由 onSuccess 决定关哪个弹窗并刷新列表
+const { approve, delegate, submitting, pendingAction } = useApprovalActions({
+  onSuccess: async (action) => {
+    if (action === 'approve') approveVisible.value = false
+    if (action === 'delegate') delegateVisible.value = false
     await crud.refresh()
-  } finally {
-    submitLoading.value = false
-  }
+  },
+})
+
+function submitApprove() {
+  return approve({
+    taskId: currentTask.value?.taskId ?? '',
+    comment: approveForm.comment || undefined,
+  })
 }
 
-async function submitDelegate() {
-  if (!currentTask.value?.taskId) return
-  if (!delegateForm.targetUserId) {
-    ElMessage.warning(t('bpm.approval.messages.inputTargetUser'))
-    return
-  }
-  submitLoading.value = true
-  try {
-    await delegateTask({
-      taskId: currentTask.value.taskId,
-      targetUserId: delegateForm.targetUserId.trim(),
-      comment: delegateForm.comment || undefined,
-    })
-    ElMessage.success(t('common.messages.operationSuccess'))
-    delegateVisible.value = false
-    await crud.refresh()
-  } finally {
-    submitLoading.value = false
-  }
+function submitDelegate() {
+  return delegate({
+    taskId: currentTask.value?.taskId ?? '',
+    targetUserId: delegateForm.targetUserId.trim(),
+    comment: delegateForm.comment || undefined,
+  })
 }
 
 /**

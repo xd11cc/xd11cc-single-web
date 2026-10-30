@@ -179,12 +179,17 @@
           <el-button
             v-if="actionMode === 'reject'"
             type="danger"
-            :loading="submitting"
+            :loading="submitting && pendingAction === 'reject'"
             @click="submitReject"
           >
             {{ $t('bpm.approval.action.confirmReject') }}
           </el-button>
-          <el-button v-else type="primary" :loading="submitting" @click="submitApprove">
+          <el-button
+            v-else
+            type="primary"
+            :loading="submitting && pendingAction === 'approve'"
+            @click="submitApprove"
+          >
             <template #icon><Icon icon="lucide:check" /></template>
             {{ $t('bpm.approval.action.approve') }}
           </el-button>
@@ -198,15 +203,10 @@
 import { Icon } from '@iconify/vue'
 import { useI18n } from 'vue-i18n'
 import { ElMessage } from 'element-plus'
-import { approveTask, getProcessDetail, getRejectableNodes, rejectTask } from '../apis'
-import { INSTANCE_STATUS } from '../apis/type'
+import { useApprovalActions } from '../composables/useApprovalActions'
+import { useApprovalDetail } from '../composables/useApprovalDetail'
 import { useDict } from '@/common/composables/useDict'
-import type {
-  InstanceStatus,
-  RejectableNodeVO,
-  WorkflowInstanceVO,
-  WorkflowTaskVO,
-} from '../apis/type'
+import type { InstanceStatus, RejectableNodeVO, WorkflowTaskVO } from '../apis/type'
 
 defineOptions({ name: 'ApprovalDetailDrawer' })
 
@@ -233,14 +233,20 @@ const visible = defineModel<boolean>({ default: false })
 
 const drawerSize = computed(() => (props.size ? props.size : '760px'))
 
-const loading = ref(false)
-const submitting = ref(false)
-const nodeLoading = ref(false)
-const detail = ref<WorkflowInstanceVO>({})
+// 读模型：详情、可退回节点、派生状态都在这里，抽屉只负责展示
+const {
+  detail,
+  loading,
+  nodeLoading,
+  rejectableNodes,
+  currentTasks,
+  load: loadDetail,
+  loadRejectableNodes,
+  reset: resetDetail,
+} = useApprovalDetail(() => props.processInstanceId)
 
 const actionMode = ref<'approve' | 'reject'>('approve')
 const actionForm = reactive({ comment: '', targetActivityId: '' })
-const rejectableNodes = ref<RejectableNodeVO[]>([])
 
 const showActions = computed(() => Boolean(props.taskId))
 
@@ -288,7 +294,7 @@ const flowNodes = computed(() => {
   return nodes
 })
 
-const currentNodes = computed(() => detail.value?.currentTasks ?? [])
+const currentNodes = computed(() => currentTasks.value)
 
 function buildNode(task: WorkflowTaskVO, fallbackState: 'done' | 'active') {
   const isReject = task.commentType === 'reject'
@@ -341,73 +347,44 @@ function nodeLabel(node: RejectableNodeVO) {
   return node.isStartNode ? `${name} (${t('bpm.approval.detail.backToStarter')})` : name
 }
 
-async function loadDetail() {
-  if (!props.processInstanceId) return
-  loading.value = true
-  try {
-    const { data } = await getProcessDetail(props.processInstanceId)
-    detail.value = data ?? {}
-  } finally {
-    loading.value = false
-  }
-}
-
 async function switchToReject() {
   actionMode.value = 'reject'
   actionForm.targetActivityId = ''
-  if (rejectableNodes.value.length || !props.taskId) return
-  nodeLoading.value = true
-  try {
-    const { data } = await getRejectableNodes(props.taskId)
-    rejectableNodes.value = data ?? []
-    if (!rejectableNodes.value.length) {
-      ElMessage.warning(t('bpm.approval.messages.noRejectableNode'))
-    }
-  } finally {
-    nodeLoading.value = false
+  if (!props.taskId) return
+
+  const nodes = await loadRejectableNodes(props.taskId)
+  if (!nodes.length) {
+    ElMessage.warning(t('bpm.approval.messages.noRejectableNode'))
   }
 }
 
-async function submitApprove() {
-  if (!props.taskId) return
-  submitting.value = true
-  try {
-    await approveTask({ taskId: props.taskId, comment: actionForm.comment || undefined })
-    ElMessage.success(t('common.messages.operationSuccess'))
+// 审批动作统一走 useApprovalActions：校验、提交态、成功提示、防重复点击都在模块内部
+const { approve, reject, submitting, pendingAction } = useApprovalActions({
+  onSuccess: (action) => {
     visible.value = false
-    emit('approved')
-  } finally {
-    submitting.value = false
-  }
+    // 分开 if：emit 的重载签名要求字面量参数，三元会被推断成联合类型
+    if (action === 'reject') emit('rejected')
+    else emit('approved')
+  },
+})
+
+function submitApprove() {
+  return approve({ taskId: props.taskId, comment: actionForm.comment || undefined })
 }
 
-async function submitReject() {
-  if (!props.taskId) return
-  if (!actionForm.targetActivityId) {
-    ElMessage.warning(t('bpm.approval.messages.selectTargetNode'))
-    return
-  }
-  submitting.value = true
-  try {
-    await rejectTask({
-      taskId: props.taskId,
-      targetActivityId: actionForm.targetActivityId,
-      comment: actionForm.comment || undefined,
-    })
-    ElMessage.success(t('common.messages.operationSuccess'))
-    visible.value = false
-    emit('rejected')
-  } finally {
-    submitting.value = false
-  }
+function submitReject() {
+  return reject({
+    taskId: props.taskId,
+    targetActivityId: actionForm.targetActivityId,
+    comment: actionForm.comment || undefined,
+  })
 }
 
 function handleClosed() {
   actionMode.value = 'approve'
   actionForm.comment = ''
   actionForm.targetActivityId = ''
-  rejectableNodes.value = []
-  detail.value = {}
+  resetDetail()
 }
 
 watch(visible, (open) => {

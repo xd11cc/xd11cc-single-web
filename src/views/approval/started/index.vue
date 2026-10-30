@@ -126,9 +126,10 @@ import { Icon } from '@iconify/vue'
 import { useI18n } from 'vue-i18n'
 import UseCrudView from '@/common/components/useCrud/index.vue'
 import { useCrud } from '@/common/composables/useCrud'
-import { cancelProcess, getMyStartedProcesses } from '../apis'
+import { getMyStartedProcesses } from '../apis'
+import { useApprovalActions } from '../composables/useApprovalActions'
+import { canCancelInstance } from '../composables/useApprovalDetail'
 import { useDict } from '@/common/composables/useDict'
-import { INSTANCE_STATUS } from '../apis/type'
 import type { InstanceStatus, MyStartedQuery, WorkflowInstanceVO } from '../apis/type'
 import ApprovalDetailDrawer from '../components/ApprovalDetailDrawer.vue'
 
@@ -169,9 +170,9 @@ function statusTagType(status?: InstanceStatus) {
   return getStatusDictItem('workflow_status', status ?? '')?.listClass ?? 'info'
 }
 
-/** 仅「进行中 / 已驳回」允许发起人撤回（状态为字符串，不能与数字比较） */
+/** 仅「进行中 / 已驳回」允许发起人撤回（判断规则收在 useApprovalDetail，避免多处各写一份） */
 function canCancel(row: WorkflowInstanceVO) {
-  return row.status === INSTANCE_STATUS.RUNNING || row.status === INSTANCE_STATUS.REJECTED
+  return canCancelInstance(row.status)
 }
 
 function openDetail(row: WorkflowInstanceVO) {
@@ -179,6 +180,9 @@ function openDetail(row: WorkflowInstanceVO) {
   activeProcessInstanceId.value = row.processInstanceId
   detailVisible.value = true
 }
+
+// 取消原因仍由页面自己收集（UI 交互留在页面），提交统一交给 useApprovalActions
+const { cancel } = useApprovalActions({ onSuccess: () => crud.refresh() })
 
 async function handleCancel(row: WorkflowInstanceVO) {
   if (!row.processInstanceId) return
@@ -192,11 +196,9 @@ async function handleCancel(row: WorkflowInstanceVO) {
         inputPlaceholder: t('bpm.approval.started.placeholder.cancelReason'),
       },
     )
-    await cancelProcess(row.processInstanceId, value)
-    ElMessage.success(t('common.messages.operationSuccess'))
-    await crud.refresh()
+    await cancel({ processInstanceId: row.processInstanceId, reason: value })
   } catch {
-    // 用户取消或请求失败，交互层已提示
+    // 用户取消弹窗；请求失败的提示由 request 层与 useApprovalActions 统一处理
   }
 }
 </script>

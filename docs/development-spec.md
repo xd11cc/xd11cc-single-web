@@ -1,20 +1,21 @@
 # 前端开发规范
 
-> 本文是**强制约定**，不是教程。新增/修改页面时按此执行；review 时以此为准。
+> 本文是**上手教程**：讲这套项目里页面怎么写、为什么这么写，示例可以直接照抄。
+> 硬性约束与项目索引见 `AGENTS.md`（两者冲突时以 `AGENTS.md` 为准）。
 >
-> 约定标记：**必须（MUST）** / **建议（SHOULD）** / **禁止（MUST NOT）**。
+> 建议阅读顺序：§0 → §2（先判断表格形态）→ 对应章节的完整示例 → §11 提交前自查。
 
 ---
 
-## 0. 总则
+## 0. 开始之前
 
-三条底线：
+三条经验，能省掉大部分返工：
 
-1. **能用壳就不手写** —— 列表页必须优先使用 `UseCrudView` / `TreeCrudView`，只有不满足条件时才手写（见 §3.4）
-2. **不写裸值** —— 颜色、圆角、字号、间距、动效时长一律走设计令牌（见 §7）
-3. **不写硬编码文案** —— 所有用户可见文本进 i18n，中英同步（见 §5）
+1. **能套壳就套壳** —— 列表页优先用 `UseCrudView` / `TreeCrudView`。这两套壳已经做好搜索区、分页、新增/编辑弹窗、删除确认、加载态和间距，手写一遍通常只是在重复它们（壳不适用的情况见 §3.3 手写表格）
+2. **用设计令牌，不写裸值** —— 颜色、圆角、字号、间距、动效时长都有对应的 `--p-*` / `--theme-*`，换主题、切暗色时才不会漏改（§7）
+3. **文案进 i18n** —— 用户可见文本放 `src/i18n/locales/`，中英两套同步改；只改一半，切到英文时会出现中英混排（§5）
 
-违反上述任一条，PR 不予合入。
+这些点在 §11 有一份可逐项核对的自查表。
 
 ---
 
@@ -36,18 +37,18 @@ src/views/<domain>/<module>/
 | 组合式函数   | 放 `src/common/composables/use<Name>.ts`，导出 `use<Name>()`                  |
 | 请求函数命名 | `<module>Page` / `add<Module>` / `modify<Module>ById` / `remove<Module>ByIds` |
 
-**组件 `name` 必须与后端菜单的 `route_name` 完全一致（区分大小写）**——标签栏缓存通过 `<keep-alive :include>` 匹配组件 `name`，大小写不一致会导致缓存静默失效。
+**组件 `name` 与后端菜单的 `route_name` 保持一致（区分大小写）**，这是标签栏缓存的匹配依据：`<keep-alive :include>` 按组件 `name` 命中，写差一个大小写不会报错，只是这一页的缓存悄悄失效——切换标签时状态照常丢失，很难联想到是命名问题。
 
-> 现状：24 个菜单页面的组件 `name` 已与后端 `route_name` 全部对齐（PascalCase，例如 `Config` / `Dict` / `ApprovalTodo`）。
-> 视图路由的 `meta.keepAlive` 由 `transformBackendRoutes` 默认置为 `true`（目录为 `false`），因此**新增页面必须写对 `name`**，否则该页面的标签栏缓存失效。
+> 现状：24 个菜单页面的 `name` 已与后端 `route_name` 对齐（PascalCase，如 `Config` / `Dict` / `ApprovalTodo`），可以直接参照。
+> 视图路由的 `meta.keepAlive` 由 `transformBackendRoutes` 默认置为 `true`（目录为 `false`），所以新页面把 `name` 写对就自动有缓存。
 >
-> 缓存生效需要四个条件同时成立：菜单 `route_name` = 组件 `name` → 转换层写 `meta.keepAlive` → `tags-view` 记入 `cachedViews` → `AppMain` 的 `<keep-alive :include>` 命中。
+> 想确认缓存是否真的生效，看这条链路是否四环齐全：菜单 `route_name` = 组件 `name` → 转换层写 `meta.keepAlive` → `tags-view` 记入 `cachedViews` → `AppMain` 的 `include` 命中。
 
 ---
 
 ## 2. 表格形态判定
 
-**每张表格必须先归类**，再套对应规范。
+先判断这张表属于哪一类，再看对应章节——比直接照抄某个页面省事，也能避免「用错壳再改回来」。
 
 ```text
 有分页查询接口（返回 { rows, total }）？
@@ -68,7 +69,7 @@ src/views/<domain>/<module>/
 
 ### 3.1 普通表格：`UseCrudView` + `useCrud`
 
-**必须**使用这套壳。壳已实现：搜索区、工具栏、表格容器、分页、新增/编辑弹窗、删除确认、加载态、底部间距。
+绝大多数列表页都是这一套。壳里已经实现：搜索区、工具栏、表格容器、分页、新增/编辑弹窗、删除确认、加载态、底部间距；页面只需要提供 `pageApi`、搜索字段和 `#table` 列定义。
 
 #### 3.1.1 最小实现
 
@@ -226,7 +227,7 @@ const crud = useCrud<DemoQueryVO, DemoVO>({
 | `defaultQuery`                                 | —    | 搜索初始值，**重置时恢复为此值** |
 | `removeConfirmText` / `batchRemoveConfirmText` | —    | 自定义删除确认文案               |
 
-删除接口**必须**接收逗号拼接的 id 字符串：`removeApi: (ids) => removeXxxByIds(ids)`。
+删除接口按后端约定接收逗号拼接的 id 字符串：`removeApi: (ids) => removeXxxByIds(ids)`。
 
 #### 3.1.5 对外接口只有三条路径
 
@@ -243,10 +244,10 @@ crud.state       // 脚本：读写 formData / dialogVisible（回填联动）
 | `refresh()` | 脚本主动刷新         | 行内状态开关、执行一次等自定义动作后        |
 | `state`     | 脚本读写弹窗内部状态 | 编辑时回填树勾选、监听 `dataScope` 变化     |
 
-**禁止**通过替换返回对象上的方法来扩展行为：
+不要通过替换返回对象上的方法来扩展行为，原因在下面这段注释里：
 
 ```ts
-// ❌ 禁止：slotProps 里保存的是原函数引用，替换不会生效，
+// ❌ 反例：slotProps 里保存的是原函数引用，替换不会生效，
 //    而且绕过了 onDialogOpen 这份显式契约
 const original = crud.methods.handleEdit
 crud.methods.handleEdit = (row) => { … }
@@ -256,7 +257,7 @@ crud.methods.handleEdit = (row) => { … }
 
 #### 3.1.6 只读列表
 
-无增删改的列表（日志、在线用户、消息记录）**必须**用壳 + `readonly`，**禁止**手写：
+没有增删改的列表（日志、在线用户、消息记录）用壳 + `readonly` 最省事，手写等于把壳的骨架再抄一遍：
 
 ```vue
 <UseCrudView :slotProps="crud.slotProps" readonly>
@@ -355,7 +356,7 @@ crud.methods.getTreeData()
 | 新增子级     | —                             | `handleAddChild(row)`，可用 `childForm` 定制默认值 |
 | 删除         | `removeApi(ids)` 逗号拼接     | `removeApi(id)` 单条                               |
 | 删除前置校验 | —                             | `removeGuard(row)` 返回文案则拦截                  |
-| 展开/收起    | —                             | 壳内置按钮，**页面禁止自己实现**                   |
+| 展开/收起    | —                             | 壳已内置按钮，页面里不用再写                        |
 | 行点击       | `@row-click` 透传             | 壳内置「点整行展开子节点」                         |
 
 #### 3.2.3 `TreeCrudView` 属性
@@ -366,10 +367,10 @@ crud.methods.getTreeData()
 | `rowKey`                                                                                                           | `id`      | 树表主键字段     |
 | `defaultExpanded`                                                                                                  | `false`   | 初始是否全部展开 |
 
-#### 3.2.4 必须遵守
+#### 3.2.4 容易踩的坑
 
-- **禁止**页面自己写「展开全部/收起全部」按钮——壳已渲染，文案走 `common.expandAll` / `common.collapseAll`
-- 父级选择必须用 `#form-fields` 作用域里的 `treeData`，不要另外请求一次
+- 页面里不用再写「展开全部/收起全部」按钮——壳已经渲染，文案走 `common.expandAll` / `common.collapseAll`
+- 父级选择直接用 `#form-fields` 作用域里的 `treeData`，另发一次请求容易和后端树不同步
 - 子级默认值有业务规则时用 `childForm(parent)`（参考菜单：目录下加菜单、菜单下加按钮）
 
 ### 3.3 手写表格
@@ -396,11 +397,11 @@ crud.methods.getTreeData()
 > 技术上**都可以迁移**——前 4 个没有增删改，用 `readonly`；后 2 个是标准 CRUD，用普通壳。
 > 它们目前是手写的，属于历史遗留，**不是设计上的豁免**。
 
-**手写不等于自由发挥**，以下仍为强制项：
+手写表格也建议沿用同一套骨架，否则间距、加载态和列表页会对不上：
 
-#### 3.3.1 必须复用页面骨架类
+#### 3.3.1 沿用页面骨架类
 
-壳内部渲染的四个类，手写时必须用同名类，**禁止**再写一份样式：
+壳内部渲染的四个类，手写时用同名类即可，不要再写一份样式（否则两套规则会互相覆盖）：
 
 ```vue
 <div class="app-container">
@@ -419,9 +420,9 @@ crud.methods.getTreeData()
 
 这四个类的样式由 `src/common/assets/styles/page-scaffold.scss` 统一提供：`.search-wrapper`（下间距）、`.toolbar-wrapper`（左右分布 + 下间距）、`.table-wrapper`（下间距）、`.page-wrapper`（右对齐分页）。
 
-**页面 `<style>` 中禁止出现这四个类**。当前 `approval/*`、`bpm/expression-config` 尚未挂 `.table-wrapper`，属待补齐项。
+这四个类不要在页面 `<style>` 里重复定义。当前 `approval/*`、`bpm/expression-config` 还没挂 `.table-wrapper`，属待补齐项。
 
-#### 3.3.2 必须遵守的表格视觉规范
+#### 3.3.2 表格视觉参考（与壳保持一致）
 
 见 §4，与普通表格完全一致（对齐、表头换行、列宽、操作列）。
 
@@ -429,10 +430,10 @@ crud.methods.getTreeData()
 
 | 项             | 要求                                                      |
 | -------------- | --------------------------------------------------------- |
-| 加载态         | `v-table-loading`，禁止 `v-loading`                       |
+| 加载态         | 用 `v-table-loading`（不用 `v-loading`，全站统一这一套）   |
 | 删除确认       | `ElMessageBox.confirm` + i18n 文案                        |
 | 权限           | `v-permission` + 后端 `@PreAuthorize` + 菜单 SQL 三处同名 |
-| 搜索区字段宽度 | `search-field*` 档位类，禁止内联 `style="width"`          |
+| 搜索区字段宽度 | 用 `search-field*` 档位类，内联 `style="width"` 会被覆盖   |
 | 弹窗           | `.adaptive-form` + `el-col` 布局                          |
 | i18n / 令牌    | 同普通页面                                                |
 
@@ -455,7 +456,7 @@ crud.methods.getTreeData()
 | 操作列                         | `fixed="right"` + `align="center"`           |
 | 勾选列                         | `type="selection" width="50" align="center"` |
 
-**禁止**把文本列设为居中——起始位置参差，无法纵向扫读。
+文本列建议左对齐：居中会让每行起始位置参差，纵向扫读变慢。
 
 ### 4.2 超长内容
 
@@ -475,11 +476,11 @@ crud.methods.getTreeData()
 | 定宽短列（状态、排序、时间） | `width="80"` ~ `"170"`                        |
 | 操作列                       | 2 个按钮 `width="90"`；4 个按钮 `width="150"` |
 
-**禁止**在列上写内联 `style`。
+列宽用 `min-width` / `width` 属性，内联 `style` 容易被 EP 的样式覆盖。
 
 ### 4.4 表格属性
 
-`border` / `height` 等通过 `:table-props` 传给壳；手写表格直接写在 `el-table` 上。**禁止**在 `#table` 插槽里再包一层 `el-table`。
+`border` / `height` 等通过 `:table-props` 传给壳；手写表格直接写在 `el-table` 上。不要在 `#table` 插槽里再包一层 `el-table`——表头和列宽会双重计算。
 
 ---
 
@@ -487,7 +488,7 @@ crud.methods.getTreeData()
 
 ### 5.1 双文件同步
 
-`src/i18n/locales/<domain>/<module>.ts` 中 `zh` 与 `en` 必须 key 完全一致。
+`src/i18n/locales/<domain>/<module>.ts` 里 `zh` 与 `en` 的 key 保持一致：漏 key 时 vue-i18n 会回退成 key 本身，界面上直接露出 `system.user.title` 这样的字面量。
 
 ### 5.2 key 分层
 
@@ -513,11 +514,11 @@ export const zh = {
 | `actions`         | 按钮         |
 | `messages`        | 提示/确认    |
 
-**禁止**硬编码中文或英文文案（含 `ElMessage.warning('只能上传一个文件')` 这类）。
+文案统一走 `t()`，包括 `ElMessage.warning('只能上传一个文件')` 这类提示——它同样会被英文用户看到。
 
 ### 5.3 动态引用
 
-部分 key 不出现在 `t('…')` 字面量里：配置对象 + `t(item.labelKey)`、三元 `t(a ? 'x' : 'y')`、模板字符串 ``t(`a.${type}`)``。删除文案前必须先确认无间接引用。
+部分 key 不出现在 `t('…')` 字面量里：配置对象 + `t(item.labelKey)`、三元 `t(a ? 'x' : 'y')`、模板字符串 ``t(`a.${type}`)``。删文案前先确认没有间接引用。
 
 ### 5.4 校验
 
@@ -525,14 +526,14 @@ export const zh = {
 
 1. 新增文案后左右切换一次中英文，确认没有显示成 key 原文、也没有中文残留
 2. 检查同一个 key 在中英两个对象里都存在
-3. 含占位符（`{name}` / `{count}`）的文案，中英占位符必须一致
-4. 模板插值必须是 `{{ $t('x') }}`——**单花括号 `{ $t('x') }` 会被当纯文本原样显示**，且构建、`vue-tsc` 都不会报错
+3. 含占位符（`{name}` / `{count}`）的文案，中英占位符保持一致
+4. 模板插值写成 `{{ $t('x') }}`；写成单花括号 `{ $t('x') }` 会被当纯文本原样显示，而构建与 `vue-tsc` 都不会报错
 
 ---
 
 ## 6. 权限规范
 
-一个操作权限必须**三处同名**：
+同一个操作权限在三处保持同名，缺一处都会出现「按钮能点但接口 403」或「有权限却看不到按钮」：
 
 | 位置   | 写法                                                    | 缺失后果                         |
 | ------ | ------------------------------------------------------- | -------------------------------- |
@@ -542,13 +543,13 @@ export const zh = {
 
 前端指令行为：`permissions` 含 `*:*:*` 或匹配项才保留元素，否则 `parentNode.removeChild(el)`。**权限标识写错的表现是按钮凭空消失，不是点击 403。**
 
-新增权限必须同时在 `doc/sql/migration/` 下补可重复执行的迁移脚本（参考 `20261028_add_workflow_category_perms.sql`）。
+新增权限时，顺手在 `doc/sql/migration/` 下补一个可重复执行的迁移脚本（参考 `20261028_add_workflow_category_perms.sql`），否则已有环境里这条权限不会生效。
 
 ---
 
 ## 7. 样式与主题规范
 
-### 7.1 令牌优先（禁止裸值）
+### 7.1 令牌优先
 
 | 类型 | 令牌                                                               |
 | ---- | ------------------------------------------------------------------ |
@@ -559,7 +560,7 @@ export const zh = {
 | 动效 | `--p-duration-fast/normal/slow`、`--p-ease-out`、`--p-ease-in-out` |
 | 阴影 | `--theme-shadow-sm/md/lg/xl`                                       |
 
-当前令牌化率：圆角 100%、字号 100%、过渡 97%、间距 85%。新增代码不得拉低。
+当前令牌化率：圆角 100%、字号 100%、过渡 97%、间距 85%。新增代码保持这个比例即可。
 
 ### 7.2 强调色的三种用法
 
@@ -577,7 +578,7 @@ export const zh = {
 
 ### 7.4 移动端
 
-全局已处理：单元格两行截断、表头换行、工具栏换行、分页居中、搜索项独占一行、弹窗内边距收紧。**页面禁止重复实现**。
+全局已处理：单元格两行截断、表头换行、工具栏换行、分页居中、搜索项独占一行、弹窗内边距收紧，页面里不用再处理一遍。
 
 特殊需求使用已全局注入的断点 mixin（无需 import）：
 
@@ -590,7 +591,7 @@ export const zh = {
 
 ### 7.5 搜索区字段宽度
 
-必须用档位类，**禁止内联 `style="width"`**：
+用档位类，不要内联 `style="width"`（内联会被 EP 的搜索项样式覆盖）：
 
 | 类                | 宽度  |
 | ----------------- | ----- |
@@ -611,7 +612,7 @@ export const zh = {
 | 列表换页 / 搜索 / 刷新 | `v-table-loading`（壳内置） |
 | 首屏整块无数据         | `Skeleton` 组件             |
 
-**禁止**使用 `v-loading`。`v-table-loading` 指令自带 `role="status"` / `aria-live`，视觉为「浅色遮罩 + 沿顶边扫过的强调色细线」，全站唯一一套。
+加载态统一用 `v-table-loading`（而不是 `v-loading`）：它自带 `role="status"` / `aria-live`，视觉是「浅色遮罩 + 沿顶边扫过的强调色细线」，全站只有这一套，换页面时不会跳变。
 
 骨架屏用法：
 
@@ -629,8 +630,8 @@ export const zh = {
 
 | 项           | 要求                                                                                                    |
 | ------------ | ------------------------------------------------------------------------------------------------------- |
-| 字段布局     | 壳的 `#form-fields` 外层已有 `el-row`，每个字段必须包 `el-col`（`:span="12"` 半宽 / `:span="24"` 整行） |
-| 窄屏降级     | `.adaptive-form` 已处理，页面禁止写断点                                                                 |
+| 字段布局     | 壳的 `#form-fields` 外层已有 `el-row`，每个字段包一层 `el-col`（`:span="12"` 半宽 / `:span="24"` 整行） |
+| 窄屏降级     | `.adaptive-form` 已处理断点，页面里不用再写                                                             |
 | 校验规则     | 通过 `formRules` 传给壳；动态规则用 `computed`                                                          |
 | 额外弹窗     | 详情抽屉、生成器等等放壳的 **`#extra` 插槽**，不要塞进 `#form-fields`，也**不要放在壳的同级**           |
 | 弹窗内写表单 | 模板里用 `#form-fields` 的 `formData`；脚本里用 `crud.state.formData.value`                             |
@@ -641,16 +642,18 @@ export const zh = {
 
 | 项              | 要求                                                            |
 | --------------- | --------------------------------------------------------------- |
-| 调试残留        | 禁止 `console.log`（`console.warn` / `error` 可用）             |
-| 注释掉的代码    | 禁止提交；确实需要保留的用 TODO + 说明                          |
-| 未使用导入/导出 | 禁止                                                            |
-| 死组件 / 死页面 | 后端接口不存在时禁止新增页面；功能下线时同步删除前端            |
-| 无效样式        | 被更高优先级覆盖、实际不生效的声明必须删除                      |
+| 调试残留        | `console.log` 提交前清掉（`console.warn` / `error` 可以留）      |
+| 注释掉的代码    | 不要提交；确实要留就转成 TODO + 说明                            |
+| 未使用导入/导出 | 顺手删掉                                                        |
+| 死组件 / 死页面 | 后端接口不存在时不加页面；功能下线时把前端一起删掉              |
+| 无效样式        | 被更高优先级覆盖、实际不生效的声明删掉                          |
 | 提交前          | `vue-tsc --noEmit`、`pnpm build:dev` 通过，且手工点过受影响页面 |
 
 ---
 
-## 11. 提交前检查清单
+## 11. 提交前自查
+
+按表格过一遍即可。这些项都对应上面章节里容易返工的点，勾完基本不会再被打回。
 
 ### 11.1 通用
 
@@ -688,18 +691,18 @@ export const zh = {
 
 ---
 
-## 12. 禁止事项速查
+## 12. 常见错误：现象与原因
 
 1. **`v-loading`** —— 用 `v-table-loading`
-2. **`el-dropdown` 默认插槽里套 `el-tooltip`** —— EP 用 `ElOnlyChild` 取触发元素，套组件后点击失效；触发元素必须是原生元素，提示用 `title`
-3. **给搜索框写内联宽度** —— 会被 EP 样式覆盖，必须用 `search-field*`
+2. **`el-dropdown` 默认插槽里套 `el-tooltip`** —— EP 用 `ElOnlyChild` 取触发元素，套一层组件后点击失效；触发元素用原生元素，提示改用 `title`
+3. **给搜索框写内联宽度** —— 会被 EP 样式覆盖，改用 `search-field*` 档位类
 4. **自己实现 `resetSearch`** —— `resetFields()` 只处理声明 `prop` 的字段，未声明 `prop` 的条件会残留；用壳的 `resetSearch()`
 5. **为不存在的后端接口写页面** —— 先确认 Controller 有对应 `@RequestMapping`
 6. **`v-permission` 用了没人种的权限标识** —— 表现是按钮消失而非报错
 7. **页面根节点自己加 `.app-container`** —— 壳内部已有，会双倍内边距
 8. **在 `#table` 里再包 `el-table`** —— 只放 `el-table-column`
 9. **组件 `name` 与路由 `name` 大小写不一致** —— keep-alive 匹配区分大小写，缓存会静默失效
-10. **在壳的同级再放弹窗、抽屉** —— 会让页面变成多根节点（fragment），而 `<transition mode="out-in">` + `<keep-alive>` 要求单一元素根：进入动画挂不上、`class` 也无法继承，**表现是右侧内容区直接空白**，且构建与 `vue-tsc` 都不报错。页面自有弹窗一律放进壳的 `#extra` 插槽，**且构建与 `vue-tsc` 都不会报错，只能靠这条规则**
+10. **在壳的同级再放弹窗、抽屉** —— 会让页面变成多根节点（fragment），而 `<transition mode="out-in">` + `<keep-alive>` 要求单一元素根：进入动画挂不上、`class` 也无法继承，**表现是右侧内容区直接空白**，构建与 `vue-tsc` 都不报错。把页面自有弹窗放进壳的 `#extra` 插槽即可——这类问题只能靠现象反推，所以单独列在这里
 11. **在 `<keep-alive>` / `<transition>` 里用 `v-if` / `v-else` 放多个分支** —— 两者都要求**恰好一个**子节点。Vue 校验发生在**运行时**，`pnpm build:dev` 不会报错，只在浏览器里抛 `<KeepAlive> expects exactly one child component`。需要分支时把判断提到外层（如 `v-else-if` 与 `router-view` 并列），或让 `:is` 指向一个兜底组件
 12. **patch 壳返回对象上的方法**（`crud.methods.handleEdit = …`）—— 用 `onDialogOpen` / `removeConfirmText` 等显式配置项，patch 既不生效也破坏契约
 13. **提交被更高优先级覆盖的"无效样式"** —— 例如给 `type="primary"` 的按钮写 `--el-button-bg-color`，会被 `html .el-button--primary` 压制
@@ -742,7 +745,7 @@ export const zh = {
 声明为预构建依赖（`optimizeDeps.include`）。不要改成「按用量推导」——会漏掉
 `ElMessage` / `ElMessageBox` / `ElNotification` 这类由 API 调用而非标签引入的样式。
 
-**改动 `vite.config.ts` 后必须重启 `pnpm dev`**，配置不会热更新。
+改动 `vite.config.ts` 后需要重启 `pnpm dev`，配置不会热更新。
 
 ### 14.2 改了 vite 配置或依赖后的标准动作
 

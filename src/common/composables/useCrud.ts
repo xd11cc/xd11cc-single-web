@@ -190,15 +190,18 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
       confirmButtonText: t('common.confirm'),
       cancelButtonText: t('common.cancel'),
       type: 'warning',
-    }).then(() => {
-      options
-        .removeApi?.(String(row.id))
-        .then((res) => {
-          ElMessage.success(res.msg || t('common.messages.deleteSuccess'))
-          getTableData()
-        })
-        .catch(() => {})
     })
+      .then(() => {
+        options
+          .removeApi?.(String(row.id))
+          .then((res) => {
+            ElMessage.success(res.msg || t('common.messages.deleteSuccess'))
+            getTableData()
+          })
+          .catch(() => {})
+      })
+      // 用户点「取消」时 ElMessageBox 会 reject；不接住会在控制台留下 unhandled rejection
+      .catch(() => {})
   }
 
   // ─── 批量删除 ──────────────────────────────────────────
@@ -215,16 +218,19 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
       confirmButtonText: t('common.confirm'),
       cancelButtonText: t('common.cancel'),
       type: 'warning',
-    }).then(() => {
-      options
-        .removeApi?.(ids)
-        .then((res) => {
-          ElMessage.success(res.msg || t('common.messages.deleteSuccess'))
-          tableSelection.value = []
-          getTableData()
-        })
-        .catch(() => {})
     })
+      .then(() => {
+        options
+          .removeApi?.(ids)
+          .then((res) => {
+            ElMessage.success(res.msg || t('common.messages.deleteSuccess'))
+            tableSelection.value = []
+            getTableData()
+          })
+          .catch(() => {})
+      })
+      // 取消批量删除同样会产生 reject，一并接住
+      .catch(() => {})
   }
 
   // ─── 提交（校验 + API 调用 + 成功/失败处理） ──────────
