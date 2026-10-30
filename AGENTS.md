@@ -38,7 +38,7 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 
 **动态路由**：`publicRoutes` + 后端 `GET /login/getRoutes` → `transformBackendRoutes`（拼 `Layout`、解析组件、把目录的 `noRedirect` 换成首个可见子页）→ `router.addRoute`。守卫用单飞 `permissionInitialization` 保证只初始化一次。菜单的 `route_name` 必须等于页面组件 `defineOptions({ name })`，否则标签栏缓存失效（现网 24 个页面已对齐）。
 
-**列表页壳**：20 个页面用 `useCrud` + `UseCrudView`，2 个树形页用 `useTreeCrud` + `TreeCrudView`。页面只提供 `pageApi`、表单字段、`#table` 插槽；分页/搜索/弹窗/批量删除由壳负责。壳的输出是 `slotProps`（`tableData` / `paginationData` / `handleAdd` …）。
+**列表页壳**：22 个表格页全部走壳——20 个用 `useCrud` + `UseCrudView`（其中 9 个 `readonly`），2 个树形页用 `useTreeCrud` + `TreeCrudView`；没有手写表格。页面只提供 `pageApi`、表单字段、`#table` 插槽；分页/搜索/弹窗/批量删除由壳负责。壳的输出是 `slotProps`（`tableData` / `paginationData` / `handleAdd` …）。
 
 **请求层**：`request.ts` 统一注入 token、401 并发去重（`handleUnauthorized` + `resetUnauthorizedHandling`）、默认超时 10s（长任务用 `LONG_REQUEST_TIMEOUT=60s`）、错误文案本地化。业务码非 200 直接 reject。
 

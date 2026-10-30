@@ -441,29 +441,6 @@ function getStatusType(row: WorkflowDefinitionVO) {
   }
 }
 
-:deep(.search-wrapper) {
-  margin-bottom: var(--p-space-5);
-}
-
-:deep(.search-wrapper .el-card__body) {
-  padding-bottom: var(--p-space-0-5);
-}
-
-:deep(.toolbar-wrapper) {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: var(--p-space-5);
-}
-
-:deep(.table-wrapper) {
-  margin-bottom: var(--p-space-5);
-}
-
-:deep(.page-wrapper) {
-  display: flex;
-  justify-content: flex-end;
-}
-
 :deep(.version-dialog .el-dialog__header) {
   margin-right: 0;
   padding: var(--p-space-6) var(--p-space-7) var(--p-space-4-5);

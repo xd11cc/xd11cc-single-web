@@ -11,7 +11,7 @@
 
 三条经验，能省掉大部分返工：
 
-1. **能套壳就套壳** —— 列表页优先用 `UseCrudView` / `TreeCrudView`。这两套壳已经做好搜索区、分页、新增/编辑弹窗、删除确认、加载态和间距，手写一遍通常只是在重复它们（壳不适用的情况见 §3.3 手写表格）
+1. **能套壳就套壳** —— 列表页优先用 `UseCrudView` / `TreeCrudView`。这两套壳已经做好搜索区、分页、新增/编辑弹窗、删除确认、加载态和间距，手写一遍通常只是在重复它们（壳表达不了的结构见 §3.3）
 2. **用设计令牌，不写裸值** —— 颜色、圆角、字号、间距、动效时长都有对应的 `--p-*` / `--theme-*`，换主题、切暗色时才不会漏改（§7）
 3. **文案进 i18n** —— 用户可见文本放 `src/i18n/locales/`，中英两套同步改；只改一半，切到英文时会出现中英混排（§5）
 
@@ -58,10 +58,10 @@ src/views/<domain>/<module>/
       ├─ 是 ──→ 树形表格 → TreeCrudView + useTreeCrud  （§3.2）
       └─ 否 ──→ 是否只读/无增删改？
          ├─ 是 ──→ 普通表格 + readonly                （§3.1.6）
-         └─ 否 ──→ 手写表格                          （§3.3）
+         └─ 否 ──→ 壳表达不了，先看 §3.3 再决定
 ```
 
-当前分布：普通表格 14 个（含 5 个只读列表）、树形表格 2 个、手写表格 6 个。
+当前分布：**22 个表格页全部走壳**——普通表格 20 个（其中 9 个 `readonly`）、树形表格 2 个（`system/dept`、`system/menu`），没有手写表格。
 
 ---
 
@@ -373,7 +373,9 @@ crud.methods.getTreeData()
 - 父级选择直接用 `#form-fields` 作用域里的 `treeData`，另发一次请求容易和后端树不同步
 - 子级默认值有业务规则时用 `childForm(parent)`（参考菜单：目录下加菜单、菜单下加按钮）
 
-### 3.3 手写表格
+### 3.3 壳覆盖不到的场景
+
+项目里 22 个表格页已经全部走壳。这一节保留给**将来真遇到壳表达不了的结构**时参考；如果你觉得某个页面非手写不可，先对照下面两张表，多数情况其实能用壳解决。
 
 **先排除这三种「以为不能用、其实能用」的情况：**
 
@@ -383,21 +385,16 @@ crud.methods.getTreeData()
 | 操作是审批、生成、导出、撤销这类**动作**而非增删改 | 动作按钮放 `#actions` 或行内，弹窗放 `#extra` 插槽 |
 | 后端没有分页接口                                   | `hide-pagination` + `pageApi` 里做适配（§3.1.6）   |
 
-只有当**壳在结构上表达不了**时才允许手写：
+排除之后仍然做不到的，通常是这几种结构：
 
-| 真正的阻碍                           | 典型形态                                              |
+| 结构                                 | 为什么壳接不住                                        |
 | ------------------------------------ | ----------------------------------------------------- |
 | 一页里有多个互相独立的列表           | 主从双表（上表选中 → 下表联动，且两者都要自己的分页） |
 | 表格内嵌可编辑单元格                 | 点击单元格原地编辑，不弹窗                            |
 | 非分页语义                           | 无限滚动、游标翻页                                    |
 | 页面骨架不是「搜索 + 工具栏 + 表格」 | 看板、树 + 详情双栏                                   |
 
-> **存量待迁移（6 个）**：`approval/started`、`approval/todo`、`approval/done`、
-> `tool/generateCode`、`bpm/expression-config`、`system/notice`。
-> 技术上**都可以迁移**——前 4 个没有增删改，用 `readonly`；后 2 个是标准 CRUD，用普通壳。
-> 它们目前是手写的，属于历史遗留，**不是设计上的豁免**。
-
-手写表格也建议沿用同一套骨架，否则间距、加载态和列表页会对不上：
+真遇到时，至少沿用同一套骨架，否则间距和加载态会和列表页对不上：
 
 #### 3.3.1 沿用页面骨架类
 
@@ -418,9 +415,7 @@ crud.methods.getTreeData()
 </div>
 ```
 
-这四个类的样式由 `src/common/assets/styles/page-scaffold.scss` 统一提供：`.search-wrapper`（下间距）、`.toolbar-wrapper`（左右分布 + 下间距）、`.table-wrapper`（下间距）、`.page-wrapper`（右对齐分页）。
-
-这四个类不要在页面 `<style>` 里重复定义。当前 `approval/*`、`bpm/expression-config` 还没挂 `.table-wrapper`，属待补齐项。
+这四个类的样式由 `src/common/assets/styles/page-scaffold.scss` 统一提供：`.search-wrapper`（下间距）、`.toolbar-wrapper`（左右分布 + 下间距）、`.table-wrapper`（下间距）、`.page-wrapper`（右对齐分页）。这四个类不要在页面 `<style>` 里重复定义。
 
 #### 3.3.2 表格视觉参考（与壳保持一致）
 
@@ -436,10 +431,6 @@ crud.methods.getTreeData()
 | 搜索区字段宽度 | 用 `search-field*` 档位类，内联 `style="width"` 会被覆盖   |
 | 弹窗           | `.adaptive-form` + `el-col` 布局                          |
 | i18n / 令牌    | 同普通页面                                                |
-
-#### 3.3.4 参考实现
-
-`src/views/system/notice/index.vue`：手写表格 + 详情弹窗 + 发布/撤回，骨架类、加载态、i18n、权限均合规。
 
 ---
 
@@ -480,7 +471,7 @@ crud.methods.getTreeData()
 
 ### 4.4 表格属性
 
-`border` / `height` 等通过 `:table-props` 传给壳；手写表格直接写在 `el-table` 上。不要在 `#table` 插槽里再包一层 `el-table`——表头和列宽会双重计算。
+`border` / `height` 等通过 `:table-props` 传给壳（若将来有手写表格，直接写在 `el-table` 上）。不要在 `#table` 插槽里再包一层 `el-table`——表头和列宽会双重计算。
 
 ---
 
@@ -681,14 +672,6 @@ export const zh = {
 - [ ] 父级选择使用插槽提供的 `treeData`
 - [ ] 子级创建默认值通过 `childForm` 表达，而非在页面里判断
 
-### 11.4 手写表格
-
-- [ ] 确认属于 §3.3 允许的三种情况之一
-- [ ] 复用 `.search-wrapper` / `.toolbar-wrapper` / `.table-wrapper` / `.page-wrapper`，未重复定义样式
-- [ ] 使用 `v-table-loading`，未使用 `v-loading`
-- [ ] 对齐、表头换行、列宽符合 §4
-- [ ] i18n、权限、令牌同普通表格
-
 ---
 
 ## 12. 常见错误：现象与原因
@@ -720,7 +703,8 @@ export const zh = {
 | 普通表格 + 工具栏右侧按钮       | `src/views/system/dict/index.vue`       |
 | 树形表格（默认展开 + 删除拦截） | `src/views/system/dept/index.vue`       |
 | 树形表格（子级类型推导）        | `src/views/system/menu/index.vue`       |
-| 手写表格（合规范本）            | `src/views/system/notice/index.vue`     |
+| 只读列表 + 详情抽屉             | `src/views/approval/started/index.vue`  |
+| 普通表格 + 字典驱动的状态筛选   | `src/views/bpm/category/index.vue`      |
 
 ---
 
