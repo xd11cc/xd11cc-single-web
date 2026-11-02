@@ -407,6 +407,7 @@ function handleQuickAction(path: string) {
 </script>
 
 <style lang="scss" scoped>
+@use '../../common/assets/styles/breakpoints.scss' as *;
 @keyframes fade-up {
   from {
     opacity: 0;

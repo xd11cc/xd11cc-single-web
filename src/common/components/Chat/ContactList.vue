@@ -81,6 +81,7 @@ const filteredContacts = computed(() => {
 </script>
 
 <style lang="scss" scoped>
+@use '../../assets/styles/breakpoints.scss' as *;
 .contact-list {
   width: 200px;
   flex-shrink: 0;

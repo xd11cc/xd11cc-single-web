@@ -64,7 +64,8 @@ function toggleAll(rows: any[], expanded: boolean) {
 defineExpose({ tableRef, toggleRowExpansion, toggleAll })
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@use '../../assets/styles/breakpoints.scss' as *;
 .tree-table-card {
   overflow: hidden;
   border-color: var(--theme-border-light);

@@ -2,7 +2,7 @@
 
 **[English](README.en.md) | 中文**
 
-SaaS 多租户管理平台前端，基于 Vue 3.5 + TypeScript + Element Plus 构建，提供认证授权、动态路由、实时通讯、数据可视化等开箱即用的企业级前端解决方案。
+企业级管理平台前端，基于 Vue 3.5 + TypeScript + Element Plus 构建，提供认证授权、动态路由、实时通讯、数据可视化等开箱即用的能力。
 
 ## 技术栈
 
@@ -23,6 +23,9 @@ SaaS 多租户管理平台前端，基于 Vue 3.5 + TypeScript + Element Plus �
 | **实时通信**  | WebSocket                                 | -             | 心跳 + 指数退避重连       |
 | **工具库**    | lodash-es / mitt / nprogress / screenfull | -             | 常用工具集                |
 | **国际化**    | vue-i18n                                  | 11.2.8        | 多语言支持                |
+| **流程设计器**| bpmn-js                                   | 18.24.0       | BPMN 2.0 画布 + 属性面板  |
+| **测试**      | Vitest + @vue/test-utils + happy-dom      | 5.0.5         | 104 个用例（6 个模块）    |
+| **构建增强**  | vite-plugin-pwa / vite-plugin-compression | 1.3.0 / 0.5.1 | PWA + gzip 预压缩         |
 
 ## 功能特性
 
@@ -39,11 +42,8 @@ SaaS 多租户管理平台前端，基于 Vue 3.5 + TypeScript + Element Plus �
 ### 🔐 认证系统
 
 - **密码登录** — 用户名 + 密码 + 图形验证码，JWT Bearer Token 注入
-- **短信登录** — 手机号 + 短信验证码
-- **社交登录** — OAuth2 第三方授权（GitHub、微信、QQ），支持 URL 参数携带 Token 自动登录回调
-- **注册 & 找回密码** — 完整用户生命周期
-- **账号绑定** — 第三方账号关联已有用户
-- **二维码登录** — 扫码登录支持
+- **社交登录** — OAuth2 第三方授权，回调地址携带 `?token=` 时由路由守卫接管并自动登录
+- **账号绑定** — 第三方账号关联已有用户（`BindUserForm`）
 
 ### 📡 实时通信
 
@@ -74,7 +74,10 @@ SaaS 多租户管理平台前端，基于 Vue 3.5 + TypeScript + Element Plus �
 
 - **系统管理** — 用户、角色、菜单、部门、岗位、字典、配置、日志（登录日志 / 操作日志 / 在线用户）
 - **通知公告** — 公告发布与编辑，WebSocket 实时推送，个人通知收件箱
-- **定时任务** — 任务 CRUD、Cron 表达式可视化生成、执行日志查看（Quartz / XXL-JOB）
+- **审批中心** — 我发起的（可撤回）/ 我的待办（通过 / 驳回 / 转办）/ 我已办，含流程详情抽屉
+- **BPM 流程设计器** — bpmn-js 画布 + 属性面板（审批模式、候选人、条件表达式、监听器）+ 表达式配置
+- **消息重投** — MQ 消费失败消息查询、重投与编辑后重投
+- **授权客户端** — 社交登录客户端配置（图标上传、回调地址）
 - **仪表盘** — ECharts 数据可视化（访问趋势 / 流量来源 / 本周概况），统计卡片，快捷入口，最近活动时间线
 - **Druid 监控** — SQL 监控面板集成
 - **代码生成器** — Freemarker 模板快速生成 CRUD 代码
@@ -87,7 +90,6 @@ src/
 │   ├── assets/styles/              # 样式系统（themes.css / variables.css / layout-common.scss / element-plus.css）
 │   ├── components/                 # 公共组件
 │   │   ├── Chat/                   # 聊天面板（联系人 + 消息区域 + 悬浮按钮）
-│   │   ├── CronGenerator/          # Cron 表达式生成器
 │   │   ├── IconSelect/             # 图标选择器
 │   │   ├── IFrame/                 # Iframe 封装
 │   │   ├── MenuIcon/               # 菜单图标渲染
@@ -98,6 +100,8 @@ src/
 │   │   └── TableColumnSetting/     # 表格列配置
 │   ├── composables/                # 公共 Hooks
 │   │   ├── useChat.ts              # 聊天逻辑
+│   │   ├── useCrud.ts              # 列表页壳（20 个页面共用）
+│   │   ├── useTreeCrud.ts          # 树形列表页壳（dept / menu）
 │   │   ├── useDevice.ts            # 设备类型检测
 │   │   ├── useDict.ts              # 字典数据加载
 │   │   ├── useLayoutMode.ts        # 布局模式
@@ -107,6 +111,7 @@ src/
 │   │   ├── useTableColumns.ts      # 表格列配置
 │   │   ├── useTheme.ts             # 主题切换（View Transition）
 │   │   ├── useTitle.ts             # 动态标题
+│   │   ├── useTodoQueue.ts         # 待办弹窗队列
 │   │   ├── useWatermark.ts         # 水印系统
 │   │   └── useWebSocket.ts         # WebSocket 生命周期
 │   ├── constants/                  # 应用常量
@@ -140,15 +145,17 @@ src/
 │   ├── permission-directive.ts     # v-permission 指令
 │   └── hljs.ts                     # Highlight.js
 ├── router/                         # 路由配置 & 守卫
-│   ├── config.ts                   # 路由配置（静态路由 / 白名单）
+│   ├── config.ts                   # 路由配置（history 模式 / 默认角色）
 │   ├── guard.ts                    # 导航守卫（NProgress / 动态路由）
-│   ├── helper.ts                   # 路由降级工具（flatMultiLevelRoutes）
-│   ├── index.ts                    # 路由入口
+│   ├── index.ts                    # 路由入口（公共路由 + resetRouter）
+│   ├── route-redirect.ts           # 目录路由 redirect 计算（纯函数）
 │   └── whitelist.ts                # 免登录白名单
 └── views/                          # 页面视图
+    ├── approval/                   # 审批中心（started / todo / done + 详情抽屉）
+    ├── bpm/                        # 工作流：定义 / 分类 / 模型设计器 / 表达式配置
     ├── dashboard/                  # 仪表盘
     ├── error/                      # 401 / 404 / 500 错误页
-    ├── login/                      # 登录 / 注册 / 找回密码 / 社交绑定
+    ├── login/                      # 登录 / 社交账号绑定
     ├── monitor/druid/              # Druid 数据库监控
     ├── redirect/                   # 路由重定向
     ├── system/                     # 系统管理（14 个子模块）
@@ -159,7 +166,7 @@ src/
 
 ### 环境要求
 
-- Node.js 18+
+- Node.js **20.19+ / 22.12+**（Vite 7 的最低要求，18 会启动失败）
 - pnpm（推荐）
 
 ### 安装依赖
@@ -201,6 +208,23 @@ pnpm preview
 
 产物输出到 `dist/` 目录。
 
+### 类型检查与测试
+
+```bash
+# 类型检查（vue-tsc --noEmit）
+pnpm typecheck
+
+# 单元测试（Vitest，104 个用例，约 1.5s）
+pnpm test:unit
+
+# 监听模式
+pnpm test:unit:watch
+```
+
+> `pnpm build` 已经串联 `typecheck → test:unit → vite build`，任一步失败都会中断打包。
+
+测试覆盖：请求封装（401 并发去重 / 超时 / 错误码）、WebSocket 状态机（心跳 / 指数退避 / 可见性重连）、列表页壳与骨架结构、字典方向、标签栏缓存、动态路由转换、BPM 属性面板。
+
 ### 代码格式化
 
 ```bash
@@ -211,64 +235,65 @@ pnpm format
 
 项目根目录下 `.env.*` 文件管理不同环境的变量：
 
-| 变量               | 说明                         |
-| ------------------ | ---------------------------- |
-| `VITE_APP_TITLE`   | 应用标题，显示在浏览器标签页 |
-| `VITE_BASE_URL`    | API 基础地址                 |
-| `VITE_PUBLIC_PATH` | 应用公共路径（部署子路径）   |
-| `VITE_WS_URL`      | WebSocket 服务地址           |
-| `VITE_WS_PATH`     | WebSocket 端点路径           |
+| 变量               | 说明                                     |
+| ------------------ | ---------------------------------------- |
+| `VITE_APP_TITLE`   | 应用标题，显示在浏览器标签页             |
+| `VITE_BASE_URL`    | 后端地址（直连；留空则走同源 + Vite 代理）|
+| `VITE_API_PREFIX`  | 接口前缀，当前为 `/xd11cc`               |
+| `VITE_PUBLIC_PATH` | 应用公共路径（部署子路径）               |
+| `VITE_WS_URL`      | WebSocket 服务地址（留空则按当前域名推导）|
+| `VITE_WS_PATH`     | WebSocket 端点路径，当前为 `/ws`         |
 
-| 文件        | 环境 | API 地址                           | WS 地址                          |
+| 文件        | 环境 | `VITE_BASE_URL`                    | `VITE_WS_URL`                    |
 | ----------- | ---- | ---------------------------------- | -------------------------------- |
-| `.env.dev`  | 开发 | `http://127.0.0.1:10001`           | `ws://127.0.0.1:12001`           |
-| `.env.test` | 测试 | 按部署配置                         | 按部署配置                       |
+| `.env.dev`  | 开发 | 空（同源，走 Vite 代理）           | 空（按域名推导 `ws://localhost`）|
+| `.env.test` | 测试 | `https://dev.api.com`              | `wss://dev.api.com`              |
 | `.env.prod` | 生产 | `https://xd11ccc.cloud/single-api` | `wss://xd11ccc.cloud/single-api` |
 
-开发环境下 Vite 配置了代理：`/xd11cc` → `http://localhost:10001`。
+开发环境通过 Vite 代理把请求转发到本机后端，所以 `.env.dev` 里两个地址刻意留空：
+
+```
+/xd11cc  → http://127.0.0.1:10001   （REST）
+/ws      → ws://127.0.0.1:12001     （WebSocket）
+```
 
 ## 接口概览
 
-| 模块           | 接口                                              | 描述                 |
-| -------------- | ------------------------------------------------- | -------------------- |
-| **认证**       | `POST /login/loginByPassword`                     | 账号密码登录         |
-| 认证           | `GET /login/getCaptcha`                           | 获取验证码           |
-| 认证           | `GET /login/getUserInfo`                          | 获取当前登录用户信息 |
-| 认证           | `GET /login/getRoutes`                            | 获取当前用户路由菜单 |
-| 认证           | `GET /login/authorize/{source}`                   | OAuth2 社交登录认证  |
-| 认证           | `GET /login/callback/{source}`                    | OAuth2 认证回调      |
-| **用户**       | `POST /system/user/page`                          | 用户分页列表         |
-| 用户           | `POST /system/user/add`                           | 新增用户             |
-| 用户           | `PUT /system/user/edit`                           | 编辑用户             |
-| 用户           | `DELETE /system/user/remove/{id}`                 | 删除用户             |
-| 用户           | `PUT /system/user/resetPassword`                  | 重置密码             |
-| **角色**       | `POST /system/role/page`                          | 角色分页列表         |
-| 角色           | `POST /system/role/assign`                        | 分配角色权限         |
-| **菜单**       | `GET /system/menu/list`                           | 菜单列表（树形）     |
-| **部门**       | `GET /system/dept/list`                           | 部门列表（树形）     |
-| 部门           | `POST /system/dept/add`                           | 新增部门             |
-| **岗位**       | `POST /system/post/page`                          | 岗位分页列表         |
-| **字典**       | `POST /system/dict/type/page`                     | 字典类型分页         |
-| 字典           | `POST /system/dict/data/page`                     | 字典数据分页         |
-| **配置**       | `POST /system/config/page`                        | 系统配置分页         |
-| **通知**       | `POST /system/notice/page`                        | 通知公告分页         |
-| 通知           | `POST /system/notice/publish/{id}`                | 发布通知             |
-| 通知           | `PUT /system/notice/revoke/{id}`                  | 撤回通知             |
-| **日志**       | `POST /system/operateLog/page`                    | 操作日志分页         |
-| 日志           | `POST /system/loginLog/page`                      | 登录日志分页         |
-| **在线用户**   | `GET /system/onlineUser/list`                     | 在线用户列表         |
-| 在线用户       | `DELETE /system/onlineUser/forceLogout/{tokenId}` | 强制下线             |
-| **定时任务**   | `POST /system/job/page`                           | 任务分页列表         |
-| 任务           | `POST /system/job/add`                            | 新增任务             |
-| 任务           | `POST /system/job/run/{id}`                       | 立即执行             |
-| 任务           | `GET /system/job/log/page`                        | 执行日志             |
-| **文件**       | `POST /file/upload`                               | 文件上传             |
-| 文件           | `GET /file/download/{id}`                         | 文件下载             |
-| **代码生成**   | `POST /generate/code/preview`                     | 代码生成预览         |
-| 代码生成       | `POST /generate/code/download`                    | 代码生成下载         |
-| **聊天**       | `GET /system/chat/onlineUsers`                    | 在线用户列表         |
-| 聊天           | `POST /system/chat/send`                          | 发送消息             |
-| **授权客户端** | `POST /auth/client/config/list`                   | 社交登录配置列表     |
+按模块列出主要接口（完整定义在各页面 `apis/index.ts`）。路径均以 `VITE_API_PREFIX`（`/xd11cc`）为前缀。
+
+| 模块 | 代表接口 | 说明 |
+| --- | --- | --- |
+| **认证** | `POST /login/loginByPassword` | 账号密码登录 |
+| | `GET /login/getCaptcha` | 图形验证码 |
+| | `GET /login/getUserInfo` | 当前用户信息 + 权限标签 |
+| | `GET /login/getRoutes` | 当前用户可见菜单树 |
+| | `GET /login/authorize/{source}` | OAuth2 社交登录跳转 |
+| | `POST /login/social-user/bind` | 社交账号绑定已有用户 |
+| | `GET /logout` | 退出登录 |
+| **用户** | `POST /system/user/page` · `POST /system/user/add` · `POST /system/user/modifyById` | 分页 / 新增 / 修改 |
+| | `DELETE /system/user/removeByIds/{ids}` · `POST /system/user/resetPassword/{id}` | 删除 / 重置密码 |
+| **角色** | `POST /system/role/page` · `GET /system/role/menuIds/{id}` · `GET /system/role/deptIds/{id}` | 分页 + 权限回显 |
+| **菜单** | `GET /menu/treeList` | 菜单树 |
+| **部门** | `GET /system/dept/treeList` | 部门树 |
+| **岗位** | `POST /system/post/page` | 岗位分页 |
+| **字典** | `POST /dict/type/page` · `POST /dict/data/page` · `GET /dict/data/getCacheGroup/{types}` | 字典管理 + 批量缓存 |
+| **配置** | `POST /system/config/page` | 系统配置 |
+| **通知公告** | `POST /system/notice/page` · `POST /system/notice/publish/{id}` · `PUT /system/notice/revoke/{id}` | 公告发布 / 撤回 |
+| **我的通知** | `POST /system/notice-user/myPage` · `POST /system/notice-user/markAllAsRead` | 个人收件箱 |
+| **日志** | `POST /system/operateLog/page` · `POST /system/loginLog/page` | 操作 / 登录日志 |
+| **在线用户** | `GET /system/onlineUser/list` · `DELETE /system/onlineUser/forceLogout/{tokenId}` | 在线会话 |
+| **消息重投** | `POST /system/mq-fail/page` · `POST /system/mq-fail/replay/{id}` | MQ 失败消息重投 |
+| **授权客户端** | `POST /auth/client/config/page` | 社交登录配置 |
+| **代码生成** | `POST /generate/code/page` · `GET /generate/code?tableName={name}` | 表列表 / 生成 |
+| **审批中心** | `POST /workflow/process/mine` · `POST /workflow/task/todo` · `POST /workflow/task/done` | 我发起的 / 待办 / 已办 |
+| | `POST /workflow/task/approve` · `POST /workflow/task/reject` · `POST /workflow/task/delegate` | 通过 / 驳回 / 转办 |
+| | `GET /workflow/task/rejectable-nodes` · `POST /workflow/process/cancel` | 可退回节点 / 撤回 |
+| **流程定义** | `POST /workflow/definition/page` · `POST /workflow/definition/suspend` · `POST /workflow/definition/activate` | 定义管理 |
+| **流程模型** | `POST /workflow/draft/save` · `POST /workflow/draft/deploy` | 设计器保存 / 部署 |
+| **流程分类** | `POST /workflow/category/page` · `GET /workflow/category/list` | 分类管理 |
+| **表达式配置** | `POST /workflow/expression-config/page` · `GET /workflow/expression-config/options` | 条件与监听器表达式 |
+
+> 未接入前端的能力：定时任务由后端 xxl-job 直接调度，管理端不做页面；文件上传后端已具备，前端尚未接入。
 
 ## 架构亮点
 
@@ -327,18 +352,20 @@ const permission: Directive = {
 ```
 用户登录成功 → 保存 Token
            → beforeEach 守卫拦截
-           → userStore.getInfo() 获取 roles + permissions
-           → getRoutes(roles) 请求后端接口获取菜单树
-           → transformBackendRoutes() 将后端 RouteVO[] 转换为 RouteRecordRaw[]
-           → filterDynamicRoutes() 根据 roles 过滤不可访问的路由
+           → userStore.getInfo() 获取用户信息 + permissions
+           → getRoutes() 请求后端菜单树（后端只下发有权限的菜单，前端不再按角色过滤）
+           → transformBackendRoutes() 将 RouteVO[] 转换为 RouteRecordRaw[]
+             · 目录路由的 `redirect: 'noRedirect'` 换成「第一个可见子页」
+             · 视图路由默认写入 `meta.keepAlive = true`
            → router.addRoute(route) 动态注册路由
-           → 重定向到目标页面（replace: true 不留历史记录）
+           → markRoutesReady() 标记完成 → 重定向到目标页面（replace: true，不留历史记录）
 ```
 
 **关键设计**：
 
 - 静态路由（登录页 / 404 / 重定向）在 `router/index.ts` 中静态定义
-- 动态路由（业务页面）通过后端接口 `/login/getRoutes` 获取，按角色过滤
+- 守卫用单飞（`permissionInitialization`）+ `routesReady` 标记，保证首次进入时只初始化一次，并发导航不会重复注册
+- 后端只返回当前用户有权限的菜单，因此前端**没有**角色过滤层
 - 组件懒加载：`const viewModules = import.meta.glob('@/views/**/*.vue', { eager: false })`
 - `Layout` 标记的路由统一使用 `@/layouts/index.vue` 布局包裹
 
@@ -444,8 +471,8 @@ setWatermark(text) → createWatermarkEl()
                           → 白名单 → 放行
                           → 其他 → 重定向 /login?redirect=xxx
                       → 有 Token 且访问 /login → 重定向 /dashboard
-                      → 已有 roles → 放行
-                      → 首次加载 → getInfo() → generateRoutes(roles) → addRoute
+                      → routesReady（路由已注册）→ 放行
+                      → 首次加载 → getInfo() → generateRoutes() → addRoute → markRoutesReady
                                     → 出错 → resetToken() → 重定向 login
 afterEach → setTitle(to.meta.title) → NProgress.done()
 ```
@@ -455,39 +482,6 @@ afterEach → setTitle(to.meta.title) → NProgress.done()
 - 401 防并发处理：`isHandlingUnauthorized` 标志位，防止多个并发请求同时触发跳转
 - 社交登录回调：URL Query 携带 Token，提取后存入 store 并清除参数避免刷新丢失
 - `replace: true` 重定向不留历史记录，避免用户点击后退重新触发守卫
-
-## 开发计划
-
-- [x] 多布局模式（Left / Top / LeftTop）
-- [x] 动态主题（View Transition API）
-- [x] Obsidian 三层设计令牌架构
-- [x] 路由懒加载 + 动态路由
-- [x] 标签栏 + 右键菜单 + 持久化
-- [x] 路由守卫 + NProgress 进度条
-- [x] 权限指令 v-permission
-- [x] 请求拦截器 + Bearer Token + 统一错误处理
-- [x] 密码登录 + 短信登录 + 社交登录（OAuth2）
-- [x] 注册 / 找回密码 / 账号绑定 / 二维码登录
-- [x] WebSocket 推送（心跳 + 指数退避重连 + 可见性监听）
-- [x] 全局聊天（联系人 + 消息 + 未读标记）
-- [x] 通知推送（NEW_NOTICE / REVOKE_NOTICE）
-- [x] 命令面板（⌘K）
-- [x] 骨架屏（page / table / list / card）
-- [x] 表格列配置（拖拽排序 / 显隐 / 宽度 / 持久化）
-- [x] 水印系统（防篡改）
-- [x] Cron 表达式生成器
-- [x] 图标选择器
-- [x] 国际化（vue-i18n）
-- [x] Element Plus 按需引入
-- [x] keep-alive 缓存
-- [x] 系统管理 14 个子模块
-- [x] 仪表盘 ECharts 可视化
-- [x] 代码生成器
-- [ ] 更多布局模式（Mixed / Single）
-- [ ] 主题定制面板（颜色选择器）
-- [ ] 多标签页缓存策略优化（白名单 / 黑名单）
-- [ ] 虚拟滚动长列表优化
-- [ ] 微前端接入支持（qiankun / Module Federation）
 
 ## 后端
 

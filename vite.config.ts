@@ -144,15 +144,10 @@ export default defineConfig(({ mode }) => {
     css: {
       // 线程中运行 CSS 预处理器
       preprocessorMaxWorkers: true,
-      preprocessorOptions: {
-        scss: {
-          // 断点 mixin 全局注入。
-          // 只注入变量与 mixin 定义、不产出任何 CSS，所以不会重复打包。
-          // 之前 breakpoints.scss 只在 index.scss 里 @use，Sass 模块作用域不外溢，
-          // 结果就是全站 0 次调用、11 种手写断点各写各的。
-          additionalData: `@use '@@/assets/styles/breakpoints.scss' as *;\n`,
-        },
-      },
+      // 断点 mixin 不做全局注入：additionalData 属于「隐式依赖」，
+      // 文件里看不出 mobile/sm 从哪来，且只要某次编译没带上注入（配置重建窗口、
+      // 直接用 sass CLI 或 IDE 编译）就会报 Undefined mixin。
+      // 现在需要断点的文件各自 @use '../.../breakpoints.scss' as *;，任何工具都能编译。
     },
     plugins: [
       vue(),

@@ -12,7 +12,10 @@
 //   lg      1200  桌面（min-width，向上生效）
 //
 // 用法：@include sm { ... }
-// 这些 mixin 由 vite.config.ts 的 additionalData 全局注入，无需在每个文件里 @use。
+// 用法：需要断点的文件自己引入，路径按相对位置写：
+//   @use '../breakpoints.scss' as *;
+// 不走 vite additionalData 全局注入：隐式依赖会让文件脱离 Vite（sass CLI / IDE）时
+// 报 Undefined mixin，而报错指向的是业务文件，很难定位。
 
 $breakpoint-xs: 480px;
 $breakpoint-phone: 576px;

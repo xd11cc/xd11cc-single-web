@@ -1,5 +1,5 @@
-// 断点 mixin 通过 vite 的 additionalData 注入到「入口文件」，
-// 但本文件是被 index.scss @use 的 partial，不经过那道注入，需显式引入。
+// 本文件是被 index.scss @use 的 partial，不会经过 Vite 的入口处理，
+// 因此断点 mixin 必须自己显式引入。
 @use './breakpoints.scss' as *;
 
 // 列表页通用骨架：搜索区 / 工具栏 / 表格 / 分页

@@ -371,6 +371,7 @@ watch(
 </script>
 
 <style lang="scss" scoped>
+@use '../../../common/assets/styles/breakpoints.scss' as *;
 // 编辑器样式统一由设计系统令牌驱动，避免与全局主题出现“两套绿色”和暗色割裂。
 .modeler-page {
   display: grid;

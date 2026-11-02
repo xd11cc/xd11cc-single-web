@@ -114,6 +114,7 @@ function logout() {
 </script>
 
 <style lang="scss" scoped>
+@use '../../../common/assets/styles/breakpoints.scss' as *;
 .navigation-bar {
   height: var(--v3-navigationbar-height);
   overflow: hidden;

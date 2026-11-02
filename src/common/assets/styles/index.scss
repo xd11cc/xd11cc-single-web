@@ -1,11 +1,11 @@
+// 断点 mixin：显式引入，不依赖构建工具注入（sass CLI / IDE 也能单独编译本文件）
+@use './breakpoints.scss' as *;
 // 全局css变量
 @use './variables.css';
 @use './element-plus.css';
 @use './themes.css';
 @use './mixins.scss';
 @use './page-scaffold.scss';
-// 断点 mixin 由 vite additionalData 注入（见 vite.config.ts），此处不要再 @use，
-// 同一文件重复加载同一 Sass 模块会直接报错。
 
 // 业务页面几乎都应该在根元素上挂载 class="app-container"，以保持页面美观
 .app-container {

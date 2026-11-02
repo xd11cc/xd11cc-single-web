@@ -72,6 +72,7 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+@use '../../assets/styles/breakpoints.scss' as *;
 .chat-panel {
   position: fixed;
   bottom: 24px;

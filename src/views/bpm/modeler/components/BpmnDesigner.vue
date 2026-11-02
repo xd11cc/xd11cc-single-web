@@ -304,6 +304,7 @@ defineExpose({
 </script>
 
 <style lang="scss">
+@use '../../../../common/assets/styles/breakpoints.scss' as *;
 @import 'bpmn-js/dist/assets/diagram-js.css';
 @import 'bpmn-js/dist/assets/bpmn-font/css/bpmn.css';
 

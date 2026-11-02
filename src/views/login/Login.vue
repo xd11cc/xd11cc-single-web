@@ -73,6 +73,7 @@ const needBind = computed(() => 'need-bind' in route.query)
 </script>
 
 <style lang="scss" scoped>
+@use '../../common/assets/styles/breakpoints.scss' as *;
 .login-page {
   position: relative;
   display: flex;

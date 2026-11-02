@@ -2,7 +2,7 @@
 
 **[中文](README.md) | English**
 
-A production-ready, multi-tenant SaaS admin frontend framework built with Vue 3.5 and TypeScript, providing out-of-the-box enterprise solutions for authentication, authorization, dynamic routing, real-time messaging, and data visualization.
+An enterprise admin frontend built with Vue 3.5 and TypeScript, providing out-of-the-box authentication, authorization, dynamic routing, real-time messaging, and data visualization.
 
 ## Tech Stack
 
@@ -23,6 +23,9 @@ A production-ready, multi-tenant SaaS admin frontend framework built with Vue 3.
 | **Realtime**         | WebSocket                                 | -             | Heartbeat + exponential backoff reconnection   |
 | **Utilities**        | lodash-es / mitt / nprogress / screenfull | -             | Common utilities                               |
 | **i18n**             | vue-i18n                                  | 11.2.8        | Internationalization                           |
+| **BPMN**             | bpmn-js                                   | 18.24.0       | BPMN 2.0 canvas + property panel               |
+| **Testing**          | Vitest + @vue/test-utils + happy-dom      | 5.0.5         | 104 cases across 6 modules                     |
+| **Build extras**     | vite-plugin-pwa / vite-plugin-compression | 1.3.0 / 0.5.1 | PWA + gzip pre-compression                     |
 
 ## Features
 
@@ -39,11 +42,8 @@ A production-ready, multi-tenant SaaS admin frontend framework built with Vue 3.
 ### 🔐 Authentication
 
 - **Password Login** — Username + password + CAPTCHA, JWT Bearer Token injection
-- **SMS Login** — Phone number + verification code
-- **Social Login** — OAuth2 third-party authorization (GitHub, WeChat, QQ), supports URL-parameter Token auto-login callback
-- **Register & Forgot Password** — Full user lifecycle
-- **Account Binding** — Link social accounts to existing users
-- **QR Code Login** — Scan-to-login support
+- **Social Login** — OAuth2 third-party authorization; callback with `?token=` is picked up by the router guard and logged in automatically
+- **Account Binding** — Link social accounts to existing users (`BindUserForm`)
 
 ### 📡 Realtime Communication
 
@@ -74,7 +74,10 @@ A production-ready, multi-tenant SaaS admin frontend framework built with Vue 3.
 
 - **System Management** — User, Role, Menu, Department, Post, Dictionary, Config, Logs (login / operate / online user)
 - **Notices** — Announcement publishing, WebSocket real-time push, personal notification inbox
-- **Scheduled Jobs** — Job CRUD, visual Cron expression generator, execution log viewer (Quartz / XXL-JOB)
+- **Approval Center** — Started (cancellable) / Todo (approve / reject / delegate) / Done, with a process detail drawer
+- **BPM Designer** — bpmn-js canvas + property panel (approval mode, candidates, conditions, listeners) + expression config
+- **MQ Replay** — Inspect failed messages, replay or edit-then-replay
+- **Auth Clients** — Social login client configuration (icon upload, callback URL)
 - **Dashboard** — ECharts data visualization (visit trends / traffic sources / weekly overview), stat cards, quick actions, recent activity timeline
 - **Druid Monitor** — SQL monitoring panel integration
 - **Code Generator** — Freemarker-based rapid CRUD code generation
@@ -87,7 +90,6 @@ src/
 │   ├── assets/styles/              # Style system (themes.css / variables.css / layout-common.scss / element-plus.css)
 │   ├── components/                 # Shared components
 │   │   ├── Chat/                   # Chat panel (contacts + message area + floating button)
-│   │   ├── CronGenerator/          # Cron expression builder
 │   │   ├── IconSelect/             # Icon picker
 │   │   ├── IFrame/                 # Iframe wrapper
 │   │   ├── MenuIcon/               # Menu icon renderer
@@ -98,6 +100,8 @@ src/
 │   │   └── TableColumnSetting/     # Table column config
 │   ├── composables/                # Shared composables
 │   │   ├── useChat.ts              # Chat logic
+│   │   ├── useCrud.ts              # List-page shell (shared by 20 pages)
+│   │   ├── useTreeCrud.ts          # Tree list-page shell (dept / menu)
 │   │   ├── useDevice.ts            # Device type detection
 │   │   ├── useDict.ts              # Dictionary data loading
 │   │   ├── useLayoutMode.ts        # Layout mode
@@ -107,6 +111,7 @@ src/
 │   │   ├── useTableColumns.ts      # Table column config
 │   │   ├── useTheme.ts             # Theme toggle (View Transition)
 │   │   ├── useTitle.ts             # Dynamic page title
+│   │   ├── useTodoQueue.ts         # Todo popup queue
 │   │   ├── useWatermark.ts         # Watermark system
 │   │   └── useWebSocket.ts         # WebSocket lifecycle
 │   ├── constants/                  # Application constants
@@ -140,15 +145,17 @@ src/
 │   ├── permission-directive.ts     # v-permission directive
 │   └── hljs.ts                     # Highlight.js
 ├── router/                         # Route config & guards
-│   ├── config.ts                   # Route config (static routes / whitelist)
+│   ├── config.ts                   # Route config (history mode / default roles)
 │   ├── guard.ts                    # Navigation guard (NProgress / dynamic routes)
-│   ├── helper.ts                   # Route flattening utility
-│   ├── index.ts                    # Router entry
+│   ├── index.ts                    # Router entry (public routes + resetRouter)
+│   ├── route-redirect.ts           # Directory redirect resolver (pure function)
 │   └── whitelist.ts                # Login-free whitelist
 └── views/                          # Page views
+    ├── approval/                   # Approval center (started / todo / done + detail drawer)
+    ├── bpm/                        # Workflow: definitions, categories, modeler, expressions
     ├── dashboard/                  # Dashboard
     ├── error/                      # 401, 404, 500 error pages
-    ├── login/                      # Login, register, forgot password, social binding
+    ├── login/                      # Login + social account binding
     ├── monitor/druid/              # Druid database monitor
     ├── redirect/                   # Route redirect
     ├── system/                     # System management (14 sub-modules)
@@ -159,7 +166,7 @@ src/
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js **20.19+ / 22.12+** (Vite 7 minimum; Node 18 fails to start)
 - pnpm (recommended)
 
 ### Install Dependencies
@@ -201,6 +208,23 @@ pnpm preview
 
 Output goes to the `dist/` directory.
 
+### Type Checking & Tests
+
+```bash
+# Type check (vue-tsc --noEmit)
+pnpm typecheck
+
+# Unit tests (Vitest, 104 cases, ~1.5s)
+pnpm test:unit
+
+# Watch mode
+pnpm test:unit:watch
+```
+
+> `pnpm build` runs `typecheck → test:unit → vite build`; any failure aborts the build.
+
+Coverage: request wrapper (401 de-duplication, timeouts, error codes), WebSocket state machine (heartbeat, exponential backoff, visibility reconnect), list-page shells and skeleton structure, dictionary direction, tag-view cache, dynamic route transformation, BPM property panel.
+
 ### Code Formatting
 
 ```bash
@@ -211,64 +235,65 @@ pnpm format
 
 Environment variables are managed via `.env.*` files in the project root:
 
-| Variable           | Description                            |
-| ------------------ | -------------------------------------- |
-| `VITE_APP_TITLE`   | Application title shown in browser tab |
-| `VITE_BASE_URL`    | API base URL                           |
-| `VITE_PUBLIC_PATH` | Public base path (deployment sub-path) |
-| `VITE_WS_URL`      | WebSocket server URL                   |
-| `VITE_WS_PATH`     | WebSocket endpoint path                |
+| Variable           | Description                                         |
+| ------------------ | --------------------------------------------------- |
+| `VITE_APP_TITLE`   | Application title shown in browser tab              |
+| `VITE_BASE_URL`    | Backend origin (empty = same origin via Vite proxy)  |
+| `VITE_API_PREFIX`  | API prefix, currently `/xd11cc`                      |
+| `VITE_PUBLIC_PATH` | Public base path (deployment sub-path)               |
+| `VITE_WS_URL`      | WebSocket server URL (empty = derive from host)      |
+| `VITE_WS_PATH`     | WebSocket endpoint path, currently `/ws`             |
 
-| File        | Environment | API URL                            | WS URL                           |
+| File        | Environment | `VITE_BASE_URL`                    | `VITE_WS_URL`                    |
 | ----------- | ----------- | ---------------------------------- | -------------------------------- |
-| `.env.dev`  | Development | `http://127.0.0.1:10001`           | `ws://127.0.0.1:12001`           |
-| `.env.test` | Testing     | Per deployment                     | Per deployment                   |
+| `.env.dev`  | Development | empty (same origin via Vite proxy) | empty (derived from host)        |
+| `.env.test` | Testing     | `https://dev.api.com`              | `wss://dev.api.com`              |
 | `.env.prod` | Production  | `https://xd11ccc.cloud/single-api` | `wss://xd11ccc.cloud/single-api` |
 
-In development mode, Vite proxies `/xd11cc` → `http://localhost:10001`.
+In development, Vite proxies requests to the local backend, which is why `.env.dev` leaves both URLs empty:
+
+```
+/xd11cc  → http://127.0.0.1:10001   (REST)
+/ws      → ws://127.0.0.1:12001     (WebSocket)
+```
 
 ## API Endpoints
 
-| Module          | Endpoint                                          | Description              |
-| --------------- | ------------------------------------------------- | ------------------------ |
-| **Auth**        | `POST /login/loginByPassword`                     | Username/password login  |
-| Auth            | `GET /login/getCaptcha`                           | Get CAPTCHA              |
-| Auth            | `GET /login/getUserInfo`                          | Get current user info    |
-| Auth            | `GET /login/getRoutes`                            | Get current user routes  |
-| Auth            | `GET /login/authorize/{source}`                   | OAuth2 social login      |
-| Auth            | `GET /login/callback/{source}`                    | OAuth2 callback          |
-| **User**        | `POST /system/user/page`                          | User paginated list      |
-| User            | `POST /system/user/add`                           | Add user                 |
-| User            | `PUT /system/user/edit`                           | Edit user                |
-| User            | `DELETE /system/user/remove/{id}`                 | Delete user              |
-| User            | `PUT /system/user/resetPassword`                  | Reset password           |
-| **Role**        | `POST /system/role/page`                          | Role paginated list      |
-| Role            | `POST /system/role/assign`                        | Assign role permissions  |
-| **Menu**        | `GET /system/menu/list`                           | Menu list (tree)         |
-| **Department**  | `GET /system/dept/list`                           | Department list (tree)   |
-| Department      | `POST /system/dept/add`                           | Add department           |
-| **Post**        | `POST /system/post/page`                          | Post paginated list      |
-| **Dictionary**  | `POST /system/dict/type/page`                     | Dict type paginated      |
-| Dictionary      | `POST /system/dict/data/page`                     | Dict data paginated      |
-| **Config**      | `POST /system/config/page`                        | System config paginated  |
-| **Notice**      | `POST /system/notice/page`                        | Notice paginated         |
-| Notice          | `POST /system/notice/publish/{id}`                | Publish notice           |
-| Notice          | `PUT /system/notice/revoke/{id}`                  | Revoke notice            |
-| **Operate Log** | `POST /system/operateLog/page`                    | Operate log paginated    |
-| **Login Log**   | `POST /system/loginLog/page`                      | Login log paginated      |
-| **Online User** | `GET /system/onlineUser/list`                     | Online user list         |
-| Online User     | `DELETE /system/onlineUser/forceLogout/{tokenId}` | Force logout             |
-| **Job**         | `POST /system/job/page`                           | Job paginated list       |
-| Job             | `POST /system/job/add`                            | Add job                  |
-| Job             | `POST /system/job/run/{id}`                       | Execute immediately      |
-| Job             | `GET /system/job/log/page`                        | Execution logs           |
-| **File**        | `POST /file/upload`                               | File upload              |
-| File            | `GET /file/download/{id}`                         | File download            |
-| **Code Gen**    | `POST /generate/code/preview`                     | Code preview             |
-| Code Gen        | `POST /generate/code/download`                    | Code download            |
-| **Chat**        | `GET /system/chat/onlineUsers`                    | Online user list         |
-| Chat            | `POST /system/chat/send`                          | Send message             |
-| **Auth Client** | `POST /auth/client/config/list`                   | Social login config list |
+Main endpoints per module (full definitions live in each page's `apis/index.ts`). Every path is prefixed by `VITE_API_PREFIX` (`/xd11cc`).
+
+| Module | Representative endpoints | Notes |
+| --- | --- | --- |
+| **Auth** | `POST /login/loginByPassword` | Username + password login |
+| | `GET /login/getCaptcha` | Image CAPTCHA |
+| | `GET /login/getUserInfo` | Current user + permission tags |
+| | `GET /login/getRoutes` | Menu tree visible to the user |
+| | `GET /login/authorize/{source}` | OAuth2 social login redirect |
+| | `POST /login/social-user/bind` | Bind social account to existing user |
+| | `GET /logout` | Sign out |
+| **User** | `POST /system/user/page` · `POST /system/user/add` · `POST /system/user/modifyById` | List / create / update |
+| | `DELETE /system/user/removeByIds/{ids}` · `POST /system/user/resetPassword/{id}` | Delete / reset password |
+| **Role** | `POST /system/role/page` · `GET /system/role/menuIds/{id}` · `GET /system/role/deptIds/{id}` | List + permission echo |
+| **Menu** | `GET /menu/treeList` | Menu tree |
+| **Department** | `GET /system/dept/treeList` | Department tree |
+| **Post** | `POST /system/post/page` | Post list |
+| **Dictionary** | `POST /dict/type/page` · `POST /dict/data/page` · `GET /dict/data/getCacheGroup/{types}` | Management + batch cache |
+| **Config** | `POST /system/config/page` | System configuration |
+| **Notices** | `POST /system/notice/page` · `POST /system/notice/publish/{id}` · `PUT /system/notice/revoke/{id}` | Publish / revoke |
+| **My Notifications** | `POST /system/notice-user/myPage` · `POST /system/notice-user/markAllAsRead` | Personal inbox |
+| **Logs** | `POST /system/operateLog/page` · `POST /system/loginLog/page` | Operate / login logs |
+| **Online Users** | `GET /system/onlineUser/list` · `DELETE /system/onlineUser/forceLogout/{tokenId}` | Live sessions |
+| **MQ Replay** | `POST /system/mq-fail/page` · `POST /system/mq-fail/replay/{id}` | Failed message replay |
+| **Auth Clients** | `POST /auth/client/config/page` | Social login configuration |
+| **Code Generator** | `POST /generate/code/page` · `GET /generate/code?tableName={name}` | Table list / generate |
+| **Approval Center** | `POST /workflow/process/mine` · `POST /workflow/task/todo` · `POST /workflow/task/done` | Started / todo / done |
+| | `POST /workflow/task/approve` · `POST /workflow/task/reject` · `POST /workflow/task/delegate` | Approve / reject / delegate |
+| | `GET /workflow/task/rejectable-nodes` · `POST /workflow/process/cancel` | Rejectable nodes / cancel |
+| **Definitions** | `POST /workflow/definition/page` · `POST /workflow/definition/suspend` · `POST /workflow/definition/activate` | Definition management |
+| **Models** | `POST /workflow/draft/save` · `POST /workflow/draft/deploy` | Designer save / deploy |
+| **Categories** | `POST /workflow/category/page` · `GET /workflow/category/list` | Category management |
+| **Expressions** | `POST /workflow/expression-config/page` · `GET /workflow/expression-config/options` | Condition & listener expressions |
+
+> Not wired to the frontend: scheduled jobs are handled directly by xxl-job on the backend (no admin UI); file upload/download exists on the backend but is not integrated yet.
 
 ## Architecture Highlights
 
@@ -327,18 +352,20 @@ const permission: Directive = {
 ```
 User login success → Save Token
                   → beforeEach guard intercepts
-                  → userStore.getInfo() fetch roles + permissions
-                  → getRoutes(roles) request backend menu tree
+                  → userStore.getInfo() fetch user info + permissions
+                  → getRoutes() request the menu tree (backend only returns permitted menus)
                   → transformBackendRoutes() convert RouteVO[] → RouteRecordRaw[]
-                  → filterDynamicRoutes() filter by roles
+                    · directory `redirect: 'noRedirect'` → first visible child
+                    · view routes get `meta.keepAlive = true` by default
                   → router.addRoute(route) register dynamically
-                  → Redirect to target page (replace: true, no history)
+                  → markRoutesReady() → redirect to target page (replace: true, no history)
 ```
 
 **Key Design**:
 
 - Static routes (login / 404 / redirect) defined in `router/index.ts`
-- Dynamic routes (business pages) fetched via `/login/getRoutes`, filtered by role
+- The guard uses a single-flight (`permissionInitialization`) plus a `routesReady` flag, so concurrent navigations only initialize once
+- Dynamic routes (business pages) fetched via `/login/getRoutes`; the backend already filters by permission, so there is **no role-filtering layer** in the frontend
 - Lazy component loading: `const viewModules = import.meta.glob('@/views/**/*.vue', { eager: false })`
 - Routes marked `Layout` wrapped by `@/layouts/index.vue`
 
@@ -455,39 +482,6 @@ afterEach → setTitle(to.meta.title) → NProgress.done()
 - 401 concurrent-dedup: `isHandlingUnauthorized` flag prevents multiple concurrent requests from triggering duplicate redirects
 - Social login callback: URL Query carries Token, extracted into store and parameter cleared to survive refresh
 - `replace: true` redirect avoids history record, prevents user clicking back from re-triggering guard
-
-## Roadmap
-
-- [x] Multi-layout modes (Left / Top / LeftTop)
-- [x] Dynamic theme (View Transition API)
-- [x] Obsidian three-layer design token architecture
-- [x] Route lazy loading + dynamic routes
-- [x] Tags view + context menu + persistence
-- [x] Route guards + NProgress progress bar
-- [x] Permission directive v-permission
-- [x] Request interceptor + Bearer Token + unified error handling
-- [x] Password login + SMS login + Social login (OAuth2)
-- [x] Register / Forgot Password / Account Binding / QR Code Login
-- [x] WebSocket push (heartbeat + exponential backoff reconnection + visibility listener)
-- [x] Global chat (contacts + messages + unread badges)
-- [x] Push notifications (NEW_NOTICE / REVOKE_NOTICE)
-- [x] Command palette (⌘K)
-- [x] Skeleton screens (page / table / list / card)
-- [x] Table column config (drag reorder / visibility / width / persistence)
-- [x] Watermark system (tamper-proof)
-- [x] Cron expression generator
-- [x] Icon picker
-- [x] Internationalization (vue-i18n)
-- [x] Element Plus on-demand import
-- [x] keep-alive cache
-- [x] System management 14 sub-modules
-- [x] Dashboard ECharts visualization
-- [x] Code generator
-- [ ] More layout modes (Mixed / Single)
-- [ ] Theme customization panel (color picker)
-- [ ] Multi-tab cache strategy optimization (whitelist / blacklist)
-- [ ] Virtual scrolling long list optimization
-- [ ] Micro-frontend support (qiankun / Module Federation)
 
 ## Backend
 

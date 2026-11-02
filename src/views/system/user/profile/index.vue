@@ -682,6 +682,7 @@ function resetPwdForm() {
 </script>
 
 <style lang="scss" scoped>
+@use '../../../../common/assets/styles/breakpoints.scss' as *;
 .profile-page {
   display: grid;
   grid-template-columns: 280px 1fr;

@@ -311,6 +311,7 @@ defineExpose({ open })
 </script>
 
 <style lang="scss">
+@use '../../../../common/assets/styles/breakpoints.scss' as *;
 .listener-form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
