@@ -146,6 +146,29 @@ describe('TreeCrudView 状态与提交契约', () => {
     expect(wrapper.find('.tree-stub').exists()).toBe(true)
   })
 
+  it('冷启动（加载中且无数据）显示骨架，不渲染树表', () => {
+    const wrapper = mount(TreeCrudView, {
+      global,
+      props: { slotProps: makeSlotProps({ loading: true, treeData: [] }) },
+    })
+
+    expect(wrapper.find('.skeleton-wrapper').exists()).toBe(true)
+    expect(wrapper.find('[role="status"]').exists()).toBe(true)
+    expect(wrapper.findComponent({ name: 'TreeTableView' }).exists()).toBe(false)
+  })
+
+  it('已有数据时刷新保留树表，不闪骨架', () => {
+    const wrapper = mount(TreeCrudView, {
+      global,
+      props: {
+        slotProps: makeSlotProps({ loading: true, treeData: [{ id: 1, name: '总部' }] }),
+      },
+    })
+
+    expect(wrapper.find('.skeleton-wrapper').exists()).toBe(false)
+    expect(wrapper.findComponent({ name: 'TreeTableView' }).exists()).toBe(true)
+  })
+
   it('正常空数据保持树空态，而不是加载错误', () => {
     const { wrapper } = mountView(makeSlotProps({ treeData: [] }))
     expect(wrapper.find('.tree-stub').exists()).toBe(true)

@@ -177,6 +177,24 @@ afterEach(() => {
 })
 
 describe('ApprovalDetailDrawer 会话与审批保护', () => {
+  it('详情未返回前显示骨架，返回后换成真实内容', async () => {
+    const pending = deferred<unknown>()
+    vi.mocked(getProcessDetail).mockImplementation(() => pending.promise as never)
+
+    const { wrapper } = mountDrawer()
+    await nextTick()
+
+    // 冷启动：骨架在，正文（分节）不渲染
+    expect(wrapper.find('.skeleton-wrapper').exists()).toBe(true)
+    expect(wrapper.find('.detail-section').exists()).toBe(false)
+
+    pending.resolve(detailResponse('p1', 't1'))
+    await flushPromises()
+
+    expect(wrapper.find('.skeleton-wrapper').exists()).toBe(false)
+    expect(wrapper.find('.detail-section').exists()).toBe(true)
+  })
+
   it('初始打开只加载一次，详情就绪前按钮和方法都禁止审批', async () => {
     const request = deferred<DetailResponse>()
     vi.mocked(getProcessDetail).mockReturnValueOnce(request.promise)

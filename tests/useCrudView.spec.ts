@@ -93,6 +93,32 @@ describe('UseCrudView 结构契约', () => {
     expect(wrapper.find('.page-wrapper').exists()).toBe(true)
   })
 
+  it('冷启动（加载中且无数据）显示骨架屏，不渲染空表', () => {
+    const wrapper = mount(UseCrudView, {
+      ...mountOptions,
+      props: { slotProps: makeSlotProps({ tableLoading: true, tableData: [] }) },
+    })
+
+    // 断言壳的接线：冷启动走 Skeleton 分支、表格不渲染、带无障碍状态标记。
+    // （骨架块本身有 180ms 延迟，避免快接口闪一下，那是 Skeleton 自己的行为，
+    //   由 tests/skeleton.spec.ts 单独验证。）
+    expect(wrapper.find('.skeleton-wrapper').exists()).toBe(true)
+    expect(wrapper.find('[data-stub="el-table"]').exists()).toBe(false)
+    expect(wrapper.find('[role="status"]').exists()).toBe(true)
+  })
+
+  it('翻页/刷新（加载中但已有数据）保留表格，不闪骨架', () => {
+    const wrapper = mount(UseCrudView, {
+      ...mountOptions,
+      props: {
+        slotProps: makeSlotProps({ tableLoading: true, tableData: [{ id: 1 }] }),
+      },
+    })
+
+    expect(wrapper.find('.skeleton-wrapper').exists()).toBe(false)
+    expect(wrapper.find('[data-stub="el-table"]').exists()).toBe(true)
+  })
+
   it('整页只有一个根元素（多根节点会白屏）', () => {
     const wrapper = mount(UseCrudView, { ...mountOptions, props: { slotProps: makeSlotProps() } })
 

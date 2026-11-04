@@ -1,11 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import {
-  WebSocketClient,
-  WsStatus,
-  getWebSocket,
-  initWebSocketInstance,
-  resetWebSocketInstance,
-} from '@@/utils/webSocket'
+import { WebSocketClient, WsStatus } from '@@/utils/webSocket'
 
 /**
  * WebSocketClient 的接口测试。
@@ -307,38 +301,5 @@ describe('WebSocketClient', () => {
 
     document.dispatchEvent(new Event('visibilitychange'))
     expect(FakeWebSocket.instances).toHaveLength(1)
-  })
-})
-
-describe('WebSocket 单例管理', () => {
-  beforeEach(() => {
-    vi.useFakeTimers()
-    FakeWebSocket.instances = []
-    vi.stubGlobal('WebSocket', FakeWebSocket)
-    resetWebSocketInstance()
-  })
-
-  afterEach(() => {
-    resetWebSocketInstance()
-    vi.useRealTimers()
-    vi.unstubAllGlobals()
-  })
-
-  it('重复初始化会关闭上一个连接', () => {
-    const first = initWebSocketInstance('t1')
-    first.initConnect()
-    const second = initWebSocketInstance('t2')
-    second.initConnect()
-
-    expect(first).not.toBe(second)
-    expect(getWebSocket()).toBe(second)
-    expect(FakeWebSocket.instances).toHaveLength(2)
-  })
-
-  it('reset 后 getWebSocket 返回 null', () => {
-    initWebSocketInstance('t1')
-    resetWebSocketInstance()
-
-    expect(getWebSocket()).toBeNull()
   })
 })

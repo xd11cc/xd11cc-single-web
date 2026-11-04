@@ -26,6 +26,10 @@
           </el-button>
         </el-empty>
       </div>
+      <!-- 冷启动：还没有任何树数据时用骨架占位；已有数据时仍走树表的扫描线 -->
+      <div v-else-if="isColdLoading" role="status" :aria-label="$t('common.loading')">
+        <Skeleton variant="table" :rows="6" :columns="4" />
+      </div>
       <TreeTableView
         v-else
         ref="treeTableRef"
@@ -95,6 +99,7 @@ import { useI18n } from 'vue-i18n'
 import { computed, onScopeDispose, ref, watch } from 'vue'
 import type { FormRules } from 'element-plus'
 import TreeTableView from '@@/components/TreeTable/index.vue'
+import Skeleton from '@@/components/Skeleton/index.vue'
 import type { UseTreeCrudSlotProps } from '@@/composables/useTreeCrud'
 
 defineOptions({ name: 'TreeCrudView' })
@@ -136,6 +141,12 @@ const emit = defineEmits<{
 const formRef = ref<any>(null)
 const submitLoading = ref(false)
 const treeTableRef = ref<InstanceType<typeof TreeTableView> | null>(null)
+/** 冷启动：加载中且没有任何树数据（失败态单独分支） */
+const isColdLoading = computed(
+  () =>
+    props.slotProps.loading && props.slotProps.treeData.length === 0 && !props.slotProps.treeError,
+)
+
 let dialogSessionId = 0
 let isDisposed = false
 

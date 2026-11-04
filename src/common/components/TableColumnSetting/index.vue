@@ -23,11 +23,17 @@
           @drop="handleDrop(index)"
         >
           <Icon icon="lucide:grip-vertical" class="drag-handle" />
-          <el-checkbox :model-value="col.visible" @change="emit('toggle', col.prop)">
+          <el-checkbox
+            :model-value="col.visible"
+            :disabled="isLastVisible(col)"
+            :title="isLastVisible(col) ? $t('common.columnSettingsLastVisible') : undefined"
+            @change="emit('toggle', col.prop)"
+          >
             {{ col.label }}
           </el-checkbox>
         </div>
       </div>
+      <div class="column-setting-hint">{{ $t('common.columnSettingsHint') }}</div>
     </div>
   </el-popover>
 </template>
@@ -51,6 +57,13 @@ const emit = defineEmits<{
 }>()
 
 const sortedColumns = computed(() => [...props.columns].sort((a, b) => a.order - b.order))
+
+const visibleCount = computed(() => props.columns.filter((col) => col.visible).length)
+
+/** 只剩一列时不允许再取消勾选，否则表格会变成空壳 */
+function isLastVisible(col: TableColumnConfig) {
+  return col.visible && visibleCount.value <= 1
+}
 
 let dragIndex = -1
 
@@ -87,6 +100,15 @@ function handleDrop(index: number) {
   .column-setting-list {
     max-height: 300px;
     overflow-y: auto;
+  }
+
+  .column-setting-hint {
+    padding-top: var(--p-space-2);
+    margin-top: var(--p-space-2);
+    border-top: 1px solid var(--theme-border);
+    color: var(--theme-text-muted);
+    font-size: var(--p-text-xs);
+    line-height: 1.5;
   }
 
   .column-setting-item {

@@ -1,6 +1,7 @@
 <template>
   <UseCrudView
     :slotProps="crud.slotProps"
+    :columns="columns"
     :formRules="formRules"
     :add-title="$t('system.user.dialogs.add')"
     :edit-title="$t('system.user.dialogs.edit')"
@@ -58,67 +59,27 @@
           rowSelection.length
         }})
       </el-button>
-      <TableColumnSetting
-        :columns="tableColumns.columns.value"
-        @toggle="tableColumns.toggleColumn"
-        @reorder="tableColumns.reorderColumns"
-        @reset="tableColumns.resetColumns"
-      />
     </template>
 
-    <!-- 表格列 -->
-    <template #table="{ handleEdit, handleRemove }">
+    <!-- 选择列：固定在生成列之前 -->
+    <template #table-prefix>
       <el-table-column type="selection" width="50" align="center" />
-      <el-table-column
-        v-if="isColumnVisible('username')"
-        prop="username"
-        :label="$t('system.user.columns.username')"
-      />
-      <el-table-column
-        v-if="isColumnVisible('nickname')"
-        prop="nickname"
-        :label="$t('system.user.form.nickname')"
-      />
-      <el-table-column
-        v-if="isColumnVisible('deptName')"
-        prop="deptName"
-        :label="$t('system.user.search.dept')"
-      />
-      <el-table-column
-        v-if="isColumnVisible('postName')"
-        prop="postName"
-        :label="$t('system.user.columns.postName')"
-      />
-      <el-table-column
-        v-if="isColumnVisible('phone')"
-        prop="phone"
-        :label="$t('system.user.search.phone')"
-      />
-      <el-table-column
-        v-if="isColumnVisible('status')"
-        prop="status"
-        :label="$t('system.user.search.status')"
-        align="center"
-        width="80"
+    </template>
+
+    <!-- 状态列：自定义单元格；其余列由壳按 columns 配置生成 -->
+    <template #cell-status="{ row }">
+      <el-tag
+        :type="getDictItem('system_status', row.status)?.listClass || 'info'"
+        effect="plain"
+        size="small"
+        disable-transitions
       >
-        <template #default="scope">
-          <el-tag
-            :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
-            effect="plain"
-            size="small"
-            disable-transitions
-          >
-            {{ getDictItem('system_status', scope.row.status)?.label }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column
-        v-if="isColumnVisible('createTime')"
-        prop="createTime"
-        :label="$t('system.user.columns.createTime')"
-        align="center"
-        min-width="160"
-      />
+        {{ getDictItem('system_status', row.status)?.label }}
+      </el-tag>
+    </template>
+
+    <!-- 操作列：固定在生成列之后 -->
+    <template #table-append="{ handleEdit, handleRemove }">
       <el-table-column fixed="right" :label="$t('common.action')" width="120" align="center">
         <template #default="scope">
           <el-tooltip :content="$t('common.edit')" placement="top">
@@ -316,11 +277,10 @@
 import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import type { FormRules } from 'element-plus'
+import type { TableColumnDef } from '@@/composables/useTableColumns'
 import UseCrudView from '@/common/components/useCrud/index.vue'
 import { useCrud } from '@/common/composables/useCrud'
 import { useDict } from '@/common/composables/useDict'
-import { useTableColumns } from '@@/composables/useTableColumns'
-import TableColumnSetting from '@@/components/TableColumnSetting/index.vue'
 import { userPage, addUser, modifyUserById, removeUserByIds, resetPassword } from './apis'
 import type { SystemUserVO, SystemUserQueryVO } from './apis/type'
 import { deptTreeList } from '@/views/system/dept/apis'
@@ -352,23 +312,17 @@ const crud = useCrud<SystemUserQueryVO, SystemUserVO>({
   },
 })
 
-// ─── 表格列配置 ────────────────────────────────────────────
-const tableColumns = useTableColumns({
-  key: 'system-user',
-  defaultColumns: [
-    { prop: 'username', label: $t('system.user.columns.username') },
-    { prop: 'nickname', label: $t('system.user.columns.nickname') },
-    { prop: 'deptName', label: $t('system.user.columns.deptName') },
-    { prop: 'postName', label: $t('system.user.columns.postName') },
-    { prop: 'phone', label: $t('system.user.columns.phone') },
-    { prop: 'status', label: $t('system.user.columns.status'), width: 80 },
-    { prop: 'createTime', label: $t('system.user.columns.createTime') },
-  ],
-})
-
-function isColumnVisible(prop: string) {
-  return tableColumns.visibleColumns.value.some((c) => c.prop === prop)
-}
+// ─── 表格列定义 ────────────────────────────────────────────
+// 只声明「这一列长什么样」；排序 / 显隐 / 列宽由壳统一管理并持久化
+const columns: TableColumnDef[] = [
+  { prop: 'username', label: $t('system.user.columns.username'), minWidth: 120 },
+  { prop: 'nickname', label: $t('system.user.columns.nickname'), minWidth: 120 },
+  { prop: 'deptName', label: $t('system.user.columns.deptName'), minWidth: 140 },
+  { prop: 'postName', label: $t('system.user.columns.postName'), minWidth: 140 },
+  { prop: 'phone', label: $t('system.user.columns.phone'), minWidth: 140 },
+  { prop: 'status', label: $t('system.user.search.status'), width: 90, align: 'center' },
+  { prop: 'createTime', label: $t('system.user.columns.createTime'), width: 170, align: 'center' },
+]
 
 // ─── 依赖数据（部门树 / 岗位 / 角色） ─────────────────────
 const deptTreeData = ref<any[]>([])

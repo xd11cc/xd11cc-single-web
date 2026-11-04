@@ -6,26 +6,26 @@
 
 ## 技术栈
 
-| 分类          | 技术                                      | 版本          | 说明                      |
-| ------------- | ----------------------------------------- | ------------- | ------------------------- |
-| **基础框架**  | Vue                                       | 3.5.17        | 渐进式前端框架            |
-| **语言**      | TypeScript                                | 5.x           | 类型安全                  |
-| **构建工具**  | Vite                                      | 7.0.0         | 极速开发体验              |
-| **UI 组件库** | Element Plus                              | 2.10.2        | 企业级组件库              |
-| **状态管理**  | Pinia                                     | 3.0.3         | 响应式状态容器            |
-| **路由**      | Vue Router                                | 4.5.1         | 路由管理 + 动态路由       |
-| **HTTP 请求** | Axios                                     | 1.10.0        | 请求拦截 + 统一错误处理   |
-| **样式方案**  | Sass                                      | 1.89.2        | Obsidian 三层设计令牌架构 |
-| **图标**      | Iconify                                   | 5.0.1         | Lucide 离线包             |
-| **字体**      | Outfit + DM Sans                          | -             | Display / Body 字体       |
-| **图表**      | ECharts + Vue-ECharts                     | 6.1.0 / 8.0.1 | 数据可视化                |
-| **代码高亮**  | Highlight.js                              | 11.11.1       | 代码生成器预览            |
-| **实时通信**  | WebSocket                                 | -             | 心跳 + 指数退避重连       |
-| **工具库**    | lodash-es / mitt / nprogress / screenfull | -             | 常用工具集                |
-| **国际化**    | vue-i18n                                  | 11.2.8        | 多语言支持                |
-| **流程设计器**| bpmn-js                                   | 18.24.0       | BPMN 2.0 画布 + 属性面板  |
-| **测试**      | Vitest + @vue/test-utils + happy-dom      | 5.0.5         | 104 个用例（6 个模块）    |
-| **构建增强**  | vite-plugin-pwa / vite-plugin-compression | 1.3.0 / 0.5.1 | PWA + gzip 预压缩         |
+| 分类           | 技术                                      | 版本          | 说明                      |
+| -------------- | ----------------------------------------- | ------------- | ------------------------- |
+| **基础框架**   | Vue                                       | 3.5.17        | 渐进式前端框架            |
+| **语言**       | TypeScript                                | 5.x           | 类型安全                  |
+| **构建工具**   | Vite                                      | 7.0.0         | 极速开发体验              |
+| **UI 组件库**  | Element Plus                              | 2.10.2        | 企业级组件库              |
+| **状态管理**   | Pinia                                     | 3.0.3         | 响应式状态容器            |
+| **路由**       | Vue Router                                | 4.5.1         | 路由管理 + 动态路由       |
+| **HTTP 请求**  | Axios                                     | 1.10.0        | 请求拦截 + 统一错误处理   |
+| **样式方案**   | Sass                                      | 1.89.2        | Obsidian 三层设计令牌架构 |
+| **图标**       | Iconify                                   | 5.0.1         | Lucide 离线包             |
+| **字体**       | Outfit + DM Sans                          | -             | Display / Body 字体       |
+| **图表**       | ECharts + Vue-ECharts                     | 6.1.0 / 8.0.1 | 数据可视化                |
+| **代码高亮**   | Highlight.js                              | 11.11.1       | 代码生成器预览            |
+| **实时通信**   | WebSocket                                 | -             | 心跳 + 指数退避重连       |
+| **工具库**     | lodash-es / mitt / nprogress / screenfull | -             | 常用工具集                |
+| **国际化**     | vue-i18n                                  | 11.2.8        | 多语言支持                |
+| **流程设计器** | bpmn-js                                   | 18.24.0       | BPMN 2.0 画布 + 属性面板  |
+| **测试**       | Vitest + @vue/test-utils + happy-dom      | 5.0.5         | 104 个用例（6 个模块）    |
+| **构建增强**   | vite-plugin-pwa / vite-plugin-compression | 1.3.0 / 0.5.1 | PWA + gzip 预压缩         |
 
 ## 功能特性
 
@@ -235,20 +235,20 @@ pnpm format
 
 项目根目录下 `.env.*` 文件管理不同环境的变量：
 
-| 变量               | 说明                                     |
-| ------------------ | ---------------------------------------- |
-| `VITE_APP_TITLE`   | 应用标题，显示在浏览器标签页             |
-| `VITE_BASE_URL`    | 后端地址（直连；留空则走同源 + Vite 代理）|
-| `VITE_API_PREFIX`  | 接口前缀，当前为 `/xd11cc`               |
-| `VITE_PUBLIC_PATH` | 应用公共路径（部署子路径）               |
-| `VITE_WS_URL`      | WebSocket 服务地址（留空则按当前域名推导）|
-| `VITE_WS_PATH`     | WebSocket 端点路径，当前为 `/ws`         |
+| 变量               | 说明                                       |
+| ------------------ | ------------------------------------------ |
+| `VITE_APP_TITLE`   | 应用标题，显示在浏览器标签页               |
+| `VITE_BASE_URL`    | 后端地址（直连；留空则走同源 + Vite 代理） |
+| `VITE_API_PREFIX`  | 接口前缀，当前为 `/xd11cc`                 |
+| `VITE_PUBLIC_PATH` | 应用公共路径（部署子路径）                 |
+| `VITE_WS_URL`      | WebSocket 服务地址（留空则按当前域名推导） |
+| `VITE_WS_PATH`     | WebSocket 端点路径，当前为 `/ws`           |
 
-| 文件        | 环境 | `VITE_BASE_URL`                    | `VITE_WS_URL`                    |
-| ----------- | ---- | ---------------------------------- | -------------------------------- |
-| `.env.dev`  | 开发 | 空（同源，走 Vite 代理）           | 空（按域名推导 `ws://localhost`）|
-| `.env.test` | 测试 | `https://dev.api.com`              | `wss://dev.api.com`              |
-| `.env.prod` | 生产 | `https://xd11ccc.cloud/single-api` | `wss://xd11ccc.cloud/single-api` |
+| 文件        | 环境 | `VITE_BASE_URL`                    | `VITE_WS_URL`                     |
+| ----------- | ---- | ---------------------------------- | --------------------------------- |
+| `.env.dev`  | 开发 | 空（同源，走 Vite 代理）           | 空（按域名推导 `ws://localhost`） |
+| `.env.test` | 测试 | `https://dev.api.com`              | `wss://dev.api.com`               |
+| `.env.prod` | 生产 | `https://xd11ccc.cloud/single-api` | `wss://xd11ccc.cloud/single-api`  |
 
 开发环境通过 Vite 代理把请求转发到本机后端，所以 `.env.dev` 里两个地址刻意留空：
 
@@ -261,37 +261,37 @@ pnpm format
 
 按模块列出主要接口（完整定义在各页面 `apis/index.ts`）。路径均以 `VITE_API_PREFIX`（`/xd11cc`）为前缀。
 
-| 模块 | 代表接口 | 说明 |
-| --- | --- | --- |
-| **认证** | `POST /login/loginByPassword` | 账号密码登录 |
-| | `GET /login/getCaptcha` | 图形验证码 |
-| | `GET /login/getUserInfo` | 当前用户信息 + 权限标签 |
-| | `GET /login/getRoutes` | 当前用户可见菜单树 |
-| | `GET /login/authorize/{source}` | OAuth2 社交登录跳转 |
-| | `POST /login/social-user/bind` | 社交账号绑定已有用户 |
-| | `GET /logout` | 退出登录 |
-| **用户** | `POST /system/user/page` · `POST /system/user/add` · `POST /system/user/modifyById` | 分页 / 新增 / 修改 |
-| | `DELETE /system/user/removeByIds/{ids}` · `POST /system/user/resetPassword/{id}` | 删除 / 重置密码 |
-| **角色** | `POST /system/role/page` · `GET /system/role/menuIds/{id}` · `GET /system/role/deptIds/{id}` | 分页 + 权限回显 |
-| **菜单** | `GET /menu/treeList` | 菜单树 |
-| **部门** | `GET /system/dept/treeList` | 部门树 |
-| **岗位** | `POST /system/post/page` | 岗位分页 |
-| **字典** | `POST /dict/type/page` · `POST /dict/data/page` · `GET /dict/data/getCacheGroup/{types}` | 字典管理 + 批量缓存 |
-| **配置** | `POST /system/config/page` | 系统配置 |
-| **通知公告** | `POST /system/notice/page` · `POST /system/notice/publish/{id}` · `PUT /system/notice/revoke/{id}` | 公告发布 / 撤回 |
-| **我的通知** | `POST /system/notice-user/myPage` · `POST /system/notice-user/markAllAsRead` | 个人收件箱 |
-| **日志** | `POST /system/operateLog/page` · `POST /system/loginLog/page` | 操作 / 登录日志 |
-| **在线用户** | `GET /system/onlineUser/list` · `DELETE /system/onlineUser/forceLogout/{tokenId}` | 在线会话 |
-| **消息重投** | `POST /system/mq-fail/page` · `POST /system/mq-fail/replay/{id}` | MQ 失败消息重投 |
-| **授权客户端** | `POST /auth/client/config/page` | 社交登录配置 |
-| **代码生成** | `POST /generate/code/page` · `GET /generate/code?tableName={name}` | 表列表 / 生成 |
-| **审批中心** | `POST /workflow/process/mine` · `POST /workflow/task/todo` · `POST /workflow/task/done` | 我发起的 / 待办 / 已办 |
-| | `POST /workflow/task/approve` · `POST /workflow/task/reject` · `POST /workflow/task/delegate` | 通过 / 驳回 / 转办 |
-| | `GET /workflow/task/rejectable-nodes` · `POST /workflow/process/cancel` | 可退回节点 / 撤回 |
-| **流程定义** | `POST /workflow/definition/page` · `POST /workflow/definition/suspend` · `POST /workflow/definition/activate` | 定义管理 |
-| **流程模型** | `POST /workflow/draft/save` · `POST /workflow/draft/deploy` | 设计器保存 / 部署 |
-| **流程分类** | `POST /workflow/category/page` · `GET /workflow/category/list` | 分类管理 |
-| **表达式配置** | `POST /workflow/expression-config/page` · `GET /workflow/expression-config/options` | 条件与监听器表达式 |
+| 模块           | 代表接口                                                                                                      | 说明                    |
+| -------------- | ------------------------------------------------------------------------------------------------------------- | ----------------------- |
+| **认证**       | `POST /login/loginByPassword`                                                                                 | 账号密码登录            |
+|                | `GET /login/getCaptcha`                                                                                       | 图形验证码              |
+|                | `GET /login/getUserInfo`                                                                                      | 当前用户信息 + 权限标签 |
+|                | `GET /login/getRoutes`                                                                                        | 当前用户可见菜单树      |
+|                | `GET /login/authorize/{source}`                                                                               | OAuth2 社交登录跳转     |
+|                | `POST /login/social-user/bind`                                                                                | 社交账号绑定已有用户    |
+|                | `GET /logout`                                                                                                 | 退出登录                |
+| **用户**       | `POST /system/user/page` · `POST /system/user/add` · `POST /system/user/modifyById`                           | 分页 / 新增 / 修改      |
+|                | `DELETE /system/user/removeByIds/{ids}` · `POST /system/user/resetPassword/{id}`                              | 删除 / 重置密码         |
+| **角色**       | `POST /system/role/page` · `GET /system/role/menuIds/{id}` · `GET /system/role/deptIds/{id}`                  | 分页 + 权限回显         |
+| **菜单**       | `GET /menu/treeList`                                                                                          | 菜单树                  |
+| **部门**       | `GET /system/dept/treeList`                                                                                   | 部门树                  |
+| **岗位**       | `POST /system/post/page`                                                                                      | 岗位分页                |
+| **字典**       | `POST /dict/type/page` · `POST /dict/data/page` · `GET /dict/data/getCacheGroup/{types}`                      | 字典管理 + 批量缓存     |
+| **配置**       | `POST /system/config/page`                                                                                    | 系统配置                |
+| **通知公告**   | `POST /system/notice/page` · `POST /system/notice/publish/{id}` · `PUT /system/notice/revoke/{id}`            | 公告发布 / 撤回         |
+| **我的通知**   | `POST /system/notice-user/myPage` · `POST /system/notice-user/markAllAsRead`                                  | 个人收件箱              |
+| **日志**       | `POST /system/operateLog/page` · `POST /system/loginLog/page`                                                 | 操作 / 登录日志         |
+| **在线用户**   | `GET /system/onlineUser/list` · `DELETE /system/onlineUser/forceLogout/{tokenId}`                             | 在线会话                |
+| **消息重投**   | `POST /system/mq-fail/page` · `POST /system/mq-fail/replay/{id}`                                              | MQ 失败消息重投         |
+| **授权客户端** | `POST /auth/client/config/page`                                                                               | 社交登录配置            |
+| **代码生成**   | `POST /generate/code/page` · `GET /generate/code?tableName={name}`                                            | 表列表 / 生成           |
+| **审批中心**   | `POST /workflow/process/mine` · `POST /workflow/task/todo` · `POST /workflow/task/done`                       | 我发起的 / 待办 / 已办  |
+|                | `POST /workflow/task/approve` · `POST /workflow/task/reject` · `POST /workflow/task/delegate`                 | 通过 / 驳回 / 转办      |
+|                | `GET /workflow/task/rejectable-nodes` · `POST /workflow/process/cancel`                                       | 可退回节点 / 撤回       |
+| **流程定义**   | `POST /workflow/definition/page` · `POST /workflow/definition/suspend` · `POST /workflow/definition/activate` | 定义管理                |
+| **流程模型**   | `POST /workflow/draft/save` · `POST /workflow/draft/deploy`                                                   | 设计器保存 / 部署       |
+| **流程分类**   | `POST /workflow/category/page` · `GET /workflow/category/list`                                                | 分类管理                |
+| **表达式配置** | `POST /workflow/expression-config/page` · `GET /workflow/expression-config/options`                           | 条件与监听器表达式      |
 
 > 未接入前端的能力：定时任务由后端 xxl-job 直接调度，管理端不做页面；文件上传后端已具备，前端尚未接入。
 
@@ -404,44 +404,45 @@ useWebSocket.connect(token)
 - `dispatchMessage` 支持 action 精确匹配 + 通配符 `*` 全局监听
 - 状态机：`DISCONNECTED` → `CONNECTING` → `CONNECTED` / `RECONNECTING`
 
-### 表格列配置持久化
+### 表格列配置（壳内置）
 
-```typescript
-// 使用方式
-const { visibleColumns, updateColumnOrder, toggleColumnVisible } = useTableColumns({
-  key: 'system-user', // 不同页面不同 key
-  defaultColumns: [
-    { prop: 'userId', label: '用户编号', width: 100 },
-    { prop: 'username', label: '用户名称' },
-    { prop: 'deptName', label: '部门' },
-    // ...
-  ],
-})
+列表页只在 `UseCrudView` 上传一个 `columns`，排序 / 显隐 / 列宽都由壳负责并持久化：
 
-// 持久化逻辑
-function loadColumns(): TableColumnConfig[] {
-  const cached = localStorage.getItem(storageKey)
-  if (cached) {
-    const parsed: TableColumnConfig[] = JSON.parse(cached)
-    return defaults.map((def, i) => {
-      const saved = parsed.find((c) => c.prop === def.prop)
-      return {
-        ...def,
-        visible: saved?.visible ?? true,
-        width: saved?.width ?? def.width,
-        order: saved?.order ?? i,
-      }
-    })
-  }
-  return defaults.map((def, i) => ({ ...def, visible: true, order: i }))
-}
+```vue
+<UseCrudView :slotProps="crud.slotProps" :columns="columns">
+  <!-- 选择列等固定在生成列之前 -->
+  <template #table-prefix>
+    <el-table-column type="selection" width="50" align="center" />
+  </template>
+
+  <!-- 自定义单元格：默认取 row[prop]，需要时用 #cell-<prop> 覆盖 -->
+  <template #cell-status="{ row }">
+    <el-tag>{{ getDictItem('system_status', row.status)?.label }}</el-tag>
+  </template>
+
+  <!-- 操作列固定在生成列之后 -->
+  <template #table-append="{ handleEdit, handleRemove }">
+    <el-table-column fixed="right" :label="$t('common.action')" width="120">
+      <template #default="{ row }">…</template>
+    </el-table-column>
+  </template>
+</UseCrudView>
+```
+
+```ts
+const columns: TableColumnDef[] = [
+  { prop: 'username', label: $t('system.user.columns.username'), minWidth: 120 },
+  { prop: 'status', label: $t('system.user.search.status'), width: 90, align: 'center' },
+]
 ```
 
 **关键设计**：
 
-- 每个页面独立的 `key` 作为 localStorage 键名前缀，互不干扰
-- 新增列自动追加到末尾，删除列后用户恢复时重新显示
-- 支持拖拽排序（`updateColumnOrder`）+ 显隐切换（`toggleColumnVisible`）+ 宽度记忆
+- 页面只声明「这一列长什么样」（`prop` / `label` / 宽度 / 对齐），不持有任何偏好状态
+- 工具栏的列设置入口由壳渲染，用户拖拽排序、勾选显隐、拖动表头边框调宽，三项都持久化到 localStorage
+- 偏好键默认取当前路由名（可用 `column-key` 覆盖），不同页面的列偏好互不干扰
+- 至少保留一列可见；代码新增列追加到末尾、删除列后本地残留的 prop 自动忽略
+- 不传 `columns` 的页面（其余 21 个）行为完全不变，仍在 `#table` 里自己写 `el-table-column`
 
 ### 水印防篡改
 

@@ -238,11 +238,11 @@ Environment variables are managed via `.env.*` files in the project root:
 | Variable           | Description                                         |
 | ------------------ | --------------------------------------------------- |
 | `VITE_APP_TITLE`   | Application title shown in browser tab              |
-| `VITE_BASE_URL`    | Backend origin (empty = same origin via Vite proxy)  |
-| `VITE_API_PREFIX`  | API prefix, currently `/xd11cc`                      |
-| `VITE_PUBLIC_PATH` | Public base path (deployment sub-path)               |
-| `VITE_WS_URL`      | WebSocket server URL (empty = derive from host)      |
-| `VITE_WS_PATH`     | WebSocket endpoint path, currently `/ws`             |
+| `VITE_BASE_URL`    | Backend origin (empty = same origin via Vite proxy) |
+| `VITE_API_PREFIX`  | API prefix, currently `/xd11cc`                     |
+| `VITE_PUBLIC_PATH` | Public base path (deployment sub-path)              |
+| `VITE_WS_URL`      | WebSocket server URL (empty = derive from host)     |
+| `VITE_WS_PATH`     | WebSocket endpoint path, currently `/ws`            |
 
 | File        | Environment | `VITE_BASE_URL`                    | `VITE_WS_URL`                    |
 | ----------- | ----------- | ---------------------------------- | -------------------------------- |
@@ -261,37 +261,37 @@ In development, Vite proxies requests to the local backend, which is why `.env.d
 
 Main endpoints per module (full definitions live in each page's `apis/index.ts`). Every path is prefixed by `VITE_API_PREFIX` (`/xd11cc`).
 
-| Module | Representative endpoints | Notes |
-| --- | --- | --- |
-| **Auth** | `POST /login/loginByPassword` | Username + password login |
-| | `GET /login/getCaptcha` | Image CAPTCHA |
-| | `GET /login/getUserInfo` | Current user + permission tags |
-| | `GET /login/getRoutes` | Menu tree visible to the user |
-| | `GET /login/authorize/{source}` | OAuth2 social login redirect |
-| | `POST /login/social-user/bind` | Bind social account to existing user |
-| | `GET /logout` | Sign out |
-| **User** | `POST /system/user/page` · `POST /system/user/add` · `POST /system/user/modifyById` | List / create / update |
-| | `DELETE /system/user/removeByIds/{ids}` · `POST /system/user/resetPassword/{id}` | Delete / reset password |
-| **Role** | `POST /system/role/page` · `GET /system/role/menuIds/{id}` · `GET /system/role/deptIds/{id}` | List + permission echo |
-| **Menu** | `GET /menu/treeList` | Menu tree |
-| **Department** | `GET /system/dept/treeList` | Department tree |
-| **Post** | `POST /system/post/page` | Post list |
-| **Dictionary** | `POST /dict/type/page` · `POST /dict/data/page` · `GET /dict/data/getCacheGroup/{types}` | Management + batch cache |
-| **Config** | `POST /system/config/page` | System configuration |
-| **Notices** | `POST /system/notice/page` · `POST /system/notice/publish/{id}` · `PUT /system/notice/revoke/{id}` | Publish / revoke |
-| **My Notifications** | `POST /system/notice-user/myPage` · `POST /system/notice-user/markAllAsRead` | Personal inbox |
-| **Logs** | `POST /system/operateLog/page` · `POST /system/loginLog/page` | Operate / login logs |
-| **Online Users** | `GET /system/onlineUser/list` · `DELETE /system/onlineUser/forceLogout/{tokenId}` | Live sessions |
-| **MQ Replay** | `POST /system/mq-fail/page` · `POST /system/mq-fail/replay/{id}` | Failed message replay |
-| **Auth Clients** | `POST /auth/client/config/page` | Social login configuration |
-| **Code Generator** | `POST /generate/code/page` · `GET /generate/code?tableName={name}` | Table list / generate |
-| **Approval Center** | `POST /workflow/process/mine` · `POST /workflow/task/todo` · `POST /workflow/task/done` | Started / todo / done |
-| | `POST /workflow/task/approve` · `POST /workflow/task/reject` · `POST /workflow/task/delegate` | Approve / reject / delegate |
-| | `GET /workflow/task/rejectable-nodes` · `POST /workflow/process/cancel` | Rejectable nodes / cancel |
-| **Definitions** | `POST /workflow/definition/page` · `POST /workflow/definition/suspend` · `POST /workflow/definition/activate` | Definition management |
-| **Models** | `POST /workflow/draft/save` · `POST /workflow/draft/deploy` | Designer save / deploy |
-| **Categories** | `POST /workflow/category/page` · `GET /workflow/category/list` | Category management |
-| **Expressions** | `POST /workflow/expression-config/page` · `GET /workflow/expression-config/options` | Condition & listener expressions |
+| Module               | Representative endpoints                                                                                      | Notes                                |
+| -------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| **Auth**             | `POST /login/loginByPassword`                                                                                 | Username + password login            |
+|                      | `GET /login/getCaptcha`                                                                                       | Image CAPTCHA                        |
+|                      | `GET /login/getUserInfo`                                                                                      | Current user + permission tags       |
+|                      | `GET /login/getRoutes`                                                                                        | Menu tree visible to the user        |
+|                      | `GET /login/authorize/{source}`                                                                               | OAuth2 social login redirect         |
+|                      | `POST /login/social-user/bind`                                                                                | Bind social account to existing user |
+|                      | `GET /logout`                                                                                                 | Sign out                             |
+| **User**             | `POST /system/user/page` · `POST /system/user/add` · `POST /system/user/modifyById`                           | List / create / update               |
+|                      | `DELETE /system/user/removeByIds/{ids}` · `POST /system/user/resetPassword/{id}`                              | Delete / reset password              |
+| **Role**             | `POST /system/role/page` · `GET /system/role/menuIds/{id}` · `GET /system/role/deptIds/{id}`                  | List + permission echo               |
+| **Menu**             | `GET /menu/treeList`                                                                                          | Menu tree                            |
+| **Department**       | `GET /system/dept/treeList`                                                                                   | Department tree                      |
+| **Post**             | `POST /system/post/page`                                                                                      | Post list                            |
+| **Dictionary**       | `POST /dict/type/page` · `POST /dict/data/page` · `GET /dict/data/getCacheGroup/{types}`                      | Management + batch cache             |
+| **Config**           | `POST /system/config/page`                                                                                    | System configuration                 |
+| **Notices**          | `POST /system/notice/page` · `POST /system/notice/publish/{id}` · `PUT /system/notice/revoke/{id}`            | Publish / revoke                     |
+| **My Notifications** | `POST /system/notice-user/myPage` · `POST /system/notice-user/markAllAsRead`                                  | Personal inbox                       |
+| **Logs**             | `POST /system/operateLog/page` · `POST /system/loginLog/page`                                                 | Operate / login logs                 |
+| **Online Users**     | `GET /system/onlineUser/list` · `DELETE /system/onlineUser/forceLogout/{tokenId}`                             | Live sessions                        |
+| **MQ Replay**        | `POST /system/mq-fail/page` · `POST /system/mq-fail/replay/{id}`                                              | Failed message replay                |
+| **Auth Clients**     | `POST /auth/client/config/page`                                                                               | Social login configuration           |
+| **Code Generator**   | `POST /generate/code/page` · `GET /generate/code?tableName={name}`                                            | Table list / generate                |
+| **Approval Center**  | `POST /workflow/process/mine` · `POST /workflow/task/todo` · `POST /workflow/task/done`                       | Started / todo / done                |
+|                      | `POST /workflow/task/approve` · `POST /workflow/task/reject` · `POST /workflow/task/delegate`                 | Approve / reject / delegate          |
+|                      | `GET /workflow/task/rejectable-nodes` · `POST /workflow/process/cancel`                                       | Rejectable nodes / cancel            |
+| **Definitions**      | `POST /workflow/definition/page` · `POST /workflow/definition/suspend` · `POST /workflow/definition/activate` | Definition management                |
+| **Models**           | `POST /workflow/draft/save` · `POST /workflow/draft/deploy`                                                   | Designer save / deploy               |
+| **Categories**       | `POST /workflow/category/page` · `GET /workflow/category/list`                                                | Category management                  |
+| **Expressions**      | `POST /workflow/expression-config/page` · `GET /workflow/expression-config/options`                           | Condition & listener expressions     |
 
 > Not wired to the frontend: scheduled jobs are handled directly by xxl-job on the backend (no admin UI); file upload/download exists on the backend but is not integrated yet.
 
@@ -404,44 +404,43 @@ Manual close → close()
 - `dispatchMessage` supports action exact match + wildcard `*` global listener
 - State machine: `DISCONNECTED` → `CONNECTING` → `CONNECTED` / `RECONNECTING`
 
-### Table Column Configuration Persistence
+### Table Column Configuration (built into the shell)
 
-```typescript
-// Usage
-const { visibleColumns, updateColumnOrder, toggleColumnVisible } = useTableColumns({
-  key: 'system-user', // unique per page
-  defaultColumns: [
-    { prop: 'userId', label: 'User ID', width: 100 },
-    { prop: 'username', label: 'Username' },
-    { prop: 'deptName', label: 'Department' },
-    // ...
-  ],
-})
+A list page only passes `columns` to `UseCrudView`; ordering, visibility and width are owned by the shell and persisted:
 
-// Persistence logic
-function loadColumns(): TableColumnConfig[] {
-  const cached = localStorage.getItem(storageKey)
-  if (cached) {
-    const parsed: TableColumnConfig[] = JSON.parse(cached)
-    return defaults.map((def, i) => {
-      const saved = parsed.find((c) => c.prop === def.prop)
-      return {
-        ...def,
-        visible: saved?.visible ?? true,
-        width: saved?.width ?? def.width,
-        order: saved?.order ?? i,
-      }
-    })
-  }
-  return defaults.map((def, i) => ({ ...def, visible: true, order: i }))
-}
+```vue
+<UseCrudView :slotProps="crud.slotProps" :columns="columns">
+  <!-- Fixed leading columns (e.g. selection) -->
+  <template #table-prefix>
+    <el-table-column type="selection" width="50" align="center" />
+  </template>
+
+  <!-- Custom cell: defaults to row[prop], override with #cell-<prop> -->
+  <template #cell-status="{ row }">
+    <el-tag>{{ getDictItem('system_status', row.status)?.label }}</el-tag>
+  </template>
+
+  <!-- Fixed trailing columns (e.g. actions) -->
+  <template #table-append="{ handleEdit, handleRemove }">
+    <el-table-column fixed="right" :label="$t('common.action')" width="120">…</el-table-column>
+  </template>
+</UseCrudView>
 ```
 
-**Key Design**:
+```ts
+const columns: TableColumnDef[] = [
+  { prop: 'username', label: $t('system.user.columns.username'), minWidth: 120 },
+  { prop: 'status', label: $t('system.user.search.status'), width: 90, align: 'center' },
+]
+```
 
-- Each page has a unique `key` as localStorage key prefix, no cross-page interference
-- New columns auto-append; deleted columns reappear on user restore
-- Supports drag reorder (`updateColumnOrder`) + visibility toggle (`toggleColumnVisible`) + width memory
+**Key design**:
+
+- Pages only describe a column (`prop` / `label` / width / align); they hold no preference state
+- The column-settings entry is rendered by the shell. Drag to reorder, toggle visibility, drag a header border to resize — all three persist to localStorage
+- The storage key defaults to the current route name (override with `column-key`), so pages never collide
+- At least one column stays visible; new columns are appended while stale props from removed columns are ignored
+- The other 21 pages pass no `columns` and keep writing `el-table-column` inside `#table` — behaviour unchanged
 
 ### Watermark Tamper-Proofing
 

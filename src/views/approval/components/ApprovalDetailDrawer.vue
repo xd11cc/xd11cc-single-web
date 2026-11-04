@@ -29,6 +29,15 @@
     <el-empty v-if="loadError" class="detail-body" :description="$t('common.messages.loadFailed')">
       <el-button @click="reloadDetail">{{ $t('common.retry') }}</el-button>
     </el-empty>
+    <!-- 冷启动：还没拿到任何详情时用骨架占位，避免抽屉里先闪一片空 -->
+    <div
+      v-else-if="isColdLoading"
+      class="detail-body"
+      role="status"
+      :aria-label="$t('common.loading')"
+    >
+      <Skeleton variant="page" :stats="2" />
+    </div>
     <div v-else v-table-loading="loading" class="detail-body">
       <!-- 概览 -->
       <section class="detail-section">
@@ -217,6 +226,7 @@ import { ElMessage } from 'element-plus'
 import { useApprovalActions } from '../composables/useApprovalActions'
 import { useApprovalDetail } from '../composables/useApprovalDetail'
 import { useDict } from '@/common/composables/useDict'
+import Skeleton from '@@/components/Skeleton/index.vue'
 import type { InstanceStatus, RejectableNodeVO, WorkflowTaskVO } from '../apis/type'
 
 defineOptions({ name: 'ApprovalDetailDrawer' })
@@ -258,6 +268,11 @@ const {
   areNodesReady,
   reset: resetDetail,
 } = useApprovalDetail(() => props.processInstanceId)
+
+/** 冷启动：加载中且详情还没有任何内容（失败态单独分支） */
+const isColdLoading = computed(
+  () => loading.value && !detail.value?.processInstanceId && !loadError.value,
+)
 
 const actionMode = ref<'approve' | 'reject'>('approve')
 const actionForm = reactive({ comment: '', targetActivityId: '' })
