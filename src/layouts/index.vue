@@ -43,6 +43,7 @@ import { useWatermark } from '@@/composables/useWatermark'
 import { useUserStore } from '@/pinia/stores/user'
 import { useWebSocket } from '@@/composables/useWebSocket'
 import { useTheme } from '@@/composables/useTheme'
+import { usePageErrorBoundary } from '@@/composables/usePageErrorBoundary'
 
 useResize()
 
@@ -51,13 +52,9 @@ useResize()
  * onErrorCaptured 只能捕获「子组件」的异常：如果 AppMain 自己的 setup 抛错，
  * 它内部的边界不会被触发（那时它还没渲染出来），只能由父级兜住。
  */
-const layoutError = shallowRef<Error | null>(null)
+const { error: layoutError, handle: handleLayoutError } = usePageErrorBoundary('Layout')
 
-onErrorCaptured((error) => {
-  layoutError.value = error as Error
-  console.error('[Layout] 布局渲染失败：', error)
-  return false
-})
+onErrorCaptured(handleLayoutError)
 
 function reloadPage() {
   window.location.reload()

@@ -19,12 +19,20 @@
 
     <!-- 树表区 -->
     <el-card shadow="never">
+      <div v-if="slotProps.treeError" class="table-error" role="alert">
+        <el-empty :description="$t('common.messages.loadFailed')" :image-size="72">
+          <el-button type="primary" plain @click="slotProps.refresh()">
+            {{ $t('common.retry') }}
+          </el-button>
+        </el-empty>
+      </div>
       <TreeTableView
+        v-else
         ref="treeTableRef"
         :data="slotProps.treeData"
         :loading="slotProps.loading"
         :row-key="rowKey"
-        :default-expand-all="defaultExpanded"
+        :default-expand-all="isExpanded"
         @row-click="handleRowClick"
       >
         <template #toolbar>
@@ -84,7 +92,7 @@
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
 import { useI18n } from 'vue-i18n'
-import { computed, ref, watch } from 'vue'
+import { computed, onScopeDispose, ref, watch } from 'vue'
 import type { FormRules } from 'element-plus'
 import TreeTableView from '@@/components/TreeTable/index.vue'
 import type { UseTreeCrudSlotProps } from '@@/composables/useTreeCrud'
@@ -128,6 +136,13 @@ const emit = defineEmits<{
 const formRef = ref<any>(null)
 const submitLoading = ref(false)
 const treeTableRef = ref<InstanceType<typeof TreeTableView> | null>(null)
+let dialogSessionId = 0
+let isDisposed = false
+
+onScopeDispose(() => {
+  isDisposed = true
+  dialogSessionId++
+})
 
 // 展开状态：与 defaultExpanded 保持一致，供工具栏按钮文案切换
 const isExpanded = ref(props.defaultExpanded)
@@ -138,23 +153,39 @@ const dialogTitle = computed(() => {
   return isAdd ? $t('common.add') : $t('common.edit')
 })
 
-function handleFormSubmit() {
-  formRef.value?.validate?.((valid: boolean) => {
-    if (!valid) return
-    submitLoading.value = true
-    const isAdd = props.slotProps.formData?.id === undefined
-    Promise.resolve(props.slotProps.handleSubmit(isAdd)).finally(() => {
-      submitLoading.value = false
-    })
-  })
+async function handleFormSubmit() {
+  const form = formRef.value
+  if (isDisposed || submitLoading.value || !props.slotProps.dialogVisible || !form) return
+  const formData = props.slotProps.formData
+  const sessionId = dialogSessionId
+  submitLoading.value = true
+  try {
+    const valid = await form.validate?.()
+    if (
+      !valid ||
+      isDisposed ||
+      sessionId !== dialogSessionId ||
+      !props.slotProps.dialogVisible ||
+      formData !== props.slotProps.formData
+    )
+      return
+    const isAdd = formData?.id === undefined
+    await props.slotProps.handleSubmit(isAdd)
+  } catch {
+    return
+  } finally {
+    if (!isDisposed) submitLoading.value = false
+  }
 }
 
 // 关闭后清校验，下次打开是干净的
 watch(
   () => props.slotProps.dialogVisible,
   (val) => {
+    dialogSessionId++
     if (!val) formRef.value?.clearValidate?.()
   },
+  { flush: 'sync' },
 )
 
 /** 整树展开 / 收起 */

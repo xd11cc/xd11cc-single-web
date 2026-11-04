@@ -14,7 +14,7 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 | 状态 / 路由 | Pinia 3、vue-router 4（动态路由，后端下发菜单） |
 | 国际化 | vue-i18n 11，`zh-CN` / `en-US` 双文件 |
 | 其他 | axios、echarts 6、bpmn-js 18（流程设计器） |
-| 测试 | vitest 5 + @vue/test-utils + happy-dom，**104 用例 / 13 文件** |
+| 测试 | vitest 5 + @vue/test-utils + happy-dom，**203 用例 / 19 文件** |
 
 接口约定：前缀 `/xd11cc`，统一响应 `ResponseVO{ code, msg, data }`，分页 `PageData{ rows, total }`（定义在 `types/api.d.ts`）。
 
@@ -24,8 +24,9 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 | --- | --- | --- |
 | `src/views/` | 业务页面，按域分包（system / bpm / approval / tool / monitor / login） | 每域 `index.vue` + `apis/` |
 | `src/common/components/` | 跨域组件（useCrud / treeCrud 壳、Chat、Notify、Screenfull…） | — |
-| `src/common/composables/` | 15 个组合式：useCrud、useTreeCrud、useDict、useChat、useWebSocket… | — |
-| `src/common/utils/` | `request.ts`（请求封装）、`webSocket.ts`（连接状态机） | — |
+| `src/common/composables/` | 16 个组合式：useCrud、useTreeCrud、useDict、useChat、useWebSocket、usePageErrorBoundary… | — |
+| `src/common/utils/` | `request.ts`（请求封装）、`webSocket.ts`（连接状态机）、`page-error.ts`（错误分类） | — |
+| `src/common/apis/` | 跨域接口：`file.ts`（`/file/upload`，返回可持久化的 `objectKey`） | — |
 | `src/common/assets/styles/` | `themes.css` 三层令牌、`variables.css` 布局变量 | — |
 | `src/layouts/` | 布局外壳（LeftMode/TopMode/LeftTopMode）、导航、标签栏 | `layouts/index.vue` |
 | `src/pinia/stores/` | 5 个 store：app / permission / settings / tags-view / user | — |
@@ -40,6 +41,10 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 
 **列表页壳**：22 个表格页全部走壳——20 个用 `useCrud` + `UseCrudView`（其中 9 个 `readonly`），2 个树形页用 `useTreeCrud` + `TreeCrudView`；没有手写表格。页面只提供 `pageApi`、表单字段、`#table` 插槽；分页/搜索/弹窗/批量删除由壳负责。壳的输出是 `slotProps`（`tableData` / `paginationData` / `handleAdd` …）。
 
+两个壳都带**过期响应守卫**：`latestRequestId` 只允许最新请求写入数据/错误/loading，`onScopeDispose` 让在途请求整体作废。失败时不抛错，而是置 `tableError` / `treeError`，壳内渲染「数据加载失败 + 重试」（调 `slotProps.refresh()`），并隐藏分页避免用旧 total 误导。
+
+树形壳另有**弹窗会话**保护：`dialogSessionId` 记录打开/关闭次数，提交前校验「会话未变 + 表单仍是同一对象」，旧弹窗的校验或保存不会关掉重新打开的表单；提交与删除都自行接住拒绝，不产生未处理的 rejection。
+
 **请求层**：`request.ts` 统一注入 token、401 并发去重（`handleUnauthorized` + `resetUnauthorizedHandling`）、默认超时 10s（长任务用 `LONG_REQUEST_TIMEOUT=60s`）、错误文案本地化。业务码非 200 直接 reject。
 
 **字典**：后端 `system_dict_data` 的 `label` 是**展示文案**、`value` 是**编码**；映射写成 `map[value] = label`，`getDictItem(type, code)` 按 `value` 匹配。
@@ -47,6 +52,12 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 **主题**：三层令牌 `--p-*`（原始值）→ `--theme-*`（语义）→ 组件变量。页面禁止裸色值/裸尺寸。
 
 **实时推送**：`webSocket.ts`（连接/心跳/指数退避/可见性恢复）→ `useWebSocket` → `useTodoQueue`（待办弹窗）、`useChat`（聊天）、Notify 组件。
+
+**聊天会话**：聊天数据只驻留内存。`Chat` 随布局卸载时调用 `useChat.destroy()`，清空消息/联系人/未读/选中项/面板状态并解除监听；`refreshOnlineUsers` 用「会话版本 + 当前 userId」双重校验丢弃过期响应，避免换账号后读到上一个人的会话。
+
+**页面错误边界**：`usePageErrorBoundary(scope)`（`AppMain` 与 `layouts/index.vue` 共用）+ `utils/page-error.ts` 的 `shouldShowPageError`。**只有**资源/动态模块加载失败与 `setup`/`render` 自身抛错才整页兜底；接口失败、事件处理器里未捕获的 rejection 只打日志、页面保持可用。改这块前先看 `tests/page-error.spec.ts`。
+
+**文件上传**：`common/apis/file.ts` 的 `uploadFile` 走 `POST /file/upload`（multipart，60s 超时），返回 `fileId` / `objectKey` / `previewUrl`。**要持久化的引用一律存 `objectKey`**——`previewUrl` 是预签名地址，2 小时过期且指向内网 endpoint。头像即 `headUrl = objectKey`，渲染时拼 `ossUrl`。
 
 **BPM 设计器**：`views/bpm/modeler/` —— `index.vue`（外壳）→ `BpmnDesigner`（bpmn-js 建模）→ `PropertyPanel`（分派）→ `BasicSection` / `UserTaskPanel` / `SequenceFlowPanel` / `ServiceTaskPanel` / `MetadataSection` / `ListenerSection`+`ListenerDialog`；数据转换在 `useElementForm.ts`（元素读写桥）与 `listener-io.ts`（监听器序列化）。审批侧读写模型在 `views/approval/composables/`。
 
@@ -60,6 +71,7 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 | 加文案 | `src/i18n/locales/<域>/…`，zh 与 en 同步 |
 | 改主题色/暗色 | `src/common/assets/styles/themes.css` |
 | 加全局组件/指令 | `src/common/components/`、`src/plugins/`（每个指令一个文件） |
+| 接文件上传 / 头像 | `src/common/apis/file.ts` → 存 `objectKey`；头像再调 `updateUserAvatar` |
 
 ## 5. 验证命令
 
@@ -67,7 +79,7 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 | --- | --- |
 | `pnpm dev` | 开发服务器（`.env.dev`） |
 | `pnpm typecheck` | `vue-tsc --noEmit` |
-| `pnpm test:unit` | vitest 全量（约 1.5s）；`test:unit:watch` 为监听模式 |
+| `pnpm test:unit` | vitest 全量，19 文件 / 203 用例（约 3s）；`test:unit:watch` 为监听模式 |
 | `pnpm build` | **已串联** `typecheck → test:unit → vite build`，任一失败即中断 |
 | `pnpm build:dev` / `build:test` | 只打包，不跑测试 |
 | `pnpm format` | Prettier 格式化 `src/` |
@@ -82,7 +94,9 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 6. **`storage.getItem` 已反序列化**：再 `JSON.parse` 会在空数组时抛 `Unexpected end of JSON input`。
 7. **`:deep()` 只在 scoped 样式生效**：全局样式里会被丢弃（属性面板掉样式踩过）。
 8. **`el-form-item` 的 label 自带 `for`**：点击标签会抢焦点，面板里用 `pointer-events: none` 收窄。
+9. **`onErrorCaptured` 会收到异步事件处理器的 rejected promise**：无条件接管会把「接口失败」渲染成「页面渲染失败」，必须走 `shouldShowPageError` 分类。
+10. **存预签名 URL 会过期**：上传结果里能持久化的只有 `objectKey`。
 
 ## 7. 复杂度热点
 
-`views/system/user/profile` (1086) · `approval/components/ApprovalDetailDrawer` (769) · `views/dashboard` (701) · `views/bpm/modeler/index` (689) · `views/bpm/definition` (636) · `views/system/notice` (517)。改动这些文件前先读现有结构，不要顺手重构。
+`views/system/user/profile` (1137) · `approval/components/ApprovalDetailDrawer` (847) · `views/dashboard` (701) · `views/bpm/modeler/index` (689) · `views/bpm/definition` (636) · `views/system/notice` (517)。改动这些文件前先读现有结构，不要顺手重构。

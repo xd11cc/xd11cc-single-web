@@ -6,6 +6,7 @@ import { isWhiteList } from '@/router/whitelist'
 import NProgress from 'nprogress'
 import { setRouteChange } from '@@/composables/useRouteListener'
 import { i18n } from '@/i18n'
+import { isChunkLoadError } from '@@/utils/page-error'
 
 NProgress.configure({ showSpinner: false })
 
@@ -17,13 +18,6 @@ const CHUNK_RELOAD_KEY = 'router-chunk-reload-target'
 // 多次导航同时发生时复用同一个初始化任务，避免重复请求、重复注册路由，
 // 以及后发导航在路由尚未注册时被错误放行。
 let permissionInitialization: Promise<void> | null = null
-
-function isChunkLoadError(error: unknown) {
-  const message = error instanceof Error ? error.message : String(error)
-  return /Failed to fetch dynamically imported module|Importing a module script failed|Loading chunk .* failed|ChunkLoadError|Unable to preload CSS/i.test(
-    message,
-  )
-}
 
 /**
  * 记录上次为哪个目标做过 chunk 恢复，以及发生时间。

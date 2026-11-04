@@ -43,6 +43,7 @@ import { useRouter } from 'vue-router'
 import { useTagsViewStore } from '@/pinia/stores/tags-view'
 import { useSettingsStore } from '@/pinia/stores/settings'
 import Footer from '../Footer/index.vue'
+import { usePageErrorBoundary } from '@@/composables/usePageErrorBoundary'
 
 const router = useRouter()
 const tagsViewStore = useTagsViewStore()
@@ -56,13 +57,15 @@ const route = useRoute()
  * 捕获范围是 AppMain 之下的整棵页面子树（含异步组件加载失败）。
  * 返回 false 阻止继续向全局冒泡，但这里已经手动打印，便于排查。
  */
-const renderError = shallowRef<Error | null>(null)
+// 只有「资源加载失败」和「setup/render 自身抛错」才整页兜底；
+// 接口失败、事件处理器里未捕获的 rejection 只记日志（见 usePageErrorBoundary）。
+const {
+  error: renderError,
+  handle: handlePageError,
+  clear: clearPageError,
+} = usePageErrorBoundary('AppMain')
 
-onErrorCaptured((error) => {
-  renderError.value = error as Error
-  console.error('[AppMain] 页面渲染失败：', error)
-  return false
-})
+onErrorCaptured(handlePageError)
 
 /**
  * 当前路由最终匹配到的记录是否没有默认组件。
@@ -88,7 +91,7 @@ function warnIfRouteHasNoComponent() {
 watch(
   () => route.fullPath,
   () => {
-    renderError.value = null
+    clearPageError()
     warnIfRouteHasNoComponent()
   },
 )
@@ -105,7 +108,7 @@ function reload() {
 
 /** 重新挂载当前页面：经 /redirect 中转，让页面组件整体重建一次 */
 function retryRender() {
-  renderError.value = null
+  clearPageError()
   router
     .replace({ path: `/redirect${route.path}`, query: route.query })
     .catch(() => window.location.reload())

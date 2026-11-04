@@ -29,6 +29,7 @@ const messagesMap = reactive<Record<number, ChatMessage[]>>({})
 const totalUnread = computed(() => contacts.value.reduce((sum, c) => sum + c.unread, 0))
 
 let initialized = false
+let chatSessionId = 0
 
 export function useChat() {
   const { sendMessage, on, off } = useWebSocket()
@@ -41,12 +42,23 @@ export function useChat() {
   }
 
   function destroy() {
-    if (!initialized) return
-    initialized = false
-    off('BUSINESS', handleBusinessMessage)
+    chatSessionId++
+    if (initialized) {
+      initialized = false
+      off('BUSINESS', handleBusinessMessage)
+    }
+    panelVisible.value = false
+    activeContactId.value = null
+    contacts.value = []
+    Object.keys(messagesMap).forEach((userId) => {
+      delete messagesMap[Number(userId)]
+    })
   }
 
-  function handleBusinessMessage(data: any, message?: { from?: { userId: number; username: string } | null }) {
+  function handleBusinessMessage(
+    data: any,
+    message?: { from?: { userId: number; username: string } | null },
+  ) {
     // data 已是结构化对象（后端不再套 JSON 字符串）；发送者身份取自信封 from，不采信报文自述
     if (!data || data.type !== 'CHAT') return
     const from = message?.from
@@ -84,7 +96,7 @@ export function useChat() {
     }
 
     moveContactToTop(senderId)
-    }
+  }
 
   function send(targetUserId: number, text: string) {
     const timestamp = Date.now()
@@ -147,8 +159,11 @@ export function useChat() {
   }
 
   async function refreshOnlineUsers() {
+    const sessionId = chatSessionId
+    const userId = userStore.userId
     try {
       const { data } = await onlineUserList()
+      if (sessionId !== chatSessionId || userId !== userStore.userId) return
       const onlineIds = new Set(data.map((u) => u.userId))
       data.forEach((user) => {
         if (user.userId === userStore.userId) return
