@@ -37,6 +37,7 @@ export const zh = {
     copyFailed: '复制失败，请手动复制 XML',
     importSuccess: '已导入 {filename}',
     importFailed: '导入失败，请选择有效的 BPMN XML 文件',
+    expressionParameterMissing: '「{element}」的表达式参数「{parameter}」未填写，请先在右侧属性面板补全',
   },
   property: {
     inspector: 'INSPECTOR',
@@ -89,6 +90,7 @@ export const zh = {
     help: {
       processCategory: '分类数据接口已预留，接入后会在此加载选项',
       condition: '选择预设表达式并配置参数，生成该顺序流的判断条件',
+      conditionIncomplete: '参数未填全，条件表达式暂不生成',
     },
     approvalModes: {
       single: { label: '单人', description: '一人处理' },
@@ -198,6 +200,8 @@ export const en = {
     copyFailed: 'Copy failed. Please copy the XML manually.',
     importSuccess: 'Imported {filename}',
     importFailed: 'Import failed. Select a valid BPMN XML file.',
+    expressionParameterMissing:
+      'The expression parameter "{parameter}" of "{element}" is empty. Fill it in the property panel first.',
   },
   property: {
     inspector: 'INSPECTOR',
@@ -251,6 +255,7 @@ export const en = {
     help: {
       processCategory: 'The category API hook is ready and will populate these options',
       condition: 'Select an expression and configure its parameters for this sequence flow',
+      conditionIncomplete: 'Fill in all parameters to generate the condition expression',
     },
     approvalModes: {
       single: { label: 'Single', description: 'One approver' },

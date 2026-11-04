@@ -41,7 +41,10 @@ export interface SystemUserAddVO {
   postId: number
   postName: string
   status: string
-  roleIds: number[]
+  /** 不传则不改动角色关联（个人中心保存资料、只改头像时不要传） */
+  roleIds?: number[]
+  /** 头像对象键，来自 /file/upload 返回的 objectKey */
+  headUrl?: string
   remark?: string
 }
 
@@ -58,6 +61,9 @@ export interface SystemUserUpdateVO {
   postId: number
   postName: string
   status: string
-  roleIds: number[]
+  /** 不传则不改动角色关联（个人中心保存资料、只改头像时不要传） */
+  roleIds?: number[]
+  /** 头像对象键，来自 /file/upload 返回的 objectKey */
+  headUrl?: string
   remark?: string
 }

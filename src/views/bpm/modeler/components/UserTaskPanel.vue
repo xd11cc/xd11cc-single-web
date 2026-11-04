@@ -42,7 +42,7 @@
         v-for="parameter in expressionCatalog.parameters(form.assigneeConfigKey)"
         :key="parameter.key"
       >
-        <el-form-item :label="parameter.name"
+        <el-form-item :label="parameter.name || parameter.key"
           ><el-select
             v-if="parameter.type === 'PROCESS_VARIABLE'"
             v-model="form.assigneeParameters[parameter.key]"
@@ -51,7 +51,7 @@
             allow-create
             default-first-option
             :reserve-keyword="false"
-            :placeholder="parameter.name"
+            :placeholder="parameter.name || parameter.key"
             @change="applyAssigneeExpression"
             ><el-option
               v-for="option in processVariableOptions"
@@ -138,7 +138,7 @@
         v-for="parameter in expressionCatalog.parameters(form.collectionConfigKey)"
         :key="parameter.key"
       >
-        <el-form-item :label="parameter.name">
+        <el-form-item :label="parameter.name || parameter.key">
           <el-select
             v-if="parameter.type === 'PROCESS_VARIABLE'"
             v-model="form.collectionParameters[parameter.key]"
@@ -147,7 +147,7 @@
             allow-create
             default-first-option
             :reserve-keyword="false"
-            :placeholder="parameter.name"
+            :placeholder="parameter.name || parameter.key"
             @change="applyCollectionConfig"
             ><el-option
               v-for="option in processVariableOptions"

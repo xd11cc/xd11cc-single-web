@@ -1,5 +1,5 @@
 import type { ComponentPublicInstance } from 'vue'
-import { reactive, ref, watch, onMounted } from 'vue'
+import { reactive, ref, watch, onMounted, onScopeDispose } from 'vue'
 import type { ResponseVO } from 'types/api'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
@@ -61,6 +61,8 @@ export interface UseCrudSlotProps {
   resetSearch: () => void
   tableData: any[]
   tableLoading: boolean
+  /** 最近一次加载是否失败（提示已由 request 层弹出） */
+  tableError: boolean
   tableSelection: any[]
   handleSelectionChange: (rows: any[]) => void
   paginationData: {
@@ -100,6 +102,8 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
   // ─── 表格 / 分页 ──────────────────────────────────────
   const tableData = ref<T[]>([])
   const tableLoading = ref(false)
+  /** 列表加载失败（数据未更新，供页面显示错误态/重试） */
+  const tableError = ref(false)
   const tableSelection = ref<any[]>([])
   const paginationData = reactive({
     total: 0,
@@ -115,32 +119,51 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
   // ─── 弹窗 ─────────────────────────────────────────────
   const dialogVisible = ref(false)
   const formData = ref<any>(options.defaultForm?.() || {})
+  let latestRequestId = 0
+  let isDisposed = false
 
   // ─── 生命周期 ──────────────────────────────────────────
+  onScopeDispose(() => {
+    isDisposed = true
+    latestRequestId += 1
+  })
   onMounted(() => getTableData())
-  watch(() => paginationData.currentPage, getTableData)
-  watch(
-    () => paginationData.pageSize,
-    () => {
-      const wasFirstPage = paginationData.currentPage === 1
-      paginationData.currentPage = 1
-      if (wasFirstPage) getTableData()
-    },
-  )
+  // 页码与每页条数合并成一个 watcher。
+  // 分开监听时，「在第 2 页改每页条数」会在同一 tick 内让两个 watcher 各触发一次：
+  // handleSizeChange 先把 currentPage 置 1，pageSize 的 watcher 读到的 wasFirstPage 已是 true，
+  // 于是它自己发一次请求，currentPage 的 watcher 又发一次 —— 两次参数完全相同。
+  // 合并后 Vue 的批量更新只会触发一次。
+  watch([() => paginationData.currentPage, () => paginationData.pageSize], () => {
+    void getTableData()
+  })
 
   // ─── 数据获取 ──────────────────────────────────────────
   async function getTableData() {
+    if (isDisposed) return
+
+    const requestId = ++latestRequestId
+    const isLatestRequest = () => !isDisposed && requestId === latestRequestId
+
     tableLoading.value = true
+    tableError.value = false
     try {
       const { data } = await options.pageApi({
         ...searchData,
         currentPage: paginationData.currentPage,
         pageSize: paginationData.pageSize,
       } as Q)
+      if (!isLatestRequest()) return
+
       tableData.value = data.rows
       paginationData.total = data.total
+    } catch {
+      if (isLatestRequest()) {
+        tableError.value = true
+      }
     } finally {
-      tableLoading.value = false
+      if (isLatestRequest()) {
+        tableLoading.value = false
+      }
     }
   }
 
@@ -276,6 +299,9 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
     },
     get tableLoading() {
       return tableLoading.value
+    },
+    get tableError() {
+      return tableError.value
     },
     get tableSelection() {
       return tableSelection.value

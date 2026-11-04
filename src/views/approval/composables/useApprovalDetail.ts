@@ -38,28 +38,68 @@ export function useApprovalDetail(
 
   const detail = ref<WorkflowInstanceVO>({})
   const loading = ref(false)
+  const loadError = ref(false)
+  const loadedProcessInstanceId = ref<string | null>(null)
 
   const rejectableNodes = ref<RejectableNodeVO[]>([])
   const nodeLoading = ref(false)
   /** 已拉取过可退回节点的任务 id：同一个任务不重复请求 */
   const loadedNodeTaskId = ref<string | null>(null)
+  const loadedNodeProcessInstanceId = ref<string | null>(null)
+  let detailRequestId = 0
+  let nodeRequestId = 0
+  let activeProcessInstanceId: string | null = null
+  let isDisposed = false
 
   const currentTasks = computed(() => detail.value?.currentTasks ?? [])
   const taskHistory = computed(() => detail.value?.taskHistory ?? [])
   const hasPendingTask = computed(() => currentTasks.value.length > 0)
+  const detailReady = computed(() => {
+    const id = getProcessInstanceId()
+    return Boolean(
+      !isDisposed &&
+        id &&
+        !loading.value &&
+        !loadError.value &&
+        loadedProcessInstanceId.value === id &&
+        detail.value.processInstanceId === id,
+    )
+  })
+
+  function ensureContext(id: string | undefined) {
+    const nextId = id || null
+    if (activeProcessInstanceId !== nextId) {
+      reset()
+      activeProcessInstanceId = nextId
+    }
+  }
 
   async function load(): Promise<void> {
+    if (isDisposed) return
     const id = getProcessInstanceId()
+    ensureContext(id)
     if (!id) return
 
+    const requestId = ++detailRequestId
+    const isCurrent = () =>
+      !isDisposed && requestId === detailRequestId && id === getProcessInstanceId()
+    detail.value = {}
+    loadedProcessInstanceId.value = null
+    loadError.value = false
     loading.value = true
     try {
       const { data } = await apis.getDetail(id)
-      detail.value = data ?? {}
+      if (!isCurrent()) return
+      if (data?.processInstanceId !== id) {
+        loadError.value = true
+        return
+      }
+      detail.value = data
+      loadedProcessInstanceId.value = id
     } catch {
-      // 错误提示由 request 层统一处理，这里只保证状态复位
+      if (isCurrent()) loadError.value = true
     } finally {
-      loading.value = false
+      if (isCurrent()) loading.value = false
     }
   }
 
@@ -68,34 +108,76 @@ export function useApprovalDetail(
    * 已加载过同一个任务时直接用缓存 —— 抽屉里反复切换「通过/驳回」不应重复请求。
    */
   async function loadRejectableNodes(taskId: string): Promise<RejectableNodeVO[]> {
-    if (!taskId) return []
-    if (loadedNodeTaskId.value === taskId && rejectableNodes.value.length > 0) {
+    if (isDisposed) return []
+    const id = getProcessInstanceId()
+    ensureContext(id)
+    if (!id || !taskId) {
+      resetNodes()
+      return []
+    }
+    if (areNodesReady(taskId)) {
       return rejectableNodes.value
     }
 
+    resetNodes()
+    const requestId = nodeRequestId
+    const isCurrent = () =>
+      !isDisposed && requestId === nodeRequestId && id === getProcessInstanceId()
     nodeLoading.value = true
     try {
       const { data } = await apis.getRejectableNodes(taskId)
+      if (!isCurrent()) return []
       rejectableNodes.value = data ?? []
       loadedNodeTaskId.value = taskId
+      loadedNodeProcessInstanceId.value = id
       return rejectableNodes.value
     } catch {
-      rejectableNodes.value = []
       return []
     } finally {
-      nodeLoading.value = false
+      if (isCurrent()) nodeLoading.value = false
     }
   }
 
-  function reset() {
-    detail.value = {}
+  function areNodesReady(taskId: string): boolean {
+    const id = getProcessInstanceId()
+    return Boolean(
+      !isDisposed &&
+        id &&
+        taskId &&
+        !nodeLoading.value &&
+        loadedNodeTaskId.value === taskId &&
+        loadedNodeProcessInstanceId.value === id,
+    )
+  }
+
+  function resetNodes() {
+    nodeRequestId++
     rejectableNodes.value = []
     loadedNodeTaskId.value = null
+    loadedNodeProcessInstanceId.value = null
+    nodeLoading.value = false
   }
+
+  function reset() {
+    detailRequestId++
+    resetNodes()
+    detail.value = {}
+    loadedProcessInstanceId.value = null
+    loadError.value = false
+    loading.value = false
+    activeProcessInstanceId = null
+  }
+
+  onScopeDispose(() => {
+    isDisposed = true
+    reset()
+  })
 
   return {
     detail,
     loading,
+    loadError,
+    detailReady,
     rejectableNodes,
     nodeLoading,
     currentTasks,
@@ -103,6 +185,7 @@ export function useApprovalDetail(
     hasPendingTask,
     load,
     loadRejectableNodes,
+    areNodesReady,
     reset,
   }
 }

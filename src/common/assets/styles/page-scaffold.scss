@@ -32,6 +32,13 @@
   margin-bottom: var(--p-space-5);
 }
 
+// ===== 表格加载失败态 =====
+// 请求层的 toast 一闪而过；这里给一个可停留、可重试的落点。
+// 错误态下壳会同时隐藏表格与分页，避免用上一次的 total 误导用户。
+.table-error {
+  padding: var(--p-space-4) 0;
+}
+
 // ===== 分页行 =====
 .page-wrapper {
   display: flex;

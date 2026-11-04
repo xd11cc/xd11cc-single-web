@@ -28,7 +28,7 @@
       v-for="parameter in expressionCatalog.parameters(form.conditionConfigKey)"
       :key="parameter.key"
     >
-      <el-form-item :label="parameter.name">
+      <el-form-item :label="parameter.name || parameter.key">
         <el-select
           v-if="parameter.type === 'PROCESS_VARIABLE'"
           v-model="form.conditionParameters[parameter.key]"
@@ -37,7 +37,7 @@
           allow-create
           default-first-option
           :reserve-keyword="false"
-          :placeholder="parameter.name"
+          :placeholder="parameter.name || parameter.key"
           @change="applyConditionConfig"
           ><el-option
             v-for="option in processVariableOptions"
@@ -51,6 +51,13 @@
         />
       </el-form-item>
     </template>
+    <el-alert
+      v-if="form.conditionConfigKey && !form.condition"
+      type="warning"
+      :closable="false"
+      show-icon
+      :title="t('bpm.modeler.property.help.conditionIncomplete')"
+    />
   </div>
 </template>
 

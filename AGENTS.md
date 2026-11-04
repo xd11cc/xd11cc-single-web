@@ -1,7 +1,7 @@
 # AGENTS.md — 项目索引
 
 > **这份文件是给 AI 的项目速览**：读完这一页就该知道项目结构、关键机制、改动入口，不必先扫描全库。
-> 面向人的上手教程见 `docs/development-spec.md`（示例与分步操作）。两者冲突时以本文件为准。
+> 面向人的上手教程见 `docs/开发手册.md`（示例与分步操作）。两者冲突时以本文件为准。
 
 ## 1. 项目是什么
 
@@ -85,4 +85,4 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 
 ## 7. 复杂度热点
 
-`views/system/user/profile` (1085) · `approval/components/ApprovalDetailDrawer` (769) · `views/dashboard` (700) · `views/bpm/definition` (659) · `views/bpm/modeler/index` (617) · `views/system/notice` (517)。改动这些文件前先读现有结构，不要顺手重构。
+`views/system/user/profile` (1086) · `approval/components/ApprovalDetailDrawer` (769) · `views/dashboard` (701) · `views/bpm/modeler/index` (689) · `views/bpm/definition` (636) · `views/system/notice` (517)。改动这些文件前先读现有结构，不要顺手重构。

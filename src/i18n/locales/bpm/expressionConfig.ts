@@ -21,7 +21,7 @@ export const zh = {
     batchDeleteConfirm: '确认删除选中的 {count} 条配置？',
     keyHint: '小写字母开头',
     templateHint:
-      '使用 Flowable 表达式语法；参数使用“参数 Key”占位，保存时会替换为实际参数值。示例：{example}',
+      '只写表达式主体，外层美元花括号由系统自动补全；参数用花括号包裹参数 Key 作为占位符。示例：{example}',
   },
 }
 
@@ -53,6 +53,6 @@ export const en = {
     batchDeleteConfirm: 'Delete the selected {count} configurations?',
     keyHint: 'Start with a lowercase letter',
     templateHint:
-      'Use Flowable expression syntax. Put parameter keys in placeholders; they are replaced with actual values when the expression is used. Example: {example}',
+      'Write only the expression body — the outer dollar-brace wrapper is added automatically. Wrap parameter keys in braces as placeholders. Example: {example}',
   },
 }

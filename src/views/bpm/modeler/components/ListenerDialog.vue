@@ -73,7 +73,7 @@
           v-for="parameter in expressionCatalog.parameters(draft.expressionConfigKey)"
           :key="parameter.key"
         >
-          <el-form-item :label="parameter.name"
+          <el-form-item :label="parameter.name || parameter.key"
             ><el-select
               v-if="parameter.type === 'PROCESS_VARIABLE'"
               v-model="draft.expressionParameters![parameter.key]"
@@ -82,7 +82,7 @@
               allow-create
               default-first-option
               :reserve-keyword="false"
-              :placeholder="parameter.name"
+              :placeholder="parameter.name || parameter.key"
               @change="applyListenerConfig"
               ><el-option
                 v-for="option in processVariableOptions"

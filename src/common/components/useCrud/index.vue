@@ -32,7 +32,15 @@
         class="table-wrapper"
         :aria-busy="slotProps.tableLoading"
       >
-        <div class="table-page-shell">
+        <!-- 加载失败：提示 + 重试。请求层的 toast 一闪而过，这里给一个可停留、可操作的落点 -->
+        <div v-if="slotProps.tableError" class="table-error" role="alert">
+          <el-empty :description="$t('common.messages.loadFailed')" :image-size="72">
+            <el-button type="primary" plain @click="slotProps.refresh()">
+              {{ $t('common.retry') }}
+            </el-button>
+          </el-empty>
+        </div>
+        <div v-else class="table-page-shell">
           <el-table
             v-bind="tableProps"
             :data="slotProps.tableData"
@@ -46,7 +54,7 @@
           </el-table>
         </div>
       </div>
-      <div v-if="!hidePagination" class="page-wrapper">
+      <div v-if="!hidePagination && !slotProps.tableError" class="page-wrapper">
         <el-pagination
           background
           :layout="slotProps.paginationData.layout"

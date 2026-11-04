@@ -14,6 +14,7 @@ export const zh = {
   export: '导出',
   import: '导入',
   loading: '加载中',
+  retry: '重试',
   home: '返回首页',
   iconSelect: {
     actions: {
@@ -35,6 +36,7 @@ export const zh = {
     },
   },
   messages: {
+    loadFailed: '数据加载失败',
     confirmTitle: '提示',
     copyFailed: '复制失败，请手动选择代码复制',
     copySuccess: '复制成功',
@@ -96,6 +98,7 @@ export const en = {
   export: 'Export',
   import: 'Import',
   loading: 'Loading',
+  retry: 'Retry',
   home: 'Back to Home',
   iconSelect: {
     actions: {
@@ -117,6 +120,7 @@ export const en = {
     },
   },
   messages: {
+    loadFailed: 'Failed to load data',
     confirmTitle: 'Confirm',
     copyFailed: 'Copy failed. Please select and copy the code manually.',
     copySuccess: 'Copied successfully',

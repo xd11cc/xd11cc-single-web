@@ -1,11 +1,5 @@
 <template>
-  <el-drawer
-    v-model="visible"
-    :size="drawerSize"
-    class="approval-detail-drawer"
-    destroy-on-close
-    @closed="handleClosed"
-  >
+  <el-drawer v-model="visible" :size="drawerSize" class="approval-detail-drawer" destroy-on-close>
     <template #header>
       <div class="detail-header">
         <div class="detail-header__mark">
@@ -32,7 +26,10 @@
       </div>
     </template>
 
-    <div v-table-loading="loading" class="detail-body">
+    <el-empty v-if="loadError" class="detail-body" :description="$t('common.messages.loadFailed')">
+      <el-button @click="reloadDetail">{{ $t('common.retry') }}</el-button>
+    </el-empty>
+    <div v-else v-table-loading="loading" class="detail-body">
       <!-- 概览 -->
       <section class="detail-section">
         <div class="section-head">
@@ -133,6 +130,7 @@
           <el-form-item :label="$t('bpm.approval.form.comment')">
             <el-input
               v-model="actionForm.comment"
+              :disabled="!canOperate"
               type="textarea"
               :rows="3"
               maxlength="500"
@@ -150,6 +148,7 @@
             <el-select
               v-model="actionForm.targetActivityId"
               :loading="nodeLoading"
+              :disabled="!canOperate || nodeLoading"
               :placeholder="$t('bpm.approval.placeholder.targetNode')"
               style="width: 100%"
             >
@@ -169,17 +168,28 @@
       <div class="detail-footer">
         <el-button @click="visible = false">{{ $t('common.close') }}</el-button>
         <template v-if="showActions">
-          <el-button v-if="actionMode !== 'reject'" type="danger" plain @click="switchToReject">
+          <el-button
+            v-if="actionMode !== 'reject'"
+            type="danger"
+            plain
+            :disabled="!canOperate || nodeLoading"
+            @click="switchToReject"
+          >
             <template #icon><Icon icon="lucide:undo-2" /></template>
             {{ $t('bpm.approval.action.reject') }}
           </el-button>
-          <el-button v-if="actionMode === 'reject'" @click="actionMode = 'approve'">
+          <el-button
+            v-if="actionMode === 'reject'"
+            :disabled="submitting"
+            @click="actionMode = 'approve'"
+          >
             {{ $t('bpm.approval.action.back') }}
           </el-button>
           <el-button
             v-if="actionMode === 'reject'"
             type="danger"
             :loading="submitting && pendingAction === 'reject'"
+            :disabled="!canReject"
             @click="submitReject"
           >
             {{ $t('bpm.approval.action.confirmReject') }}
@@ -188,6 +198,7 @@
             v-else
             type="primary"
             :loading="submitting && pendingAction === 'approve'"
+            :disabled="!canOperate"
             @click="submitApprove"
           >
             <template #icon><Icon icon="lucide:check" /></template>
@@ -237,16 +248,45 @@ const drawerSize = computed(() => (props.size ? props.size : '760px'))
 const {
   detail,
   loading,
+  loadError,
+  detailReady,
   nodeLoading,
   rejectableNodes,
   currentTasks,
   load: loadDetail,
   loadRejectableNodes,
+  areNodesReady,
   reset: resetDetail,
 } = useApprovalDetail(() => props.processInstanceId)
 
 const actionMode = ref<'approve' | 'reject'>('approve')
 const actionForm = reactive({ comment: '', targetActivityId: '' })
+let drawerSessionId = 0
+
+interface DrawerContext {
+  sessionId: number
+  processInstanceId: string
+  taskId: string
+}
+
+let submissionContext: DrawerContext | null = null
+
+function captureContext(): DrawerContext {
+  return {
+    sessionId: drawerSessionId,
+    processInstanceId: props.processInstanceId,
+    taskId: props.taskId,
+  }
+}
+
+function isCurrentContext(context: DrawerContext): boolean {
+  return (
+    visible.value &&
+    context.sessionId === drawerSessionId &&
+    context.processInstanceId === props.processInstanceId &&
+    context.taskId === props.taskId
+  )
+}
 
 const showActions = computed(() => Boolean(props.taskId))
 
@@ -348,12 +388,18 @@ function nodeLabel(node: RejectableNodeVO) {
 }
 
 async function switchToReject() {
+  if (!canOperate.value || nodeLoading.value) return
+  const context = captureContext()
   actionMode.value = 'reject'
   actionForm.targetActivityId = ''
-  if (!props.taskId) return
 
-  const nodes = await loadRejectableNodes(props.taskId)
-  if (!nodes.length) {
+  const nodes = await loadRejectableNodes(context.taskId)
+  if (
+    isCurrentContext(context) &&
+    actionMode.value === 'reject' &&
+    areNodesReady(context.taskId) &&
+    !nodes.length
+  ) {
     ElMessage.warning(t('bpm.approval.messages.noRejectableNode'))
   }
 }
@@ -361,34 +407,66 @@ async function switchToReject() {
 // 审批动作统一走 useApprovalActions：校验、提交态、成功提示、防重复点击都在模块内部
 const { approve, reject, submitting, pendingAction } = useApprovalActions({
   onSuccess: (action) => {
-    visible.value = false
+    if (submissionContext && isCurrentContext(submissionContext)) visible.value = false
     // 分开 if：emit 的重载签名要求字面量参数，三元会被推断成联合类型
     if (action === 'reject') emit('rejected')
     else emit('approved')
   },
 })
 
+const canOperate = computed(
+  () =>
+    visible.value &&
+    detailReady.value &&
+    !submitting.value &&
+    Boolean(props.taskId) &&
+    currentTasks.value.some((task) => task.taskId === props.taskId),
+)
+
+const canReject = computed(
+  () =>
+    canOperate.value &&
+    areNodesReady(props.taskId) &&
+    Boolean(actionForm.targetActivityId) &&
+    rejectableNodes.value.some((node) => node.activityId === actionForm.targetActivityId),
+)
+
 function submitApprove() {
-  return approve({ taskId: props.taskId, comment: actionForm.comment || undefined })
+  if (!canOperate.value) return
+  submissionContext = captureContext()
+  return approve({ taskId: submissionContext.taskId, comment: actionForm.comment || undefined })
 }
 
 function submitReject() {
+  if (!canReject.value) return
+  submissionContext = captureContext()
   return reject({
-    taskId: props.taskId,
+    taskId: submissionContext.taskId,
     targetActivityId: actionForm.targetActivityId,
     comment: actionForm.comment || undefined,
   })
 }
 
-function handleClosed() {
+function reloadDetail() {
+  drawerSessionId++
   actionMode.value = 'approve'
   actionForm.comment = ''
   actionForm.targetActivityId = ''
   resetDetail()
+  if (!visible.value || !props.processInstanceId) return
+  const context = captureContext()
+  void nextTick(() => {
+    if (isCurrentContext(context)) void loadDetail()
+  })
 }
 
-watch(visible, (open) => {
-  if (open) void loadDetail()
+watch([visible, () => props.processInstanceId, () => props.taskId], reloadDetail, {
+  immediate: true,
+  flush: 'sync',
+})
+
+onScopeDispose(() => {
+  drawerSessionId++
 })
 
 defineExpose({ open: () => (visible.value = true) })

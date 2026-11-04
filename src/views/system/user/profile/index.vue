@@ -382,7 +382,8 @@ import { useI18n } from 'vue-i18n'
 import { useUserStore } from '@/pinia/stores/user'
 import { useOssUrl } from '@@/composables/useOssUrl'
 import { useDict } from '@/common/composables/useDict'
-import { changePassword, modifyUserById } from '../apis'
+import { changePassword, modifyUserById, updateUserAvatar } from '../apis'
+import { uploadFile } from '@@/apis/file'
 import type { FormRules } from 'element-plus'
 
 defineOptions({ name: 'Profile' })
@@ -521,15 +522,64 @@ function handleZoom(delta: number) {
   cropScale.value = Math.min(3, Math.max(0.5, cropScale.value + delta))
 }
 
-function handleAvatarUpload() {
+/**
+ * 把圆形裁剪区内的画面渲染成 256×256 的正方形图片。
+ *
+ * 几何关系：图片盒子 280×280 居中、object-fit: cover；外层再套
+ * translate(cropX, cropY) 与 scale(cropScale)；裁剪圆固定 240×240 居中。
+ * 因此「圆内的区域」换算回原图像素要依次撤销 transform 与 cover 缩放。
+ */
+async function cropToBlob(): Promise<Blob | null> {
+  const image = cropImageRef.value
+  if (!image?.complete || !image.naturalWidth) return null
+
+  const BOX = 280
+  const CIRCLE = 240
+  const nw = image.naturalWidth
+  const nh = image.naturalHeight
+  // object-fit: cover 的缩放系数
+  const coverScale = Math.max(BOX / nw, BOX / nh)
+  const scale = coverScale * cropScale.value
+
+  // 圆的直径换算到原图像素；夹到原图内，避免把裁剪框外的背景带进来
+  const side = Math.min(nw, nh, CIRCLE / scale)
+  // 圆固定居中，图片中心相对它偏移了 (-cropX, -cropY)
+  const centerX = nw / 2 - cropX.value / scale
+  const centerY = nh / 2 - cropY.value / scale
+  const sx = Math.min(Math.max(centerX - side / 2, 0), nw - side)
+  const sy = Math.min(Math.max(centerY - side / 2, 0), nh - side)
+
+  const canvas = document.createElement('canvas')
+  canvas.width = 256
+  canvas.height = 256
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return null
+  ctx.drawImage(image, sx, sy, side, side, 0, 0, 256, 256)
+
+  return new Promise((resolve) => canvas.toBlob((blob) => resolve(blob), 'image/jpeg', 0.9))
+}
+
+async function handleAvatarUpload() {
   if (!selectedFile.value) return
   avatarUploading.value = true
-  // TODO: 对接后端 uploadAvatar 接口，可用 canvas 裁切后上传
-  setTimeout(() => {
-    avatarUploading.value = false
-    avatarDialogVisible.value = false
+  try {
+    const blob = await cropToBlob()
+    if (!blob) return
+
+    // 第一步：上传文件，拿 objectKey（previewUrl 带签名会过期，不能存库）
+    const { data } = await uploadFile(new File([blob], 'avatar.jpg', { type: 'image/jpeg' }))
+    if (!data?.objectKey) return
+
+    // 第二步：把 objectKey 写进用户资料
+    await updateUserAvatar({ id: userStore.userId, headUrl: data.objectKey })
+    // 第三步：刷新 store，头像立即更新（页面按 ossUrl + headUrl 渲染）
+    await userStore.getInfo()
+
     ElMessage.success($t('system.user.profile.messages.avatarUploadSuccess'))
-  }, 800)
+    avatarDialogVisible.value = false
+  } finally {
+    avatarUploading.value = false
+  }
 }
 
 function handleAvatarDialogClose() {
@@ -594,7 +644,8 @@ function handleSaveProfile() {
       postId: userStore.postId,
       postName: userStore.postName,
       status: '0',
-      roleIds: [],
+      // 不传 roleIds：后端只在显式传入时才重算角色关联，
+      // 个人中心保存资料不应改动角色（此前传 [] 会把角色清空）
     })
       .then((res) => {
         ElMessage.success(res.msg || $t('system.user.profile.messages.profileUpdateSuccess'))

@@ -273,18 +273,19 @@ const parameterTypes: ExpressionParameterDefinition['type'][] = [
   'PROCESS_VARIABLE',
 ]
 
+// 模板只写表达式主体，外层 ${} 由系统补全；参数用 {参数Key} 占位
 const templateExamples: Record<string, string> = {
-  ASSIGNEE: '${approvalService.resolveUser({{businessId}})}',
-  MULTI_INSTANCE_USERS: '${approvalService.resolveUsers({{businessId}})}',
-  SEQUENCE_CONDITION: '${amount > {{threshold}}}',
-  LISTENER_EXPRESSION: '${workflowListener.handle(execution, {{businessId}})}',
-  default: '${service.method({{parameter}})}',
+  ASSIGNEE: 'approvalService.resolveUser({businessId})',
+  MULTI_INSTANCE_USERS: 'approvalService.resolveUsers({businessId})',
+  SEQUENCE_CONDITION: '{amountVariable} >= {threshold}',
+  LISTENER_EXPRESSION: 'workflowListener.handle(execution, {businessId})',
+  default: 'service.method({parameter})',
 }
 
 const templatePlaceholder = computed(() =>
   locale.value === 'en'
-    ? 'For example: ${approvalService.resolve({{businessId}})}'
-    : '例如：${approvalService.resolve({{businessId}})}',
+    ? 'e.g. {amountVariable} >= {threshold}'
+    : '例如：{amountVariable} >= {threshold}',
 )
 
 // 模板示例随所选表达式类型变化，需要读取当前表单内容

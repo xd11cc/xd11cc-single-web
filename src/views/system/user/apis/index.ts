@@ -56,6 +56,24 @@ export function userList(): Promise<ResponseVO<SystemUserVO[]>> {
   })
 }
 
+/**
+ * 只更新头像。
+ *
+ * 复用 modifyById 接口，但只提交 id + headUrl：
+ * 后端按「非 null 字段更新」，且 roleIds 为空时不重算角色关联，
+ * 因此不会像整表单保存那样覆盖其它字段。
+ */
+export function updateUserAvatar(data: {
+  id: number
+  headUrl: string
+}): Promise<ResponseVO<number>> {
+  return request({
+    url: '/system/user/modifyById',
+    method: 'POST',
+    data,
+  })
+}
+
 export function changePassword(data: {
   oldPassword: string
   newPassword: string

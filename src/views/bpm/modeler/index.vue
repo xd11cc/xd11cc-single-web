@@ -164,6 +164,7 @@ import { createDefaultProcessKey, createDefaultProcessXml } from './default-proc
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { deployWorkflowDraft, getWorkflowDraft, saveWorkflowDraft } from './apis'
+import { getExpressionConfigOptions } from '../expression-config/apis'
 
 defineOptions({ name: 'Modeler' })
 
@@ -338,12 +339,82 @@ async function publishProcess() {
     // 用户却看到“发布成功”，造成版本错乱。
     const saved = await saveProcess()
     if (!saved || !modelId.value) return
+    // 发布前先检查表达式参数是否填全：后端解析时会因缺参直接失败，
+    // 提前拦住并指出是哪个元素、哪个参数，比让用户对着报错猜要快得多。
+    const missing = await findMissingExpressionParameter(currentXml.value)
+    if (missing) {
+      ElMessage.error(
+        t('bpm.modeler.messages.expressionParameterMissing', {
+          element: missing.element,
+          parameter: missing.parameter,
+        }),
+      )
+      return
+    }
     await deployWorkflowDraft(modelId.value)
     ElMessage.success(t('common.messages.operationSuccess'))
     returnToDefinition()
   } finally {
     publishLoading.value = false
   }
+}
+
+/**
+ * 找出第一个「已配置表达式但必填参数为空」的元素。
+ * 与后端 resolveExpression 的校验保持一致，避免发布后才发现缺参。
+ */
+async function findMissingExpressionParameter(
+  xml: string | undefined,
+): Promise<{ element: string; parameter: string } | null> {
+  if (!xml) return null
+  const doc = new DOMParser().parseFromString(xml, 'application/xml')
+  if (doc.getElementsByTagName('parsererror').length > 0) return null
+  const elements = Array.from(doc.getElementsByTagName('*')).filter((el) =>
+    el.getAttribute('flowable:expressionConfigKey'),
+  )
+  if (!elements.length) return null
+
+  const configs = (
+    await Promise.all(
+      ['ASSIGNEE', 'MULTI_INSTANCE_USERS', 'SEQUENCE_CONDITION', 'LISTENER_EXPRESSION'].map(
+        (type) => getExpressionConfigOptions(type).then((res) => res.data ?? []),
+      ),
+    )
+  ).flat()
+  const configByKey = new Map(configs.map((config) => [config.configKey, config]))
+
+  for (const element of elements) {
+    const configKey = element.getAttribute('flowable:expressionConfigKey') ?? ''
+    const config = configByKey.get(configKey)
+    if (!config?.parameterSchema) continue
+    let schema: Array<{ key: string; name?: string; required?: boolean }> = []
+    try {
+      schema = JSON.parse(config.parameterSchema)
+    } catch {
+      continue
+    }
+    let values: Record<string, unknown> = {}
+    try {
+      values = JSON.parse(element.getAttribute('flowable:expressionParameters') || '{}')
+    } catch {
+      values = {}
+    }
+    for (const parameter of schema) {
+      if (!parameter.required) continue
+      const value = values[parameter.key]
+      if (value === undefined || value === null || String(value).trim() === '') {
+        return {
+          element:
+            element.getAttribute('name') ||
+            element.getAttribute('id') ||
+            config.configName ||
+            configKey,
+          parameter: parameter.name || parameter.key,
+        }
+      }
+    }
+  }
+  return null
 }
 
 async function loadDraft(id: string) {

@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
 import UseCrudView from '@/common/components/useCrud/index.vue'
@@ -31,6 +31,7 @@ function makeSlotProps(overrides: Record<string, any> = {}) {
     resetSearch: () => {},
     tableData: [],
     tableLoading: false,
+    tableError: false,
     tableSelection: [],
     handleSelectionChange: () => {},
     paginationData: {
@@ -78,7 +79,7 @@ const mountOptions = {
       'el-input': { template: '<input />' },
       'el-select': { template: '<div><slot /></div>' },
       'el-option': { template: '<div />' },
-      'el-empty': { template: '<div />' },
+      'el-empty': { template: '<div class="el-empty-stub"><slot /></div>' },
     },
   },
 }
@@ -106,6 +107,22 @@ describe('UseCrudView 结构契约', () => {
     })
 
     expect(wrapper.find('.el-dialog-stub').exists()).toBe(false)
+  })
+
+  it('加载失败时显示错误态与重试按钮，并隐藏表格和分页', async () => {
+    const refresh = vi.fn()
+    const wrapper = mount(UseCrudView, {
+      ...mountOptions,
+      props: { slotProps: makeSlotProps({ tableError: true, refresh }) },
+    })
+
+    const error = wrapper.find('.table-error')
+    expect(error.exists()).toBe(true)
+    expect(error.attributes('role')).toBe('alert')
+    expect(wrapper.find('.page-wrapper').exists()).toBe(false)
+
+    await error.find('button').trigger('click')
+    expect(refresh).toHaveBeenCalledTimes(1)
   })
 
   it('hidePagination 隐藏分页区', () => {

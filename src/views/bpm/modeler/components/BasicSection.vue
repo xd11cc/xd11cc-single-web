@@ -46,6 +46,11 @@
         />
       </el-form-item>
     </template>
+    <template v-if="isSequenceFlow">
+      <el-form-item :label="t('bpm.modeler.property.fields.nodeId')">
+        <el-input v-model="form.id" @change="update('id')" />
+      </el-form-item>
+    </template>
     <template v-else>
       <el-form-item :label="t('bpm.modeler.property.fields.nodeName')">
         <el-input
@@ -76,6 +81,12 @@ defineOptions({ name: 'BasicSection' })
 
 const { t } = useI18n()
 
-const { form, update, updateProcessDescription, processCategoryOptions, isProcess } =
-  useElementContext()
+const {
+  form,
+  update,
+  updateProcessDescription,
+  processCategoryOptions,
+  isProcess,
+  isSequenceFlow,
+} = useElementContext()
 </script>
