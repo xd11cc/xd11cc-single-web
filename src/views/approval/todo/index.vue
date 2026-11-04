@@ -1,5 +1,10 @@
 <template>
-  <UseCrudView :slotProps="crud.slotProps" readonly :table-props="{ border: true, stripe: true }">
+  <UseCrudView
+    :columns="columns"
+    :slotProps="crud.slotProps"
+    readonly
+    :table-props="{ border: true, stripe: true }"
+  >
     <!-- 搜索区字段 -->
     <template #search-form="{ searchData }">
       <el-form-item :label="$t('bpm.approval.todo.search.title')">
@@ -21,60 +26,29 @@
     </template>
 
     <!-- 表格列 -->
-    <template #table>
-      <el-table-column
-        prop="taskName"
-        :label="$t('bpm.approval.todo.columns.taskName')"
-        min-width="160"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        prop="title"
-        :label="$t('bpm.approval.todo.columns.title')"
-        min-width="220"
-        show-overflow-tooltip
-      >
-        <template #default="{ row }">
-          <el-link type="primary" :underline="false" @click="openDetail(row)">
-            {{ row.title || '-' }}
-          </el-link>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="processDefinitionKey"
-        :label="$t('bpm.approval.todo.columns.processKey')"
-        min-width="160"
-        show-overflow-tooltip
-      >
-        <template #default="{ row }">{{ row.processDefinitionKey || '-' }}</template>
-      </el-table-column>
-      <el-table-column
-        prop="businessKey"
-        :label="$t('bpm.approval.todo.columns.businessKey')"
-        min-width="160"
-        show-overflow-tooltip
-      >
-        <template #default="{ row }">{{ row.businessKey || '-' }}</template>
-      </el-table-column>
-      <el-table-column
-        prop="assignee"
-        :label="$t('bpm.approval.todo.columns.assignee')"
-        width="130"
-        align="center"
-      >
-        <template #default="{ row }">
-          <el-tag v-if="row.assignee" size="small" effect="plain">{{ row.assignee }}</el-tag>
-          <el-tag v-else size="small" type="warning" effect="plain">
-            {{ $t('bpm.approval.todo.candidate') }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="createTime"
-        :label="$t('bpm.approval.todo.columns.createTime')"
-        width="170"
-        align="center"
-      />
+    <template #cell-title="{ row }">
+      <el-link type="primary" :underline="false" @click="openDetail(row)">
+        {{ row.title || '-' }}
+      </el-link>
+    </template>
+
+    <template #cell-processDefinitionKey="{ row }">
+      {{ row.processDefinitionKey || '-' }}
+    </template>
+
+    <template #cell-businessKey="{ row }">
+      {{ row.businessKey || '-' }}
+    </template>
+
+    <template #cell-assignee="{ row }">
+      <el-tag v-if="row.assignee" size="small" effect="plain">{{ row.assignee }}</el-tag>
+      <el-tag v-else size="small" type="warning" effect="plain">
+        {{ $t('bpm.approval.todo.candidate') }}
+      </el-tag>
+    </template>
+
+    <!-- 操作列：固定在生成列之后 -->
+    <template #table-append="">
       <el-table-column fixed="right" :label="$t('common.action')" width="130" align="center">
         <template #default="{ row }">
           <div class="action-icons">
@@ -205,6 +179,7 @@ import { Icon } from '@iconify/vue'
 import { useI18n } from 'vue-i18n'
 import UseCrudView from '@/common/components/useCrud/index.vue'
 import { useCrud } from '@/common/composables/useCrud'
+import type { TableColumnDef } from '@@/composables/useTableColumns'
 import { getMyTodoTasks } from '../apis'
 import { useApprovalActions } from '../composables/useApprovalActions'
 import type { MyTaskQuery, WorkflowTaskVO } from '../apis/type'
@@ -217,6 +192,30 @@ const route = useRoute()
 const router = useRouter()
 
 // 待办任务：只读列表，操作是「详情 / 通过 / 转办」
+// 列定义：排序 / 显隐 / 列宽由列表壳统一管理
+const columns = computed<TableColumnDef[]>(() => [
+  { prop: 'taskName', label: t('bpm.approval.todo.columns.taskName'), minWidth: 160 },
+  { prop: 'title', label: t('bpm.approval.todo.columns.title'), minWidth: 220 },
+  {
+    prop: 'processDefinitionKey',
+    label: t('bpm.approval.todo.columns.processKey'),
+    minWidth: 160,
+  },
+  { prop: 'businessKey', label: t('bpm.approval.todo.columns.businessKey'), minWidth: 160 },
+  {
+    prop: 'assignee',
+    label: t('bpm.approval.todo.columns.assignee'),
+    width: 130,
+    align: 'center',
+  },
+  {
+    prop: 'createTime',
+    label: t('bpm.approval.todo.columns.createTime'),
+    width: 170,
+    align: 'center',
+  },
+])
+
 const crud = useCrud<MyTaskQuery, WorkflowTaskVO>({
   pageApi: (query) => getMyTodoTasks(query),
 })

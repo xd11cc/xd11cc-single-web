@@ -1,5 +1,5 @@
 <template>
-  <UseCrudView :slotProps="crud.slotProps" readonly hide-pagination>
+  <UseCrudView :columns="columns" :slotProps="crud.slotProps" readonly hide-pagination>
     <!-- 搜索区字段 -->
     <template #search-form="{ searchData }">
       <el-form-item prop="username" :label="$t('system.onlineUser.search.username')">
@@ -11,23 +11,18 @@
     </template>
 
     <!-- 表格列 -->
-    <template #table>
+    <!-- 固定列：不参与列设置 -->
+    <template #table-prefix>
       <el-table-column
         type="index"
         :label="$t('system.onlineUser.columns.index')"
         width="60"
         align="center"
       />
-      <el-table-column prop="username" :label="$t('system.onlineUser.columns.username')" />
-      <el-table-column prop="ipAddr" :label="$t('system.onlineUser.columns.ipAddr')" width="140" />
-      <el-table-column prop="browser" :label="$t('system.onlineUser.columns.browser')" />
-      <el-table-column prop="os" :label="$t('system.onlineUser.columns.os')" />
-      <el-table-column
-        prop="loginTime"
-        :label="$t('system.onlineUser.columns.loginTime')"
-        align="center"
-        min-width="160"
-      />
+    </template>
+
+    <!-- 操作列：固定在生成列之后 -->
+    <template #table-append="">
       <el-table-column fixed="right" :label="$t('common.action')" width="70" align="center">
         <template #default="scope">
           <el-tooltip :content="$t('system.onlineUser.actions.forceLogout')" placement="top">
@@ -55,6 +50,7 @@ import UseCrudView from '@/common/components/useCrud/index.vue'
 import { useCrud } from '@/common/composables/useCrud'
 import { onlineUserList, forceLogout } from './apis'
 import type { OnlineUserVO } from './apis/type'
+import type { TableColumnDef } from '@@/composables/useTableColumns'
 
 const { t } = useI18n()
 const $t = t
@@ -65,6 +61,20 @@ defineOptions({
 
 // 在线用户是「一次性返回全量」的接口，没有分页。
 // 在适配层把数组包装成分页结构，页面即可复用同一套壳（分页区用 hide-pagination 隐藏）。
+// 列定义：排序 / 显隐 / 列宽由列表壳统一管理
+const columns = computed<TableColumnDef[]>(() => [
+  { prop: 'username', label: t('system.onlineUser.columns.username') },
+  { prop: 'ipAddr', label: t('system.onlineUser.columns.ipAddr'), width: 140 },
+  { prop: 'browser', label: t('system.onlineUser.columns.browser') },
+  { prop: 'os', label: t('system.onlineUser.columns.os') },
+  {
+    prop: 'loginTime',
+    label: t('system.onlineUser.columns.loginTime'),
+    minWidth: 160,
+    align: 'center',
+  },
+])
+
 const crud = useCrud<{ username?: string }, OnlineUserVO>({
   pageApi: async (query) => {
     const res = await onlineUserList(query.username)

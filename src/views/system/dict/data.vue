@@ -1,6 +1,7 @@
 <template>
   <UseCrudView
     :slotProps="crud.slotProps"
+    :columns="columns"
     :formRules="formRules"
     :add-title="$t('system.dict.data.dialogs.addData')"
     :edit-title="$t('system.dict.data.dialogs.editData')"
@@ -73,29 +74,23 @@
     </template>
 
     <!-- 表格列 -->
-    <template #table="{ handleEdit, handleRemove }">
+    <!-- 固定列：不参与列设置 -->
+    <template #table-prefix>
       <el-table-column type="selection" width="50" align="center" />
-      <el-table-column prop="value" :label="$t('system.dict.data.columns.value')" />
-      <el-table-column prop="label" :label="$t('system.dict.data.columns.label')" />
-      <el-table-column prop="sort" :label="$t('system.dict.data.columns.sort')" align="right" />
-      <el-table-column prop="status" :label="$t('system.dict.data.columns.status')" align="center">
-        <template #default="scope">
-          <el-tag
-            :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
-            effect="plain"
-            disable-transitions
-          >
-            {{ getDictItem('system_status', scope.row.status)?.label }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="remark" :label="$t('system.dict.data.columns.remark')" />
-      <el-table-column
-        prop="createTime"
-        :label="$t('system.dict.data.columns.createTime')"
-        align="center"
-        min-width="160"
-      />
+    </template>
+
+    <template #cell-status="{ row }">
+      <el-tag
+        :type="getDictItem('system_status', row.status)?.listClass || 'info'"
+        effect="plain"
+        disable-transitions
+      >
+        {{ getDictItem('system_status', row.status)?.label }}
+      </el-tag>
+    </template>
+
+    <!-- 操作列：固定在生成列之后 -->
+    <template #table-append="{ handleEdit, handleRemove }">
       <el-table-column fixed="right" :label="$t('common.action')" width="90" align="center">
         <template #default="scope">
           <el-tooltip :content="$t('common.edit')" placement="top">
@@ -211,6 +206,7 @@ import UseCrudView from '@/common/components/useCrud/index.vue'
 import { useCrud } from '@/common/composables/useCrud'
 import { useDict } from '@/common/composables/useDict'
 import type { SystemDictDataVO, SystemDictDataQueryVO, SystemDictTypeVO } from './apis/type'
+import type { TableColumnDef } from '@@/composables/useTableColumns'
 import {
   addDictData,
   dictDataPage,
@@ -257,6 +253,21 @@ const formRules: FormRules<SystemDictDataVO> = {
     },
   ],
 }
+
+// 列定义：排序 / 显隐 / 列宽由列表壳统一管理
+const columns = computed<TableColumnDef[]>(() => [
+  { prop: 'value', label: t('system.dict.data.columns.value') },
+  { prop: 'label', label: t('system.dict.data.columns.label') },
+  { prop: 'sort', label: t('system.dict.data.columns.sort'), align: 'right' },
+  { prop: 'status', label: t('system.dict.data.columns.status'), align: 'center' },
+  { prop: 'remark', label: t('system.dict.data.columns.remark') },
+  {
+    prop: 'createTime',
+    label: t('system.dict.data.columns.createTime'),
+    minWidth: 160,
+    align: 'center',
+  },
+])
 
 const crud = useCrud<SystemDictDataQueryVO, SystemDictDataVO>({
   pageApi: (query) => dictDataPage(query),

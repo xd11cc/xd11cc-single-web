@@ -20,8 +20,8 @@ const defaults = [
   { prop: 'c', label: 'C' },
 ]
 
-function read() {
-  return JSON.parse(localStorage.getItem(storageKey) ?? '[]')
+function read(): Record<string, { visible?: boolean; width?: number | string; order?: number }> {
+  return JSON.parse(localStorage.getItem(storageKey) ?? '{}')
 }
 
 describe('useTableColumns', () => {
@@ -30,7 +30,7 @@ describe('useTableColumns', () => {
   })
 
   it('默认按定义顺序、全部可见', () => {
-    const { columns, visibleColumns } = useTableColumns({ key: KEY, defaultColumns: defaults })
+    const { columns, visibleColumns } = useTableColumns({ key: KEY, columns: defaults })
 
     expect(columns.value.map((c) => [c.prop, c.order, c.visible])).toEqual([
       ['a', 0, true],
@@ -41,15 +41,15 @@ describe('useTableColumns', () => {
   })
 
   it('切换显隐后写回本地', () => {
-    const { toggleColumn, visibleColumns } = useTableColumns({ key: KEY, defaultColumns: defaults })
+    const { toggleColumn, visibleColumns } = useTableColumns({ key: KEY, columns: defaults })
 
     expect(toggleColumn('b')).toBe(true)
     expect(visibleColumns.value.map((c) => c.prop)).toEqual(['a', 'c'])
-    expect(read().find((c: any) => c.prop === 'b').visible).toBe(false)
+    expect(read().b?.visible).toBe(false)
   })
 
   it('只剩一列时不允许再隐藏', () => {
-    const { toggleColumn, visibleColumns } = useTableColumns({ key: KEY, defaultColumns: defaults })
+    const { toggleColumn, visibleColumns } = useTableColumns({ key: KEY, columns: defaults })
 
     toggleColumn('a')
     toggleColumn('b')
@@ -59,13 +59,13 @@ describe('useTableColumns', () => {
   })
 
   it('拖拽排序生效并持久化', () => {
-    const { reorderColumns, visibleColumns } = useTableColumns({ key: KEY, defaultColumns: defaults })
+    const { reorderColumns, visibleColumns } = useTableColumns({ key: KEY, columns: defaults })
 
     reorderColumns(0, 2) // a 移到末尾
 
     expect(visibleColumns.value.map((c) => c.prop)).toEqual(['b', 'c', 'a'])
-    // 持久化的是「每个 prop 的 order」，存储顺序无关
-    expect(Object.fromEntries(read().map((c: any) => [c.prop, c.order]))).toEqual({
+    // 持久化的是「每个 prop 的 order」
+    expect(Object.fromEntries(Object.entries(read()).map(([prop, p]) => [prop, p.order]))).toEqual({
       a: 2,
       b: 0,
       c: 1,
@@ -75,7 +75,7 @@ describe('useTableColumns', () => {
   it('隐藏列在排序后仍排在可见列之后', () => {
     const { toggleColumn, reorderColumns, columns } = useTableColumns({
       key: KEY,
-      defaultColumns: defaults,
+      columns: defaults,
     })
 
     toggleColumn('a') // a 隐藏
@@ -86,17 +86,17 @@ describe('useTableColumns', () => {
   })
 
   it('记录列宽；相同宽度不重复写', () => {
-    const { setColumnWidth, columns } = useTableColumns({ key: KEY, defaultColumns: defaults })
+    const { setColumnWidth, columns } = useTableColumns({ key: KEY, columns: defaults })
 
     setColumnWidth('a', 200)
     expect(columns.value.find((c) => c.prop === 'a')?.width).toBe(200)
-    expect(read().find((c: any) => c.prop === 'a').width).toBe(200)
+    expect(read().a?.width).toBe(200)
   })
 
   it('重置恢复默认并清掉本地偏好', () => {
     const { toggleColumn, resetColumns, columns, visibleColumns } = useTableColumns({
       key: KEY,
-      defaultColumns: defaults,
+      columns: defaults,
     })
 
     toggleColumn('a')
@@ -109,7 +109,7 @@ describe('useTableColumns', () => {
 
   it('本地数据损坏时回落到默认', () => {
     localStorage.setItem(storageKey, '不是 JSON')
-    const { visibleColumns } = useTableColumns({ key: KEY, defaultColumns: defaults })
+    const { visibleColumns } = useTableColumns({ key: KEY, columns: defaults })
     expect(visibleColumns.value.map((c) => c.prop)).toEqual(['a', 'b', 'c'])
   })
 
@@ -124,7 +124,7 @@ describe('useTableColumns', () => {
 
     const { visibleColumns } = useTableColumns({
       key: KEY,
-      defaultColumns: [...defaults, { prop: 'd', label: 'D' }],
+      columns: [...defaults, { prop: 'd', label: 'D' }],
     })
 
     expect(visibleColumns.value.map((c) => c.prop)).toEqual(['b', 'a', 'c', 'd'])
@@ -139,7 +139,7 @@ describe('useTableColumns', () => {
       ]),
     )
 
-    const { columns } = useTableColumns({ key: KEY, defaultColumns: defaults })
+    const { columns } = useTableColumns({ key: KEY, columns: defaults })
     expect(columns.value.map((c) => c.prop)).not.toContain('gone')
   })
 })

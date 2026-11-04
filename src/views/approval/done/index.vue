@@ -1,5 +1,5 @@
 <template>
-  <UseCrudView :slotProps="crud.slotProps" readonly>
+  <UseCrudView :columns="columns" :slotProps="crud.slotProps" readonly>
     <!-- 搜索区字段 -->
     <template #search-form="{ searchData }">
       <el-form-item :label="$t('bpm.approval.done.search.title')">
@@ -21,63 +21,30 @@
     </template>
 
     <!-- 表格列 -->
-    <template #table>
-      <el-table-column
-        prop="taskName"
-        :label="$t('bpm.approval.done.columns.taskName')"
-        min-width="160"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        prop="title"
-        :label="$t('bpm.approval.done.columns.title')"
-        min-width="220"
-        show-overflow-tooltip
-      >
-        <template #default="{ row }">
-          <el-link type="primary" :underline="false" @click="openDetail(row)">
-            {{ row.title || '-' }}
-          </el-link>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="processDefinitionKey"
-        :label="$t('bpm.approval.done.columns.processKey')"
-        min-width="160"
-        show-overflow-tooltip
-      >
-        <template #default="{ row }">{{ row.processDefinitionKey || '-' }}</template>
-      </el-table-column>
-      <el-table-column
-        prop="businessKey"
-        :label="$t('bpm.approval.done.columns.businessKey')"
-        min-width="160"
-        show-overflow-tooltip
-      >
-        <template #default="{ row }">{{ row.businessKey || '-' }}</template>
-      </el-table-column>
-      <el-table-column
-        prop="comment"
-        :label="$t('bpm.approval.done.columns.comment')"
-        min-width="200"
-        show-overflow-tooltip
-      >
-        <template #default="{ row }">{{ row.comment || '-' }}</template>
-      </el-table-column>
-      <el-table-column
-        prop="createTime"
-        :label="$t('bpm.approval.done.columns.createTime')"
-        width="170"
-        align="center"
-      />
-      <el-table-column
-        prop="endTime"
-        :label="$t('bpm.approval.done.columns.endTime')"
-        width="170"
-        align="center"
-      >
-        <template #default="{ row }">{{ row.endTime || '-' }}</template>
-      </el-table-column>
+    <template #cell-title="{ row }">
+      <el-link type="primary" :underline="false" @click="openDetail(row)">
+        {{ row.title || '-' }}
+      </el-link>
+    </template>
+
+    <template #cell-processDefinitionKey="{ row }">
+      {{ row.processDefinitionKey || '-' }}
+    </template>
+
+    <template #cell-businessKey="{ row }">
+      {{ row.businessKey || '-' }}
+    </template>
+
+    <template #cell-comment="{ row }">
+      {{ row.comment || '-' }}
+    </template>
+
+    <template #cell-endTime="{ row }">
+      {{ row.endTime || '-' }}
+    </template>
+
+    <!-- 操作列：固定在生成列之后 -->
+    <template #table-append="">
       <el-table-column fixed="right" :label="$t('common.action')" width="90" align="center">
         <template #default="{ row }">
           <div class="action-icons">
@@ -116,6 +83,7 @@ import { Icon } from '@iconify/vue'
 import { useI18n } from 'vue-i18n'
 import UseCrudView from '@/common/components/useCrud/index.vue'
 import { useCrud } from '@/common/composables/useCrud'
+import type { TableColumnDef } from '@@/composables/useTableColumns'
 import { getMyDoneTasks } from '../apis'
 import type { MyTaskQuery, WorkflowTaskVO } from '../apis/type'
 import ApprovalDetailDrawer from '../components/ApprovalDetailDrawer.vue'
@@ -126,6 +94,26 @@ const { t } = useI18n()
 const $t = t
 
 // 已办任务：只读列表，操作只有「查看详情」
+// 列定义：排序 / 显隐 / 列宽由列表壳统一管理
+const columns = computed<TableColumnDef[]>(() => [
+  { prop: 'taskName', label: t('bpm.approval.done.columns.taskName'), minWidth: 160 },
+  { prop: 'title', label: t('bpm.approval.done.columns.title'), minWidth: 220 },
+  {
+    prop: 'processDefinitionKey',
+    label: t('bpm.approval.done.columns.processKey'),
+    minWidth: 160,
+  },
+  { prop: 'businessKey', label: t('bpm.approval.done.columns.businessKey'), minWidth: 160 },
+  { prop: 'comment', label: t('bpm.approval.done.columns.comment'), minWidth: 200 },
+  {
+    prop: 'createTime',
+    label: t('bpm.approval.done.columns.createTime'),
+    width: 170,
+    align: 'center',
+  },
+  { prop: 'endTime', label: t('bpm.approval.done.columns.endTime'), width: 170, align: 'center' },
+])
+
 const crud = useCrud<MyTaskQuery, WorkflowTaskVO>({
   pageApi: (query) => getMyDoneTasks(query),
 })

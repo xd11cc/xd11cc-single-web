@@ -1,6 +1,7 @@
 <template>
   <UseCrudView
     :slotProps="crud.slotProps"
+    :columns="columns"
     :formRules="formRules"
     :add-title="$t('system.config.dialogs.add')"
     :edit-title="$t('system.config.dialogs.edit')"
@@ -35,18 +36,13 @@
     </template>
 
     <!-- 表格列 -->
-    <template #table="{ handleEdit, handleRemove }">
+    <!-- 选择列：不参与列设置 -->
+    <template #table-prefix>
       <el-table-column type="selection" width="50" align="center" />
-      <el-table-column prop="configName" :label="$t('system.config.columns.configName')" />
-      <el-table-column prop="configKey" :label="$t('system.config.columns.configKey')" />
-      <el-table-column prop="configValue" :label="$t('system.config.columns.configValue')" />
-      <el-table-column prop="remark" :label="$t('system.config.columns.remark')" />
-      <el-table-column
-        prop="createTime"
-        :label="$t('system.config.columns.createTime')"
-        align="center"
-        min-width="160"
-      />
+    </template>
+
+    <!-- 操作列：固定在生成列之后，不参与列设置 -->
+    <template #table-append="{ handleEdit, handleRemove }">
       <el-table-column fixed="right" :label="$t('common.action')" width="90" align="center">
         <template #default="scope">
           <el-tooltip :content="$t('system.config.actions.edit')" placement="top">
@@ -127,6 +123,7 @@ import UseCrudView from '@/common/components/useCrud/index.vue'
 import { useCrud } from '@/common/composables/useCrud'
 import { configPage, addConfig, modifyConfigById, removeConfigByIds } from './apis'
 import type { SystemConfigQueryVO, SystemConfigVO } from './apis/type'
+import type { TableColumnDef } from '@@/composables/useTableColumns'
 
 const { t } = useI18n()
 const $t = t
@@ -158,6 +155,20 @@ const formRules: FormRules<SystemConfigVO> = {
     },
   ],
 }
+
+// 列定义：排序 / 显隐 / 列宽由列表壳统一管理
+const columns = computed<TableColumnDef[]>(() => [
+  { prop: 'configName', label: $t('system.config.columns.configName'), minWidth: 140 },
+  { prop: 'configKey', label: $t('system.config.columns.configKey'), minWidth: 160 },
+  { prop: 'configValue', label: $t('system.config.columns.configValue'), minWidth: 160 },
+  { prop: 'remark', label: $t('system.config.columns.remark'), minWidth: 160 },
+  {
+    prop: 'createTime',
+    label: $t('system.config.columns.createTime'),
+    minWidth: 160,
+    align: 'center',
+  },
+])
 
 const crud = useCrud<SystemConfigQueryVO, SystemConfigVO>({
   pageApi: (query) => configPage(query),

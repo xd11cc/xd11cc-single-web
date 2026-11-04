@@ -1,6 +1,7 @@
 <template>
   <UseCrudView
     :slotProps="crud.slotProps"
+    :columns="columns"
     :formRules="rules"
     :add-title="$t('bpm.expressionConfig.dialog.add')"
     :edit-title="$t('bpm.expressionConfig.dialog.edit')"
@@ -53,64 +54,37 @@
     </template>
 
     <!-- 表格列 -->
-    <template #table="{ handleEdit, handleRemove }">
+    <!-- 固定列：不参与列设置 -->
+    <template #table-prefix>
       <el-table-column type="selection" width="50" align="center" />
-      <el-table-column
-        prop="configName"
-        :label="$t('bpm.expressionConfig.fields.name')"
-        min-width="150"
-      />
-      <el-table-column
-        prop="configKey"
-        :label="$t('bpm.expressionConfig.fields.key')"
-        min-width="180"
-      />
-      <el-table-column
-        prop="expressionType"
-        :label="$t('bpm.expressionConfig.fields.type')"
-        width="180"
-      >
-        <template #default="{ row }">
-          {{
-            getDictItem('workflow_expression_type', row.expressionType || '')?.label ||
-            row.expressionType
-          }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="returnType"
-        :label="$t('bpm.expressionConfig.fields.returnType')"
-        width="120"
-      >
-        <template #default="{ row }">
-          {{
-            getDictItem('workflow_expression_return_type', row.returnType || '')?.label ||
-            row.returnType
-          }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="expressionTemplate"
-        :label="$t('bpm.expressionConfig.fields.preview')"
-        min-width="240"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        prop="status"
-        :label="$t('bpm.expressionConfig.fields.status')"
-        align="center"
-        width="90"
-      >
-        <template #default="{ row }">
-          <el-tag :type="row.status === '0' ? 'success' : 'info'" effect="plain" size="small">
-            {{
-              row.status === '0'
-                ? $t('bpm.expressionConfig.status.enabled')
-                : $t('bpm.expressionConfig.status.disabled')
-            }}
-          </el-tag>
-        </template>
-      </el-table-column>
+    </template>
+
+    <template #cell-expressionType="{ row }">
+      {{
+        getDictItem('workflow_expression_type', row.expressionType || '')?.label ||
+        row.expressionType
+      }}
+    </template>
+
+    <template #cell-returnType="{ row }">
+      {{
+        getDictItem('workflow_expression_return_type', row.returnType || '')?.label ||
+        row.returnType
+      }}
+    </template>
+
+    <template #cell-status="{ row }">
+      <el-tag :type="row.status === '0' ? 'success' : 'info'" effect="plain" size="small">
+        {{
+          row.status === '0'
+            ? $t('bpm.expressionConfig.status.enabled')
+            : $t('bpm.expressionConfig.status.disabled')
+        }}
+      </el-tag>
+    </template>
+
+    <!-- 操作列：固定在生成列之后 -->
+    <template #table-append="{ handleEdit, handleRemove }">
       <el-table-column fixed="right" :label="$t('common.action')" width="90" align="center">
         <template #default="{ row }">
           <el-tooltip :content="$t('common.edit')" placement="top">
@@ -256,6 +230,7 @@ import type {
   WorkflowExpressionConfigQueryVO,
   WorkflowExpressionConfigVO,
 } from './apis/type'
+import type { TableColumnDef } from '@@/composables/useTableColumns'
 
 const { t, locale } = useI18n()
 const $t = t
@@ -321,6 +296,16 @@ const rules: FormRules = {
     },
   ],
 }
+
+// 列定义：排序 / 显隐 / 列宽由列表壳统一管理
+const columns = computed<TableColumnDef[]>(() => [
+  { prop: 'configName', label: $t('bpm.expressionConfig.fields.name'), minWidth: 150 },
+  { prop: 'configKey', label: $t('bpm.expressionConfig.fields.key'), minWidth: 180 },
+  { prop: 'expressionType', label: $t('bpm.expressionConfig.fields.type'), width: 180 },
+  { prop: 'returnType', label: $t('bpm.expressionConfig.fields.returnType'), width: 120 },
+  { prop: 'expressionTemplate', label: $t('bpm.expressionConfig.fields.preview'), minWidth: 240 },
+  { prop: 'status', label: $t('bpm.expressionConfig.fields.status'), width: 90, align: 'center' },
+])
 
 const crud = useCrud<WorkflowExpressionConfigQueryVO, WorkflowExpressionConfigVO>({
   pageApi: (query) => expressionConfigPage(query),

@@ -2,6 +2,7 @@
   <div class="definition-page">
     <UseCrudView
       :slotProps="crud.slotProps"
+      :columns="columns"
       :formRules="formRules"
       :add-title="$t('bpm.definition.dialogs.add')"
       :edit-title="$t('bpm.definition.dialogs.edit')"
@@ -38,66 +39,28 @@
       </template>
 
       <!-- 表格列 -->
-      <template #table>
+      <template #table-prefix>
         <el-table-column type="selection" width="50" align="center" />
-        <el-table-column
-          prop="key"
-          :label="$t('bpm.definition.columns.key')"
-          min-width="140"
-          show-overflow-tooltip
-        />
-        <el-table-column
-          prop="name"
-          :label="$t('bpm.definition.columns.name')"
-          min-width="160"
-          show-overflow-tooltip
-        />
-        <el-table-column
-          prop="version"
-          :label="$t('bpm.definition.columns.version')"
-          align="center"
-          width="100"
-        >
-          <template #default="scope">
-            <span v-if="scope.row.version" class="version-badge">
-              <Icon icon="lucide:git-branch" />
-              <strong>v{{ scope.row.version }}</strong>
-            </span>
-            <span v-else class="version-draft-badge">
-              <Icon icon="lucide:pen-line" />
-              {{ getStatusItem(scope.row)?.value || scope.row.status || '-' }}
-            </span>
-          </template>
-        </el-table-column>
-        <el-table-column
-          prop="category"
-          :label="$t('bpm.definition.columns.category')"
-          width="110"
-          show-overflow-tooltip
-        />
-        <el-table-column
-          prop="deployTime"
-          :label="$t('bpm.definition.columns.deployTime')"
-          align="center"
-          min-width="170"
-        />
-        <el-table-column
-          prop="status"
-          :label="$t('bpm.definition.columns.suspended')"
-          align="center"
-          width="90"
-        >
-          <template #default="scope">
-            <el-tag
-              :type="getStatusType(scope.row)"
-              effect="plain"
-              size="small"
-              disable-transitions
-            >
-              {{ getStatusItem(scope.row)?.value || scope.row.status || '-' }}
-            </el-tag>
-          </template>
-        </el-table-column>
+      </template>
+
+      <template #cell-version="{ row }">
+        <span v-if="row.version" class="version-badge">
+          <Icon icon="lucide:git-branch" />
+          <strong>v{{ row.version }}</strong>
+        </span>
+        <span v-else class="version-draft-badge">
+          <Icon icon="lucide:pen-line" />
+          {{ getStatusItem(row)?.value || row.status || '-' }}
+        </span>
+      </template>
+
+      <template #cell-status="{ row }">
+        <el-tag :type="getStatusType(row)" effect="plain" size="small" disable-transitions>
+          {{ getStatusItem(row)?.value || row.status || '-' }}
+        </el-tag>
+      </template>
+
+      <template #table-append>
         <el-table-column fixed="right" :label="$t('common.action')" width="150" align="center">
           <template #default="scope">
             <div class="action-icons">
@@ -254,6 +217,7 @@ import { useRoute, useRouter } from 'vue-router'
 import type { FormRules } from 'element-plus'
 import UseCrudView from '@/common/components/useCrud/index.vue'
 import { useCrud } from '@/common/composables/useCrud'
+import type { TableColumnDef } from '@@/composables/useTableColumns'
 import { useDict } from '@/common/composables/useDict'
 import {
   activateWorkflowDefinition,
@@ -280,6 +244,21 @@ const versionDialogKey = ref('')
 const versionDialogName = ref('')
 
 defineOptions({ name: 'Definition' })
+
+// 列定义：排序 / 显隐 / 列宽由列表壳统一管理
+const columns = computed<TableColumnDef[]>(() => [
+  { prop: 'key', label: t('bpm.definition.columns.key'), minWidth: 140 },
+  { prop: 'name', label: t('bpm.definition.columns.name'), minWidth: 160 },
+  { prop: 'version', label: t('bpm.definition.columns.version'), width: 100, align: 'center' },
+  { prop: 'category', label: t('bpm.definition.columns.category'), width: 110 },
+  {
+    prop: 'deployTime',
+    label: t('bpm.definition.columns.deployTime'),
+    minWidth: 170,
+    align: 'center',
+  },
+  { prop: 'status', label: t('bpm.definition.columns.suspended'), width: 90, align: 'center' },
+])
 
 const crud = useCrud<WorkflowDefinitionQueryVO, WorkflowDefinitionVO>({
   pageApi: (query) => getDefinitionPage(query),

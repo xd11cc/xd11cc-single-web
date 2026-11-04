@@ -1,6 +1,7 @@
 <template>
   <UseCrudView
     :slotProps="crud.slotProps"
+    :columns="columns"
     :formRules="formRules"
     :add-title="$t('bpm.category.dialogs.add')"
     :edit-title="$t('bpm.category.dialogs.edit')"
@@ -52,55 +53,24 @@
       </el-button>
     </template>
 
-    <template #table="{ handleEdit, handleRemove }">
+    <!-- 固定列：不参与列设置 -->
+    <template #table-prefix>
       <el-table-column type="selection" width="50" align="center" />
-      <el-table-column
-        prop="categoryCode"
-        :label="$t('bpm.category.columns.code')"
-        min-width="180"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        prop="categoryName"
-        :label="$t('bpm.category.columns.name')"
-        min-width="180"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        prop="sort"
-        :label="$t('bpm.category.columns.sort')"
-        width="100"
-        align="right"
-      />
-      <el-table-column
-        prop="status"
-        :label="$t('bpm.category.columns.status')"
-        width="100"
-        align="center"
+    </template>
+
+    <template #cell-status="{ row }">
+      <el-tag
+        :type="getDictItem('system_status', row.status)?.listClass || 'info'"
+        effect="plain"
+        size="small"
+        disable-transitions
       >
-        <template #default="{ row }">
-          <el-tag
-            :type="getDictItem('system_status', row.status)?.listClass || 'info'"
-            effect="plain"
-            size="small"
-            disable-transitions
-          >
-            {{ getDictItem('system_status', row.status)?.label || row.status || '-' }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="remark"
-        :label="$t('bpm.category.columns.remark')"
-        min-width="220"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        prop="createTime"
-        :label="$t('bpm.category.columns.createTime')"
-        min-width="170"
-        align="center"
-      />
+        {{ getDictItem('system_status', row.status)?.label || row.status || '-' }}
+      </el-tag>
+    </template>
+
+    <!-- 操作列：固定在生成列之后 -->
+    <template #table-append="{ handleEdit, handleRemove }">
       <el-table-column fixed="right" :label="$t('common.action')" width="120" align="center">
         <template #default="{ row }">
           <el-button
@@ -196,12 +166,28 @@ import {
   workflowCategoryPage,
 } from './apis'
 import type { WorkflowCategoryQueryVO, WorkflowCategoryVO } from './apis/type'
+import type { TableColumnDef } from '@@/composables/useTableColumns'
 
 const { t } = useI18n()
 const $t = t
 const { getDictList, getDictItem } = useDict('system_status')
 
 defineOptions({ name: 'Category' })
+
+// 列定义：排序 / 显隐 / 列宽由列表壳统一管理
+const columns = computed<TableColumnDef[]>(() => [
+  { prop: 'categoryCode', label: t('bpm.category.columns.code'), minWidth: 180 },
+  { prop: 'categoryName', label: t('bpm.category.columns.name'), minWidth: 180 },
+  { prop: 'sort', label: t('bpm.category.columns.sort'), width: 100, align: 'right' },
+  { prop: 'status', label: t('bpm.category.columns.status'), width: 100, align: 'center' },
+  { prop: 'remark', label: t('bpm.category.columns.remark'), minWidth: 220 },
+  {
+    prop: 'createTime',
+    label: t('bpm.category.columns.createTime'),
+    minWidth: 170,
+    align: 'center',
+  },
+])
 
 const crud = useCrud<WorkflowCategoryQueryVO, WorkflowCategoryVO>({
   pageApi: workflowCategoryPage,

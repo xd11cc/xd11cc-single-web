@@ -1,6 +1,7 @@
 <template>
   <UseCrudView
     :slotProps="crud.slotProps"
+    :columns="columns"
     :formRules="formRules"
     :add-title="$t('system.role.dialogs.add')"
     :edit-title="$t('system.role.dialogs.edit')"
@@ -47,34 +48,24 @@
     </template>
 
     <!-- 表格列 -->
-    <template #table="{ handleEdit, handleRemove }">
+    <!-- 固定列：不参与列设置 -->
+    <template #table-prefix>
       <el-table-column type="selection" width="50" align="center" />
-      <el-table-column prop="roleName" :label="$t('system.role.search.roleName')" />
-      <el-table-column prop="roleCode" :label="$t('system.role.search.roleKey')" />
-      <el-table-column
-        prop="status"
-        :label="$t('system.role.search.status')"
-        align="center"
-        width="80"
+    </template>
+
+    <template #cell-status="{ row }">
+      <el-tag
+        :type="getDictItem('system_status', row.status)?.listClass || 'info'"
+        effect="plain"
+        size="small"
+        disable-transitions
       >
-        <template #default="scope">
-          <el-tag
-            :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
-            effect="plain"
-            size="small"
-            disable-transitions
-          >
-            {{ getDictItem('system_status', scope.row.status)?.label }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="remark" :label="$t('system.role.form.remark')" />
-      <el-table-column
-        prop="createTime"
-        :label="$t('system.role.columns.createTime')"
-        align="center"
-        min-width="160"
-      />
+        {{ getDictItem('system_status', row.status)?.label }}
+      </el-tag>
+    </template>
+
+    <!-- 操作列：固定在生成列之后 -->
+    <template #table-append="{ handleEdit, handleRemove }">
       <el-table-column fixed="right" :label="$t('common.action')" width="90" align="center">
         <template #default="scope">
           <el-tooltip :content="$t('common.edit')" placement="top">
@@ -213,6 +204,7 @@ import {
   getRoleDeptIds,
 } from './apis'
 import type { SystemRoleVO, SystemRoleQueryVO } from './apis/type'
+import type { TableColumnDef } from '@@/composables/useTableColumns'
 import { treeList } from '@/views/system/menu/apis'
 import type { SystemMenuTreeVO } from '@/views/system/menu/apis/type'
 import { deptTreeList } from '@/views/system/dept/apis'
@@ -227,6 +219,20 @@ defineOptions({ name: 'Role' })
 const { getDictList, getDictItem } = useDict(['system_status'])
 
 // ─── CRUD 核心（状态 + 搜索/分页/删除/弹窗生命周期） ──────
+// 列定义：排序 / 显隐 / 列宽由列表壳统一管理
+const columns = computed<TableColumnDef[]>(() => [
+  { prop: 'roleName', label: $t('system.role.search.roleName') },
+  { prop: 'roleCode', label: $t('system.role.search.roleKey') },
+  { prop: 'status', label: $t('system.role.search.status'), width: 80, align: 'center' },
+  { prop: 'remark', label: $t('system.role.form.remark') },
+  {
+    prop: 'createTime',
+    label: $t('system.role.columns.createTime'),
+    minWidth: 160,
+    align: 'center',
+  },
+])
+
 const crud = useCrud<SystemRoleQueryVO, SystemRoleVO>({
   pageApi: (query) => rolePage(query),
   removeConfirmText: (row) => $t('system.role.messages.deleteConfirm', { roleName: row?.roleName }),

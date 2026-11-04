@@ -440,7 +440,7 @@ const columns: TableColumnDef[] = [
 - The column-settings entry is rendered by the shell. Drag to reorder, toggle visibility, drag a header border to resize — all three persist to localStorage
 - The storage key defaults to the current route name (override with `column-key`), so pages never collide
 - At least one column stays visible; new columns are appended while stale props from removed columns are ignored
-- The other 21 pages pass no `columns` and keep writing `el-table-column` inside `#table` — behaviour unchanged
+- All **20 list pages** now use it; a page may still write `el-table-column` inside `#table` when no `columns` is passed (legacy capability kept)
 
 ### Watermark Tamper-Proofing
 

@@ -1,6 +1,7 @@
 <template>
   <UseCrudView
     :slotProps="crud.slotProps"
+    :columns="columns"
     :formRules="formRules"
     :add-title="$t('system.notice.dialogs.add')"
     :edit-title="$t('system.notice.dialogs.edit')"
@@ -60,72 +61,39 @@
     </template>
 
     <!-- 表格列 -->
-    <template #table="{ handleEdit, handleRemove }">
+    <!-- 固定列：不参与列设置 -->
+    <template #table-prefix>
       <el-table-column type="selection" width="50" align="center" />
-      <el-table-column prop="title" :label="$t('system.notice.columns.title')" min-width="200" />
-      <el-table-column
-        prop="type"
-        :label="$t('system.notice.columns.type')"
-        align="center"
-        width="100"
+    </template>
+
+    <template #cell-type="{ row }">
+      <el-tag
+        :type="getDictItem('system_notice_type', String(row.type))?.listClass || 'info'"
+        effect="plain"
+        size="small"
+        disable-transitions
       >
-        <template #default="scope">
-          <el-tag
-            :type="getDictItem('system_notice_type', String(scope.row.type))?.listClass || 'info'"
-            effect="plain"
-            size="small"
-            disable-transitions
-          >
-            {{ getDictItem('system_notice_type', String(scope.row.type))?.value }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="scope"
-        :label="$t('system.notice.columns.scope')"
-        align="center"
-        width="120"
+        {{ getDictItem('system_notice_type', String(row.type))?.value }}
+      </el-tag>
+    </template>
+
+    <template #cell-scope="{ row }">
+      {{ scopeLabel(row.scope) }}
+    </template>
+
+    <template #cell-status="{ row }">
+      <el-tag
+        :type="getDictItem('system_notice_status', String(row.status))?.listClass || 'info'"
+        effect="plain"
+        size="small"
+        disable-transitions
       >
-        <template #default="scope">
-          {{ scopeLabel(scope.row.scope) }}
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="senderName"
-        :label="$t('system.notice.columns.senderName')"
-        width="120"
-      />
-      <el-table-column
-        prop="status"
-        :label="$t('system.notice.columns.status')"
-        align="center"
-        width="100"
-      >
-        <template #default="scope">
-          <el-tag
-            :type="
-              getDictItem('system_notice_status', String(scope.row.status))?.listClass || 'info'
-            "
-            effect="plain"
-            size="small"
-            disable-transitions
-          >
-            {{ getDictItem('system_notice_status', String(scope.row.status))?.value }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="publishTime"
-        :label="$t('system.notice.columns.publishTime')"
-        align="center"
-        min-width="160"
-      />
-      <el-table-column
-        prop="createTime"
-        :label="$t('system.notice.columns.createTime')"
-        align="center"
-        min-width="160"
-      />
+        {{ getDictItem('system_notice_status', String(row.status))?.value }}
+      </el-tag>
+    </template>
+
+    <!-- 操作列：固定在生成列之后 -->
+    <template #table-append="{ handleEdit, handleRemove }">
       <el-table-column fixed="right" :label="$t('common.action')" width="120" align="center">
         <template #default="scope">
           <el-tooltip :content="$t('system.notice.actions.edit')" placement="top">
@@ -351,6 +319,7 @@ import {
   revokeNotice,
 } from './apis'
 import type { SystemNoticeVO, SystemNoticeQueryVO } from './apis/type'
+import type { TableColumnDef } from '@@/composables/useTableColumns'
 import { deptTreeList } from '@/views/system/dept/apis'
 import type { SystemDeptTreeVO } from '@/views/system/dept/apis/type'
 import { userList } from '@/views/system/user/apis'
@@ -411,6 +380,27 @@ const formRules: FormRules = {
     { required: true, trigger: 'change', message: () => $t('system.notice.formPlaceholder.scope') },
   ],
 }
+
+// 列定义：排序 / 显隐 / 列宽由列表壳统一管理
+const columns = computed<TableColumnDef[]>(() => [
+  { prop: 'title', label: t('system.notice.columns.title'), minWidth: 200 },
+  { prop: 'type', label: t('system.notice.columns.type'), width: 100, align: 'center' },
+  { prop: 'scope', label: t('system.notice.columns.scope'), width: 120, align: 'center' },
+  { prop: 'senderName', label: t('system.notice.columns.senderName'), width: 120 },
+  { prop: 'status', label: t('system.notice.columns.status'), width: 100, align: 'center' },
+  {
+    prop: 'publishTime',
+    label: t('system.notice.columns.publishTime'),
+    minWidth: 160,
+    align: 'center',
+  },
+  {
+    prop: 'createTime',
+    label: t('system.notice.columns.createTime'),
+    minWidth: 160,
+    align: 'center',
+  },
+])
 
 const crud = useCrud<SystemNoticeQueryVO, SystemNoticeVO>({
   pageApi: (query) => noticePage(query),

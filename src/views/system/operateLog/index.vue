@@ -1,5 +1,5 @@
 <template>
-  <UseCrudView :slotProps="crud.slotProps" readonly>
+  <UseCrudView :columns="columns" :slotProps="crud.slotProps" readonly>
     <!-- 搜索区字段 -->
     <template #search-form="{ searchData }">
       <el-form-item prop="module" :label="$t('system.operateLog.search.module')">
@@ -62,70 +62,38 @@
     </template>
 
     <!-- 表格列 -->
-    <template #table="{ handleRemove }">
+    <!-- 选择列：不参与列设置 -->
+    <template #table-prefix>
       <el-table-column type="selection" width="50" align="center" />
-      <el-table-column prop="module" :label="$t('system.operateLog.columns.module')" />
-      <el-table-column
-        prop="operateType"
-        :label="$t('system.operateLog.columns.operateType')"
-        align="center"
-        width="100"
+    </template>
+
+    <!-- 自定义单元格：字典标签 / 耗时 -->
+    <template #cell-operateType="{ row }">
+      <el-tag
+        :type="getDictItem('system_operate_type', row.operateType)?.listClass || 'info'"
+        effect="plain"
+        size="small"
+        disable-transitions
       >
-        <template #default="scope">
-          <el-tag
-            :type="getDictItem('system_operate_type', scope.row.operateType)?.listClass || 'info'"
-            effect="plain"
-            size="small"
-            disable-transitions
-          >
-            {{
-              getDictItem('system_operate_type', scope.row.operateType)?.label ||
-              scope.row.operateType
-            }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="requestMethod"
-        :label="$t('system.operateLog.columns.requestMethod')"
-        width="100"
-      />
-      <el-table-column
-        prop="operateIp"
-        :label="$t('system.operateLog.columns.operateIp')"
-        width="140"
-      />
-      <el-table-column
-        prop="status"
-        :label="$t('system.operateLog.columns.status')"
-        align="center"
-        width="80"
+        {{ getDictItem('system_operate_type', row.operateType)?.label || row.operateType }}
+      </el-tag>
+    </template>
+
+    <template #cell-status="{ row }">
+      <el-tag
+        :type="getDictItem('system_operate_status', row.status)?.listClass || 'info'"
+        effect="plain"
+        size="small"
+        disable-transitions
       >
-        <template #default="scope">
-          <el-tag
-            :type="getDictItem('system_operate_status', scope.row.status)?.listClass || 'info'"
-            effect="plain"
-            size="small"
-            disable-transitions
-          >
-            {{ getDictItem('system_operate_status', scope.row.status)?.label || scope.row.status }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="costTime"
-        :label="$t('system.operateLog.columns.costTime')"
-        align="center"
-        width="100"
-      >
-        <template #default="scope"> {{ scope.row.costTime }}ms </template>
-      </el-table-column>
-      <el-table-column
-        prop="createTime"
-        :label="$t('system.operateLog.columns.createTime')"
-        align="center"
-        min-width="160"
-      />
+        {{ getDictItem('system_operate_status', row.status)?.label || row.status }}
+      </el-tag>
+    </template>
+
+    <template #cell-costTime="{ row }"> {{ row.costTime }}ms </template>
+
+    <!-- 操作列：固定在生成列之后 -->
+    <template #table-append="{ handleRemove }">
       <el-table-column fixed="right" :label="$t('common.action')" width="90" align="center">
         <template #default="scope">
           <el-tooltip :content="$t('system.operateLog.actions.detail')" placement="top">
@@ -252,6 +220,7 @@ import { useCrud } from '@/common/composables/useCrud'
 import { useDict } from '@/common/composables/useDict'
 import { operateLogPage, removeOperateLogByIds, cleanOperateLog } from './apis'
 import type { SystemOperateLogQueryVO, SystemOperateLogVO } from './apis/type'
+import type { TableColumnDef } from '@@/composables/useTableColumns'
 
 const { t } = useI18n()
 const $t = t
@@ -263,6 +232,32 @@ defineOptions({
 const { getDictList, getDictItem } = useDict(['system_operate_type', 'system_operate_status'])
 
 // 只读列表：只有查询与删除，没有新增/编辑
+// 列定义：排序 / 显隐 / 列宽由列表壳统一管理
+const columns = computed<TableColumnDef[]>(() => [
+  { prop: 'module', label: $t('system.operateLog.columns.module'), minWidth: 140 },
+  {
+    prop: 'operateType',
+    label: $t('system.operateLog.columns.operateType'),
+    align: 'center',
+    width: 110,
+  },
+  { prop: 'requestMethod', label: $t('system.operateLog.columns.requestMethod'), width: 110 },
+  { prop: 'operateIp', label: $t('system.operateLog.columns.operateIp'), width: 140 },
+  { prop: 'status', label: $t('system.operateLog.columns.status'), align: 'center', width: 90 },
+  {
+    prop: 'costTime',
+    label: $t('system.operateLog.columns.costTime'),
+    align: 'center',
+    width: 100,
+  },
+  {
+    prop: 'createTime',
+    label: $t('system.operateLog.columns.createTime'),
+    align: 'center',
+    minWidth: 160,
+  },
+])
+
 const crud = useCrud<SystemOperateLogQueryVO, SystemOperateLogVO>({
   pageApi: (query) => operateLogPage(query),
   removeApi: (ids) => removeOperateLogByIds(ids),

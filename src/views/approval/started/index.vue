@@ -1,5 +1,5 @@
 <template>
-  <UseCrudView :slotProps="crud.slotProps" readonly>
+  <UseCrudView :columns="columns" :slotProps="crud.slotProps" readonly>
     <!-- 搜索区字段 -->
     <template #search-form="{ searchData }">
       <el-form-item :label="$t('bpm.approval.started.search.title')">
@@ -28,57 +28,24 @@
     </template>
 
     <!-- 表格列 -->
-    <template #table>
-      <el-table-column
-        prop="title"
-        :label="$t('bpm.approval.started.columns.title')"
-        min-width="220"
-        show-overflow-tooltip
-      >
-        <template #default="{ row }">
-          <el-link type="primary" :underline="false" @click="openDetail(row)">
-            {{ row.title || '-' }}
-          </el-link>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="processDefinitionKey"
-        :label="$t('bpm.approval.started.columns.processKey')"
-        min-width="160"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        prop="businessKey"
-        :label="$t('bpm.approval.started.columns.businessKey')"
-        min-width="160"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        prop="status"
-        :label="$t('bpm.approval.started.columns.status')"
-        width="110"
-        align="center"
-      >
-        <template #default="{ row }">
-          <el-tag :type="statusTagType(row.status)" effect="plain" size="small">
-            {{ statusLabel(row.status) }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="createTime"
-        :label="$t('bpm.approval.started.columns.createTime')"
-        width="170"
-        align="center"
-      />
-      <el-table-column
-        prop="endTime"
-        :label="$t('bpm.approval.started.columns.endTime')"
-        width="170"
-        align="center"
-      >
-        <template #default="{ row }">{{ row.endTime || '-' }}</template>
-      </el-table-column>
+    <template #cell-title="{ row }">
+      <el-link type="primary" :underline="false" @click="openDetail(row)">
+        {{ row.title || '-' }}
+      </el-link>
+    </template>
+
+    <template #cell-status="{ row }">
+      <el-tag :type="statusTagType(row.status)" effect="plain" size="small">
+        {{ statusLabel(row.status) }}
+      </el-tag>
+    </template>
+
+    <template #cell-endTime="{ row }">
+      {{ row.endTime || '-' }}
+    </template>
+
+    <!-- 操作列：固定在生成列之后 -->
+    <template #table-append="">
       <el-table-column fixed="right" :label="$t('common.action')" width="110" align="center">
         <template #default="{ row }">
           <div class="action-icons">
@@ -126,6 +93,7 @@ import { Icon } from '@iconify/vue'
 import { useI18n } from 'vue-i18n'
 import UseCrudView from '@/common/components/useCrud/index.vue'
 import { useCrud } from '@/common/composables/useCrud'
+import type { TableColumnDef } from '@@/composables/useTableColumns'
 import { getMyStartedProcesses } from '../apis'
 import { useApprovalActions } from '../composables/useApprovalActions'
 import { canCancelInstance } from '../composables/useApprovalDetail'
@@ -138,6 +106,30 @@ defineOptions({ name: 'ApprovalStarted' })
 const { t } = useI18n()
 
 // 我发起的：只读列表，操作是「查看详情 / 撤回」
+// 列定义：排序 / 显隐 / 列宽由列表壳统一管理
+const columns = computed<TableColumnDef[]>(() => [
+  { prop: 'title', label: t('bpm.approval.started.columns.title'), minWidth: 220 },
+  {
+    prop: 'processDefinitionKey',
+    label: t('bpm.approval.started.columns.processKey'),
+    minWidth: 160,
+  },
+  { prop: 'businessKey', label: t('bpm.approval.started.columns.businessKey'), minWidth: 160 },
+  { prop: 'status', label: t('bpm.approval.started.columns.status'), width: 110, align: 'center' },
+  {
+    prop: 'createTime',
+    label: t('bpm.approval.started.columns.createTime'),
+    width: 170,
+    align: 'center',
+  },
+  {
+    prop: 'endTime',
+    label: t('bpm.approval.started.columns.endTime'),
+    width: 170,
+    align: 'center',
+  },
+])
+
 const crud = useCrud<MyStartedQuery, WorkflowInstanceVO>({
   pageApi: (query) => getMyStartedProcesses(query),
 })

@@ -1,6 +1,7 @@
 <template>
   <UseCrudView
     :slotProps="crud.slotProps"
+    :columns="columns"
     :formRules="formRules"
     :add-title="$t('system.post.dialogs.add')"
     :edit-title="$t('system.post.dialogs.edit')"
@@ -47,34 +48,25 @@
     </template>
 
     <!-- 表格列 -->
-    <template #table="{ handleEdit, handleRemove }">
+    <!-- 选择列：不参与列设置 -->
+    <template #table-prefix>
       <el-table-column type="selection" width="50" align="center" />
-      <el-table-column prop="postCode" :label="$t('system.post.columns.postCode')" />
-      <el-table-column prop="postName" :label="$t('system.post.columns.postName')" />
-      <el-table-column
-        prop="status"
-        :label="$t('system.post.columns.status')"
-        align="center"
-        width="80"
+    </template>
+
+    <!-- 状态列：字典标签 -->
+    <template #cell-status="{ row }">
+      <el-tag
+        :type="getDictItem('system_status', row.status)?.listClass || 'info'"
+        effect="plain"
+        size="small"
+        disable-transitions
       >
-        <template #default="scope">
-          <el-tag
-            :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
-            effect="plain"
-            size="small"
-            disable-transitions
-          >
-            {{ getDictItem('system_status', scope.row.status)?.label }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="remark" :label="$t('system.post.columns.remark')" />
-      <el-table-column
-        prop="createTime"
-        :label="$t('system.post.columns.createTime')"
-        align="center"
-        min-width="160"
-      />
+        {{ getDictItem('system_status', row.status)?.label }}
+      </el-tag>
+    </template>
+
+    <!-- 操作列：固定在生成列之后 -->
+    <template #table-append="{ handleEdit, handleRemove }">
       <el-table-column fixed="right" :label="$t('common.action')" width="90" align="center">
         <template #default="scope">
           <el-tooltip :content="$t('common.edit')" placement="top">
@@ -176,6 +168,7 @@ import { useCrud } from '@/common/composables/useCrud'
 import { useDict } from '@/common/composables/useDict'
 import { postPage, addPost, modifyPostById, removePostByIds, getPostDeptIds } from './apis'
 import type { SystemPostVO, SystemPostQueryVO } from './apis/type'
+import type { TableColumnDef } from '@@/composables/useTableColumns'
 import { deptTreeList } from '@/views/system/dept/apis'
 import type { SystemDeptTreeVO } from '@/views/system/dept/apis/type'
 
@@ -188,6 +181,20 @@ defineOptions({ name: 'Post' })
 const { getDictList, getDictItem } = useDict(['system_status'])
 
 // ─── CRUD 核心（状态 + 搜索/分页/删除/弹窗生命周期） ──────
+// 列定义：排序 / 显隐 / 列宽由列表壳统一管理
+const columns = computed<TableColumnDef[]>(() => [
+  { prop: 'postCode', label: $t('system.post.columns.postCode'), minWidth: 140 },
+  { prop: 'postName', label: $t('system.post.columns.postName'), minWidth: 140 },
+  { prop: 'status', label: $t('system.post.columns.status'), align: 'center', width: 90 },
+  { prop: 'remark', label: $t('system.post.columns.remark'), minWidth: 160 },
+  {
+    prop: 'createTime',
+    label: $t('system.post.columns.createTime'),
+    align: 'center',
+    minWidth: 160,
+  },
+])
+
 const crud = useCrud<SystemPostQueryVO, SystemPostVO>({
   pageApi: (query) => postPage(query),
   addApi: (data) => addPost(data),

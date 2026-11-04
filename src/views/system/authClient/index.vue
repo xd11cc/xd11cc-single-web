@@ -1,6 +1,7 @@
 <template>
   <UseCrudView
     :slotProps="crud.slotProps"
+    :columns="columns"
     :formRules="formRules"
     :add-title="$t('system.authClient.dialogs.add')"
     :edit-title="$t('system.authClient.dialogs.edit')"
@@ -54,51 +55,28 @@
     </template>
 
     <!-- 表格列 -->
-    <template #table="{ handleEdit, handleRemove }">
+    <!-- 固定列：不参与列设置 -->
+    <template #table-prefix>
       <el-table-column type="selection" width="50" align="center" />
-      <el-table-column prop="name" :label="$t('system.authClient.columns.name')" />
-      <el-table-column prop="source" :label="$t('system.authClient.columns.source')" />
-      <el-table-column
-        prop="icon"
-        :label="$t('system.authClient.columns.icon')"
-        align="center"
-        width="80"
+    </template>
+
+    <template #cell-icon="{ row }">
+      <img v-if="row.icon" :src="ossUrl + row.icon" class="table-icon" />
+    </template>
+
+    <template #cell-status="{ row }">
+      <el-tag
+        :type="getDictItem('system_status', row.status)?.listClass || 'info'"
+        effect="plain"
+        size="small"
+        disable-transitions
       >
-        <template #default="scope">
-          <img v-if="scope.row.icon" :src="ossUrl + scope.row.icon" class="table-icon" />
-        </template>
-      </el-table-column>
-      <el-table-column prop="clientId" :label="$t('system.authClient.columns.clientId')" />
-      <el-table-column
-        prop="sort"
-        :label="$t('system.authClient.columns.sort')"
-        align="right"
-        width="80"
-      />
-      <el-table-column
-        prop="status"
-        :label="$t('system.authClient.columns.status')"
-        align="center"
-        width="80"
-      >
-        <template #default="scope">
-          <el-tag
-            :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
-            effect="plain"
-            size="small"
-            disable-transitions
-          >
-            {{ getDictItem('system_status', scope.row.status)?.label }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="remark" :label="$t('system.authClient.columns.remark')" />
-      <el-table-column
-        prop="createTime"
-        :label="$t('system.authClient.columns.createTime')"
-        align="center"
-        min-width="160"
-      />
+        {{ getDictItem('system_status', row.status)?.label }}
+      </el-tag>
+    </template>
+
+    <!-- 操作列：固定在生成列之后 -->
+    <template #table-append="{ handleEdit, handleRemove }">
       <el-table-column fixed="right" :label="$t('common.action')" width="90" align="center">
         <template #default="scope">
           <el-tooltip :content="$t('common.edit')" placement="top">
@@ -249,6 +227,7 @@ import {
   removeAuthClientConfigByIds,
 } from './apis'
 import type { AuthClientConfigVO, AuthClientConfigQueryVO } from './apis/type'
+import type { TableColumnDef } from '@@/composables/useTableColumns'
 
 const { t } = useI18n()
 const $t = t
@@ -299,6 +278,23 @@ const formRules: FormRules = {
     },
   ],
 }
+
+// 列定义：排序 / 显隐 / 列宽由列表壳统一管理
+const columns = computed<TableColumnDef[]>(() => [
+  { prop: 'name', label: t('system.authClient.columns.name') },
+  { prop: 'source', label: t('system.authClient.columns.source') },
+  { prop: 'icon', label: t('system.authClient.columns.icon'), width: 80, align: 'center' },
+  { prop: 'clientId', label: t('system.authClient.columns.clientId') },
+  { prop: 'sort', label: t('system.authClient.columns.sort'), width: 80, align: 'right' },
+  { prop: 'status', label: t('system.authClient.columns.status'), width: 80, align: 'center' },
+  { prop: 'remark', label: t('system.authClient.columns.remark') },
+  {
+    prop: 'createTime',
+    label: t('system.authClient.columns.createTime'),
+    minWidth: 160,
+    align: 'center',
+  },
+])
 
 const crud = useCrud<AuthClientConfigQueryVO, AuthClientConfigVO>({
   pageApi: (query) => authClientConfigPage(query),

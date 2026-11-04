@@ -1,5 +1,5 @@
 <template>
-  <UseCrudView :slotProps="crud.slotProps" readonly @row-click="handleRowClick">
+  <UseCrudView :columns="columns" :slotProps="crud.slotProps" readonly @row-click="handleRowClick">
     <!-- 搜索区字段 -->
     <template #search-form="{ searchData }">
       <el-form-item prop="title" :label="$t('system.noticeUser.search.title')">
@@ -49,69 +49,41 @@
     </template>
 
     <!-- 表格列 -->
-    <template #table>
+    <!-- 固定列：不参与列设置 -->
+    <template #table-prefix>
       <el-table-column
         type="index"
         :label="$t('system.noticeUser.columns.index')"
         width="60"
         align="center"
       />
-      <el-table-column prop="title" :label="$t('system.noticeUser.columns.title')" min-width="200">
-        <template #default="scope">
-          <span :class="{ 'unread-title': scope.row.readStatus === READ_STATUS.UNREAD }">
-            {{ scope.row.title }}
-          </span>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="type"
-        :label="$t('system.noticeUser.columns.type')"
-        align="center"
-        width="100"
+    </template>
+
+    <template #cell-title="{ row }">
+      <span :class="{ 'unread-title': row.readStatus === READ_STATUS.UNREAD }">
+        {{ row.title }}
+      </span>
+    </template>
+
+    <template #cell-type="{ row }">
+      <el-tag
+        :type="getDictItem('system_notice_type', String(row.type))?.listClass || 'info'"
+        effect="plain"
+        size="small"
+        disable-transitions
       >
-        <template #default="scope">
-          <el-tag
-            :type="getDictItem('system_notice_type', String(scope.row.type))?.listClass || 'info'"
-            effect="plain"
-            size="small"
-            disable-transitions
-          >
-            {{ getDictItem('system_notice_type', String(scope.row.type))?.value }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="senderName"
-        :label="$t('system.noticeUser.columns.senderName')"
-        width="120"
-      />
-      <el-table-column
-        prop="readStatus"
-        :label="$t('system.noticeUser.columns.readStatus')"
-        align="center"
-        width="80"
+        {{ getDictItem('system_notice_type', String(row.type))?.value }}
+      </el-tag>
+    </template>
+
+    <template #cell-readStatus="{ row }">
+      <el-tag
+        :type="getDictItem('system_read_status', String(row.readStatus))?.listClass || 'info'"
+        size="small"
+        effect="plain"
       >
-        <template #default="scope">
-          <el-tag
-            :type="
-              getDictItem('system_read_status', String(scope.row.readStatus))?.listClass || 'info'
-            "
-            size="small"
-            effect="plain"
-          >
-            {{
-              getDictItem('system_read_status', String(scope.row.readStatus))?.value ||
-              scope.row.readStatus
-            }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="publishTime"
-        :label="$t('system.noticeUser.columns.publishTime')"
-        align="center"
-        min-width="160"
-      />
+        {{ getDictItem('system_read_status', String(row.readStatus))?.value || row.readStatus }}
+      </el-tag>
     </template>
 
     <!-- 页面自有弹窗 / 抽屉：放进 #extra，保证壳只有一个根节点 -->
@@ -155,6 +127,7 @@ import { useCrud } from '@/common/composables/useCrud'
 import { useDict } from '@/common/composables/useDict'
 import { myNoticePage, markAsRead, markAllAsRead } from './apis'
 import type { SystemNoticeUserQueryVO, SystemNoticeUserDTO } from './apis/type'
+import type { TableColumnDef } from '@@/composables/useTableColumns'
 
 const { t } = useI18n()
 const $t = t
@@ -173,6 +146,25 @@ defineOptions({
 const { getDictList, getDictItem } = useDict(['system_notice_type', 'system_read_status'])
 
 // 只读列表：站内消息，无新增/编辑
+// 列定义：排序 / 显隐 / 列宽由列表壳统一管理
+const columns = computed<TableColumnDef[]>(() => [
+  { prop: 'title', label: t('system.noticeUser.columns.title'), minWidth: 200 },
+  { prop: 'type', label: t('system.noticeUser.columns.type'), width: 100, align: 'center' },
+  { prop: 'senderName', label: t('system.noticeUser.columns.senderName'), width: 120 },
+  {
+    prop: 'readStatus',
+    label: t('system.noticeUser.columns.readStatus'),
+    width: 80,
+    align: 'center',
+  },
+  {
+    prop: 'publishTime',
+    label: t('system.noticeUser.columns.publishTime'),
+    minWidth: 160,
+    align: 'center',
+  },
+])
+
 const crud = useCrud<SystemNoticeUserQueryVO, SystemNoticeUserDTO>({
   pageApi: (query) => myNoticePage(query),
 })

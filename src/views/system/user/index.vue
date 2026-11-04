@@ -314,7 +314,7 @@ const crud = useCrud<SystemUserQueryVO, SystemUserVO>({
 
 // ─── 表格列定义 ────────────────────────────────────────────
 // 只声明「这一列长什么样」；排序 / 显隐 / 列宽由壳统一管理并持久化
-const columns: TableColumnDef[] = [
+const columns = computed<TableColumnDef[]>(() => [
   { prop: 'username', label: $t('system.user.columns.username'), minWidth: 120 },
   { prop: 'nickname', label: $t('system.user.columns.nickname'), minWidth: 120 },
   { prop: 'deptName', label: $t('system.user.columns.deptName'), minWidth: 140 },
@@ -322,7 +322,7 @@ const columns: TableColumnDef[] = [
   { prop: 'phone', label: $t('system.user.columns.phone'), minWidth: 140 },
   { prop: 'status', label: $t('system.user.search.status'), width: 90, align: 'center' },
   { prop: 'createTime', label: $t('system.user.columns.createTime'), width: 170, align: 'center' },
-]
+])
 
 // ─── 依赖数据（部门树 / 岗位 / 角色） ─────────────────────
 const deptTreeData = ref<any[]>([])

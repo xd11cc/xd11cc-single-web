@@ -43,7 +43,7 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 
 两个壳都带**过期响应守卫**：`latestRequestId` 只允许最新请求写入数据/错误/loading，`onScopeDispose` 让在途请求整体作废。失败时不抛错，而是置 `tableError` / `treeError`，壳内渲染「数据加载失败 + 重试」（调 `slotProps.refresh()`），并隐藏分页避免用旧 total 误导。
 
-列配置也是壳的一部分：页面传 `columns`（`TableColumnDef[]`）即由壳渲染列、管排序/显隐/列宽并持久化，单元格用 `#cell-<prop>` 覆盖，选择列与操作列分别放 `#table-prefix` / `#table-append`；不传则仍在 `#table` 自写列。
+列配置也是壳的一部分：页面传 `columns`（`TableColumnDef[]`）即由壳渲染列、管排序/显隐/列宽并持久化，单元格用 `#cell-<prop>` 覆盖，选择列与操作列分别放 `#table-prefix` / `#table-append`；现网 20 个列表页已全部接入；不传时仍可在 `#table` 自写列（保留的旧能力）。
 
 **冷启动**（加载中且无数据、非失败态）用 `Skeleton` 占位：列表壳与树表壳用 `variant="table"`，审批详情抽屉用 `variant="page"`；其余加载态仍用 `v-table-loading` 扫描线——有旧数据时保留数据，翻页不会整表消失。骨架自带 180ms 延迟，快接口不出骨架；行高已与 `el-table` 对齐（骨架 41px / 表格 40px）。
 

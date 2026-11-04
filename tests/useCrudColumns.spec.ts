@@ -152,8 +152,8 @@ describe('UseCrudView 列管线', () => {
     })
     await wrapper.vm.$nextTick()
 
-    const stored = JSON.parse(localStorage.getItem(storageKey) ?? '[]')
-    expect(stored.find((col: any) => col.prop === 'a')?.width).toBe(240)
+    const stored = JSON.parse(localStorage.getItem(storageKey) ?? '{}')
+    expect(stored.a?.width).toBe(240)
   })
 
   it('传了 columns 时工具栏出现列设置入口', () => {

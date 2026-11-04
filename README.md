@@ -442,7 +442,7 @@ const columns: TableColumnDef[] = [
 - 工具栏的列设置入口由壳渲染，用户拖拽排序、勾选显隐、拖动表头边框调宽，三项都持久化到 localStorage
 - 偏好键默认取当前路由名（可用 `column-key` 覆盖），不同页面的列偏好互不干扰
 - 至少保留一列可见；代码新增列追加到末尾、删除列后本地残留的 prop 自动忽略
-- 不传 `columns` 的页面（其余 21 个）行为完全不变，仍在 `#table` 里自己写 `el-table-column`
+- 现网 **20 个列表页已全部接入**；不传 `columns` 时仍可选择在 `#table` 里自己写 `el-table-column`（保留的旧能力）
 
 ### 水印防篡改
 

@@ -1,5 +1,5 @@
 <template>
-  <UseCrudView :slotProps="crud.slotProps" readonly>
+  <UseCrudView :columns="columns" :slotProps="crud.slotProps" readonly>
     <!-- 搜索区字段 -->
     <template #search-form="{ searchData }">
       <el-form-item prop="messageId" :label="$t('system.mqFail.search.messageId')">
@@ -35,48 +35,14 @@
     </template>
 
     <!-- 表格列 -->
-    <template #table>
-      <el-table-column
-        prop="messageId"
-        :label="$t('system.mqFail.columns.messageId')"
-        min-width="260"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        prop="queueName"
-        :label="$t('system.mqFail.columns.queueName')"
-        min-width="180"
-        show-overflow-tooltip
-      />
-      <el-table-column
-        prop="retryCount"
-        :label="$t('system.mqFail.columns.retryCount')"
-        align="right"
-        width="100"
-      />
-      <el-table-column
-        prop="status"
-        :label="$t('system.mqFail.columns.status')"
-        align="center"
-        width="100"
-      >
-        <template #default="scope">
-          <el-tag
-            :type="statusTagType(scope.row.status)"
-            effect="plain"
-            size="small"
-            disable-transitions
-          >
-            {{ statusLabel(scope.row.status) }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="createTime"
-        :label="$t('system.mqFail.columns.createTime')"
-        align="center"
-        width="170"
-      />
+    <template #cell-status="{ row }">
+      <el-tag :type="statusTagType(row.status)" effect="plain" size="small" disable-transitions>
+        {{ statusLabel(row.status) }}
+      </el-tag>
+    </template>
+
+    <!-- 操作列：固定在生成列之后 -->
+    <template #table-append="">
       <el-table-column fixed="right" :label="$t('common.action')" width="180" align="center">
         <template #default="scope">
           <el-tooltip :content="$t('system.mqFail.actions.detail')" placement="top">
@@ -239,6 +205,7 @@ import { useCrud } from '@/common/composables/useCrud'
 import { useDict } from '@/common/composables/useDict'
 import { mqFailPage, replayMqFail, replayEditMqFail, ignoreMqFail } from './apis'
 import type { SystemMqFailQueryVO, SystemMqFailVO } from './apis/type'
+import type { TableColumnDef } from '@@/composables/useTableColumns'
 
 const { t } = useI18n()
 const $t = t
@@ -248,6 +215,20 @@ defineOptions({
 })
 
 // 只读列表：失败消息只能重投/忽略，没有新增/编辑整条记录
+// 列定义：排序 / 显隐 / 列宽由列表壳统一管理
+const columns = computed<TableColumnDef[]>(() => [
+  { prop: 'messageId', label: t('system.mqFail.columns.messageId'), minWidth: 260 },
+  { prop: 'queueName', label: t('system.mqFail.columns.queueName'), minWidth: 180 },
+  { prop: 'retryCount', label: t('system.mqFail.columns.retryCount'), width: 100, align: 'right' },
+  { prop: 'status', label: t('system.mqFail.columns.status'), width: 100, align: 'center' },
+  {
+    prop: 'createTime',
+    label: t('system.mqFail.columns.createTime'),
+    width: 170,
+    align: 'center',
+  },
+])
+
 const crud = useCrud<SystemMqFailQueryVO, SystemMqFailVO>({
   pageApi: (query) => mqFailPage(query),
 })

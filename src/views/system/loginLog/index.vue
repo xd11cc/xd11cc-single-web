@@ -1,5 +1,5 @@
 <template>
-  <UseCrudView :slotProps="crud.slotProps" readonly>
+  <UseCrudView :columns="columns" :slotProps="crud.slotProps" readonly>
     <!-- 搜索区字段 -->
     <template #search-form="{ searchData }">
       <el-form-item prop="username" :label="$t('system.loginLog.search.username')">
@@ -53,55 +53,35 @@
     </template>
 
     <!-- 表格列 -->
-    <template #table="{ handleRemove }">
+    <!-- 固定列：不参与列设置 -->
+    <template #table-prefix>
       <el-table-column type="selection" width="50" align="center" />
-      <el-table-column prop="username" :label="$t('system.loginLog.columns.username')" />
-      <el-table-column
-        prop="loginType"
-        :label="$t('system.loginLog.columns.loginType')"
-        align="center"
-        width="100"
+    </template>
+
+    <template #cell-loginType="{ row }">
+      <el-tag
+        :type="getDictItem('system_login_type', row.loginType)?.listClass || 'info'"
+        effect="plain"
+        size="small"
+        disable-transitions
       >
-        <template #default="scope">
-          <el-tag
-            :type="getDictItem('system_login_type', scope.row.loginType)?.listClass || 'info'"
-            effect="plain"
-            size="small"
-            disable-transitions
-          >
-            {{
-              getDictItem('system_login_type', scope.row.loginType)?.label || scope.row.loginType
-            }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="status"
-        :label="$t('system.loginLog.columns.status')"
-        align="center"
-        width="80"
+        {{ getDictItem('system_login_type', row.loginType)?.label || row.loginType }}
+      </el-tag>
+    </template>
+
+    <template #cell-status="{ row }">
+      <el-tag
+        :type="getDictItem('system_operate_status', row.status)?.listClass || 'info'"
+        effect="plain"
+        size="small"
+        disable-transitions
       >
-        <template #default="scope">
-          <el-tag
-            :type="getDictItem('system_operate_status', scope.row.status)?.listClass || 'info'"
-            effect="plain"
-            size="small"
-            disable-transitions
-          >
-            {{ getDictItem('system_operate_status', scope.row.status)?.label || scope.row.status }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="loginIp" :label="$t('system.loginLog.columns.loginIp')" width="140" />
-      <el-table-column prop="browser" :label="$t('system.loginLog.columns.browser')" />
-      <el-table-column prop="os" :label="$t('system.loginLog.columns.os')" />
-      <el-table-column prop="msg" :label="$t('system.loginLog.columns.msg')" />
-      <el-table-column
-        prop="loginTime"
-        :label="$t('system.loginLog.columns.loginTime')"
-        align="center"
-        min-width="160"
-      />
+        {{ getDictItem('system_operate_status', row.status)?.label || row.status }}
+      </el-tag>
+    </template>
+
+    <!-- 操作列：固定在生成列之后 -->
+    <template #table-append="{ handleRemove }">
       <el-table-column fixed="right" :label="$t('common.action')" width="70" align="center">
         <template #default="scope">
           <el-tooltip :content="$t('common.delete')" placement="top">
@@ -130,6 +110,7 @@ import { useCrud } from '@/common/composables/useCrud'
 import { useDict } from '@/common/composables/useDict'
 import { loginLogPage, removeLoginLogByIds, cleanLoginLog } from './apis'
 import type { SystemLoginLogQueryVO, SystemLoginLogVO } from './apis/type'
+import type { TableColumnDef } from '@@/composables/useTableColumns'
 
 const { t } = useI18n()
 const $t = t
@@ -141,6 +122,28 @@ defineOptions({
 const { getDictList, getDictItem } = useDict(['system_login_type', 'system_operate_status'])
 
 // 只读列表：只有查询与删除，没有新增/编辑
+// 列定义：排序 / 显隐 / 列宽由列表壳统一管理
+const columns = computed<TableColumnDef[]>(() => [
+  { prop: 'username', label: t('system.loginLog.columns.username') },
+  {
+    prop: 'loginType',
+    label: t('system.loginLog.columns.loginType'),
+    width: 100,
+    align: 'center',
+  },
+  { prop: 'status', label: t('system.loginLog.columns.status'), width: 80, align: 'center' },
+  { prop: 'loginIp', label: t('system.loginLog.columns.loginIp'), width: 140 },
+  { prop: 'browser', label: t('system.loginLog.columns.browser') },
+  { prop: 'os', label: t('system.loginLog.columns.os') },
+  { prop: 'msg', label: t('system.loginLog.columns.msg') },
+  {
+    prop: 'loginTime',
+    label: t('system.loginLog.columns.loginTime'),
+    minWidth: 160,
+    align: 'center',
+  },
+])
+
 const crud = useCrud<SystemLoginLogQueryVO, SystemLoginLogVO>({
   pageApi: (query) => loginLogPage(query),
   removeApi: (ids) => removeLoginLogByIds(ids),

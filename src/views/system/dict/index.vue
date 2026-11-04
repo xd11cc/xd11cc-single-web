@@ -1,6 +1,7 @@
 <template>
   <UseCrudView
     :slotProps="crud.slotProps"
+    :columns="columns"
     :formRules="formRules"
     :add-title="$t('system.dict.dialogs.add')"
     :edit-title="$t('system.dict.dialogs.edit')"
@@ -42,25 +43,22 @@
     </template>
 
     <!-- 表格列 -->
-    <template #table="{ handleEdit, handleRemove }">
+    <!-- 固定列：不参与列设置 -->
+    <template #table-prefix>
       <el-table-column type="selection" width="50" align="center" />
-      <el-table-column prop="dictName" :label="$t('system.dict.search.dictName')" />
-      <el-table-column prop="dictType" :label="$t('system.dict.search.dictType')" align="center">
-        <template #default="scope">
-          <router-link
-            :to="{ path: '/system/dict-data', query: { dictType: scope.row.dictType } }"
-            class="link-type"
-          >
-            <span>{{ scope.row.dictType }}</span>
-          </router-link>
-        </template>
-      </el-table-column>
-      <el-table-column prop="remark" :label="$t('system.dict.columns.remark')" />
-      <el-table-column
-        prop="createTime"
-        :label="$t('system.dict.columns.createTime')"
-        align="center"
-      />
+    </template>
+
+    <template #cell-dictType="{ row }">
+      <router-link
+        :to="{ path: '/system/dict-data', query: { dictType: row.dictType } }"
+        class="link-type"
+      >
+        <span>{{ row.dictType }}</span>
+      </router-link>
+    </template>
+
+    <!-- 操作列：固定在生成列之后 -->
+    <template #table-append="{ handleEdit, handleRemove }">
       <el-table-column fixed="right" :label="$t('common.action')" width="90" align="center">
         <template #default="scope">
           <el-tooltip :content="$t('common.edit')" placement="top">
@@ -133,6 +131,7 @@ import UseCrudView from '@/common/components/useCrud/index.vue'
 import { useCrud } from '@/common/composables/useCrud'
 import { dictTypePage, addDictType, modifyDictTypeById, removeDictTypeByIds } from './apis/index'
 import type { SystemDictTypeQueryVO, SystemDictTypeVO } from './apis/type'
+import type { TableColumnDef } from '@@/composables/useTableColumns'
 
 const { t } = useI18n()
 const $t = t
@@ -149,6 +148,14 @@ const formRules: FormRules<SystemDictTypeVO> = {
     { required: true, trigger: 'blur', message: () => $t('system.dict.formPlaceholder.dictType') },
   ],
 }
+
+// 列定义：排序 / 显隐 / 列宽由列表壳统一管理
+const columns = computed<TableColumnDef[]>(() => [
+  { prop: 'dictName', label: t('system.dict.search.dictName') },
+  { prop: 'dictType', label: t('system.dict.search.dictType'), align: 'center' },
+  { prop: 'remark', label: t('system.dict.columns.remark') },
+  { prop: 'createTime', label: t('system.dict.columns.createTime'), align: 'center' },
+])
 
 const crud = useCrud<SystemDictTypeQueryVO, SystemDictTypeVO>({
   pageApi: (query) => dictTypePage(query),

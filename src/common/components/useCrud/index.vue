@@ -233,7 +233,8 @@ const routeForColumnKey = props.columns?.length ? useRoute() : null
 const columnSetting = props.columns?.length
   ? useTableColumns({
       key: props.columnKey || (routeForColumnKey?.name ? String(routeForColumnKey.name) : 'crud'),
-      defaultColumns: props.columns,
+      // 传 getter：列定义随 props / i18n 变化时，label 实时更新（偏好仍然保留）
+      columns: () => props.columns ?? [],
     })
   : null
 

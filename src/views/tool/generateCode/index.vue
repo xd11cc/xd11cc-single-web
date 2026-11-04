@@ -1,5 +1,5 @@
 <template>
-  <UseCrudView :slotProps="crud.slotProps" readonly>
+  <UseCrudView :columns="columns" :slotProps="crud.slotProps" readonly>
     <!-- 搜索区字段 -->
     <template #search-form="{ searchData }">
       <el-form-item prop="tableName" :label="$t('tool.generateCode.search.tableName')">
@@ -17,15 +17,13 @@
     </template>
 
     <!-- 表格列 -->
-    <template #table>
+    <!-- 固定列：不参与列设置 -->
+    <template #table-prefix>
       <el-table-column type="selection" width="50" align="center" />
-      <el-table-column prop="tableName" :label="$t('tool.generateCode.columns.tableName')" />
-      <el-table-column prop="tableComment" :label="$t('tool.generateCode.columns.tableComment')" />
-      <el-table-column
-        prop="createTime"
-        :label="$t('tool.generateCode.columns.createTime')"
-        align="center"
-      />
+    </template>
+
+    <!-- 操作列：固定在生成列之后 -->
+    <template #table-append="">
       <el-table-column fixed="right" :label="$t('common.action')" width="70" align="center">
         <template #default="scope">
           <el-tooltip :content="$t('tool.generateCode.actions.generate')" placement="top">
@@ -75,6 +73,7 @@ import { Icon } from '@iconify/vue'
 import { useI18n } from 'vue-i18n'
 import UseCrudView from '@/common/components/useCrud/index.vue'
 import { useCrud } from '@/common/composables/useCrud'
+import type { TableColumnDef } from '@@/composables/useTableColumns'
 import { type PreviewCodeVO, type TableInfoQueryVO, type TableInfoVO } from './apis/type'
 import { generateCodePage, generateCode } from './apis'
 import CodeBlock from './components/CodeBlock.vue'
@@ -87,6 +86,13 @@ defineOptions({
 })
 
 // 只读列表：代码生成没有新增/编辑，只有「生成并预览」这一动作
+// 列定义：排序 / 显隐 / 列宽由列表壳统一管理
+const columns = computed<TableColumnDef[]>(() => [
+  { prop: 'tableName', label: t('tool.generateCode.columns.tableName') },
+  { prop: 'tableComment', label: t('tool.generateCode.columns.tableComment') },
+  { prop: 'createTime', label: t('tool.generateCode.columns.createTime'), align: 'center' },
+])
+
 const crud = useCrud<TableInfoQueryVO, TableInfoVO>({
   pageApi: (query) => generateCodePage(query),
 })
