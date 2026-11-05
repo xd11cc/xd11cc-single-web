@@ -5,7 +5,6 @@ import { routerConfig } from '@/router/config'
 import { resetRouter } from '@/router'
 import { useSettingsStore } from './settings'
 import { useTagsViewStore } from './tags-view'
-import { pinia } from '..'
 import type { RouteRecordRaw } from 'vue-router'
 import { usePermissionStore } from './permission'
 import { resetUnauthorizedHandling } from '@/common/utils/request'
@@ -131,7 +130,3 @@ export const useUserStore = defineStore('user', () => {
     resetToken,
   }
 })
-
-export function useUserStoreOutside() {
-  return useUserStore(pinia)
-}

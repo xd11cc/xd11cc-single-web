@@ -1,10 +1,4 @@
 export const zh = {
-  status: {
-    running: '进行中',
-    completed: '已完成',
-    cancelled: '已取消',
-    rejected: '已驳回',
-  },
   action: {
     approve: '通过',
     reject: '驳回',
@@ -103,12 +97,6 @@ export const zh = {
 }
 
 export const en = {
-  status: {
-    running: 'Running',
-    completed: 'Completed',
-    cancelled: 'Cancelled',
-    rejected: 'Rejected',
-  },
   action: {
     approve: 'Approve',
     reject: 'Reject',

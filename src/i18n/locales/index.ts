@@ -14,7 +14,6 @@ import { zh as DashboardChartsZh, en as DashboardChartsEn } from './dashboard/ch
 import { zh as DashboardGreetingZh, en as DashboardGreetingEn } from './dashboard/greeting'
 import { zh as DashboardQuickZh, en as DashboardQuickEn } from './dashboard/quick'
 import { zh as DashboardStatsZh, en as DashboardStatsEn } from './dashboard/stats'
-import { zh as Error401Zh, en as Error401En } from './error/401'
 import { zh as Error404Zh, en as Error404En } from './error/404'
 import { zh as Error500Zh, en as Error500En } from './error/500'
 import { zh as LayoutZh, en as LayoutEn } from './layout/index'
@@ -68,7 +67,6 @@ export const zhCN = {
     stats: DashboardStatsZh,
   },
   error: {
-    401: Error401Zh,
     404: Error404Zh,
     500: Error500Zh,
   },
@@ -136,7 +134,6 @@ export const enUS = {
     stats: DashboardStatsEn,
   },
   error: {
-    401: Error401En,
     404: Error404En,
     500: Error500En,
   },

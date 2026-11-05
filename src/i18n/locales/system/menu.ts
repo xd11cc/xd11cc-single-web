@@ -45,7 +45,6 @@ export const zh = {
   },
   messages: {
     deleteConfirm: '正在删除{menuName}菜单数据，确认删除？',
-    formError: '表单校验不通过',
   },
   search: {
     menuName: '菜单名称',
@@ -104,7 +103,6 @@ export const en = {
   },
   messages: {
     deleteConfirm: 'Delete menu {menuName}, confirm?',
-    formError: 'Form validation failed',
   },
   search: {
     menuName: 'Menu Name',

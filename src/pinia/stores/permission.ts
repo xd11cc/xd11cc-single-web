@@ -3,7 +3,6 @@ import { defineComponent, h } from 'vue'
 import type { ResponseVO } from 'types/api'
 import { publicRoutes } from '@/router/index'
 import { resolveDirRedirect } from '@/router/route-redirect'
-import { pinia } from '@/pinia'
 import { getRoutes } from '@/views/login/apis'
 import type { RouteVO } from '@/views/login/apis/type'
 
@@ -125,7 +124,3 @@ export const usePermissionStore = defineStore('permission', () => {
 
   return { routesReady, routes, addRoutes, generateRoutes, markRoutesReady, reset }
 })
-
-export function usePermissionStoreOutside() {
-  return usePermissionStore(pinia)
-}

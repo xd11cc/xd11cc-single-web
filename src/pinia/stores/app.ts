@@ -58,6 +58,3 @@ export const useAppStore = defineStore('app', () => {
  * @description 在SSR应用中可用于在setup外使用store
  * @returns
  */
-export function useAppStoreOutside() {
-  return useAppStore(pinia)
-}

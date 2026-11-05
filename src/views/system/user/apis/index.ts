@@ -10,13 +10,6 @@ export function userPage(data: SystemUserQueryVO): Promise<ResponseVO<PageData<S
   })
 }
 
-export function getUserById(id: number): Promise<ResponseVO<SystemUserVO>> {
-  return request({
-    url: `/system/user/getById/${id}`,
-    method: 'GET',
-  })
-}
-
 export function addUser(data: SystemUserAddVO): Promise<ResponseVO<number>> {
   return request({
     url: '/system/user/add',

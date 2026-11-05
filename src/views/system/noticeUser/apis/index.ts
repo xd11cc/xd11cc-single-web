@@ -12,14 +12,6 @@ export function myNoticePage(
   })
 }
 
-export function sendNotice(data: SystemNoticeSendVO): Promise<ResponseVO<void>> {
-  return request({
-    url: '/system/notice-user/send',
-    method: 'POST',
-    data,
-  })
-}
-
 export function markAsRead(noticeId: number): Promise<ResponseVO<void>> {
   return request({
     url: `/system/notice-user/markAsRead/${noticeId}`,

@@ -14,9 +14,6 @@ export function isArray<T>(arg: T) {
  * @param str
  * @returns
  */
-export function isString(str: unknown) {
-  return typeof str === 'string' || str instanceof String
-}
 
 /**
  * 判断是否为外链

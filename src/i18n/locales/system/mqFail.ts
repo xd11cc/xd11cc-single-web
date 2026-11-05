@@ -48,11 +48,6 @@ export const zh = {
     queueName: '来源队列',
     status: '状态',
   },
-  status: {
-    ignored: '已忽略',
-    pending: '待处理',
-    replayed: '已重放',
-  },
 }
 
 export const en = {
@@ -104,10 +99,5 @@ export const en = {
     messageId: 'Message ID',
     queueName: 'Queue',
     status: 'Status',
-  },
-  status: {
-    ignored: 'Ignored',
-    pending: 'Pending',
-    replayed: 'Replayed',
   },
 }

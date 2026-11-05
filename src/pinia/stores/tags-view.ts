@@ -108,6 +108,3 @@ export const useTagsViewStore = defineStore('tags-view', () => {
  * 在 SSR 应用中可用于在 setup 外使用 store
  * @returns
  */
-export function useTagsViewStoreOutside() {
-  return useTagsViewStore(pinia)
-}

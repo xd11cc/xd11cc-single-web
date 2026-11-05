@@ -22,7 +22,3 @@ export const getItem = <T = any>(key: string): T | string | null => {
 export const removeItem = (key: string) => {
   window.localStorage.removeItem(key)
 }
-// 4、删除所有数据
-export const removeAllItem = () => {
-  window.localStorage.clear()
-}
