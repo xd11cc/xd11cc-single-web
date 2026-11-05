@@ -7,6 +7,7 @@
     <div v-table-loading="loading" class="tree-table-frame" :aria-busy="loading">
       <el-table
         ref="tableRef"
+        v-bind="$attrs"
         :data="data"
         :row-key="rowKey"
         :tree-props="treeProps"
@@ -23,7 +24,7 @@
 <script lang="ts" setup>
 import type { TableInstance } from 'element-plus'
 
-defineOptions({ name: 'TreeTableView' })
+defineOptions({ name: 'TreeTableView', inheritAttrs: false })
 
 withDefaults(
   defineProps<{

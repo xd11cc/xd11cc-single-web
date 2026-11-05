@@ -3,8 +3,10 @@ import { flushPromises, mount } from '@vue/test-utils'
 import type { VueWrapper } from '@vue/test-utils'
 import { defineComponent, h, nextTick, reactive } from 'vue'
 import { createI18n } from 'vue-i18n'
+import { createMemoryHistory, createRouter } from 'vue-router'
 import TreeCrudView from '@/common/components/treeCrud/index.vue'
 import { useTreeCrud } from '@/common/composables/useTreeCrud'
+import { CacheKey } from '@@/constants/cache-key'
 import type { UseTreeCrudSlotProps } from '@/common/composables/useTreeCrud'
 
 function deferred<Value>() {
@@ -27,6 +29,13 @@ const FormStub = defineComponent({
   },
 })
 
+const router = createRouter({
+  history: createMemoryHistory(),
+  routes: [{ path: '/', name: 'tree-crud', component: { template: '<div />' } }],
+})
+
+const defaultColumns = [{ prop: 'code', label: '编码' }]
+
 const i18n = createI18n({
   legacy: false,
   globalInjection: true,
@@ -37,7 +46,7 @@ const i18n = createI18n({
 })
 
 const global = {
-  plugins: [i18n],
+  plugins: [i18n, router],
   directives: { 'table-loading': {} },
   stubs: {
     TreeTableView: {
@@ -63,6 +72,13 @@ const global = {
       props: ['description'],
       template: '<div class="empty-stub">{{ description }}<slot /></div>',
     },
+    'el-table-column': {
+      props: ['prop', 'label', 'width', 'minWidth', 'align', 'showOverflowTooltip'],
+      template:
+        '<div class="col" :data-prop="prop" :data-label="label" :data-width="width"><slot :row="{ id: 9 }" /></div>',
+    },
+    'el-popover': { template: '<div><slot /><slot name="reference" /></div>' },
+    'el-checkbox': { template: '<label><slot /></label>' },
   },
 }
 
@@ -91,7 +107,10 @@ function makeSlotProps(overrides: Partial<UseTreeCrudSlotProps> = {}) {
 }
 
 function mountView(slotProps = makeSlotProps(), readonly = false, defaultExpanded = false) {
-  const wrapper = mount(TreeCrudView, { props: { slotProps, readonly, defaultExpanded }, global })
+  const wrapper = mount(TreeCrudView, {
+    props: { slotProps, readonly, defaultExpanded, columns: defaultColumns },
+    global,
+  })
   wrappers.push(wrapper)
   return { wrapper, slotProps }
 }
@@ -146,10 +165,70 @@ describe('TreeCrudView 状态与提交契约', () => {
     expect(wrapper.find('.tree-stub').exists()).toBe(true)
   })
 
+  it('传 columns 时由壳生成列（树列走 prefix，操作列走 append）', () => {
+    const scoped = mount(TreeCrudView, {
+      global,
+      props: {
+        slotProps: makeSlotProps(),
+        columns: [
+          { prop: 'deptCode', label: '编码' },
+          { prop: 'sort', label: '排序', width: 80 },
+        ],
+      },
+      slots: {
+        'table-prefix': '<div class="tree-col">部门名称</div>',
+        'table-append': '<div class="action-col">操作</div>',
+      },
+    })
+    wrappers.push(scoped)
+
+    const cols = scoped.findAll('.col')
+    expect(cols.map((c) => c.attributes('data-prop'))).toEqual(['deptCode', 'sort'])
+    expect(scoped.find('.tree-col').exists()).toBe(true)
+    expect(scoped.find('.action-col').exists()).toBe(true)
+  })
+
+  it('列偏好决定显隐与顺序', () => {
+    localStorage.setItem(
+      `${CacheKey.TABLE_COLUMNS}-TreeCrudTest`,
+      JSON.stringify({ deptCode: { visible: false } }),
+    )
+
+    const wrapper = mount(TreeCrudView, {
+      global,
+      props: {
+        slotProps: makeSlotProps(),
+        columnKey: 'TreeCrudTest',
+        columns: [
+          { prop: 'deptCode', label: '编码' },
+          { prop: 'sort', label: '排序' },
+        ],
+      },
+    })
+    wrappers.push(wrapper)
+
+    expect(wrapper.findAll('.col').map((c) => c.attributes('data-prop'))).toEqual(['sort'])
+    localStorage.clear()
+  })
+
+  it('#cell-<prop> 覆盖默认单元格', () => {
+    const wrapper = mount(TreeCrudView, {
+      global,
+      props: {
+        slotProps: makeSlotProps(),
+        columns: [{ prop: 'deptCode', label: '编码' }],
+      },
+      slots: { 'cell-deptCode': '<strong class="custom-cell">自定义</strong>' },
+    })
+    wrappers.push(wrapper)
+
+    expect(wrapper.find('.custom-cell').exists()).toBe(true)
+  })
+
   it('冷启动（加载中且无数据）显示骨架，不渲染树表', () => {
     const wrapper = mount(TreeCrudView, {
       global,
-      props: { slotProps: makeSlotProps({ loading: true, treeData: [] }) },
+      props: { slotProps: makeSlotProps({ loading: true, treeData: [] }), columns: defaultColumns },
     })
 
     expect(wrapper.find('.skeleton-wrapper').exists()).toBe(true)
@@ -162,6 +241,7 @@ describe('TreeCrudView 状态与提交契约', () => {
       global,
       props: {
         slotProps: makeSlotProps({ loading: true, treeData: [{ id: 1, name: '总部' }] }),
+        columns: defaultColumns,
       },
     })
 
@@ -300,7 +380,7 @@ describe('TreeCrudView 状态与提交契约', () => {
       setup() {
         const crud = useTreeCrud({ treeApi })
         void crud.refresh()
-        return () => h(TreeCrudView, { slotProps: crud.slotProps, readonly: true })
+        return () => h(TreeCrudView, { slotProps: crud.slotProps, readonly: true, columns: defaultColumns })
       },
     })
     const wrapper = mount(parent, { global })

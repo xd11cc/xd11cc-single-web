@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
+import { createMemoryHistory, createRouter } from 'vue-router'
 import UseCrudView from '@/common/components/useCrud/index.vue'
 import TableColumnSetting from '@/common/components/TableColumnSetting/index.vue'
 import { CacheKey } from '@@/constants/cache-key'
@@ -12,6 +13,11 @@ import { CacheKey } from '@@/constants/cache-key'
  * 这些用例保证壳真的按配置渲染，并且表头拖拽的宽度能落到偏好里。
  */
 
+const router = createRouter({
+  history: createMemoryHistory(),
+  routes: [{ path: '/', name: 'crud', component: { template: '<div />' } }],
+})
+
 const i18n = createI18n({
   legacy: false,
   globalInjection: true,
@@ -22,14 +28,14 @@ const i18n = createI18n({
 })
 
 const columnStub = {
-  props: ['prop', 'label', 'width', 'minWidth', 'align', 'fixed'],
+  props: ['prop', 'label', 'width', 'minWidth', 'align', 'fixed', 'showOverflowTooltip'],
   template:
-    '<div class="col" :data-prop="prop" :data-width="width" :data-label="label"><slot :row="{ a: 1, b: 2 }" /></div>',
+    '<div class="col" :data-prop="prop" :data-width="width" :data-label="label" :data-overflow="String(!!showOverflowTooltip)"><slot :row="{ a: 1, b: 2 }" /></div>',
 }
 
 const mountOptions = {
   global: {
-    plugins: [i18n],
+    plugins: [i18n, router],
     directives: { 'table-loading': {} },
     stubs: {
       Icon: true,
@@ -113,6 +119,26 @@ describe('UseCrudView 列管线', () => {
     expect(cols[1].attributes('data-width')).toBe('120')
   })
 
+  it('默认给所有列开 show-overflow-tooltip（单元格全局 nowrap，否则看不到全文）', () => {
+    const wrapper = mountShell()
+    const cols = wrapper.findAll('.col')
+
+    expect(cols.map((c) => c.attributes('data-overflow'))).toEqual(['true', 'true'])
+  })
+
+  it('显式 showOverflowTooltip: false 可关闭 tooltip', () => {
+    const wrapper = mountShell({
+      columns: [
+        { prop: 'a', label: 'A 列' },
+        { prop: 'b', label: 'B 列', showOverflowTooltip: false },
+      ],
+    })
+    const cols = wrapper.findAll('.col')
+
+    expect(cols[0].attributes('data-overflow')).toBe('true')
+    expect(cols[1].attributes('data-overflow')).toBe('false')
+  })
+
   it('按本地偏好决定顺序与显隐', () => {
     localStorage.setItem(
       storageKey,
@@ -159,17 +185,5 @@ describe('UseCrudView 列管线', () => {
   it('传了 columns 时工具栏出现列设置入口', () => {
     const wrapper = mountShell()
     expect(wrapper.findComponent(TableColumnSetting).exists()).toBe(true)
-  })
-
-  it('不传 columns 时仍走 #table 槽（旧页面零改动）', () => {
-    const wrapper = mount(UseCrudView, {
-      ...mountOptions,
-      props: { slotProps: makeSlotProps(), columns: undefined },
-      slots: { table: '<div class="legacy-columns">页面自己写的列</div>' },
-    })
-
-    expect(wrapper.find('.legacy-columns').exists()).toBe(true)
-    expect(wrapper.find('.col').exists()).toBe(false)
-    expect(wrapper.findComponent(TableColumnSetting).exists()).toBe(false)
   })
 })

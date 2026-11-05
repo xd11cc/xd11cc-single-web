@@ -14,36 +14,37 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 | 状态 / 路由 | Pinia 3、vue-router 4（动态路由，后端下发菜单）                |
 | 国际化      | vue-i18n 11，`zh-CN` / `en-US` 双文件                          |
 | 其他        | axios、echarts 6、bpmn-js 18（流程设计器）                     |
-| 测试        | vitest 5 + @vue/test-utils + happy-dom，**232 用例 / 23 文件** |
+| 测试        | vitest 5 + @vue/test-utils + happy-dom，**247 用例 / 26 文件** |
 
 接口约定：前缀 `/xd11cc`，统一响应 `ResponseVO{ code, msg, data }`，分页 `PageData{ rows, total }`（定义在 `types/api.d.ts`）。
 
 ## 2. 目录地图
 
-| 路径                        | 职责                                                                                     | 入口文件                      |
-| --------------------------- | ---------------------------------------------------------------------------------------- | ----------------------------- |
-| `src/views/`                | 业务页面，按域分包（system / bpm / approval / tool / monitor / login）                   | 每域 `index.vue` + `apis/`    |
-| `src/common/components/`    | 跨域组件（useCrud / treeCrud 壳、Chat、Notify、Screenfull…）                             | —                             |
-| `src/common/composables/`   | 16 个组合式：useCrud、useTreeCrud、useDict、useChat、useWebSocket、usePageErrorBoundary… | —                             |
-| `src/common/utils/`         | `request.ts`（请求封装）、`webSocket.ts`（连接状态机）、`page-error.ts`（错误分类）      | —                             |
-| `src/common/apis/`          | 跨域接口：`file.ts`（`/file/upload`，返回可持久化的 `objectKey`）                        | —                             |
-| `src/common/assets/styles/` | `themes.css` 三层令牌、`variables.css` 布局变量                                          | —                             |
-| `src/layouts/`              | 布局外壳（LeftMode/TopMode/LeftTopMode）、导航、标签栏                                   | `layouts/index.vue`           |
-| `src/pinia/stores/`         | 5 个 store：app / permission / settings / tags-view / user                               | —                             |
-| `src/router/`               | 公共路由 + 导航守卫 + 路由转换                                                           | `router/index.ts`、`guard.ts` |
-| `src/i18n/locales/`         | 按域拆分的双语文案                                                                       | `locales/index.ts`            |
-| `types/`                    | 全局类型（`api.d.ts`）+ 自动生成的 `types/auto/*`                                        | —                             |
-| `tests/`                    | vitest 用例（不在 `tsconfig.include` 内，不影响类型检查）                                | `vitest.config.ts`            |
+| 路径                        | 职责                                                                                                       | 入口文件                      |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| `src/views/`                | 业务页面，按域分包（system / bpm / approval / tool / monitor / login）                                     | 每域 `index.vue` + `apis/`    |
+| `src/common/components/`    | 跨域组件（useCrud / treeCrud 壳、Chat、Notify、Screenfull…）                                               | —                             |
+| `src/common/composables/`   | 16 个组合式：useCrud、useTreeCrud、useDict、useChat、useWebSocket、usePageErrorBoundary、useLatestRequest… | —                             |
+| `src/common/utils/`         | `request.ts`（请求封装）、`webSocket.ts`（连接状态机）、`page-error.ts`（错误分类）                        | —                             |
+| `vite/`                     | 构建期插件：`icon-subset.ts`（图标按需打包）                                                               | —                             |
+| `src/common/apis/`          | 跨域接口：`file.ts`（`/file/upload`，返回可持久化的 `objectKey`）                                          | —                             |
+| `src/common/assets/styles/` | `themes.css` 三层令牌、`variables.css` 布局变量                                                            | —                             |
+| `src/layouts/`              | 布局外壳（LeftMode/TopMode/LeftTopMode）、导航、标签栏                                                     | `layouts/index.vue`           |
+| `src/pinia/stores/`         | 5 个 store：app / permission / settings / tags-view / user                                                 | —                             |
+| `src/router/`               | 公共路由 + 导航守卫 + 路由转换                                                                             | `router/index.ts`、`guard.ts` |
+| `src/i18n/locales/`         | 按域拆分的双语文案                                                                                         | `locales/index.ts`            |
+| `types/`                    | 全局类型（`api.d.ts`）+ 自动生成的 `types/auto/*`                                                          | —                             |
+| `tests/`                    | vitest 用例（不在 `tsconfig.include` 内，不影响类型检查）                                                  | `vitest.config.ts`            |
 
 ## 3. 关键机制（改动前必读）
 
 **动态路由**：`publicRoutes` + 后端 `GET /login/getRoutes` → `transformBackendRoutes`（拼 `Layout`、解析组件、把目录的 `noRedirect` 换成首个可见子页）→ `router.addRoute`。守卫用单飞 `permissionInitialization` 保证只初始化一次。菜单的 `route_name` 必须等于页面组件 `defineOptions({ name })`，否则标签栏缓存失效（现网 24 个页面已对齐）。
 
-**列表页壳**：22 个表格页全部走壳——20 个用 `useCrud` + `UseCrudView`（其中 9 个 `readonly`），2 个树形页用 `useTreeCrud` + `TreeCrudView`；没有手写表格。页面只提供 `pageApi`、表单字段、`#table` 插槽；分页/搜索/弹窗/批量删除由壳负责。壳的输出是 `slotProps`（`tableData` / `paginationData` / `handleAdd` …）。
+**列表页壳**：22 个表格页全部走壳——20 个用 `useCrud` + `UseCrudView`（其中 9 个 `readonly`），2 个树形页用 `useTreeCrud` + `TreeCrudView`；没有手写表格。页面只提供 `pageApi`、表单字段与 `columns`；分页/搜索/弹窗/批量删除/列渲染由壳负责。壳的输出是 `slotProps`（`tableData` / `paginationData` / `handleAdd` …）。
 
-两个壳都带**过期响应守卫**：`latestRequestId` 只允许最新请求写入数据/错误/loading，`onScopeDispose` 让在途请求整体作废。失败时不抛错，而是置 `tableError` / `treeError`，壳内渲染「数据加载失败 + 重试」（调 `slotProps.refresh()`），并隐藏分页避免用旧 total 误导。
+两个壳共用**过期响应守卫** `useLatestRequest()`：`begin()` 让此前请求作废，`isCurrent(id)` 才允许写入数据/错误/loading，`onScopeDispose` 时整体失效。失败时不抛错，而是置 `tableError` / `treeError`，壳内渲染「数据加载失败 + 重试」（调 `slotProps.refresh()`），并隐藏分页避免用旧 total 误导。
 
-列配置也是壳的一部分：页面传 `columns`（`TableColumnDef[]`）即由壳渲染列、管排序/显隐/列宽并持久化，单元格用 `#cell-<prop>` 覆盖，选择列与操作列分别放 `#table-prefix` / `#table-append`；现网 20 个列表页已全部接入；不传时仍可在 `#table` 自写列（保留的旧能力）。
+列配置也是壳的一部分：页面传 `columns`（`TableColumnDef[]`）即由壳渲染列、管排序/显隐/列宽并持久化，单元格用 `#cell-<prop>` 覆盖，选择列与操作列分别放 `#table-prefix` / `#table-append`；现网 20 个列表页 + 2 个树形页（`dept` / `menu`）已全部接入；树形页的树列不参与列设置，固定在 `#table-prefix`。`columns` 为必填（少了它 `vue-tsc` 直接报错），壳里没有「页面自写列」的第二条路径。单元格全局 `nowrap + 省略号`，所以**生成列默认开启 `show-overflow-tooltip`**（`showOverflowTooltip: false` 可关）；树形页的树列在 `#table-prefix` 里自写，需要的话自行加该属性。
 
 **冷启动**（加载中且无数据、非失败态）用 `Skeleton` 占位：列表壳与树表壳用 `variant="table"`，审批详情抽屉用 `variant="page"`；其余加载态仍用 `v-table-loading` 扫描线——有旧数据时保留数据，翻页不会整表消失。骨架自带 180ms 延迟，快接口不出骨架；行高已与 `el-table` 对齐（骨架 41px / 表格 40px）。
 
@@ -60,6 +61,8 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 **聊天会话**：聊天数据只驻留内存。`Chat` 随布局卸载时调用 `useChat.destroy()`，清空消息/联系人/未读/选中项/面板状态并解除监听；`refreshOnlineUsers` 用「会话版本 + 当前 userId」双重校验丢弃过期响应，避免换账号后读到上一个人的会话。
 
 **页面错误边界**：`usePageErrorBoundary(scope)`（`AppMain` 与 `layouts/index.vue` 共用）+ `utils/page-error.ts` 的 `shouldShowPageError`。**只有**资源/动态模块加载失败与 `setup`/`render` 自身抛错才整页兜底；接口失败、事件处理器里未捕获的 rejection 只打日志、页面保持可用。改这块前先看 `tests/page-error.spec.ts`。
+
+**图标按需加载**：`vite/icon-subset.ts` 在构建期扫描源码里出现的 `lucide:x` / `ep:x`，只把用到的图标打进 `virtual:icon-subset`（入口同步注册）；后端菜单等运行时才知道的名字走 `AppIcon`（`common/components/AppIcon/`），它先 `ensureIconCollection` 懒加载完整集合（`virtual:icon-full-<prefix>`，按前缀分 chunk），再渲染。**新增图标不需要登记**，写进模板即被扫到；图标选择器用 `virtual:icon-names` 只取名字。
 
 **文件上传**：`common/apis/file.ts` 的 `uploadFile` 走 `POST /file/upload`（multipart，60s 超时），返回 `fileId` / `objectKey` / `previewUrl`。**要持久化的引用一律存 `objectKey`**——`previewUrl` 是预签名地址，2 小时过期且指向内网 endpoint。头像即 `headUrl = objectKey`，渲染时拼 `ossUrl`。
 
@@ -83,7 +86,7 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 | ------------------------------- | ---------------------------------------------------------------------- |
 | `pnpm dev`                      | 开发服务器（`.env.dev`）                                               |
 | `pnpm typecheck`                | `vue-tsc --noEmit`                                                     |
-| `pnpm test:unit`                | vitest 全量，23 文件 / 232 用例（约 4s）；`test:unit:watch` 为监听模式 |
+| `pnpm test:unit`                | vitest 全量，26 文件 / 247 用例（约 4s）；`test:unit:watch` 为监听模式 |
 | `pnpm build`                    | **已串联** `typecheck → test:unit → vite build`，任一失败即中断        |
 | `pnpm build:dev` / `build:test` | 只打包，不跑测试                                                       |
 | `pnpm format`                   | Prettier 格式化 `src/`                                                 |

@@ -39,7 +39,7 @@
                   @click="executeItem(item)"
                   @mouseenter="setActive(gi, ii)"
                 >
-                  <Icon :icon="item.icon || 'lucide:file'" class="cmd-item-icon" />
+                  <AppIcon :icon="item.icon || 'lucide:file'" class="cmd-item-icon" />
                   <div class="cmd-item-content">
                     <span class="cmd-item-title">{{ item.title }}</span>
                     <span v-if="item.breadcrumb" class="cmd-item-breadcrumb">{{
@@ -69,6 +69,7 @@
 <script lang="ts" setup>
 import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
+import AppIcon from '@@/components/AppIcon/index.vue'
 import { usePermissionStore } from '@/pinia/stores/permission'
 import type { RouteRecordRaw } from 'vue-router'
 

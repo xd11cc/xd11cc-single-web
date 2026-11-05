@@ -1,5 +1,6 @@
 import type { ResponseVO } from 'types/api'
 import { onScopeDispose, reactive, ref } from 'vue'
+import { useLatestRequest } from './useLatestRequest'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 
@@ -86,21 +87,18 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
   const dialogVisible = ref(false)
   const formData = ref<any>(options.defaultForm?.() || {})
   const parentRow = ref<any>(null)
-  let latestRequestId = 0
+  const request = useLatestRequest()
   let dialogSessionId = 0
-  let isDisposed = false
 
   onScopeDispose(() => {
-    isDisposed = true
-    latestRequestId++
     dialogSessionId++
     loading.value = false
   })
 
   async function getTreeData() {
-    if (isDisposed) return
-    const requestId = ++latestRequestId
-    const isLatestRequest = () => !isDisposed && requestId === latestRequestId
+    if (request.isDisposed()) return
+    const requestId = request.begin()
+    const isLatestRequest = () => request.isCurrent(requestId)
     loading.value = true
     treeError.value = false
     try {
@@ -127,7 +125,7 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
   }
 
   function openDialog(form: Record<string, any>, parent: any = null) {
-    if (isDisposed) return
+    if (request.isDisposed()) return
     dialogSessionId++
     formData.value = form
     parentRow.value = parent
@@ -156,7 +154,7 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
   }
 
   async function handleSubmit(isAdd: boolean): Promise<ResponseVO<any> | void> {
-    if (isDisposed || submitLoading.value) return
+    if (request.isDisposed() || submitLoading.value) return
     const api = isAdd ? options.addApi : options.updateApi
     if (!api) return
 
@@ -165,7 +163,7 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
     try {
       const payload = options.transformPayload?.(formData.value, isAdd) ?? { ...formData.value }
       const res = await api(payload)
-      if (isDisposed) return res
+      if (request.isDisposed()) return res
       ElMessage.success(res.msg || t('common.messages.operationSuccess'))
       if (sessionId === dialogSessionId) {
         dialogVisible.value = false
@@ -176,12 +174,12 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
     } catch {
       return
     } finally {
-      if (!isDisposed) submitLoading.value = false
+      if (!request.isDisposed()) submitLoading.value = false
     }
   }
 
   async function handleRemove(row: any) {
-    if (isDisposed || !options.removeApi) return
+    if (request.isDisposed() || !options.removeApi) return
 
     const blocked = options.removeGuard?.(row)
     if (blocked) {
@@ -202,10 +200,10 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
       return
     }
 
-    if (isDisposed) return
+    if (request.isDisposed()) return
     try {
       const res = await options.removeApi(row[idKey])
-      if (isDisposed) return
+      if (request.isDisposed()) return
       ElMessage.success(res.msg || t('common.messages.deleteSuccess'))
       await getTreeData()
     } catch {

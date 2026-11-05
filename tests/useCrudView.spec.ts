@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { createMemoryHistory, createRouter } from 'vue-router'
 import { createI18n } from 'vue-i18n'
 import UseCrudView from '@/common/components/useCrud/index.vue'
 
@@ -14,6 +15,14 @@ import UseCrudView from '@/common/components/useCrud/index.vue'
  */
 
 // 组件内部调用了 useI18n()，必须真的装上 i18n 插件（只 mock $t 不够）
+// 壳里用 useRoute() 取列偏好的默认键，测试环境需要一个真 router（否则 inject 告警）
+const router = createRouter({
+  history: createMemoryHistory(),
+  routes: [{ path: '/', name: 'crud-test', component: { template: '<div />' } }],
+})
+
+const defaultColumns = [{ prop: 'name', label: '名称' }]
+
 const i18n = createI18n({
   legacy: false,
   globalInjection: true,
@@ -62,7 +71,7 @@ const stub = (tag: string, cls = '') => ({
 
 const mountOptions = {
   global: {
-    plugins: [i18n],
+    plugins: [i18n, router],
     directives: { 'table-loading': {} },
     stubs: {
       'el-card': stub('el-card'),
@@ -80,13 +89,18 @@ const mountOptions = {
       'el-select': { template: '<div><slot /></div>' },
       'el-option': { template: '<div />' },
       'el-empty': { template: '<div class="el-empty-stub"><slot /></div>' },
+      'el-popover': { template: '<div><slot /><slot name="reference" /></div>' },
+      'el-checkbox': { template: '<label><slot /></label>' },
     },
   },
 }
 
 describe('UseCrudView 结构契约', () => {
   it('渲染搜索区、表格区、分页区三段骨架', () => {
-    const wrapper = mount(UseCrudView, { ...mountOptions, props: { slotProps: makeSlotProps() } })
+    const wrapper = mount(UseCrudView, {
+      ...mountOptions,
+      props: { slotProps: makeSlotProps(), columns: defaultColumns },
+    })
 
     expect(wrapper.find('.search-wrapper').exists()).toBe(true)
     expect(wrapper.find('.table-wrapper').exists()).toBe(true)
@@ -96,7 +110,10 @@ describe('UseCrudView 结构契约', () => {
   it('冷启动（加载中且无数据）显示骨架屏，不渲染空表', () => {
     const wrapper = mount(UseCrudView, {
       ...mountOptions,
-      props: { slotProps: makeSlotProps({ tableLoading: true, tableData: [] }) },
+      props: {
+        slotProps: makeSlotProps({ tableLoading: true, tableData: [] }),
+        columns: defaultColumns,
+      },
     })
 
     // 断言壳的接线：冷启动走 Skeleton 分支、表格不渲染、带无障碍状态标记。
@@ -112,6 +129,7 @@ describe('UseCrudView 结构契约', () => {
       ...mountOptions,
       props: {
         slotProps: makeSlotProps({ tableLoading: true, tableData: [{ id: 1 }] }),
+        columns: defaultColumns,
       },
     })
 
@@ -120,7 +138,10 @@ describe('UseCrudView 结构契约', () => {
   })
 
   it('整页只有一个根元素（多根节点会白屏）', () => {
-    const wrapper = mount(UseCrudView, { ...mountOptions, props: { slotProps: makeSlotProps() } })
+    const wrapper = mount(UseCrudView, {
+      ...mountOptions,
+      props: { slotProps: makeSlotProps(), columns: defaultColumns },
+    })
 
     const root = wrapper.element
     expect(root.parentElement?.children.length).toBe(1)
@@ -129,7 +150,7 @@ describe('UseCrudView 结构契约', () => {
   it('readonly 模式不渲染新增/编辑弹窗', () => {
     const wrapper = mount(UseCrudView, {
       ...mountOptions,
-      props: { slotProps: makeSlotProps(), readonly: true },
+      props: { slotProps: makeSlotProps(), columns: defaultColumns, readonly: true },
     })
 
     expect(wrapper.find('.el-dialog-stub').exists()).toBe(false)
@@ -139,7 +160,7 @@ describe('UseCrudView 结构契约', () => {
     const refresh = vi.fn()
     const wrapper = mount(UseCrudView, {
       ...mountOptions,
-      props: { slotProps: makeSlotProps({ tableError: true, refresh }) },
+      props: { slotProps: makeSlotProps({ tableError: true, refresh }), columns: defaultColumns },
     })
 
     const error = wrapper.find('.table-error')
@@ -154,7 +175,7 @@ describe('UseCrudView 结构契约', () => {
   it('hidePagination 隐藏分页区', () => {
     const wrapper = mount(UseCrudView, {
       ...mountOptions,
-      props: { slotProps: makeSlotProps(), hidePagination: true },
+      props: { slotProps: makeSlotProps(), columns: defaultColumns, hidePagination: true },
     })
 
     expect(wrapper.find('.page-wrapper').exists()).toBe(false)

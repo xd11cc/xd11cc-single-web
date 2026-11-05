@@ -1,9 +1,9 @@
 <template>
-  <Icon v-if="name" :icon="name" />
+  <AppIcon v-if="name" :icon="name" />
 </template>
 
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
+import AppIcon from '@@/components/AppIcon/index.vue'
 
 defineProps<{
   name: string

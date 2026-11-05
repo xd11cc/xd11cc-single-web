@@ -183,10 +183,10 @@ const { getDictList, getDictItem } = useDict(['system_status'])
 // ─── CRUD 核心（状态 + 搜索/分页/删除/弹窗生命周期） ──────
 // 列定义：排序 / 显隐 / 列宽由列表壳统一管理
 const columns = computed<TableColumnDef[]>(() => [
-  { prop: 'postCode', label: $t('system.post.columns.postCode'), minWidth: 140 },
-  { prop: 'postName', label: $t('system.post.columns.postName'), minWidth: 140 },
-  { prop: 'status', label: $t('system.post.columns.status'), align: 'center', width: 90 },
-  { prop: 'remark', label: $t('system.post.columns.remark'), minWidth: 160 },
+  { prop: 'postCode', label: $t('system.post.columns.postCode') },
+  { prop: 'postName', label: $t('system.post.columns.postName') },
+  { prop: 'status', label: $t('system.post.columns.status'), align: 'center', width: 80 },
+  { prop: 'remark', label: $t('system.post.columns.remark') },
   {
     prop: 'createTime',
     label: $t('system.post.columns.createTime'),

@@ -194,14 +194,26 @@ const router = useRouter()
 // 待办任务：只读列表，操作是「详情 / 通过 / 转办」
 // 列定义：排序 / 显隐 / 列宽由列表壳统一管理
 const columns = computed<TableColumnDef[]>(() => [
-  { prop: 'taskName', label: t('bpm.approval.todo.columns.taskName'), minWidth: 160 },
-  { prop: 'title', label: t('bpm.approval.todo.columns.title'), minWidth: 220 },
+  {
+    prop: 'taskName',
+    label: t('bpm.approval.todo.columns.taskName'),
+    minWidth: 160,
+  },
+  {
+    prop: 'title',
+    label: t('bpm.approval.todo.columns.title'),
+    minWidth: 220,
+  },
   {
     prop: 'processDefinitionKey',
     label: t('bpm.approval.todo.columns.processKey'),
     minWidth: 160,
   },
-  { prop: 'businessKey', label: t('bpm.approval.todo.columns.businessKey'), minWidth: 160 },
+  {
+    prop: 'businessKey',
+    label: t('bpm.approval.todo.columns.businessKey'),
+    minWidth: 160,
+  },
   {
     prop: 'assignee',
     label: t('bpm.approval.todo.columns.assignee'),

@@ -4,6 +4,7 @@
     :formRules="formRules"
     :add-title="$t('system.menu.dialogs.add')"
     :edit-title="$t('system.menu.dialogs.edit')"
+    :columns="columns"
     label-width="144px"
     :default-expanded="false"
   >
@@ -40,65 +41,41 @@
       </el-button>
     </template>
 
-    <!-- 表格列 -->
-    <template #table="{ handleAddChild, handleEdit, handleRemove }">
+    <!-- 树列：固定在生成列之前 -->
+    <template #table-prefix>
       <el-table-column
         prop="menuName"
         :label="$t('system.menu.columns.menuName')"
         min-width="180"
+        show-overflow-tooltip
       />
-      <el-table-column
-        prop="icon"
-        :label="$t('system.menu.columns.icon')"
-        align="center"
-        width="60"
+    </template>
+
+    <!-- 图标列：图标名来自后端菜单 -->
+    <template #cell-icon="{ row }">
+      <MenuIcon v-if="row.icon" :name="row.icon" class="el-icon" />
+    </template>
+
+    <!-- 类型列：字典标签 -->
+    <template #cell-menuType="{ row }">
+      <el-tag :type="menuTypeTag(row.menuType)" effect="plain" size="small" disable-transitions>
+        {{ getDictItem('system_menu_type', row.menuType)?.label || row.menuType }}
+      </el-tag>
+    </template>
+
+    <!-- 状态列：字典标签 -->
+    <template #cell-status="{ row }">
+      <el-tag
+        :type="getDictItem('system_status', row.status)?.listClass || 'info'"
+        effect="plain"
+        disable-transitions
       >
-        <template #default="scope">
-          <MenuIcon v-if="scope.row.icon" :name="scope.row.icon" class="el-icon" />
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="menuType"
-        :label="$t('system.menu.columns.type')"
-        align="center"
-        width="80"
-      >
-        <template #default="scope">
-          <el-tag
-            :type="menuTypeTag(scope.row.menuType)"
-            effect="plain"
-            size="small"
-            disable-transitions
-          >
-            {{ getDictItem('system_menu_type', scope.row.menuType)?.label || scope.row.menuType }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="sort"
-        :label="$t('system.menu.columns.orderNum')"
-        align="right"
-        width="70"
-      />
-      <el-table-column prop="permission" :label="$t('system.menu.columns.perms')" />
-      <el-table-column prop="component" :label="$t('system.menu.columns.component')" />
-      <el-table-column prop="status" :label="$t('system.menu.columns.status')" align="center">
-        <template #default="scope">
-          <el-tag
-            :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
-            effect="plain"
-            disable-transitions
-          >
-            {{ getDictItem('system_status', scope.row.status)?.label }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="createTime"
-        :label="$t('system.menu.columns.createTime')"
-        align="center"
-        min-width="160"
-      />
+        {{ getDictItem('system_status', row.status)?.label }}
+      </el-tag>
+    </template>
+
+    <!-- 操作列 -->
+    <template #table-append="{ handleAddChild, handleEdit, handleRemove }">
       <el-table-column fixed="right" :label="$t('common.action')" width="120" align="center">
         <template #default="scope">
           <el-tooltip
@@ -289,6 +266,7 @@ import IconSelect from '@@/components/IconSelect/index.vue'
 import MenuIcon from '@@/components/MenuIcon/index.vue'
 import { addMenu, modifyById, removeById, treeList } from './apis'
 import type { SystemMenuVO, SystemMenuQueryVO, SystemMenuTreeVO } from './apis/type'
+import type { TableColumnDef } from '@@/composables/useTableColumns'
 
 const { t } = useI18n()
 const $t = t
@@ -312,6 +290,22 @@ const menuTypeTagMap: Record<string, 'info' | 'primary' | 'warning'> = {
 function menuTypeTag(type?: string) {
   return menuTypeTagMap[type || ''] || 'info'
 }
+
+// 列定义：排序 / 显隐 / 列宽由壳统一管理（树列固定在 #table-prefix）
+const columns = computed<TableColumnDef[]>(() => [
+  { prop: 'icon', label: $t('system.menu.columns.icon'), align: 'center', width: 70 },
+  { prop: 'menuType', label: $t('system.menu.columns.type'), align: 'center', width: 90 },
+  { prop: 'sort', label: $t('system.menu.columns.orderNum'), align: 'right', width: 80 },
+  { prop: 'permission', label: $t('system.menu.columns.perms') },
+  { prop: 'component', label: $t('system.menu.columns.component') },
+  { prop: 'status', label: $t('system.menu.columns.status'), align: 'center', width: 90 },
+  {
+    prop: 'createTime',
+    label: $t('system.menu.columns.createTime'),
+    align: 'center',
+    minWidth: 160,
+  },
+])
 
 const crud = useTreeCrud<SystemMenuQueryVO, SystemMenuTreeVO>({
   treeApi: (query) => treeList(query),

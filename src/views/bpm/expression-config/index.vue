@@ -303,7 +303,11 @@ const columns = computed<TableColumnDef[]>(() => [
   { prop: 'configKey', label: $t('bpm.expressionConfig.fields.key'), minWidth: 180 },
   { prop: 'expressionType', label: $t('bpm.expressionConfig.fields.type'), width: 180 },
   { prop: 'returnType', label: $t('bpm.expressionConfig.fields.returnType'), width: 120 },
-  { prop: 'expressionTemplate', label: $t('bpm.expressionConfig.fields.preview'), minWidth: 240 },
+  {
+    prop: 'expressionTemplate',
+    label: $t('bpm.expressionConfig.fields.preview'),
+    minWidth: 240,
+  },
   { prop: 'status', label: $t('bpm.expressionConfig.fields.status'), width: 90, align: 'center' },
 ])
 

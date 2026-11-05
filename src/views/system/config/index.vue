@@ -158,10 +158,10 @@ const formRules: FormRules<SystemConfigVO> = {
 
 // 列定义：排序 / 显隐 / 列宽由列表壳统一管理
 const columns = computed<TableColumnDef[]>(() => [
-  { prop: 'configName', label: $t('system.config.columns.configName'), minWidth: 140 },
-  { prop: 'configKey', label: $t('system.config.columns.configKey'), minWidth: 160 },
-  { prop: 'configValue', label: $t('system.config.columns.configValue'), minWidth: 160 },
-  { prop: 'remark', label: $t('system.config.columns.remark'), minWidth: 160 },
+  { prop: 'configName', label: $t('system.config.columns.configName') },
+  { prop: 'configKey', label: $t('system.config.columns.configKey') },
+  { prop: 'configValue', label: $t('system.config.columns.configValue') },
+  { prop: 'remark', label: $t('system.config.columns.remark') },
   {
     prop: 'createTime',
     label: $t('system.config.columns.createTime'),

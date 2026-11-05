@@ -6,6 +6,7 @@ import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
 import { defineConfig, loadEnv } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
+import { iconSubsetPlugin } from './vite/icon-subset'
 import compression from 'vite-plugin-compression'
 /**
  * 生成需要预构建的 Element Plus 依赖列表。
@@ -55,7 +56,18 @@ export default defineConfig(({ mode }) => {
         includeAssets: ['favicon.svg', 'robots.txt'],
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+          // 完整图标集合是「按需」chunk：不进预缓存清单，改为首次真正用到时再抓并缓存。
+          // 否则 SW 安装阶段会把它整包下载，等于把入口拆出去又立刻搬回来。
+          globIgnores: ['**/_virtual_icon-full-*.js'],
           runtimeCaching: [
+            {
+              urlPattern: /\/assets\/js\/_virtual_icon-full-.*\.js$/,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'iconify-full-icons',
+                expiration: { maxEntries: 4, maxAgeSeconds: 60 * 60 * 24 * 30 },
+              },
+            },
             {
               urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
               handler: 'CacheFirst',
@@ -150,6 +162,8 @@ export default defineConfig(({ mode }) => {
       // 现在需要断点的文件各自 @use '../.../breakpoints.scss' as *;，任何工具都能编译。
     },
     plugins: [
+      // 图标按需加载：构建期只挑源码里用到的图标；运行时遇到未知图标再懒加载全量集合
+      iconSubsetPlugin(),
       vue(),
       AutoImport({
         imports: ['vue', 'vue-router', 'pinia'],

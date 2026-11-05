@@ -217,8 +217,16 @@ defineOptions({
 // 只读列表：失败消息只能重投/忽略，没有新增/编辑整条记录
 // 列定义：排序 / 显隐 / 列宽由列表壳统一管理
 const columns = computed<TableColumnDef[]>(() => [
-  { prop: 'messageId', label: t('system.mqFail.columns.messageId'), minWidth: 260 },
-  { prop: 'queueName', label: t('system.mqFail.columns.queueName'), minWidth: 180 },
+  {
+    prop: 'messageId',
+    label: t('system.mqFail.columns.messageId'),
+    minWidth: 260,
+  },
+  {
+    prop: 'queueName',
+    label: t('system.mqFail.columns.queueName'),
+    minWidth: 180,
+  },
   { prop: 'retryCount', label: t('system.mqFail.columns.retryCount'), width: 100, align: 'right' },
   { prop: 'status', label: t('system.mqFail.columns.status'), width: 100, align: 'center' },
   {

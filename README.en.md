@@ -58,6 +58,7 @@ An enterprise admin frontend built with Vue 3.5 and TypeScript, providing out-of
 - **Component Lazy Loading** — `import.meta.glob` on-demand loading for view modules
 - **keep-alive Cache** — `<keep-alive>` built into `AppMain` for page state caching
 - **Element Plus On-Demand** — `unplugin-vue-components` + `unplugin-auto-import` auto-imports components and APIs
+- **On-demand Icons** — A build-time scan packs only referenced icons; runtime-only icons (backend menu) load from a lazy chunk (entry dropped from 201KB to 92KB gzip)
 - **localStorage Persistence** — Theme, language, table column config, tags view, settings
 
 ### 🔧 Infrastructure
@@ -440,7 +441,8 @@ const columns: TableColumnDef[] = [
 - The column-settings entry is rendered by the shell. Drag to reorder, toggle visibility, drag a header border to resize — all three persist to localStorage
 - The storage key defaults to the current route name (override with `column-key`), so pages never collide
 - At least one column stays visible; new columns are appended while stale props from removed columns are ignored
-- All **20 list pages** now use it; a page may still write `el-table-column` inside `#table` when no `columns` is passed (legacy capability kept)
+- All **20 list pages + 2 tree pages** use it (tree column stays in `#table-prefix` and is not configurable); `columns` is required and the shell has a single rendering path
+- Cells are globally `nowrap + ellipsis`, so generated columns enable `show-overflow-tooltip` **by default** (hover shows the full text); pass `showOverflowTooltip: false` to opt out
 
 ### Watermark Tamper-Proofing
 

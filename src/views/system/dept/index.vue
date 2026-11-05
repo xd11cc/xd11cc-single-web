@@ -4,6 +4,7 @@
     :formRules="formRules"
     :add-title="$t('system.dept.dialogs.add')"
     :edit-title="$t('system.dept.dialogs.edit')"
+    :columns="columns"
     dialog-width="min(720px, calc(100vw - 32px))"
     label-width="144px"
     :default-expanded="true"
@@ -41,40 +42,30 @@
       </el-button>
     </template>
 
-    <!-- 表格列 -->
-    <template #table="{ handleAddChild, handleEdit, handleRemove }">
-      <el-table-column prop="deptName" :label="$t('system.dept.search.deptName')" min-width="180" />
-      <el-table-column prop="deptCode" :label="$t('system.dept.columns.deptCode')" />
+    <!-- 树列：必须放在生成列之前（展开箭头与缩进由第一列渲染） -->
+    <template #table-prefix>
       <el-table-column
-        prop="sort"
-        :label="$t('system.dept.columns.sort')"
-        align="right"
-        width="80"
+        prop="deptName"
+        :label="$t('system.dept.search.deptName')"
+        min-width="180"
+        show-overflow-tooltip
       />
-      <el-table-column
-        prop="status"
-        :label="$t('system.dept.search.status')"
-        align="center"
-        width="80"
+    </template>
+
+    <!-- 状态列：字典标签 -->
+    <template #cell-status="{ row }">
+      <el-tag
+        :type="getDictItem('system_status', row.status)?.listClass || 'info'"
+        effect="plain"
+        size="small"
+        disable-transitions
       >
-        <template #default="scope">
-          <el-tag
-            :type="getDictItem('system_status', scope.row.status)?.listClass || 'info'"
-            effect="plain"
-            size="small"
-            disable-transitions
-          >
-            {{ getDictItem('system_status', scope.row.status)?.label }}
-          </el-tag>
-        </template>
-      </el-table-column>
-      <el-table-column prop="remark" :label="$t('system.dept.columns.remark')" />
-      <el-table-column
-        prop="createTime"
-        :label="$t('system.dept.columns.createTime')"
-        align="center"
-        min-width="160"
-      />
+        {{ getDictItem('system_status', row.status)?.label }}
+      </el-tag>
+    </template>
+
+    <!-- 操作列 -->
+    <template #table-append="{ handleAddChild, handleEdit, handleRemove }">
       <el-table-column fixed="right" :label="$t('common.action')" width="120" align="center">
         <template #default="scope">
           <el-tooltip :content="$t('system.dept.actions.addChild')" placement="top">
@@ -216,6 +207,7 @@ import { useDict } from '@/common/composables/useDict'
 import { deptTreeList, addDept, modifyDeptById, removeDeptById } from './apis'
 import { userList } from '@/views/system/user/apis'
 import type { SystemDeptQueryVO, SystemDeptTreeVO } from './apis/type'
+import type { TableColumnDef } from '@@/composables/useTableColumns'
 
 const { t } = useI18n()
 const $t = t
@@ -234,6 +226,20 @@ const formRules: FormRules = {
   leaderId: [{ required: true, trigger: 'change', message: () => $t('system.dept.form.leaderId') }],
   sort: [{ required: true, trigger: 'blur', message: () => $t('system.dept.form.orderNum') }],
 }
+
+// 列定义：排序 / 显隐 / 列宽由壳统一管理（树列不参与，固定在 #table-prefix）
+const columns = computed<TableColumnDef[]>(() => [
+  { prop: 'deptCode', label: $t('system.dept.columns.deptCode') },
+  { prop: 'sort', label: $t('system.dept.columns.sort'), align: 'right', width: 80 },
+  { prop: 'status', label: $t('system.dept.search.status'), align: 'center', width: 80 },
+  { prop: 'remark', label: $t('system.dept.columns.remark') },
+  {
+    prop: 'createTime',
+    label: $t('system.dept.columns.createTime'),
+    align: 'center',
+    minWidth: 160,
+  },
+])
 
 const crud = useTreeCrud<SystemDeptQueryVO, SystemDeptTreeVO>({
   treeApi: (query) => deptTreeList(query),

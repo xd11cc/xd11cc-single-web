@@ -58,6 +58,7 @@
 - **组件懒加载** — 视图模块 `import.meta.glob` 按需加载
 - **keep-alive 缓存** — `AppMain` 内置 `<keep-alive>` 缓存页面状态
 - **Element Plus 按需引入** — `unplugin-vue-components` + `unplugin-auto-import` 自动导入组件和 API
+- **图标按需加载** — 构建期扫描源码里用到的图标名，只打包这些；后端菜单等运行时图标走懒加载 chunk（入口因此从 201KB 降到 92KB gzip）
 - **localStorage 持久化** — 主题、语言、表格列配置、标签栏、设置项持久化
 
 ### 🔧 基础设施
@@ -442,7 +443,8 @@ const columns: TableColumnDef[] = [
 - 工具栏的列设置入口由壳渲染，用户拖拽排序、勾选显隐、拖动表头边框调宽，三项都持久化到 localStorage
 - 偏好键默认取当前路由名（可用 `column-key` 覆盖），不同页面的列偏好互不干扰
 - 至少保留一列可见；代码新增列追加到末尾、删除列后本地残留的 prop 自动忽略
-- 现网 **20 个列表页已全部接入**；不传 `columns` 时仍可选择在 `#table` 里自己写 `el-table-column`（保留的旧能力）
+- 现网 **20 个列表页 + 2 个树形页已全部接入**（树形页的树列固定在 `#table-prefix`，不参与列设置）；`columns` 必填，壳里只有这一条渲染路径
+- 单元格全局 `nowrap + 省略号`，因此生成列**默认开启 `show-overflow-tooltip`**（悬浮显示全文）；纯数值/标签列可传 `showOverflowTooltip: false` 关闭
 
 ### 水印防篡改
 

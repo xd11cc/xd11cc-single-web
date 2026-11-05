@@ -11,6 +11,12 @@ export interface TableColumnDef {
   minWidth?: number | string
   align?: 'left' | 'center' | 'right'
   fixed?: 'left' | 'right' | boolean
+  /**
+   * 内容超长时省略并用 tooltip 展示全文。
+   * 默认开启（表格单元格全局 nowrap + 省略号，不开就永远看不到全文）；
+   * 纯数值/标签列可显式设为 false。
+   */
+  showOverflowTooltip?: boolean
   /** 默认是否显示，默认 true */
   visible?: boolean
 }
@@ -126,6 +132,19 @@ export function useTableColumns(options: UseTableColumnsOptions) {
     patchPrefs(prop, { width })
   }
 
+  /**
+   * el-table 的 `header-dragend` 事件处理器：把拖拽后的列宽写进偏好。
+   * 放在组合式里，两个壳都直接绑它，避免同一段逻辑各写一份。
+   */
+  function onHeaderDragEnd(
+    newWidth: number,
+    _oldWidth: number,
+    column: { property?: string } | undefined,
+  ) {
+    if (!column?.property) return
+    setColumnWidth(column.property, newWidth)
+  }
+
   /** 把第 from 个可见列移动到第 to 个位置（隐藏列统一排在可见列之后） */
   function reorderColumns(fromIndex: number, toIndex: number) {
     const sorted = [...visibleColumns.value]
@@ -170,6 +189,7 @@ export function useTableColumns(options: UseTableColumnsOptions) {
     visibleColumns,
     toggleColumn,
     setColumnWidth,
+    onHeaderDragEnd,
     reorderColumns,
     resetColumns,
   }

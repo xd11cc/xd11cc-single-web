@@ -38,6 +38,7 @@
         :row-key="rowKey"
         :default-expand-all="isExpanded"
         @row-click="handleRowClick"
+        @header-dragend="columnSetting.onHeaderDragEnd"
       >
         <template #toolbar>
           <div>
@@ -48,11 +49,38 @@
               <template #icon><Icon icon="lucide:arrow-up-down" /></template>
               {{ isExpanded ? $t('common.collapseAll') : $t('common.expandAll') }}
             </el-button>
+            <TableColumnSetting
+              :columns="columnSetting.columns.value"
+              @toggle="columnSetting.toggleColumn"
+              @reorder="columnSetting.reorderColumns"
+              @reset="columnSetting.resetColumns"
+            />
             <slot name="actions-right" v-bind="slotProps" />
           </div>
         </template>
 
-        <slot name="table" v-bind="slotProps" />
+        <!-- 树列（含展开箭头与缩进）必须固定在生成列之前 -->
+        <slot name="table-prefix" v-bind="slotProps" />
+
+        <el-table-column
+          v-for="col in columnSetting.visibleColumns.value"
+          :key="col.prop"
+          :prop="col.prop"
+          :label="col.label"
+          :width="col.width"
+          :min-width="col.minWidth"
+          :align="col.align"
+          :show-overflow-tooltip="col.showOverflowTooltip !== false"
+        >
+          <template #default="scope">
+            <slot :name="`cell-${col.prop}`" v-bind="scope">
+              {{ scope.row?.[col.prop] ?? '-' }}
+            </slot>
+          </template>
+        </el-table-column>
+
+        <slot name="table-append" v-bind="slotProps" />
+
         <template v-if="$slots.empty" #empty>
           <slot name="empty" />
         </template>
@@ -100,6 +128,10 @@ import { computed, onScopeDispose, ref, watch } from 'vue'
 import type { FormRules } from 'element-plus'
 import TreeTableView from '@@/components/TreeTable/index.vue'
 import Skeleton from '@@/components/Skeleton/index.vue'
+import TableColumnSetting from '@@/components/TableColumnSetting/index.vue'
+import { useTableColumns } from '@@/composables/useTableColumns'
+import type { TableColumnDef } from '@@/composables/useTableColumns'
+import { useRoute } from 'vue-router'
 import type { UseTreeCrudSlotProps } from '@@/composables/useTreeCrud'
 
 defineOptions({ name: 'TreeCrudView' })
@@ -110,6 +142,10 @@ const $t = t
 const props = withDefaults(
   defineProps<{
     slotProps: UseTreeCrudSlotProps
+    /** 表头列定义（必填，不含树列；树列放 #table-prefix） */
+    columns: TableColumnDef[]
+    /** 列偏好持久化键，默认取当前路由名 */
+    columnKey?: string
     /** 新增/修改共用表单校验规则；只读列表可不传 */
     formRules?: FormRules
     addTitle?: string
@@ -141,6 +177,13 @@ const emit = defineEmits<{
 const formRef = ref<any>(null)
 const submitLoading = ref(false)
 const treeTableRef = ref<InstanceType<typeof TreeTableView> | null>(null)
+/** 传了 columns 才启用列配置；与列表壳同一套「定义 + 偏好」模型 */
+const route = useRoute()
+const columnSetting = useTableColumns({
+  key: props.columnKey || (route?.name ? String(route.name) : 'crud'),
+  columns: () => props.columns,
+})
+
 /** 冷启动：加载中且没有任何树数据（失败态单独分支） */
 const isColdLoading = computed(
   () =>

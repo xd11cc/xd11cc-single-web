@@ -248,9 +248,17 @@ defineOptions({ name: 'Definition' })
 // 列定义：排序 / 显隐 / 列宽由列表壳统一管理
 const columns = computed<TableColumnDef[]>(() => [
   { prop: 'key', label: t('bpm.definition.columns.key'), minWidth: 140 },
-  { prop: 'name', label: t('bpm.definition.columns.name'), minWidth: 160 },
+  {
+    prop: 'name',
+    label: t('bpm.definition.columns.name'),
+    minWidth: 160,
+  },
   { prop: 'version', label: t('bpm.definition.columns.version'), width: 100, align: 'center' },
-  { prop: 'category', label: t('bpm.definition.columns.category'), width: 110 },
+  {
+    prop: 'category',
+    label: t('bpm.definition.columns.category'),
+    width: 110,
+  },
   {
     prop: 'deployTime',
     label: t('bpm.definition.columns.deployTime'),

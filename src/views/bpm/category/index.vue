@@ -176,11 +176,23 @@ defineOptions({ name: 'Category' })
 
 // 列定义：排序 / 显隐 / 列宽由列表壳统一管理
 const columns = computed<TableColumnDef[]>(() => [
-  { prop: 'categoryCode', label: t('bpm.category.columns.code'), minWidth: 180 },
-  { prop: 'categoryName', label: t('bpm.category.columns.name'), minWidth: 180 },
+  {
+    prop: 'categoryCode',
+    label: t('bpm.category.columns.code'),
+    minWidth: 180,
+  },
+  {
+    prop: 'categoryName',
+    label: t('bpm.category.columns.name'),
+    minWidth: 180,
+  },
   { prop: 'sort', label: t('bpm.category.columns.sort'), width: 100, align: 'right' },
   { prop: 'status', label: t('bpm.category.columns.status'), width: 100, align: 'center' },
-  { prop: 'remark', label: t('bpm.category.columns.remark'), minWidth: 220 },
+  {
+    prop: 'remark',
+    label: t('bpm.category.columns.remark'),
+    minWidth: 220,
+  },
   {
     prop: 'createTime',
     label: t('bpm.category.columns.createTime'),

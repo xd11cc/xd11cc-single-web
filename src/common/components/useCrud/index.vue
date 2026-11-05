@@ -25,7 +25,6 @@
         </div>
         <div class="toolbar-actions-right">
           <TableColumnSetting
-            v-if="columnSetting"
             :columns="columnSetting.columns.value"
             @toggle="columnSetting.toggleColumn"
             @reorder="columnSetting.reorderColumns"
@@ -65,34 +64,29 @@
             :data="slotProps.tableData"
             @selection-change="slotProps.handleSelectionChange"
             @row-click="handleRowClick"
-            @header-dragend="handleHeaderDragEnd"
+            @header-dragend="columnSetting.onHeaderDragEnd"
           >
             <!-- 选择列等需要固定在生成列之前的内容 -->
             <slot name="table-prefix" v-bind="slotProps" />
 
-            <!-- 传了 columns：由壳按「用户排序 + 显隐」生成列，
-                 单元格默认取 row[prop]，需要自定义就用 #cell-<prop> 插槽 -->
-            <template v-if="columnSetting">
-              <el-table-column
-                v-for="col in columnSetting.visibleColumns.value"
-                :key="col.prop"
-                :prop="col.prop"
-                :label="col.label"
-                :width="col.width"
-                :min-width="col.minWidth"
-                :align="col.align"
-                :fixed="col.fixed"
-              >
-                <template #default="scope">
-                  <slot :name="`cell-${col.prop}`" v-bind="scope">
-                    {{ scope.row?.[col.prop] ?? '-' }}
-                  </slot>
-                </template>
-              </el-table-column>
-            </template>
-
-            <!-- 没传 columns：沿用页面自己写 el-table-column 的方式 -->
-            <slot v-else name="table" v-bind="slotProps" />
+            <!-- 按「用户排序 + 显隐」生成列；单元格默认取 row[prop]，需要自定义用 #cell-<prop> -->
+            <el-table-column
+              v-for="col in columnSetting.visibleColumns.value"
+              :key="col.prop"
+              :prop="col.prop"
+              :label="col.label"
+              :width="col.width"
+              :min-width="col.minWidth"
+              :align="col.align"
+              :fixed="col.fixed"
+              :show-overflow-tooltip="col.showOverflowTooltip !== false"
+            >
+              <template #default="scope">
+                <slot :name="`cell-${col.prop}`" v-bind="scope">
+                  {{ scope.row?.[col.prop] ?? '-' }}
+                </slot>
+              </template>
+            </el-table-column>
 
             <!-- 操作列等固定尾列 -->
             <slot name="table-append" v-bind="slotProps" />
@@ -174,11 +168,11 @@ const $t = t
 const props = defineProps<{
   slotProps: UseCrudSlotProps
   /**
-   * 表头列定义。传了它，表格列由壳生成：
-   * 排序/显隐/列宽由用户控制并持久化，单元格用 `#cell-<prop>` 自定义。
-   * 不传则保持旧行为（页面自己在 `#table` 里写 el-table-column）。
+   * 表头列定义（必填）：表格列完全由壳生成，
+   * 排序 / 显隐 / 列宽由用户控制并持久化，单元格用 `#cell-<prop>` 自定义。
+   * 固定列放 `#table-prefix` / `#table-append`。
    */
-  columns?: TableColumnDef[]
+  columns: TableColumnDef[]
   /** 列偏好的持久化键，默认取当前路由名 */
   columnKey?: string
   /** 新增/修改共用表单校验规则；只读列表可不传 */
@@ -225,24 +219,12 @@ const dialogTitle = computed(() => {
  * 冷启动：正在加载且当前没有任何数据（且不是失败态）。
  * 这是唯一使用骨架屏的场景——有旧数据时继续用扫描线，翻页不会整表消失。
  */
-/**
- * 传了 columns 才启用列配置；不传时行为与旧版完全一致。
- * useRoute 只在启用时取，避免没装 router 的场景（单测里直接 mount 壳）产生告警。
- */
-const routeForColumnKey = props.columns?.length ? useRoute() : null
-const columnSetting = props.columns?.length
-  ? useTableColumns({
-      key: props.columnKey || (routeForColumnKey?.name ? String(routeForColumnKey.name) : 'crud'),
-      // 传 getter：列定义随 props / i18n 变化时，label 实时更新（偏好仍然保留）
-      columns: () => props.columns ?? [],
-    })
-  : null
-
-/** 表头拖拽调宽：把结果写进偏好，下次进入沿用 */
-function handleHeaderDragEnd(_newWidth: number, _oldWidth: number, column: { property?: string }) {
-  if (!columnSetting || !column?.property) return
-  columnSetting.setColumnWidth(column.property, _newWidth)
-}
+const route = useRoute()
+const columnSetting = useTableColumns({
+  key: props.columnKey || (route?.name ? String(route.name) : 'crud'),
+  // 传 getter：列定义随 props / i18n 变化时，label 实时更新（偏好仍然保留）
+  columns: () => props.columns,
+})
 
 const isColdLoading = computed(
   () =>

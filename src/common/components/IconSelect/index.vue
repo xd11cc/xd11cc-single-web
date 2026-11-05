@@ -3,7 +3,7 @@
   <div v-if="allowEdit">
     <el-input v-model="inputValue" :placeholder="placeholder" clearable @clear="handleClear">
       <template #prefix>
-        <Icon v-if="inputValue" :icon="inputValue" />
+        <AppIcon v-if="inputValue" :icon="inputValue" />
         <Icon v-else icon="lucide:search" />
       </template>
     </el-input>
@@ -26,7 +26,7 @@
           @clear="handleClear"
         >
           <template #prefix>
-            <Icon v-if="inputValue" :icon="inputValue" />
+            <AppIcon v-if="inputValue" :icon="inputValue" />
             <Icon v-else icon="lucide:search" />
           </template>
         </el-input>
@@ -79,7 +79,7 @@
               :class="{ active: modelValue === icon }"
               @click="handleSelect(icon)"
             >
-              <Icon :icon="icon" width="20" height="20" />
+              <AppIcon :icon="icon" width="20" height="20" />
               <span>{{ icon.replace('lucide:', '') }}</span>
             </div>
             <div v-if="displayIcons.length === 0" class="empty-state">
@@ -94,7 +94,7 @@
               :class="{ active: modelValue === icon }"
               @click="handleSelect(icon)"
             >
-              <Icon :icon="icon" width="20" height="20" />
+              <AppIcon :icon="icon" width="20" height="20" />
               <span>{{ icon }}</span>
             </div>
             <div v-if="onlineLoading" class="empty-state">
@@ -113,13 +113,17 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
+import AppIcon from '@@/components/AppIcon/index.vue'
 import { ref, computed } from 'vue'
-import lucideIcons from '@iconify-json/lucide/icons.json'
+import { lucideNames } from 'virtual:icon-names'
+import { ensureIconCollection } from '@/plugins/iconify'
 
 const { t } = useI18n()
 const $t = t
 
-const lucideIconNames = Object.keys(lucideIcons.icons).map((name) => `lucide:${name}`)
+// 只取名字（约 20KB），不把 543KB 的完整图标 JSON 拉进菜单页；
+// 图标本体在打开选择器时按需加载
+const lucideIconNames = lucideNames
 
 interface Props {
   modelValue?: string
@@ -156,6 +160,11 @@ const handleClear = () => {
 }
 
 const popoverVisible = ref(false)
+
+// 打开选择器才需要完整图标集（列表里可能选到任意一个）
+watch(popoverVisible, (visible) => {
+  if (visible) void ensureIconCollection('lucide')
+})
 const searchKeyword = ref('')
 const activeTab = ref<'local' | 'online'>('local')
 const filteredIcons = ref<string[]>([])

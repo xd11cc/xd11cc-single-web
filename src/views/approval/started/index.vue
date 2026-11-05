@@ -108,13 +108,21 @@ const { t } = useI18n()
 // 我发起的：只读列表，操作是「查看详情 / 撤回」
 // 列定义：排序 / 显隐 / 列宽由列表壳统一管理
 const columns = computed<TableColumnDef[]>(() => [
-  { prop: 'title', label: t('bpm.approval.started.columns.title'), minWidth: 220 },
+  {
+    prop: 'title',
+    label: t('bpm.approval.started.columns.title'),
+    minWidth: 220,
+  },
   {
     prop: 'processDefinitionKey',
     label: t('bpm.approval.started.columns.processKey'),
     minWidth: 160,
   },
-  { prop: 'businessKey', label: t('bpm.approval.started.columns.businessKey'), minWidth: 160 },
+  {
+    prop: 'businessKey',
+    label: t('bpm.approval.started.columns.businessKey'),
+    minWidth: 160,
+  },
   { prop: 'status', label: t('bpm.approval.started.columns.status'), width: 110, align: 'center' },
   {
     prop: 'createTime',

@@ -1,5 +1,6 @@
 import type { ComponentPublicInstance } from 'vue'
-import { reactive, ref, watch, onMounted, onScopeDispose } from 'vue'
+import { reactive, ref, watch, onMounted } from 'vue'
+import { useLatestRequest } from './useLatestRequest'
 import type { ResponseVO } from 'types/api'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
@@ -119,14 +120,9 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
   // ─── 弹窗 ─────────────────────────────────────────────
   const dialogVisible = ref(false)
   const formData = ref<any>(options.defaultForm?.() || {})
-  let latestRequestId = 0
-  let isDisposed = false
+  const request = useLatestRequest()
 
   // ─── 生命周期 ──────────────────────────────────────────
-  onScopeDispose(() => {
-    isDisposed = true
-    latestRequestId += 1
-  })
   onMounted(() => getTableData())
   // 页码与每页条数合并成一个 watcher。
   // 分开监听时，「在第 2 页改每页条数」会在同一 tick 内让两个 watcher 各触发一次：
@@ -139,10 +135,10 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
 
   // ─── 数据获取 ──────────────────────────────────────────
   async function getTableData() {
-    if (isDisposed) return
+    if (request.isDisposed()) return
 
-    const requestId = ++latestRequestId
-    const isLatestRequest = () => !isDisposed && requestId === latestRequestId
+    const requestId = request.begin()
+    const isLatestRequest = () => request.isCurrent(requestId)
 
     tableLoading.value = true
     tableError.value = false

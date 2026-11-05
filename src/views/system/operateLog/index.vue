@@ -234,16 +234,16 @@ const { getDictList, getDictItem } = useDict(['system_operate_type', 'system_ope
 // 只读列表：只有查询与删除，没有新增/编辑
 // 列定义：排序 / 显隐 / 列宽由列表壳统一管理
 const columns = computed<TableColumnDef[]>(() => [
-  { prop: 'module', label: $t('system.operateLog.columns.module'), minWidth: 140 },
+  { prop: 'module', label: $t('system.operateLog.columns.module') },
   {
     prop: 'operateType',
     label: $t('system.operateLog.columns.operateType'),
     align: 'center',
-    width: 110,
+    width: 100,
   },
-  { prop: 'requestMethod', label: $t('system.operateLog.columns.requestMethod'), width: 110 },
+  { prop: 'requestMethod', label: $t('system.operateLog.columns.requestMethod'), width: 100 },
   { prop: 'operateIp', label: $t('system.operateLog.columns.operateIp'), width: 140 },
-  { prop: 'status', label: $t('system.operateLog.columns.status'), align: 'center', width: 90 },
+  { prop: 'status', label: $t('system.operateLog.columns.status'), align: 'center', width: 80 },
   {
     prop: 'costTime',
     label: $t('system.operateLog.columns.costTime'),
