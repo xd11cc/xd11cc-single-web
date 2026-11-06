@@ -2,20 +2,12 @@
 <!-- 差异部分通过 slot 注入，业务页面无需重复写样板代码 -->
 <template>
   <div class="app-container">
-    <!-- 搜索区 -->
-    <el-card shadow="never" class="search-wrapper">
-      <el-form ref="searchFormRef" :inline="true" :model="slotProps.searchData">
-        <slot name="search-form" v-bind="slotProps" />
-        <el-form-item>
-          <el-button type="primary" @click="slotProps.handleSearch">
-            <template #icon><Icon icon="lucide:search" /></template>{{ $t('common.search') }}
-          </el-button>
-          <el-button @click="slotProps.resetSearch">
-            <template #icon><Icon icon="lucide:rotate-ccw" /></template>{{ $t('common.reset') }}
-          </el-button>
-        </el-form-item>
-      </el-form>
-    </el-card>
+    <!-- 搜索区：与树形壳共用 -->
+    <SearchCard :slotProps="slotProps">
+      <template #default="scope">
+        <slot name="search-form" v-bind="scope" />
+      </template>
+    </SearchCard>
 
     <!-- 表格区 -->
     <el-card shadow="never">
@@ -69,24 +61,12 @@
             <!-- 选择列等需要固定在生成列之前的内容 -->
             <slot name="table-prefix" v-bind="slotProps" />
 
-            <!-- 按「用户排序 + 显隐」生成列；单元格默认取 row[prop]，需要自定义用 #cell-<prop> -->
-            <el-table-column
-              v-for="col in columnSetting.visibleColumns.value"
-              :key="col.prop"
-              :prop="col.prop"
-              :label="col.label"
-              :width="col.width"
-              :min-width="col.minWidth"
-              :align="col.align"
-              :fixed="col.fixed"
-              :show-overflow-tooltip="col.showOverflowTooltip !== false"
-            >
-              <template #default="scope">
-                <slot :name="`cell-${col.prop}`" v-bind="scope">
-                  {{ scope.row?.[col.prop] ?? '-' }}
-                </slot>
+            <!-- 生成列：抽象自本壳，两壳共用 -->
+            <TableColumns :columns="columnSetting.visibleColumns.value">
+              <template v-for="name in cellSlotNames" :key="name" #[name]="scope">
+                <slot :name="name" v-bind="scope" />
               </template>
-            </el-table-column>
+            </TableColumns>
 
             <!-- 操作列等固定尾列 -->
             <slot name="table-append" v-bind="slotProps" />
@@ -111,34 +91,19 @@
       </div>
     </el-card>
 
-    <!-- 新增/修改弹窗 -->
-    <el-dialog
-      v-if="!readonly"
-      v-model="slotProps.dialogVisible"
-      :title="dialogTitle"
-      :width="dialogWidth || 'min(760px, calc(100vw - 32px))'"
-      destroy-on-close
-      @close="slotProps.handleClose"
+    <!-- 新增/修改弹窗：与树形壳共用同一实现（含重复提交/过期提交保护） -->
+    <FormDialog
+      :slotProps="slotProps"
+      :form-rules="formRules"
+      :add-title="addTitle"
+      :edit-title="editTitle"
+      :readonly="readonly"
+      :dialog-width="dialogWidth"
+      :label-width="labelWidth"
+      :label-position="labelPosition"
     >
-      <el-form
-        ref="formRef"
-        class="adaptive-form"
-        :model="slotProps.formData"
-        :rules="formRules"
-        :label-width="labelWidth"
-        :label-position="labelPosition"
-      >
-        <el-row :gutter="20">
-          <slot name="form-fields" v-bind="slotProps" />
-        </el-row>
-      </el-form>
-      <template #footer>
-        <el-button @click="slotProps.handleClose">{{ $t('common.cancel') }}</el-button>
-        <el-button type="primary" :loading="submitLoading" @click="handleFormSubmit">
-          {{ $t('common.confirm') }}
-        </el-button>
-      </template>
-    </el-dialog>
+      <slot name="form-fields" v-bind="slotProps" />
+    </FormDialog>
 
     <!-- 页面自有弹窗、抽屉放这里。
          不要放在壳的同级：那会让页面变成多根节点（fragment），
@@ -152,108 +117,51 @@
 import { Icon } from '@iconify/vue'
 import Skeleton from '@@/components/Skeleton/index.vue'
 import { useI18n } from 'vue-i18n'
-import { ref, computed, watch } from 'vue'
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import type { FormRules } from 'element-plus'
 import type { UseCrudSlotProps } from '@@/composables/useCrud'
-import { useTableColumns } from '@@/composables/useTableColumns'
-import type { TableColumnDef } from '@@/composables/useTableColumns'
+import { useCrudShellView } from '@@/composables/useCrudShellView'
+import type { CrudShellPropsBase } from '@@/components/crudShell/types'
 import TableColumnSetting from '@@/components/TableColumnSetting/index.vue'
+import FormDialog from '@@/components/crudShell/FormDialog.vue'
+import SearchCard from '@@/components/crudShell/SearchCard.vue'
+import TableColumns from '@@/components/crudShell/TableColumns.vue'
 
 defineOptions({ name: 'useCrudView' })
 
 const { t } = useI18n()
 const $t = t
 
-const props = defineProps<{
-  slotProps: UseCrudSlotProps
-  /**
-   * 表头列定义（必填）：表格列完全由壳生成，
-   * 排序 / 显隐 / 列宽由用户控制并持久化，单元格用 `#cell-<prop>` 自定义。
-   * 固定列放 `#table-prefix` / `#table-append`。
-   */
-  columns: TableColumnDef[]
-  /** 列偏好的持久化键，默认取当前路由名 */
-  columnKey?: string
-  /** 新增/修改共用表单校验规则；只读列表可不传 */
-  formRules?: FormRules
-  /** 弹窗标题，不传则自动根据新增/修改生成 */
-  addTitle?: string
-  editTitle?: string
-  /** 只读列表：不渲染新增/修改弹窗，仅保留搜索、表格、分页 */
-  readonly?: boolean
-  /** 弹窗宽度，默认 min(760px, calc(100vw - 32px)) */
-  dialogWidth?: string
-  /** 透传给 el-table 的属性，如 { border: true, height: '520px' } */
-  tableProps?: Record<string, unknown>
-  /** 表单标签宽度，默认 168px；窄标签页面（如 notice）可传 144px */
-  labelWidth?: string
-  /** 表单标签位置，默认 left */
-  labelPosition?: 'left' | 'right' | 'top'
-  /** 后端无分页接口的列表（如在线用户）隐藏分页区 */
-  hidePagination?: boolean
-}>()
-
-const labelWidth = computed(() => props.labelWidth ?? '168px')
-const labelPosition = computed(() => props.labelPosition ?? 'left')
+const props = defineProps<
+  CrudShellPropsBase & {
+    slotProps: UseCrudSlotProps
+    /** 透传给 el-table 的属性，如 { border: true, height: '520px' } */
+    tableProps?: Record<string, unknown>
+    /** 后端无分页接口的列表（如在线用户）隐藏分页区 */
+    hidePagination?: boolean
+  }
+>()
 
 const emit = defineEmits<{
   rowClick: [row: any, column: any, event: Event]
 }>()
 
-const formRef = ref<any>(null)
-
 function handleRowClick(row: any, column: any, event: Event) {
   emit('rowClick', row, column, event)
 }
-const submitLoading = ref(false)
-
-const dialogTitle = computed(() => {
-  if (props.addTitle && props.editTitle) {
-    return props.slotProps.formData.id === undefined ? props.addTitle : props.editTitle
-  }
-  return props.slotProps.formData.id === undefined ? $t('common.add') : $t('common.edit')
-})
-
 /**
  * 冷启动：正在加载且当前没有任何数据（且不是失败态）。
  * 这是唯一使用骨架屏的场景——有旧数据时继续用扫描线，翻页不会整表消失。
  */
-const route = useRoute()
-const columnSetting = useTableColumns({
-  key: props.columnKey || (route?.name ? String(route.name) : 'crud'),
-  // 传 getter：列定义随 props / i18n 变化时，label 实时更新（偏好仍然保留）
+const { columnSetting, cellSlotNames, isColdLoading } = useCrudShellView({
   columns: () => props.columns,
+  columnKey: () => props.columnKey,
+  isLoading: () => props.slotProps.tableLoading,
+  isEmpty: () => props.slotProps.tableData.length === 0,
+  hasError: () => props.slotProps.tableError,
 })
-
-const isColdLoading = computed(
-  () =>
-    props.slotProps.tableLoading &&
-    props.slotProps.tableData.length === 0 &&
-    !props.slotProps.tableError,
-)
 
 /** 骨架行数跟每页条数走，最多 10 行，避免 pageSize=100 时拉出一屏灰条 */
 const skeletonRows = computed(() => Math.min(props.slotProps.paginationData.pageSize || 10, 10))
-
-function handleFormSubmit() {
-  formRef.value?.validate?.((valid: boolean) => {
-    if (!valid) return
-    submitLoading.value = true
-    const isAdd = props.slotProps.formData.id === undefined
-    props.slotProps.handleSubmit(isAdd).finally(() => {
-      submitLoading.value = false
-    })
-  })
-}
-
-// 弹窗关闭时清除校验状态，让下次打开干净
-watch(
-  () => props.slotProps.dialogVisible,
-  (val) => {
-    if (!val) {
-      formRef.value?.clearValidate?.()
-    }
-  },
-)
 </script>

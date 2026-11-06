@@ -10,6 +10,10 @@
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
 import { useI18n } from 'vue-i18n'
+// 高亮模块随本组件加载，模板里的 <highlightjs> 由 Highlightjs 这个名字满足
+import { HighlightjsComponent as Highlightjs, setupHljs } from '@/plugins/hljs'
+
+setupHljs()
 
 const { t } = useI18n()
 
@@ -18,7 +22,7 @@ const props = defineProps({
   // 代码内容字符串
   code: {
     type: String,
-    require: true,
+    required: true,
   },
   language: {
     type: String,

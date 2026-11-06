@@ -252,11 +252,7 @@ const editData = reactive<SystemMqFailVO>({})
 // 状态文案与标签色统一由字典 mq_fail_status 提供，避免与后端字典分叉
 const { getDictList, getDictItem } = useDict(['mq_fail_status'])
 
-/**
- * 仅有「待处理」允许重投/忽略。
- * <p>这是<b>行为判断</b>，依赖具体状态码，保留常量；
- * 展示文案一律走字典，不再 i18n 硬编码。</p>
- */
+/** 「待处理」是唯一允许重投/忽略的状态，属于行为判断而非展示文案，所以用常量而不是字典 */
 const STATUS_PENDING = '0'
 
 /** 状态下拉选项：后端 label=展示文案、value=编码 */

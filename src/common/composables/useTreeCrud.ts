@@ -3,6 +3,7 @@ import { onScopeDispose, reactive, ref } from 'vue'
 import { useLatestRequest } from './useLatestRequest'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
+import type { BaseCrudOptions } from './crud-types'
 
 /**
  * 树形列表的逻辑层（配合 TreeCrudView 使用）。
@@ -14,17 +15,12 @@ import { useI18n } from 'vue-i18n'
  *   - 展开/收起、行点击展开由 TreeCrudView 负责，这里不掺和 DOM
  */
 
-export interface UseTreeCrudOptions<Q = any, T = any> {
+export interface UseTreeCrudOptions<Q = any, T = any>
+  extends BaseCrudOptions<{ isAdd: boolean; form: Record<string, any>; parent?: any }> {
   /** 树查询接口，返回完整层级数据（无分页） */
   treeApi: (query: Q) => Promise<ResponseVO<T[]>>
-  /** 新增接口 */
-  addApi?: (data: any) => Promise<ResponseVO<any>>
-  /** 修改接口 */
-  updateApi?: (data: any) => Promise<ResponseVO<any>>
   /** 删除接口，接收单条 id */
   removeApi?: (id: number | string) => Promise<ResponseVO<any>>
-  /** 新增时的初始表单值 */
-  defaultForm?: () => Record<string, any>
   /**
    * 「新增子级」时的初始表单值。
    * 默认在 defaultForm 基础上补 parentId；需要按父节点类型推导默认值时（例如
@@ -33,20 +29,11 @@ export interface UseTreeCrudOptions<Q = any, T = any> {
   childForm?: (parent: any) => Record<string, any>
   /** 查询条件初始值；重置时恢复到这份值 */
   defaultQuery?: () => Q
-  /** 提交前把表单转成接口载荷 */
-  transformPayload?: (form: any, isAdd: boolean) => any
-  /** 删除确认文案 */
-  removeConfirmText?: (row: any) => string
   /**
    * 删除前置校验：返回字符串则中断删除并提示该文案。
    * 例：有子节点时不允许删除 → 返回「请先删除子节点」
    */
   removeGuard?: (row: any) => string | undefined
-  /**
-   * 弹窗打开后的钩子（新增 / 新增子级 / 编辑共用），用于回填联动数据。
-   * 需要操作弹窗内组件时请自行 nextTick。
-   */
-  onDialogOpen?: (context: { isAdd: boolean; form: Record<string, any>; parent?: any }) => void
   /** 主键字段名，默认 id */
   idKey?: string
   /** 子节点字段名，默认 children */

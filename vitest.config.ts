@@ -27,13 +27,24 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url)),
       '@@': fileURLToPath(new URL('./src/common', import.meta.url)),
       types: fileURLToPath(new URL('./types', import.meta.url)),
+      // 该包的 main 是 UMD（依赖全局 Vue），module 才是 ESM。
+      // Vite 打包时按 module 解析没问题，但 vitest 会解析到 main 并报 “Vue is not defined”，
+      // 所以这里显式指向 ESM 产物。
+      '@highlightjs/vue-plugin': fileURLToPath(
+        new URL(
+          './node_modules/@highlightjs/vue-plugin/dist/highlightjs-vue.esm.min.js',
+          import.meta.url,
+        ),
+      ),
     },
   },
   test: {
     environment: 'happy-dom',
     // Element Plus 的自动导入会带出 `.../style/css` 副作用导入，这些 .css 必须由 Vite 处理成空模块
     css: false,
-    server: { deps: { inline: ['element-plus'] } },
+    // @highlightjs/vue-plugin 的 main 是 UMD（依赖全局 Vue），module 才是 ESM。
+    // 不 inline 时 vitest 会解析到 UMD，报 “Vue is not defined”。
+    server: { deps: { inline: ['element-plus', '@highlightjs/vue-plugin'] } },
     include: ['tests/**/*.spec.ts'],
     setupFiles: ['./tests/setup.ts'],
     // 组件里大量使用 <Icon>，测试中统一打桩，避免真的去加载图标数据

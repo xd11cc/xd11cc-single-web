@@ -1,7 +1,7 @@
 const SYSTEM_NAME = import.meta.env.VITE_APP_TITLE
-const ENV = import.meta.env.NODE_ENV
+// 环境段取 Vite 的构建模式（dev/test/prod）；NODE_ENV 不会注入到客户端，取值恒为 undefined
+const ENV = import.meta.env.MODE
 
-// 缓存时用到的key
 export class CacheKey {
   static readonly TOKEN = `${SYSTEM_NAME}-${ENV}-token-key`
   static readonly THEME = `${SYSTEM_NAME}-${ENV}-theme-key`

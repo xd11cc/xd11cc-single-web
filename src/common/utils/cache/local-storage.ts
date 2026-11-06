@@ -27,9 +27,8 @@ export function getSidebarStatus() {
 }
 
 // 标签栏
-// 注意：getItem 内部已经 JSON.parse 过，这里不能再 parse 一次。
-// 二次 parse 时，空数组会被 String([]) 转成空串，触发
-// `SyntaxError: Unexpected end of JSON input`，进而在 store 初始化阶段炸掉整个布局。
+// getItem 已经 JSON.parse 过，这里只做形状校验。再 parse 一次时，
+// 空数组会被 String([]) 转成空串，抛 SyntaxError 并炸掉 store 初始化阶段的整个布局。
 export function getVisitedViews(): TagView[] {
   const views = getItem<TagView[]>(CacheKey.VISITED_VIEW)
   return Array.isArray(views) ? views : []

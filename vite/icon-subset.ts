@@ -31,6 +31,39 @@ const RESOLVED = new Set([SUBSET_ID, NAMES_ID])
 const ICON_RE = /(?<![\w/:-])((?:lucide|ep):[a-z0-9-]+)/g
 const SOURCE_EXT = /\.(vue|ts)$/
 
+/**
+ * 运行时才知道的图标：菜单图标由后端通过 `meta.icon` 下发，构建期扫不到源码里。
+ *
+ * 不登记的话，`AppIcon` 遇到这些名字会去懒加载「完整集合」
+ * （lucide 80.5KB + ep 30.2KB，gzip），只为渲染下面这十来个图标；
+ * 登记进来只花约 2KB。
+ *
+ * 维护方式：新增菜单用了不在列表里的图标时**不必强制登记**——
+ * 会安全降级成加载完整集合（图标照常显示，只是慢一点）。
+ * 但如果某个图标经常出现在首屏，就把它加到这里。
+ *
+ * 注意：这些名字进的是 `buildSubset`（打包内容），不是 `scanIconNames`（源码扫描），
+ * 后者的契约是「只抓源码字面量」，由 tests/icon-scan.spec.ts 锁住。
+ */
+export const RUNTIME_ICONS = [
+  'ep:connection',
+  'ep:data-line',
+  'ep:menu',
+  'ep:monitor',
+  'ep:notebook',
+  'ep:operation',
+  'ep:setting',
+  'ep:shopping-bag',
+  'ep:user',
+  'lucide:folder-tree',
+  'lucide:inbox',
+  'lucide:log-in',
+  'lucide:megaphone',
+  'lucide:network',
+  'lucide:square-function',
+  'lucide:workflow',
+] as const
+
 interface IconifyCollection {
   prefix: string
   width?: number
@@ -84,6 +117,12 @@ interface Subset {
  */
 export function buildSubset(rootDir: string): Subset {
   const used = scanIconNames(rootDir)
+  // 后端菜单等运行时下发的图标，与源码扫描结果合并（同名只算一次）
+  for (const icon of RUNTIME_ICONS) {
+    const [prefix, name] = icon.split(':')
+    if (!used.has(prefix)) used.set(prefix, new Set())
+    used.get(prefix)!.add(name)
+  }
   const collections: IconifyCollection[] = []
   const lucideNames: string[] = []
   const epNames: string[] = []

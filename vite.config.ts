@@ -47,7 +47,9 @@ function elementPlusStyleDeps(): string[] {
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
-  const { VITE_PUBLIC_PATH, VITE_WS_PATH } = loadEnv(mode, process.cwd(), '') as ImportMetaEnv
+  // loadEnv 返回的是 Record<string, string>（.env 里所有变量，不限 VITE_ 前缀），
+  // 与 ImportMetaEnv 不是同一形状，不要硬转成它。这里只取用到的两个键。
+  const { VITE_PUBLIC_PATH, VITE_WS_PATH } = loadEnv(mode, process.cwd(), '')
   const isProd = mode === 'prod'
   // PWA 离线缓存配置（仅生产环境注入）
   const pwaPlugin = isProd
@@ -115,7 +117,7 @@ export default defineConfig(({ mode }) => {
         },
         // WebSocket 服务（Netty，独立端口）
         [VITE_WS_PATH || '/ws']: {
-          target: 'ws://127.0.0.1:12001',
+          target: 'ws://127.0.0.1:10002',
           ws: true,
           changeOrigin: true,
         },
@@ -136,10 +138,17 @@ export default defineConfig(({ mode }) => {
       // rollup 输出配置
       rollupOptions: {
         output: {
-          // 手动分包：vendor 与 Element Plus 独立，避免主 chunk 过大
+          // 手动分包：只把「稳定的第三方」独立出来，避免主 chunk 过大。
+          //
+          // ⚠️ 不要把 element-plus 写进这里。manualChunks 的数组/对象写法会把列出的包
+          // 当作 chunk 入口，而 Rollup 对 chunk 入口的导出不做 tree-shaking；
+          // element-plus/es/index.mjs 是 re-export 全部组件与 hooks 的 barrel，
+          // 一旦成为 chunk 入口就会把 91 个组件整包保留（实测首屏 273KB → 500KB gzip，
+          // 源码根本没引用的 tour / cascader / table-v2 / color-picker 全被打进去）。
+          // 改成函数式写法同样无效，必须完全不干预 EP 的分包，交给 Rollup 按需处理。
+          // 验证：pnpm size（会断言入口不含 element-plus-*.js）
           manualChunks: {
             vendor: ['vue', 'vue-router', 'pinia'],
-            'element-plus': ['element-plus'],
             echarts: ['echarts', 'vue-echarts'],
           },
           // chunk 命名

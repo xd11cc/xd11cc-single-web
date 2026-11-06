@@ -255,7 +255,7 @@ pnpm format
 
 ```
 /xd11cc  → http://127.0.0.1:10001   （REST）
-/ws      → ws://127.0.0.1:12001     （WebSocket）
+/ws      → ws://127.0.0.1:10002     （WebSocket）
 ```
 
 ## 接口概览

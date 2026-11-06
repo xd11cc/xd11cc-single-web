@@ -12,6 +12,7 @@
     "build:test": "vite build --mode test",
     "preview": "vite preview",
     "format": "prettier --write src/",
+    "size": "node scripts/check-bundle-size.mjs",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
     "typecheck": "vue-tsc --noEmit"

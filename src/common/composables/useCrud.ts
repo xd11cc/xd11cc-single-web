@@ -4,6 +4,7 @@ import { useLatestRequest } from './useLatestRequest'
 import type { ResponseVO } from 'types/api'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useI18n } from 'vue-i18n'
+import type { BaseCrudOptions } from './crud-types'
 
 /**
  * 业务分页接口返回结构
@@ -14,41 +15,20 @@ export interface PageData<T> {
 }
 
 /**
- * useCrud 配置项
+ * useCrud 配置项（分页列表）
+ *
+ * 新增/修改/载荷转换/删除确认/弹窗回调 等字段来自 {@link BaseCrudOptions}，与树形壳共用。
  */
-export interface UseCrudOptions<Q = any, T = any> {
+export interface UseCrudOptions<Q = any, T = any>
+  extends BaseCrudOptions<{ isAdd: boolean; form: Record<string, any>; row?: any }> {
   /** 分页查询接口 */
   pageApi: (query: Q) => Promise<ResponseVO<PageData<T>>>
-  /** 新增接口 */
-  addApi?: (data: any) => Promise<ResponseVO<any>>
-  /** 修改接口 */
-  updateApi?: (data: any) => Promise<ResponseVO<any>>
   /** 删除接口（接收逗号拼接的 id 字符串） */
   removeApi?: (ids: string) => Promise<ResponseVO<any>>
-  /**
-   * 提交前转换 formData 为 API 需要的载荷
-   * 用于补充 deptName / postName 等关联字段
-   */
-  transformPayload?: (form: any, isAdd: boolean) => any
-  /** 新增/修改共用默认表单 */
-  defaultForm?: () => Record<string, any>
   /** 查询条件默认值 */
   defaultQuery?: () => Q
-  /** 单条删除的确认文案，默认使用通用文案 */
-  removeConfirmText?: (row: any) => string
   /** 批量删除的确认文案，默认使用通用文案 */
   batchRemoveConfirmText?: (count: number) => string
-  /**
-   * 弹窗打开后的钩子（新增 / 编辑共用）。
-   *
-   * 用于「表单需要按当前行回填联动数据」的场景：部门树勾选、岗位下拉列表、
-   * dataScope 默认值等。调用时机是 formData 已赋值、dialogVisible 已置 true、
-   * 但 DOM 尚未更新——需要操作弹窗内组件时请自行 nextTick。
-   *
-   * 不要通过替换返回对象上的方法来扩展行为：那会绕过这份契约，
-   * 且 slotProps 里保存的仍是原函数引用，替换不会生效。
-   */
-  onDialogOpen?: (context: { isAdd: boolean; form: Record<string, any>; row?: any }) => void
 }
 
 /**
@@ -171,10 +151,8 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
   }
 
   function resetSearch() {
-    // 逐个删除而不是依赖 el-form 的 resetFields：
-    // 1) resetFields 只处理声明了 prop 的字段，未声明 prop 的条件会残留；
-    // 2) 此前组合式函数里的 searchFormRef 从未绑定到 <el-form>，
-    //    resetFields 一直没执行，导致「重置」按钮点了没反应。
+    // 按 key 逐个清空再回填默认值，没用 el-form 的 resetFields：
+    // 它只处理声明了 prop 的字段，未声明 prop 的查询条件会残留下来。
     Object.keys(searchData as any).forEach((key) => {
       delete (searchData as any)[key]
     })
