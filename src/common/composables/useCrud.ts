@@ -33,19 +33,22 @@ export interface UseCrudOptions<Q = any, T = any>
 
 /**
  * slotProps 完整类型（供 #search-form / #actions / #table / #form-fields 消费）
+ *
+ * @typeParam Q 查询条件（#search-form 里的 searchData）
+ * @typeParam T 列表行（tableData / handleEdit 等）
  */
-export interface UseCrudSlotProps {
-  searchData: any
+export interface UseCrudSlotProps<Q = any, T = any> {
+  searchData: Q
   /** 主动重新拉取当前页数据（自定义动作后刷新用） */
   refresh: () => Promise<void>
   handleSearch: () => void
   resetSearch: () => void
-  tableData: any[]
+  tableData: T[]
   tableLoading: boolean
   /** 最近一次加载是否失败（提示已由 request 层弹出） */
   tableError: boolean
-  tableSelection: any[]
-  handleSelectionChange: (rows: any[]) => void
+  tableSelection: T[]
+  handleSelectionChange: (rows: T[]) => void
   paginationData: {
     total: number
     currentPage: number
@@ -55,15 +58,16 @@ export interface UseCrudSlotProps {
   }
   handleCurrentChange: (page: number) => void
   handleSizeChange: (size: number) => void
-  formData: any
+  /** 表单对象：新增时字段不全，因此是 Partial；同时保留索引签名以容纳字典/关联字段 */
+  formData: Partial<T> & Record<string, any>
   dialogVisible: boolean
   handleAdd: () => void
-  handleEdit: (row: any) => void
-  handleRemove: (row: any) => void
+  handleEdit: (row: T) => void
+  handleRemove: (row: T) => void
   handleBatchRemove: () => void
   handleClose: () => void
   handleSubmit: (isAdd: boolean) => Promise<ResponseVO<any> | void>
-  rowSelection: any[]
+  rowSelection: T[]
 }
 
 /**
@@ -85,7 +89,7 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
   const tableLoading = ref(false)
   /** 列表加载失败（数据未更新，供页面显示错误态/重试） */
   const tableError = ref(false)
-  const tableSelection = ref<any[]>([])
+  const tableSelection = ref<T[]>([])
   const paginationData = reactive({
     total: 0,
     currentPage: 1,
@@ -181,7 +185,10 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
   }
 
   // ─── 单条删除 ──────────────────────────────────────────
-  function handleRemove(row: any) {
+  /** 行类型未必声明 id（部分列表用 taskId 等），删除时按约定的 id 字段取 */
+  const readRowId = (row: unknown) => (row as { id?: number | string } | null)?.id
+
+  function handleRemove(row: T) {
     const confirmText = options.removeConfirmText?.(row) ?? t('common.messages.deleteConfirm')
     ElMessageBox.confirm(confirmText, t('common.messages.confirmTitle'), {
       confirmButtonText: t('common.confirm'),
@@ -190,7 +197,7 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
     })
       .then(() => {
         options
-          .removeApi?.(String(row.id))
+          .removeApi?.(String(readRowId(row)))
           .then((res) => {
             ElMessage.success(res.msg || t('common.messages.deleteSuccess'))
             getTableData()
@@ -203,7 +210,7 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
 
   // ─── 批量删除 ──────────────────────────────────────────
   function handleBatchRemove() {
-    const ids = tableSelection.value.map((r: any) => r.id).join(',')
+    const ids = tableSelection.value.map((r) => readRowId(r)).join(',')
     if (!ids) {
       ElMessage.warning(t('common.messages.selectFirst'))
       return
@@ -256,7 +263,7 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
   }
 
   // ─── 选择 ──────────────────────────────────────────────
-  function handleSelectionChange(rows: any[]) {
+  function handleSelectionChange(rows: T[]) {
     tableSelection.value = rows
   }
 
@@ -302,7 +309,7 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
     get rowSelection() {
       return tableSelection.value
     },
-  } as UseCrudSlotProps)
+  } as UseCrudSlotProps<Q, T>)
 
   // 对外只暴露三条路径，避免同一能力暴露多次：
   //   slotProps —— 模板消费（绑定到壳、或从插槽作用域取动作）

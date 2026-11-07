@@ -7,7 +7,7 @@ export interface SystemPostQueryVO {
 }
 
 export interface SystemPostVO {
-  id?: number
+  id: number
   postCode?: string
   postName?: string
   status?: string

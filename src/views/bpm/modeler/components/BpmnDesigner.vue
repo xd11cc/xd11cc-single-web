@@ -20,6 +20,7 @@ import Modeler from 'bpmn-js/lib/Modeler'
 import flowableModdle from '../moddle/flowable.json'
 import { useI18n } from 'vue-i18n'
 import type { ApprovalConfig, ListenerConfig } from '../types'
+import type { BpmnElement, ModdleElement, ServiceMap } from '../bpmn-types'
 
 const { t } = useI18n()
 
@@ -41,7 +42,7 @@ let exportTimer: number | undefined
 let layoutObserver: ResizeObserver | undefined
 
 async function fitViewportWhenReady() {
-  const canvas = modeler?.get<any>('canvas')
+  const canvas = modeler?.get('canvas')
   const element = canvasRef.value
   if (!canvas || !element) return
 
@@ -70,26 +71,24 @@ async function importXml(xml: string) {
   try {
     await modeler.importXML(xml)
     await fitViewportWhenReady()
-    const canvas = modeler.get<any>('canvas')
+    const canvas = modeler.get('canvas')
     emit('selected', canvas.getRootElement())
   } finally {
     loading.value = false
   }
 }
 
-function getService<T = any>(name: string): T | null {
-  return modeler?.get<T>(name) ?? null
+function getService<K extends keyof ServiceMap>(name: K): ServiceMap[K] | null {
+  return (modeler?.get(name) as ServiceMap[K] | undefined) ?? null
 }
 
 function getActiveElement() {
-  return (
-    getService<any>('selection')?.get()?.[0] ?? getService<any>('canvas')?.getRootElement() ?? null
-  )
+  return getService('selection')?.get()?.[0] ?? getService('canvas')?.getRootElement() ?? null
 }
 
 function updateSelectedElement(properties: Record<string, unknown>) {
-  const modeling = getService<any>('modeling')
-  const moddle = getService<any>('moddle')
+  const modeling = getService('modeling')
+  const moddle = getService('moddle')
   const element = getActiveElement()
   if (element && modeling && moddle) {
     const nextProperties = { ...properties }
@@ -111,16 +110,16 @@ function updateSelectedElement(properties: Record<string, unknown>) {
 }
 
 function updateProcess(properties: Record<string, unknown>) {
-  const canvas = getService<any>('canvas')
-  const modeling = getService<any>('modeling')
+  const canvas = getService('canvas')
+  const modeling = getService('modeling')
   const rootElement = canvas?.getRootElement()
   if (rootElement && modeling) modeling.updateProperties(rootElement, properties)
 }
 
 function updateApprovalConfig(config: ApprovalConfig) {
-  const selection = getService<any>('selection')
-  const modeling = getService<any>('modeling')
-  const moddle = getService<any>('moddle')
+  const selection = getService('selection')
+  const modeling = getService('modeling')
+  const moddle = getService('moddle')
   const element = selection?.get()?.[0]
   if (!element || !modeling || !moddle) return
   const previousMode =
@@ -170,8 +169,8 @@ function updateApprovalConfig(config: ApprovalConfig) {
 }
 
 function updateListeners(listeners: ListenerConfig[]) {
-  const modeling = getService<any>('modeling')
-  const moddle = getService<any>('moddle')
+  const modeling = getService('modeling')
+  const moddle = getService('moddle')
   const element = getActiveElement()
   const businessObject = element?.businessObject
   if (!element || !businessObject || !modeling || !moddle) return
@@ -227,22 +226,22 @@ async function saveSvg() {
 }
 
 function zoom(step: number) {
-  const canvas = getService<any>('canvas')
+  const canvas = getService('canvas')
   if (!canvas) return
   const current = canvas.zoom()
   canvas.zoom(Math.min(4, Math.max(0.2, current + step)))
 }
 
 function fitViewport() {
-  getService<any>('canvas')?.zoom('fit-viewport', 'auto')
+  getService('canvas')?.zoom('fit-viewport', 'auto')
 }
 
 function undo() {
-  getService<any>('commandStack')?.undo()
+  getService('commandStack')?.undo()
 }
 
 function redo() {
-  getService<any>('commandStack')?.redo()
+  getService('commandStack')?.redo()
 }
 
 onMounted(async () => {
@@ -256,21 +255,21 @@ onMounted(async () => {
   })
   layoutObserver.observe(canvasRef.value!)
 
-  const eventBus = modeler.get<any>('eventBus')
-  eventBus.on('selection.changed', ({ newSelection }: any) => {
+  const eventBus = getService('eventBus')
+  eventBus?.on('selection.changed', ({ newSelection }) => {
     const selectedElement = newSelection?.[0]
     if (selectedElement) {
       emit('selected', selectedElement)
       return
     }
-    emit('selected', modeler?.get<any>('canvas')?.getRootElement() ?? null)
+    emit('selected', getService('canvas')?.getRootElement() ?? null)
   })
-  eventBus.on('element.changed', ({ element }: any) => {
-    const selection = modeler?.get<any>('selection')?.get()?.[0]
-    const activeElement = selection ?? modeler?.get<any>('canvas')?.getRootElement()
+  eventBus?.on('element.changed', ({ element }) => {
+    const selection = getService('selection')?.get()?.[0]
+    const activeElement = selection ?? getService('canvas')?.getRootElement()
     if (activeElement?.id === element?.id) emit('selected', element)
   })
-  eventBus.on('commandStack.changed', () => {
+  eventBus?.on('commandStack.changed', () => {
     window.clearTimeout(exportTimer)
     exportTimer = window.setTimeout(exportXml, 220)
   })

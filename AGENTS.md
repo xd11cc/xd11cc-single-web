@@ -45,7 +45,13 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 两个壳**只保留各自不同的部分**（表格主体、数据源、工具栏差异）；其余共享：
 `common/components/crudShell/` 下的 `SearchCard`（搜索区）、`TableColumns`（生成列，会把页面的 `#cell-<prop>` 透传下去）、`FormDialog`（新增/修改弹窗，**内置重复提交与过期提交保护**）；逻辑侧用 `useCrudShellView`（列偏好 / `cell-*` 插槽转发 / 冷启动判定）与 `common/composables/crud-types.ts`（共享 option 字段 `BaseCrudOptions`、`CrudShellPropsBase`）。**加公共 prop 或改提交行为时改这些共享件，别只改一个壳。**
 
-页面只提供 `pageApi`、表单字段与 `columns`；分页/搜索/弹窗/批量删除/列渲染由壳负责。壳的输出是 `slotProps`（`tableData` / `paginationData` / `handleAdd` …）。
+页面只提供 `pageApi`、表单字段与 `columns`；分页/搜索/弹窗/批量删除/列渲染由壳负责。
+
+**壳的泛型**：`useCrud<Q, T>` / `useTreeCrud<Q, T>` 的 `Q`（查询条件）与 `T`（行类型）会一路传到 `slotProps` 和壳组件，所以 `#search-form="{ searchData }"` 的字段名写错会被 `vue-tsc` 抓到。新增页面时把 VO 类型传进去即可。例外：`#cell-<prop>` 的 `row` 来自 el-table 的插槽，仍是 `any`。
+
+**bpmn-js 没有类型定义**：`views/bpm/modeler/bpmn-types.ts` 里手写了本项目用到的表面（`ServiceMap` / `BpmnElement` / `ModdleElement`），取服务请走 `getService('canvas')` 这类按名推导的写法，不要用 `modeler.get<any>(...)`。
+
+壳的输出是 `slotProps`（`tableData` / `paginationData` / `handleAdd` …）。
 
 两个壳共用**过期响应守卫** `useLatestRequest()`：`begin()` 让此前请求作废，`isCurrent(id)` 才允许写入数据/错误/loading，`onScopeDispose` 时整体失效。失败时不抛错，而是置 `tableError` / `treeError`，壳内渲染「数据加载失败 + 重试」（调 `slotProps.refresh()`），并隐藏分页避免用旧 total 误导。
 

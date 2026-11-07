@@ -40,30 +40,34 @@ export interface UseTreeCrudOptions<Q = any, T = any>
   childrenKey?: string
 }
 
-export interface UseTreeCrudSlotProps {
-  searchData: any
+export interface UseTreeCrudSlotProps<Q = any, T = any> {
+  searchData: Q
   handleSearch: () => void
   resetSearch: () => void
-  treeData: any[]
+  treeData: T[]
   loading: boolean
   treeError: boolean
   refresh: () => Promise<void>
-  formData: any
+  /** 表单对象：新增时字段不全，因此是 Partial；同时保留索引签名以容纳字典/关联字段 */
+  formData: Partial<T> & Record<string, any>
   dialogVisible: boolean
   handleAdd: () => void
-  handleAddChild: (row: any) => void
-  handleEdit: (row: any) => void
-  handleRemove: (row: any) => void
+  handleAddChild: (row: T) => void
+  handleEdit: (row: T) => void
+  handleRemove: (row: T) => void
   handleClose: () => void
   handleSubmit: (isAdd: boolean) => Promise<ResponseVO<any> | void>
   /** 当前弹窗是否为「新增子级」，可用于在表单里展示父级名称 */
-  parentRow: any
+  parentRow: T | null
 }
 
 export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>) {
   const { t } = useI18n()
 
   const idKey = options.idKey ?? 'id'
+  /** 主键字段名可配置（idKey），因此这里按字符串取值 */
+  const rowId = (row: T | null | undefined) =>
+    (row as Record<string, unknown> | null | undefined)?.[idKey] as number | string | undefined
   const treeData = ref<T[]>([])
   const loading = ref(false)
   const treeError = ref(false)
@@ -73,7 +77,7 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
 
   const dialogVisible = ref(false)
   const formData = ref<any>(options.defaultForm?.() || {})
-  const parentRow = ref<any>(null)
+  const parentRow = ref<T | null>(null)
   const request = useLatestRequest()
   let dialogSessionId = 0
 
@@ -111,7 +115,7 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
     void getTreeData()
   }
 
-  function openDialog(form: Record<string, any>, parent: any = null) {
+  function openDialog(form: Record<string, any>, parent: T | null = null) {
     if (request.isDisposed()) return
     dialogSessionId++
     formData.value = form
@@ -125,12 +129,12 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
   }
 
   /** 在指定节点下新增子级：预填 parentId（或父节点主键） */
-  function handleAddChild(row: any) {
-    openDialog({ ...(options.defaultForm?.() || {}), parentId: row?.[idKey] }, row)
+  function handleAddChild(row: T) {
+    openDialog({ ...(options.defaultForm?.() || {}), parentId: rowId(row) }, row)
   }
 
-  function handleEdit(row: any) {
-    openDialog({ ...row }, null)
+  function handleEdit(row: T) {
+    openDialog({ ...(row as Record<string, any>) }, null)
   }
 
   function handleClose() {
@@ -165,7 +169,7 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
     }
   }
 
-  async function handleRemove(row: any) {
+  async function handleRemove(row: T) {
     if (request.isDisposed() || !options.removeApi) return
 
     const blocked = options.removeGuard?.(row)
@@ -189,7 +193,7 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
 
     if (request.isDisposed()) return
     try {
-      const res = await options.removeApi(row[idKey])
+      const res = await options.removeApi(rowId(row) as number | string)
       if (request.isDisposed()) return
       ElMessage.success(res.msg || t('common.messages.deleteSuccess'))
       await getTreeData()
@@ -230,7 +234,7 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
     get parentRow() {
       return parentRow.value
     },
-  } as UseTreeCrudSlotProps)
+  } as UseTreeCrudSlotProps<Q, T>)
 
   // 与 useCrud 保持同一套对外契约：slotProps / refresh / state
   return {

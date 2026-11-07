@@ -1,3 +1,4 @@
+import type { ModdleElement } from './bpmn-types'
 import type { ListenerConfig } from './types'
 
 /**
@@ -63,13 +64,13 @@ export function parseJsonArray<T = any>(value?: string): T[] {
  * Flowable 把监听器挂在 extensionElements 下，且有多种实现方式
  * （class / delegateExpression / expression），需要归一化成一个结构。
  */
-export function readListeners(businessObject: any): ListenerConfig[] {
+export function readListeners(businessObject: ModdleElement): ListenerConfig[] {
   return (businessObject?.extensionElements?.values ?? [])
     .filter(
-      (value: any) =>
+      (value: ModdleElement) =>
         value.$type === 'flowable:TaskListener' || value.$type === 'flowable:ExecutionListener',
     )
-    .map((value: any, index: number) => {
+    .map((value: ModdleElement, index: number) => {
       const implementationType = value.class
         ? 'class'
         : value.delegateExpression
@@ -81,16 +82,18 @@ export function readListeners(businessObject: any): ListenerConfig[] {
         listenerType: isTaskListener ? 'task' : 'execution',
         event: value.event ?? (isTaskListener ? 'create' : 'start'),
         implementationType,
-        implementation: value[implementationType] ?? '',
+        implementation: (value[implementationType] as string | undefined) ?? '',
         expressionConfigKey: value.expressionConfigKey ?? '',
         expressionParameters: parseJsonObject(value.expressionParameters),
-        fields: (value.fields ?? []).map((field: any) => ({
-          name: field.name ?? '',
-          valueType: field.expression !== undefined ? 'expression' : 'stringValue',
-          value: field.expression ?? field.stringValue ?? '',
-          expressionConfigKey: field.expressionConfigKey ?? '',
-          expressionParameters: parseJsonObject(field.expressionParameters),
-        })),
+        fields: (Array.isArray(value.fields) ? (value.fields as ModdleElement[]) : []).map(
+          (field) => ({
+            name: field.name ?? '',
+            valueType: field.expression !== undefined ? 'expression' : 'stringValue',
+            value: field.expression ?? field.stringValue ?? '',
+            expressionConfigKey: field.expressionConfigKey ?? '',
+            expressionParameters: parseJsonObject(field.expressionParameters),
+          }),
+        ),
       } as ListenerConfig
     })
 }

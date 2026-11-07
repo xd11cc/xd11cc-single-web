@@ -3,7 +3,7 @@
     <div class="section-title">{{ t('bpm.modeler.property.sections.technical') }}</div>
     <div class="metadata-row">
       <span>{{ t('bpm.modeler.property.fields.bpmnType') }}</span
-      ><code>{{ element.type }}</code>
+      ><code>{{ element?.type }}</code>
     </div>
   </div>
 </template>

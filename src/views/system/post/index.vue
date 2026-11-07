@@ -162,7 +162,7 @@
 import { useI18n } from 'vue-i18n'
 import { Icon } from '@iconify/vue'
 import { ref, nextTick } from 'vue'
-import type { FormRules } from 'element-plus'
+import type { FormRules, TreeInstance } from 'element-plus'
 import UseCrudView from '@/common/components/useCrud/index.vue'
 import { useCrud } from '@/common/composables/useCrud'
 import { useDict } from '@/common/composables/useDict'
@@ -237,7 +237,7 @@ const crud = useCrud<SystemPostQueryVO, SystemPostVO>({
 
 // ─── 依赖数据（部门树） ───────────────────────────────────
 const deptTreeData = ref<SystemDeptTreeVO[]>([])
-const deptTreeRef = ref<any>(null)
+const deptTreeRef = ref<TreeInstance>()
 
 const formRules: FormRules = {
   postCode: [{ required: true, trigger: 'blur', message: () => $t('system.post.form.postCode') }],

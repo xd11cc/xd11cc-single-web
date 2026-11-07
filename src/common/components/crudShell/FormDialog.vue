@@ -32,7 +32,7 @@
 <script lang="ts" setup generic="T extends CrudDialogSlotProps">
 import { computed, onScopeDispose, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { FormRules } from 'element-plus'
+import type { FormInstance, FormRules } from 'element-plus'
 import type { CrudDialogSlotProps } from '@@/composables/crud-types'
 
 /**
@@ -67,7 +67,7 @@ const props = withDefaults(
 const { t } = useI18n()
 const $t = t
 
-const formRef = ref<any>(null)
+const formRef = ref<FormInstance>()
 const submitLoading = ref(false)
 
 /** 弹窗会话号：打开/关闭都 +1，用来判断一次提交是否已经过期 */

@@ -16,19 +16,24 @@
         @row-click="handleRowClick"
       >
         <slot />
+
+        <!-- 透传自定义空态：树页可以像列表页一样用 #empty -->
+        <template v-if="$slots.empty" #empty>
+          <slot name="empty" />
+        </template>
       </el-table>
     </div>
   </el-card>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup generic="T extends Record<string, any>">
 import type { TableInstance } from 'element-plus'
 
 defineOptions({ name: 'TreeTableView', inheritAttrs: false })
 
 withDefaults(
   defineProps<{
-    data: any[]
+    data: T[]
     loading?: boolean
     rowKey: string
     treeProps?: { children?: string; hasChildren?: string }
@@ -42,23 +47,24 @@ withDefaults(
 )
 
 const emit = defineEmits<{
-  rowClick: [row: any, column: any, event: Event]
+  rowClick: [row: T, column: unknown, event: Event]
 }>()
 
 const tableRef = useTemplateRef<TableInstance>('tableRef')
 
-function handleRowClick(row: any, column: any, event: Event) {
+function handleRowClick(row: T, column: unknown, event: Event) {
   emit('rowClick', row, column, event)
 }
 
-function toggleRowExpansion(row: any, expanded?: boolean) {
+function toggleRowExpansion(row: T, expanded?: boolean) {
   tableRef.value?.toggleRowExpansion(row, expanded)
 }
 
-function toggleAll(rows: any[], expanded: boolean) {
+function toggleAll(rows: T[], expanded: boolean) {
   rows.forEach((row) => {
     toggleRowExpansion(row, expanded)
-    if (row.children?.length) toggleAll(row.children, expanded)
+    const children = (row as Record<string, unknown>).children as T[] | undefined
+    if (children?.length) toggleAll(children, expanded)
   })
 }
 

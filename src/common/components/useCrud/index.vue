@@ -113,7 +113,7 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup generic="Q extends Record<string, any>, T extends Record<string, any>">
 import { Icon } from '@iconify/vue'
 import Skeleton from '@@/components/Skeleton/index.vue'
 import { useI18n } from 'vue-i18n'
@@ -135,7 +135,7 @@ const $t = t
 
 const props = defineProps<
   CrudShellPropsBase & {
-    slotProps: UseCrudSlotProps
+    slotProps: UseCrudSlotProps<Q, T>
     /** 透传给 el-table 的属性，如 { border: true, height: '520px' } */
     tableProps?: Record<string, unknown>
     /** 后端无分页接口的列表（如在线用户）隐藏分页区 */

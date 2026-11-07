@@ -49,8 +49,7 @@ export function createExpressionCatalog(configs: WorkflowExpressionConfigVO[]) {
       // 必填参数没填全时返回空表达式，而不是把占位符替换成空串。
       // 否则 XML 里会出现 `${ > }` 这种残缺条件——既看不出缺什么，也没法执行。
       const incomplete = definitions.some(
-        (parameter) =>
-          parameter.required && String(next[parameter.key] ?? '').trim() === '',
+        (parameter) => parameter.required && String(next[parameter.key] ?? '').trim() === '',
       )
       if (incomplete) {
         return { expression: '', parameters: next }

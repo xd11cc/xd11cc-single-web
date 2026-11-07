@@ -1,3 +1,5 @@
+import type { createExpressionCatalog } from './expression-catalog'
+import type { BpmnElement } from './bpmn-types'
 import type { ComputedRef, InjectionKey, Ref } from 'vue'
 import type { ApprovalMode, ListenerConfig } from './types'
 import type { ElementFormState } from './useElementForm'
@@ -13,7 +15,7 @@ import type { ElementFormState } from './useElementForm'
  */
 export interface ElementPanelContext {
   /** 当前选中的 bpmn 元素 */
-  element: ComputedRef<any>
+  element: ComputedRef<BpmnElement | null>
   form: ElementFormState
 
   // 元素类型判定
@@ -32,11 +34,8 @@ export interface ElementPanelContext {
   updateCondition: () => void
 
   // 表达式解析
-  expressionCatalog: ComputedRef<{
-    resolve: (...args: any[]) => any
-    options: (t: string) => any[]
-    parameters: (k?: string) => any[]
-  }>
+  /** 直接从 createExpressionCatalog 的返回值推导，避免手写一份更松的类型 */
+  expressionCatalog: ComputedRef<ReturnType<typeof createExpressionCatalog>>
   processVariableOptions: ComputedRef<Array<{ label: string; value: string }>>
   applyCollectionConfig: () => void
   applyConditionConfig: () => void

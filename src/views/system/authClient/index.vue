@@ -213,7 +213,8 @@
 <script lang="ts" setup>
 import { Icon } from '@iconify/vue'
 import { useI18n } from 'vue-i18n'
-import type { FormRules } from 'element-plus'
+import type { FormRules, UploadRequestOptions, UploadUserFile } from 'element-plus'
+import { uploadFile } from '@/common/apis/file'
 import UseCrudView from '@/common/components/useCrud/index.vue'
 import { useCrud } from '@/common/composables/useCrud'
 import { useDict } from '@/common/composables/useDict'
@@ -239,7 +240,7 @@ defineOptions({
 const { getDictList, getDictItem } = useDict(['system_status'])
 const { ossUrl } = useOssUrl()
 
-const iconFileList = ref<any[]>([])
+const iconFileList = ref<UploadUserFile[]>([])
 
 const formRules: FormRules = {
   source: [
@@ -318,32 +319,27 @@ watch(
     }
     const icon = crud.state.formData.value?.icon
     iconFileList.value =
-      icon && ossUrl.value
-        ? [{ uid: String(Date.now()), name: 'icon', url: ossUrl.value + icon }]
-        : []
+      icon && ossUrl.value ? [{ uid: Date.now(), name: 'icon', url: ossUrl.value + icon }] : []
   },
 )
 
-function handleIconUpload(options: any) {
-  const { file, onSuccess, onError } = options
-  const uploadFormData = new FormData()
-  uploadFormData.append('file', file)
-  return request({
-    url: '/file/upload',
-    method: 'POST',
-    data: uploadFormData,
-    timeout: LONG_REQUEST_TIMEOUT,
-  })
-    .then((res: any) => {
-      if (res.data?.fileId) {
-        crud.state.formData.value.icon = res.data.fileId
-      }
-      onSuccess(res.data)
+async function handleIconUpload(options: UploadRequestOptions) {
+  try {
+    const res = await uploadFile(options.file)
+    if (res.data?.fileId) {
+      crud.state.formData.value.icon = res.data.fileId
+    }
+    options.onSuccess(res.data)
+  } catch {
+    const err = Object.assign(new Error('upload failed'), {
+      name: 'UploadAjaxError',
+      status: 0,
+      method: 'POST',
+      url: '/file/upload',
     })
-    .catch(() => {
-      onError()
-      iconFileList.value = []
-    })
+    options.onError(err as Parameters<typeof options.onError>[0])
+    iconFileList.value = []
+  }
 }
 
 function handleIconRemove() {

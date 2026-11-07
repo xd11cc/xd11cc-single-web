@@ -4,7 +4,7 @@ export interface SystemDeptQueryVO {
 }
 
 export interface SystemDeptVO {
-  id?: number
+  id: number
   parentId?: number
   deptCode?: string
   deptName?: string

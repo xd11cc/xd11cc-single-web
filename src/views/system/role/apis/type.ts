@@ -7,7 +7,7 @@ export interface SystemRoleQueryVO {
 }
 
 export interface SystemRoleVO {
-  id?: number
+  id: number
   roleCode?: string
   roleName?: string
   status?: string

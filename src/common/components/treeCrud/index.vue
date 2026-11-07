@@ -62,7 +62,7 @@
 
         <slot name="table-append" v-bind="slotProps" />
 
-        <template v-if="$slots.empty" #empty>
+        <template v-if="hasEmptySlot" #empty>
           <slot name="empty" />
         </template>
       </TreeTableView>
@@ -87,10 +87,10 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup generic="Q extends Record<string, any>, T extends Record<string, any>">
 import { Icon } from '@iconify/vue'
 import { useI18n } from 'vue-i18n'
-import { computed, ref } from 'vue'
+import { computed, ref, useSlots } from 'vue'
 import type { FormRules } from 'element-plus'
 import TreeTableView from '@@/components/TreeTable/index.vue'
 import Skeleton from '@@/components/Skeleton/index.vue'
@@ -111,7 +111,7 @@ const $t = t
 const props = withDefaults(
   defineProps<
     CrudShellPropsBase & {
-      slotProps: UseTreeCrudSlotProps
+      slotProps: UseTreeCrudSlotProps<Q, T>
       /** 树表主键字段，默认 id */
       rowKey?: string
       /** 初始是否全部展开 */
@@ -125,7 +125,13 @@ const emit = defineEmits<{
   rowClick: [row: any, column: any, event: Event]
 }>()
 
-const treeTableRef = ref<InstanceType<typeof TreeTableView> | null>(null)
+const slots = useSlots()
+/** 子组件是否传了 #empty（$slots 在子组件作用域里会指向子组件的插槽，这里取本组件的） */
+const hasEmptySlot = computed(() => Boolean(slots.empty))
+
+/** TreeTableView 通过 defineExpose 暴露的方法；泛型组件无法用 InstanceType 推导 */
+type TreeTableExposed = { toggleRowExpansion: (row: T, expanded?: boolean) => void }
+const treeTableRef = ref<TreeTableExposed | null>(null)
 /** 传了 columns 才启用列配置；与列表壳同一套「定义 + 偏好」模型 */
 const { columnSetting, cellSlotNames, isColdLoading } = useCrudShellView({
   columns: () => props.columns,

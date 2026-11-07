@@ -283,6 +283,9 @@ import { useCrud } from '@/common/composables/useCrud'
 import { useDict } from '@/common/composables/useDict'
 import { userPage, addUser, modifyUserById, removeUserByIds, resetPassword } from './apis'
 import type { SystemUserVO, SystemUserQueryVO } from './apis/type'
+import type { SystemDeptTreeVO } from '@/views/system/dept/apis/type'
+import type { SystemPostVO } from '@/views/system/post/apis/type'
+import type { SystemRoleVO } from '@/views/system/role/apis/type'
 import { deptTreeList } from '@/views/system/dept/apis'
 import { postListByDeptId } from '@/views/system/post/apis'
 import { roleList } from '@/views/system/role/apis'
@@ -325,9 +328,9 @@ const columns = computed<TableColumnDef[]>(() => [
 ])
 
 // ─── 依赖数据（部门树 / 岗位 / 角色） ─────────────────────
-const deptTreeData = ref<any[]>([])
-const postList = ref<any[]>([])
-const roleOptions = ref<any[]>([])
+const deptTreeData = ref<SystemDeptTreeVO[]>([])
+const postList = ref<SystemPostVO[]>([])
+const roleOptions = ref<SystemRoleVO[]>([])
 
 const formRef = ref(null)
 const formRules: FormRules = {
@@ -363,7 +366,7 @@ function getRoleOptions() {
   })
 }
 
-function findDeptNode(tree: any[], id: number): any | undefined {
+function findDeptNode(tree: SystemDeptTreeVO[], id: number): SystemDeptTreeVO | undefined {
   for (const node of tree) {
     if (node.id === id) return node
     if (node.children?.length) {
@@ -392,7 +395,7 @@ function handleDeptChange(deptId: number | undefined) {
 
 function handlePostChange(postId: number | undefined) {
   if (postId) {
-    const post = postList.value.find((item: any) => item.id === postId)
+    const post = postList.value.find((item) => item.id === postId)
     crud.state.formData.value.postName = post?.postName
   } else {
     crud.state.formData.value.postName = undefined

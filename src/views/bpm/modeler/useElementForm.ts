@@ -1,4 +1,5 @@
 import type { ApprovalConfig, ApprovalMode } from './types'
+import type { BpmnElement, ModdleElement } from './bpmn-types'
 import { parseJsonArray, parseJsonObject } from './listener-io'
 
 /**
@@ -59,7 +60,7 @@ export function parseCandidateValues(value?: string): string[] {
  * 老流程没有 flowable:approvalMode 扩展属性，需要从 loopCharacteristics 反推：
  * 有会签完成条件（nrOfCompletedInstances > 0）视为或签，其余并行多实例视为会签。
  */
-export function readApprovalMode(businessObject: any): ApprovalMode {
+export function readApprovalMode(businessObject: ModdleElement): ApprovalMode {
   const savedMode = businessObject?.get?.('flowable:approvalMode')
   if (['single', 'countersign', 'orsign'].includes(savedMode)) return savedMode
 
@@ -71,13 +72,15 @@ export function readApprovalMode(businessObject: any): ApprovalMode {
 }
 
 /** 向上找到所属的流程根节点（流程变量挂在它身上） */
-export function findProcessBusinessObject(businessObject: any) {
-  let current = businessObject
+export function findProcessBusinessObject(
+  businessObject: ModdleElement,
+): ModdleElement | undefined {
+  let current: ModdleElement | undefined = businessObject
   while (current && current.$type !== 'bpmn:Process') current = current.$parent
   return current
 }
 
-export function useElementForm(getElement: () => any, emit: ElementFormEmit) {
+export function useElementForm(getElement: () => BpmnElement | null, emit: ElementFormEmit) {
   const form = reactive<ElementFormState>({
     id: '',
     name: '',
@@ -106,8 +109,9 @@ export function useElementForm(getElement: () => any, emit: ElementFormEmit) {
   /** 流程变量：挂在流程根节点上，面板里用于表达式的变量提示 */
   const processVariables = ref<ProcessVariable[]>([])
 
-  function syncFromElement(element: any) {
-    const businessObject = element?.businessObject
+  function syncFromElement(element: BpmnElement | null) {
+    // 未选中元素时用空对象兜底，让下面的 ?? 落到默认值（与之前直接传 undefined 的行为一致）
+    const businessObject: ModdleElement = element?.businessObject ?? { $type: '' }
 
     form.id = businessObject?.id ?? ''
     form.name = businessObject?.name ?? ''
