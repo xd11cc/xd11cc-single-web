@@ -324,10 +324,15 @@ watch(
 )
 
 async function handleIconUpload(options: UploadRequestOptions) {
+  // 记录发起上传时的表单对象：上传期间用户可能关掉弹窗、甚至打开另一条记录，
+  // 旧结果不能写到新表单上
+  const targetForm = crud.state.formData.value
   try {
     const res = await uploadFile(options.file)
-    if (res.data?.fileId) {
-      crud.state.formData.value.icon = res.data.fileId
+    // 存 objectKey（而不是 fileId）：列表和表单都用 ossUrl + 该值拼地址显示，
+    // fileId 是纯 UUID，拼出来的路径取不到文件
+    if (res.data?.objectKey && crud.state.formData.value === targetForm) {
+      targetForm.icon = res.data.objectKey
     }
     options.onSuccess(res.data)
   } catch {

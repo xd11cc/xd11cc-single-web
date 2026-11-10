@@ -30,6 +30,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   changed: [xml: string]
+  editing: []
   selected: [element: any | null]
   ready: []
 }>()
@@ -270,6 +271,9 @@ onMounted(async () => {
     if (activeElement?.id === element?.id) emit('selected', element)
   })
   eventBus?.on('commandStack.changed', () => {
+    // Notify the parent synchronously; XML export is debounced and may lag behind
+    // an in-flight detail response that would otherwise overwrite a fresh edit.
+    emit('editing')
     window.clearTimeout(exportTimer)
     exportTimer = window.setTimeout(exportXml, 220)
   })

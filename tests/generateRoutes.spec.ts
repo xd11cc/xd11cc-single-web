@@ -50,7 +50,11 @@ describe('动态路由转换', () => {
 
   it('目录的 noRedirect 被替换为第一个可见子页路径', async () => {
     const store = usePermissionStore()
-    const routes = await store.generateRoutes(async () => ({ code: 200, msg: 'ok', data: fakeRoutes }))
+    const routes = await store.generateRoutes(async () => ({
+      code: 200,
+      msg: 'ok',
+      data: fakeRoutes,
+    }))
 
     expect(routes[0].redirect).toBe('/approval/started')
     // 未知路由 key 不应残留哨兵值
@@ -59,7 +63,11 @@ describe('动态路由转换', () => {
 
   it('视图路由默认缓存、目录不缓存', async () => {
     const store = usePermissionStore()
-    const routes = await store.generateRoutes(async () => ({ code: 200, msg: 'ok', data: fakeRoutes }))
+    const routes = await store.generateRoutes(async () => ({
+      code: 200,
+      msg: 'ok',
+      data: fakeRoutes,
+    }))
 
     expect(routes[0].meta?.keepAlive).toBe(false)
     const started = routes[0].children?.find((r) => r.name === 'ApprovalStarted')
@@ -68,7 +76,11 @@ describe('动态路由转换', () => {
 
   it('菜单里的组件字符串能解析为组件', async () => {
     const store = usePermissionStore()
-    const routes = await store.generateRoutes(async () => ({ code: 200, msg: 'ok', data: fakeRoutes }))
+    const routes = await store.generateRoutes(async () => ({
+      code: 200,
+      msg: 'ok',
+      data: fakeRoutes,
+    }))
 
     const started = routes[0].children?.find((r) => r.name === 'ApprovalStarted')
     expect(started?.component).toBeTypeOf('function')
@@ -97,5 +109,39 @@ describe('动态路由转换', () => {
     // MissingView 是一个组件对象（而不是什么都没渲染）
     expect(typeof routes[0].component).toBe('object')
     errorSpy.mockRestore()
+  })
+})
+
+/**
+ * 初始化期间的「过期」判定。
+ *
+ * 守卫拿到结果才校验登录态是不够的：侧栏数据在 store 里就写进去了。
+ * 因此 generateRoutes 支持传入 isStillCurrent，在写入前再确认一次。
+ */
+describe('generateRoutes 的过期判定', () => {
+  it('isStillCurrent 返回 false 时不写入 routes / addRoutes', async () => {
+    const store = usePermissionStore()
+    const before = store.routes
+    const beforeAdd = store.addRoutes
+
+    const result = await store.generateRoutes(
+      async () => ({ code: 200, msg: 'ok', data: fakeRoutes }),
+      () => false,
+    )
+
+    expect(result).toEqual([])
+    expect(store.routes, '过期数据写进了侧栏').toBe(before)
+    expect(store.addRoutes).toBe(beforeAdd)
+  })
+
+  it('isStillCurrent 返回 true 时正常写入', async () => {
+    const store = usePermissionStore()
+    const result = await store.generateRoutes(
+      async () => ({ code: 200, msg: 'ok', data: fakeRoutes }),
+      () => true,
+    )
+    expect(result.length).toBeGreaterThan(0)
+    expect(store.addRoutes.length).toBe(result.length)
+    expect(store.routes.length).toBeGreaterThan(result.length) // 含公共路由
   })
 })

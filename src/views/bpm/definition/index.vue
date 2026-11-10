@@ -50,13 +50,13 @@
         </span>
         <span v-else class="version-draft-badge">
           <Icon icon="lucide:pen-line" />
-          {{ getStatusItem(row)?.value || row.status || '-' }}
+          {{ getStatusItem(row)?.label || row.status || '-' }}
         </span>
       </template>
 
       <template #cell-status="{ row }">
         <el-tag :type="getStatusType(row)" effect="plain" size="small" disable-transitions>
-          {{ getStatusItem(row)?.value || row.status || '-' }}
+          {{ getStatusItem(row)?.label || row.status || '-' }}
         </el-tag>
       </template>
 
@@ -179,7 +179,7 @@
                 <span class="version-number">v{{ version.version }}</span>
                 <span>{{ version.name || '-' }}</span>
                 <el-tag :type="getVersionStatusType(version)" effect="plain" size="small">
-                  {{ getVersionStatusItem(version)?.value || version.status }}
+                  {{ getVersionStatusItem(version)?.label || version.status }}
                 </el-tag>
               </div>
               <div class="version-meta">
@@ -329,16 +329,20 @@ function showConflictMessage() {
 
 async function openVersionDialog(row: WorkflowDefinitionVO) {
   if (!row.key) return
-  versionDialogKey.value = row.key
+  const key = row.key
+  versionDialogKey.value = key
   versionDialogName.value = row.name || ''
   versionRows.value = []
   versionDialogVisible.value = true
   versionLoading.value = true
   try {
-    const { data } = await getWorkflowDefinitionVersions(row.key)
+    const { data } = await getWorkflowDefinitionVersions(key)
+    // 用户可能已经点了另一行的版本按钮：迟到的响应不能替换当前弹窗，
+    // 否则随后的激活/挂起操作会作用到错误的流程上
+    if (versionDialogKey.value !== key) return
     versionRows.value = data || []
   } finally {
-    versionLoading.value = false
+    if (versionDialogKey.value === key) versionLoading.value = false
   }
 }
 

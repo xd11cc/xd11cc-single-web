@@ -78,7 +78,11 @@
       :dialog-width="dialogWidth"
       :label-width="labelWidth"
       :label-position="labelPosition"
+      :submit-disabled="submitDisabled"
     >
+      <template #banner>
+        <slot name="dialog-banner" />
+      </template>
       <slot name="form-fields" v-bind="slotProps" />
     </FormDialog>
 

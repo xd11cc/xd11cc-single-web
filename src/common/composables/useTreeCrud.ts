@@ -16,7 +16,13 @@ import type { BaseCrudOptions } from './crud-types'
  */
 
 export interface UseTreeCrudOptions<Q = any, T = any>
-  extends BaseCrudOptions<{ isAdd: boolean; form: Record<string, any>; parent?: any }> {
+  extends BaseCrudOptions<{
+    isAdd: boolean
+    form: Record<string, any>
+    parent?: any
+    /** 本次弹窗会话号：异步回填返回后用它判断弹窗是否已被重新打开 */
+    session: number
+  }> {
   /** 树查询接口，返回完整层级数据（无分页） */
   treeApi: (query: Q) => Promise<ResponseVO<T[]>>
   /** 删除接口，接收单条 id */
@@ -51,6 +57,8 @@ export interface UseTreeCrudSlotProps<Q = any, T = any> {
   /** 表单对象：新增时字段不全，因此是 Partial；同时保留索引签名以容纳字典/关联字段 */
   formData: Partial<T> & Record<string, any>
   dialogVisible: boolean
+  /** 当前弹窗会话号：异步回调可用它判断弹窗是否已被重新打开 */
+  readonly sessionId: number
   handleAdd: () => void
   handleAddChild: (row: T) => void
   handleEdit: (row: T) => void
@@ -79,10 +87,10 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
   const formData = ref<any>(options.defaultForm?.() || {})
   const parentRow = ref<T | null>(null)
   const request = useLatestRequest()
-  let dialogSessionId = 0
+  const dialogSessionId = ref(0)
 
   onScopeDispose(() => {
-    dialogSessionId++
+    dialogSessionId.value++
     loading.value = false
   })
 
@@ -117,20 +125,37 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
 
   function openDialog(form: Record<string, any>, parent: T | null = null) {
     if (request.isDisposed()) return
-    dialogSessionId++
+    dialogSessionId.value++
     formData.value = form
     parentRow.value = parent
     dialogVisible.value = true
-    options.onDialogOpen?.({ isAdd: !form?.[idKey], form, parent: parent ?? undefined })
+    options.onDialogOpen?.({
+      isAdd: !form?.[idKey],
+      form,
+      parent: parent ?? undefined,
+      session: dialogSessionId.value,
+    })
   }
 
   function handleAdd() {
     openDialog(options.defaultForm?.() || {})
   }
 
-  /** 在指定节点下新增子级：预填 parentId（或父节点主键） */
+  /**
+   * 在指定节点下新增子级。
+   * 初始值以 defaultForm 为底，再叠加 childForm 按父节点推导出的字段
+   * （如菜单页：父级是目录则子级默认菜单、父级是菜单则默认按钮），
+   * parentId 最后强制写入，避免被 childForm 覆盖成 undefined。
+   */
   function handleAddChild(row: T) {
-    openDialog({ ...(options.defaultForm?.() || {}), parentId: rowId(row) }, row)
+    openDialog(
+      {
+        ...(options.defaultForm?.() || {}),
+        ...(options.childForm?.(row) ?? {}),
+        parentId: rowId(row),
+      },
+      row,
+    )
   }
 
   function handleEdit(row: T) {
@@ -138,7 +163,7 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
   }
 
   function handleClose() {
-    dialogSessionId++
+    dialogSessionId.value++
     formData.value = options.defaultForm?.() || {}
     parentRow.value = null
     dialogVisible.value = false
@@ -149,14 +174,14 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
     const api = isAdd ? options.addApi : options.updateApi
     if (!api) return
 
-    const sessionId = dialogSessionId
+    const sessionId = dialogSessionId.value
     submitLoading.value = true
     try {
       const payload = options.transformPayload?.(formData.value, isAdd) ?? { ...formData.value }
       const res = await api(payload)
       if (request.isDisposed()) return res
       ElMessage.success(res.msg || t('common.messages.operationSuccess'))
-      if (sessionId === dialogSessionId) {
+      if (sessionId === dialogSessionId.value) {
         dialogVisible.value = false
         parentRow.value = null
       }
@@ -222,6 +247,9 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
     get dialogVisible() {
       return dialogVisible.value
     },
+    get sessionId() {
+      return dialogSessionId.value
+    },
     set dialogVisible(val: boolean) {
       dialogVisible.value = val
     },
@@ -240,6 +268,15 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
   return {
     slotProps,
     refresh: getTreeData,
-    state: { formData, dialogVisible },
+    state: {
+      formData,
+      dialogVisible,
+      /** 当前弹窗会话号（打开/关闭都会变） */
+      get sessionId() {
+        return dialogSessionId.value
+      },
+      /** 该会话号是否仍是当前弹窗 */
+      isCurrentSession: (session: number) => session === dialogSessionId.value,
+    },
   }
 }

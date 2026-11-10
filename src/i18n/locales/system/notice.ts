@@ -39,6 +39,8 @@ export const zh = {
   messages: {
     batchDeleteConfirm: '正在删除 {count} 条通知数据，确认删除？',
     deleteConfirm: '正在删除通知「{title}」，确认删除？',
+    detailsNotReady: '通知详情或范围数据加载失败，请关闭弹窗后重试',
+    detailsLoadFailed: '通知详情加载失败，为避免覆盖原内容已暂停保存。',
     publishConfirm: '确认发布通知「{title}」？',
     publishSuccess: '发布成功',
     revokeConfirm: '确认撤回通知「{title}」？',
@@ -97,6 +99,9 @@ export const en = {
   messages: {
     batchDeleteConfirm: 'Deleting {count} notices. Confirm?',
     deleteConfirm: 'Deleting notice "{title}". Confirm?',
+    detailsNotReady: 'Notice details or scope data failed to load. Close and reopen the dialog to retry.',
+    detailsLoadFailed:
+      'Failed to load notice details. Saving is paused to avoid overwriting the existing content.',
     publishConfirm: 'Publish notice "{title}"?',
     publishSuccess: 'Publish successful',
     revokeConfirm: 'Revoke notice "{title}"?',

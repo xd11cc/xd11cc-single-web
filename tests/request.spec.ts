@@ -61,7 +61,11 @@ const routerReplace = vi.fn()
 const nav = { path: '/system/user' }
 vi.mock('@/router', () => ({
   router: {
-    currentRoute: { get value() { return { fullPath: nav.path } } },
+    currentRoute: {
+      get value() {
+        return { fullPath: nav.path }
+      },
+    },
     replace: (...args: any[]) => routerReplace(...args),
   },
 }))
@@ -69,7 +73,11 @@ vi.mock('@/router', () => ({
 const auth = { token: 'token-abc' }
 vi.mock('@@/utils/cache/cookies', () => ({ getToken: () => auth.token }))
 
-import request, { handleUnauthorized, resetUnauthorizedHandling, LONG_REQUEST_TIMEOUT } from '@@/utils/request'
+import request, {
+  handleUnauthorized,
+  resetUnauthorizedHandling,
+  LONG_REQUEST_TIMEOUT,
+} from '@@/utils/request'
 
 const requestInterceptor = () => h.requestHandlers[0].ok
 const responseOk = () => h.responseHandlers[0].ok
@@ -130,6 +138,33 @@ describe('request 封装', () => {
       path: '/login',
       query: { redirect: '/system/user' },
     })
+  })
+
+  it('旧的 401（发起时用的不是当前 token）不会清掉新登录态', () => {
+    // 期间换了账号：当前 token 已是 token-new
+    auth.token = 'token-new'
+
+    handleUnauthorized('token-old')
+
+    expect(resetToken, 'B 的登录态被旧会话的 401 清掉了').not.toHaveBeenCalled()
+    expect(routerReplace).not.toHaveBeenCalled()
+  })
+
+  it('响应里的旧 Authorization 触发 401 时同样被忽略', async () => {
+    auth.token = 'token-new'
+    const staleResponse = {
+      data: { code: 401, msg: 'expired' },
+      config: { headers: { Authorization: 'Bearer token-old' } },
+    }
+
+    await expect(responseOk()(staleResponse)).rejects.toThrow('expired')
+
+    expect(resetToken).not.toHaveBeenCalled()
+  })
+
+  it('token 未变时 401 正常清理', () => {
+    handleUnauthorized('token-abc')
+    expect(resetToken).toHaveBeenCalledTimes(1)
   })
 
   it('并发 401 只处理一次（避免重复跳转）', () => {

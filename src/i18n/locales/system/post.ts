@@ -26,6 +26,8 @@ export const zh = {
   messages: {
     batchDeleteConfirm: '正在删除 {count} 条岗位数据，确认删除？',
     deleteConfirm: '正在删除岗位「{postName}」，确认删除？',
+    deptPermissionsNotReady: '部门权限数据还在加载中，请稍候再保存',
+    deptLoadFailed: '部门权限加载失败，为避免清空原范围已暂停保存。',
   },
 }
 
@@ -57,5 +59,8 @@ export const en = {
   messages: {
     batchDeleteConfirm: 'Are you sure to delete {count} posts?',
     deleteConfirm: 'Are you sure to delete post 「{postName}」?',
+    deptPermissionsNotReady: 'Department permissions are still loading. Please wait before saving.',
+    deptLoadFailed:
+      'Failed to load department permissions. Saving is paused to avoid clearing the existing scope.',
   },
 }

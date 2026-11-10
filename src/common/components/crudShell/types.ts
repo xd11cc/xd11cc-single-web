@@ -29,4 +29,9 @@ export interface CrudShellPropsBase {
   labelWidth?: string
   /** 表单标签位置，默认 left */
   labelPosition?: 'left' | 'right' | 'top'
+  /**
+   * 禁止提交（如编辑时依赖数据还没回填完）。
+   * 为 true 时弹窗的「确定」不可点，handleFormSubmit 也会直接返回。
+   */
+  submitDisabled?: boolean
 }

@@ -72,7 +72,7 @@
         size="small"
         disable-transitions
       >
-        {{ getDictItem('system_notice_type', String(row.type))?.value }}
+        {{ getDictItem('system_notice_type', String(row.type))?.label }}
       </el-tag>
     </template>
 
@@ -82,7 +82,7 @@
         size="small"
         effect="plain"
       >
-        {{ getDictItem('system_read_status', String(row.readStatus))?.value || row.readStatus }}
+        {{ getDictItem('system_read_status', String(row.readStatus))?.label || row.readStatus }}
       </el-tag>
     </template>
 
@@ -99,7 +99,7 @@
             detailData.title
           }}</el-descriptions-item>
           <el-descriptions-item :label="$t('system.noticeUser.search.type')">
-            {{ getDictItem('system_notice_type', String(detailData.type))?.value }}
+            {{ getDictItem('system_notice_type', String(detailData.type))?.label }}
           </el-descriptions-item>
           <el-descriptions-item :label="$t('system.noticeUser.columns.senderName')">{{
             detailData.senderName || '-'

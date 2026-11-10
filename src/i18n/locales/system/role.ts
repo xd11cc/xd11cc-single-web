@@ -31,6 +31,8 @@ export const zh = {
   messages: {
     batchDeleteConfirm: '正在删除 {count} 条角色数据，确认删除？',
     deleteConfirm: '正在删除角色「{roleName}」，确认删除？',
+    permsNotReady: '权限数据还在加载中，请稍候再保存',
+    permsLoadFailed: '权限数据加载失败，为避免清空原权限已暂停保存。',
   },
   search: {
     roleKey: '权限字符',
@@ -72,6 +74,9 @@ export const en = {
   messages: {
     batchDeleteConfirm: 'You are about to delete {count} roles. Confirm?',
     deleteConfirm: 'Delete role「{roleName}」, confirm?',
+    permsNotReady: 'Permissions are still loading. Please try again in a moment.',
+    permsLoadFailed:
+      'Failed to load permissions. Saving is paused to avoid clearing existing permissions.',
   },
   search: {
     roleKey: 'Permission String',

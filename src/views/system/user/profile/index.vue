@@ -562,6 +562,9 @@ async function cropToBlob(): Promise<Blob | null> {
 async function handleAvatarUpload() {
   if (!selectedFile.value) return
   avatarUploading.value = true
+  // 记下发起时的用户与登录态：上传可能很慢，期间可能已经换了账号
+  const userIdAtUpload = userStore.userId
+  const tokenAtUpload = userStore.token
   try {
     const blob = await cropToBlob()
     if (!blob) return
@@ -569,9 +572,11 @@ async function handleAvatarUpload() {
     // 第一步：上传文件，拿 objectKey（previewUrl 带签名会过期，不能存库）
     const { data } = await uploadFile(new File([blob], 'avatar.jpg', { type: 'image/jpeg' }))
     if (!data?.objectKey) return
+    // 换了账号就丢弃这次结果，避免把头像写到新账号名下
+    if (!userIdAtUpload || userStore.token !== tokenAtUpload) return
 
-    // 第二步：把 objectKey 写进用户资料
-    await updateUserAvatar({ id: userStore.userId, headUrl: data.objectKey })
+    // 第二步：把 objectKey 写进发起上传时的那个用户
+    await updateUserAvatar({ id: userIdAtUpload, headUrl: data.objectKey })
     // 第三步：刷新 store，头像立即更新（页面按 ossUrl + headUrl 渲染）
     await userStore.getInfo()
 
@@ -709,6 +714,8 @@ function handleChangePassword() {
   pwdFormRef.value?.validate((valid: boolean) => {
     if (!valid) return
     pwdLoading.value = true
+    // 必须在发请求前捕获：响应回来时用户可能已经换成别的账号登录
+    const tokenAtRequest = userStore.token
     changePassword({
       oldPassword: pwdForm.oldPassword,
       newPassword: pwdForm.newPassword,
@@ -716,8 +723,12 @@ function handleChangePassword() {
       .then((res) => {
         ElMessage.success(res.msg || $t('system.user.profile.messages.passwordChangeSuccess'))
         resetPwdForm()
-        setTimeout(() => {
-          userStore.logout()
+        setTimeout(async () => {
+          // 用「发起改密时的 token」判断：期间换号就什么都不做，不能登出别人
+          if (userStore.token !== tokenAtRequest) return
+          // 必须先等登出真正完成（token 清空），否则此时跳 /login 会被守卫重定向回首页
+          await userStore.logout()
+          if (userStore.token && userStore.token !== tokenAtRequest) return
           router.push('/login')
         }, 1500)
       })

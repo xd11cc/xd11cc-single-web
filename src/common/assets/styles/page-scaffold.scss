@@ -90,3 +90,14 @@ $search-field-widths: (
     }
   }
 }
+
+/* 弹窗内的持久提示条（如「权限/详情加载失败，已暂停保存」） */
+.perms-alert {
+  margin-bottom: var(--space-3, 12px);
+
+  .el-button {
+    margin-left: var(--space-2, 8px);
+    padding: 0;
+    vertical-align: baseline;
+  }
+}

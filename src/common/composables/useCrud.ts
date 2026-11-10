@@ -1,5 +1,5 @@
 import type { ComponentPublicInstance } from 'vue'
-import { reactive, ref, watch, onMounted } from 'vue'
+import { reactive, ref, watch, onMounted, onScopeDispose } from 'vue'
 import { useLatestRequest } from './useLatestRequest'
 import type { ResponseVO } from 'types/api'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -20,7 +20,13 @@ export interface PageData<T> {
  * 新增/修改/载荷转换/删除确认/弹窗回调 等字段来自 {@link BaseCrudOptions}，与树形壳共用。
  */
 export interface UseCrudOptions<Q = any, T = any>
-  extends BaseCrudOptions<{ isAdd: boolean; form: Record<string, any>; row?: any }> {
+  extends BaseCrudOptions<{
+    isAdd: boolean
+    form: Record<string, any>
+    row?: any
+    /** 本次弹窗会话号：异步回填返回后用它判断弹窗是否已被重新打开 */
+    session: number
+  }> {
   /** 分页查询接口 */
   pageApi: (query: Q) => Promise<ResponseVO<PageData<T>>>
   /** 删除接口（接收逗号拼接的 id 字符串） */
@@ -61,10 +67,12 @@ export interface UseCrudSlotProps<Q = any, T = any> {
   /** 表单对象：新增时字段不全，因此是 Partial；同时保留索引签名以容纳字典/关联字段 */
   formData: Partial<T> & Record<string, any>
   dialogVisible: boolean
+  /** 当前弹窗会话号：异步回调可用它判断弹窗是否已被重新打开 */
+  readonly sessionId: number
   handleAdd: () => void
   handleEdit: (row: T) => void
-  handleRemove: (row: T) => void
-  handleBatchRemove: () => void
+  handleRemove: (row: T) => Promise<void>
+  handleBatchRemove: () => Promise<void>
   handleClose: () => void
   handleSubmit: (isAdd: boolean) => Promise<ResponseVO<any> | void>
   rowSelection: T[]
@@ -105,6 +113,12 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
   const dialogVisible = ref(false)
   const formData = ref<any>(options.defaultForm?.() || {})
   const request = useLatestRequest()
+  /** 弹窗会话号：提交返回时用它判断这次提交是否已经过期 */
+  const dialogSessionId = ref(0)
+
+  onScopeDispose(() => {
+    dialogSessionId.value++
+  })
 
   // ─── 生命周期 ──────────────────────────────────────────
   onMounted(() => getTableData())
@@ -168,18 +182,26 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
 
   // ─── 弹窗开关 ──────────────────────────────────────────
   function handleAdd() {
+    dialogSessionId.value++
     formData.value = options.defaultForm?.() || {}
     dialogVisible.value = true
-    options.onDialogOpen?.({ isAdd: true, form: formData.value })
+    options.onDialogOpen?.({ isAdd: true, form: formData.value, session: dialogSessionId.value })
   }
 
   function handleEdit(row: T) {
+    dialogSessionId.value++
     formData.value = { ...row }
     dialogVisible.value = true
-    options.onDialogOpen?.({ isAdd: false, form: formData.value, row })
+    options.onDialogOpen?.({
+      isAdd: false,
+      form: formData.value,
+      row,
+      session: dialogSessionId.value,
+    })
   }
 
   function handleClose() {
+    dialogSessionId.value++
     formData.value = options.defaultForm?.() || {}
     dialogVisible.value = false
   }
@@ -188,28 +210,42 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
   /** 行类型未必声明 id（部分列表用 taskId 等），删除时按约定的 id 字段取 */
   const readRowId = (row: unknown) => (row as { id?: number | string } | null)?.id
 
-  function handleRemove(row: T) {
+  async function handleRemove(row: T): Promise<void> {
+    // 只读列表可以不配置删除接口；此时删除动作应是无操作，而非打开确认框后报错。
+    const removeApi = options.removeApi
+    if (request.isDisposed() || !removeApi) return
+
     const confirmText = options.removeConfirmText?.(row) ?? t('common.messages.deleteConfirm')
-    ElMessageBox.confirm(confirmText, t('common.messages.confirmTitle'), {
-      confirmButtonText: t('common.confirm'),
-      cancelButtonText: t('common.cancel'),
-      type: 'warning',
-    })
-      .then(() => {
-        options
-          .removeApi?.(String(readRowId(row)))
-          .then((res) => {
-            ElMessage.success(res.msg || t('common.messages.deleteSuccess'))
-            getTableData()
-          })
-          .catch(() => {})
+    try {
+      await ElMessageBox.confirm(confirmText, t('common.messages.confirmTitle'), {
+        confirmButtonText: t('common.confirm'),
+        cancelButtonText: t('common.cancel'),
+        type: 'warning',
       })
-      // 用户点「取消」时 ElMessageBox 会 reject；不接住会在控制台留下 unhandled rejection
-      .catch(() => {})
+    } catch {
+      // 用户取消时 ElMessageBox 会 reject；取消不应产生未处理的 rejection。
+      return
+    }
+
+    // 用户可能在确认框打开期间离开列表；确认结果返回后必须重新校验生命周期。
+    if (request.isDisposed()) return
+
+    try {
+      const res = await removeApi(String(readRowId(row)))
+      if (request.isDisposed()) return
+      ElMessage.success(res.msg || t('common.messages.deleteSuccess'))
+      await getTableData()
+    } catch {
+      // request 层负责显示请求错误；这里收口 rejection，避免事件处理器留下未处理异常。
+      return
+    }
   }
 
   // ─── 批量删除 ──────────────────────────────────────────
-  function handleBatchRemove() {
+  async function handleBatchRemove(): Promise<void> {
+    const removeApi = options.removeApi
+    if (request.isDisposed() || !removeApi) return
+
     const ids = tableSelection.value.map((r) => readRowId(r)).join(',')
     if (!ids) {
       ElMessage.warning(t('common.messages.selectFirst'))
@@ -218,23 +254,30 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
     const count = tableSelection.value.length
     const confirmText =
       options.batchRemoveConfirmText?.(count) ?? t('common.messages.deleteSelected', { count })
-    ElMessageBox.confirm(confirmText, t('common.messages.confirmTitle'), {
-      confirmButtonText: t('common.confirm'),
-      cancelButtonText: t('common.cancel'),
-      type: 'warning',
-    })
-      .then(() => {
-        options
-          .removeApi?.(ids)
-          .then((res) => {
-            ElMessage.success(res.msg || t('common.messages.deleteSuccess'))
-            tableSelection.value = []
-            getTableData()
-          })
-          .catch(() => {})
+
+    try {
+      await ElMessageBox.confirm(confirmText, t('common.messages.confirmTitle'), {
+        confirmButtonText: t('common.confirm'),
+        cancelButtonText: t('common.cancel'),
+        type: 'warning',
       })
-      // 取消批量删除同样会产生 reject，一并接住
-      .catch(() => {})
+    } catch {
+      // 取消批量删除同样会产生 reject，一并接住。
+      return
+    }
+
+    if (request.isDisposed()) return
+
+    try {
+      const res = await removeApi(ids)
+      if (request.isDisposed()) return
+      ElMessage.success(res.msg || t('common.messages.deleteSuccess'))
+      tableSelection.value = []
+      await getTableData()
+    } catch {
+      // request 层负责显示请求错误；这里收口 rejection。
+      return
+    }
   }
 
   // ─── 提交（校验 + API 调用 + 成功/失败处理） ──────────
@@ -242,10 +285,15 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
     const api = isAdd ? options.addApi : options.updateApi
     if (!api) return Promise.resolve()
     const payload = options.transformPayload?.(formData.value, isAdd) ?? { ...formData.value }
+    const sessionId = dialogSessionId.value
     return api(payload)
       .then((res) => {
         ElMessage.success(res.msg || t('common.messages.operationSuccess'))
-        dialogVisible.value = false
+        // 请求期间用户可能已关掉弹窗、甚至打开了另一行的编辑弹窗；
+        // 只有会话未变时才关闭，否则会把新弹窗一起关掉
+        if (sessionId === dialogSessionId.value) {
+          dialogVisible.value = false
+        }
         getTableData()
         return res
       })
@@ -297,6 +345,9 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
     get dialogVisible() {
       return dialogVisible.value
     },
+    get sessionId() {
+      return dialogSessionId.value
+    },
     set dialogVisible(val: boolean) {
       dialogVisible.value = val
     },
@@ -318,6 +369,15 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
   return {
     slotProps,
     refresh: getTableData,
-    state: { formData, dialogVisible },
+    state: {
+      formData,
+      dialogVisible,
+      /** 当前弹窗会话号（打开/关闭都会变） */
+      get sessionId() {
+        return dialogSessionId.value
+      },
+      /** 该会话号是否仍是当前弹窗：异步回填返回后用它判断结果是否已过期 */
+      isCurrentSession: (session: number) => session === dialogSessionId.value,
+    },
   }
 }

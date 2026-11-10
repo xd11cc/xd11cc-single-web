@@ -176,6 +176,52 @@ describe('useCrud 对外契约', () => {
     wrapper.unmount()
   })
 
+  it('确认删除期间组件卸载后，单条和批量删除都不再调用接口', async () => {
+    const confirmations = [deferred<void>(), deferred<void>()]
+    confirmMock.mockReset()
+    confirmMock
+      .mockReturnValueOnce(confirmations[0].promise)
+      .mockReturnValueOnce(confirmations[1].promise)
+    const removeApi = vi.fn().mockResolvedValue({ code: 200, msg: 'ok', data: null })
+    const pageApi = makePageApi()
+    const { result: crud, wrapper } = withSetup(() => useCrud({ pageApi, removeApi }))
+    await vi.waitFor(() => expect(pageApi).toHaveBeenCalled())
+
+    const singleDelete = crud.slotProps.handleRemove({ id: 7, name: 'single' })
+    expect(confirmMock).toHaveBeenCalledTimes(1)
+    wrapper.unmount()
+    confirmations[0].resolve()
+    await singleDelete
+    expect(removeApi).not.toHaveBeenCalled()
+
+    // 新建一份实例覆盖批量分支，确认框返回后也必须检查作用域是否还有效。
+    const { result: batchCrud, wrapper: batchWrapper } = withSetup(() =>
+      useCrud({ pageApi, removeApi }),
+    )
+    batchCrud.slotProps.handleSelectionChange([{ id: 8, name: 'batch' }])
+    const batchDelete = batchCrud.slotProps.handleBatchRemove()
+    expect(confirmMock).toHaveBeenCalledTimes(2)
+    batchWrapper.unmount()
+    confirmations[1].resolve()
+    await batchDelete
+    expect(removeApi).not.toHaveBeenCalled()
+  })
+
+  it('未配置删除接口时，单条和批量删除均为安全无操作', async () => {
+    confirmMock.mockReset().mockResolvedValue(undefined)
+    const pageApi = makePageApi()
+    const { result: crud, wrapper } = withSetup(() => useCrud({ pageApi }))
+    await vi.waitFor(() => expect(pageApi).toHaveBeenCalled())
+    confirmMock.mockClear()
+
+    await crud.slotProps.handleRemove({ id: 7, name: 'single' })
+    crud.slotProps.handleSelectionChange([{ id: 8, name: 'batch' }])
+    await crud.slotProps.handleBatchRemove()
+
+    expect(confirmMock).not.toHaveBeenCalled()
+    wrapper.unmount()
+  })
+
   it('在第 2 页改每页条数只发一次请求', async () => {
     const pageApi = makePageApi()
     const { result: crud, wrapper } = withSetup(() => useCrud({ pageApi }))

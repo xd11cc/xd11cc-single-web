@@ -72,6 +72,7 @@
           plain
           class="save-button"
           :loading="saveLoading"
+          :disabled="!draftLoaded"
           @click="saveProcess"
         >
           <Icon v-if="!saveLoading" icon="lucide:save" />{{ t('common.save') }}
@@ -88,6 +89,7 @@
           ref="designerRef"
           :xml="currentXml"
           @changed="handleDesignerChanged"
+          @editing="handleDesignerEditing"
           @selected="handleElementSelected"
           @ready="designerReady = true"
         />
@@ -173,10 +175,15 @@ const route = useRoute()
 const router = useRouter()
 
 const processKey = ref(createDefaultProcessKey())
-const defaultProcessXml = createDefaultProcessXml({
-  processName: t('bpm.modeler.process.defaultName'),
-  processId: processKey.value,
-})
+/** 按指定流程标识生成一张空白流程；每次「新建」都要重新生成，不能复用常量 */
+function createBlankProcessXml(
+  processId: string,
+  processName: string = t('bpm.modeler.process.defaultName'),
+) {
+  return createDefaultProcessXml({ processName, processId })
+}
+
+const defaultProcessXml = createBlankProcessXml(processKey.value)
 
 const designerRef = ref<InstanceType<typeof BpmnDesigner>>()
 const fileInputRef = useTemplateRef<HTMLInputElement>('fileInputRef')
@@ -189,9 +196,39 @@ const designerReady = ref(false)
 const processName = ref(t('bpm.modeler.process.defaultName'))
 const saveLoading = ref(false)
 const publishLoading = ref(false)
+/** 最近一次保存实际写入的草稿 id（发布时以它为准，而不是可能已被切走的 modelId） */
+const lastSavedId = ref('')
 const modelId = ref(typeof route.query.modelId === 'string' ? route.query.modelId : '')
+/**
+ * 画布内容是否已和 modelId 对上。
+ * 有 modelId 时要等草稿真正导入完成；在此之前保存会把默认空图写进该草稿。
+ */
+const draftLoaded = ref(!modelId.value)
 const processCategory = ref('')
 const processDescription = ref('')
+/** Changes whenever the route selects another draft (including the new-draft state). */
+let draftSessionId = 0
+/** Incremented synchronously for canvas edits, before the debounced XML export updates currentXml. */
+let canvasEditRevision = 0
+/** Serialize editor imports: bpmn-js mutates its canvas asynchronously and cannot cancel an import in flight. */
+let xmlImportQueue: Promise<void> = Promise.resolve()
+
+function isCurrentDraftSession(sessionId: number, id: string) {
+  return draftSessionId === sessionId && modelId.value === id
+}
+
+function enqueueXmlImport(xml: string, isCurrent: () => boolean = () => true): Promise<boolean> {
+  const importTask = xmlImportQueue.then(async () => {
+    if (!isCurrent()) return false
+    await designerRef.value?.importXml(xml)
+    return isCurrent()
+  })
+  xmlImportQueue = importTask.then(
+    () => undefined,
+    () => undefined,
+  )
+  return importTask
+}
 
 function returnToDefinition() {
   const returnTo = route.query.returnTo
@@ -226,6 +263,10 @@ function handlePropertyUpdate(properties: Record<string, unknown>) {
     processDescription.value = properties.documentationText
 }
 
+function handleDesignerEditing() {
+  canvasEditRevision++
+}
+
 function handleDesignerChanged(xml: string) {
   currentXml.value = xml
 }
@@ -237,9 +278,13 @@ async function openXmlDialog() {
 }
 
 async function applyXml() {
+  const sessionId = draftSessionId
+  const targetId = modelId.value
+  const xml = xmlEditorValue.value
   try {
-    await designerRef.value?.importXml(xmlEditorValue.value)
-    currentXml.value = xmlEditorValue.value
+    const imported = await enqueueXmlImport(xml, () => isCurrentDraftSession(sessionId, targetId))
+    if (!imported) return
+    currentXml.value = xml
     xmlDialogVisible.value = false
     ElMessage.success(t('bpm.modeler.messages.xmlApplied'))
   } catch (error) {
@@ -266,9 +311,13 @@ async function importFile(event: Event) {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0]
   if (!file) return
+  const sessionId = draftSessionId
+  const targetId = modelId.value
   try {
     const xml = await file.text()
-    await designerRef.value?.importXml(xml)
+    if (!isCurrentDraftSession(sessionId, targetId)) return
+    const imported = await enqueueXmlImport(xml, () => isCurrentDraftSession(sessionId, targetId))
+    if (!imported) return
     currentXml.value = xml
     ElMessage.success(t('bpm.modeler.messages.importSuccess', { filename: file.name }))
   } catch (error) {
@@ -299,29 +348,66 @@ async function handleExport(command: string) {
 }
 
 async function saveProcess(): Promise<boolean> {
-  if (!designerReady.value || saveLoading.value) return false
+  if (!designerReady.value || !draftLoaded.value || saveLoading.value) return false
   saveLoading.value = true
   try {
-    const xml = await designerRef.value?.saveXml()
-    if (!xml) return false
-    currentXml.value = xml
-    const { data } = await saveWorkflowDraft({
-      modelId: modelId.value || undefined,
+    // 记下本次保存针对的草稿会话：await 期间用户可能已切到别的草稿，
+    // 之后一切「接管当前画布 / 改 modelId」的动作都必须以此为准
+    const targetModelId = modelId.value
+    const targetSessionId = draftSessionId
+    const targetEditRevision = canvasEditRevision
+    // 元数据与编辑代次也要一起快照：saveXml 是异步的，期间可能已切草稿或继续编辑，
+    // 否则会出现「A 的 XML + B 的名称/key」这种混搭载荷
+    const meta = {
       name: processName.value,
       key: processKey.value,
       category: processCategory.value,
       description: processDescription.value,
+    }
+    const xml = await designerRef.value?.saveXml()
+    if (!xml) return false
+    currentXml.value = xml
+    const { data } = await saveWorkflowDraft({
+      modelId: targetModelId || undefined,
+      ...meta,
       editorSource: xml,
     })
     if (!data?.id) return false
-    modelId.value = data.id
-    if (modelId.value) {
-      const detail = await getWorkflowDraft(modelId.value)
-      if (detail.data.editorSource) {
-        currentXml.value = detail.data.editorSource
-        await designerRef.value?.importXml(detail.data.editorSource)
+    const savedId = String(data.id)
+    lastSavedId.value = savedId
+
+    // 保存期间已切换到别的草稿：这次保存确实落库了，但不能再改当前 modelId，
+    // 也不能把画布重新导入成刚保存的内容（那会覆盖用户正在编辑的新草稿）
+    if (modelId.value !== targetModelId) {
+      ElMessage.success(t('common.messages.operationSuccess'))
+      return true
+    }
+
+    modelId.value = savedId
+    if (!targetModelId) {
+      // 新建成功后转为编辑态：只更新地址，画布就是刚保存的内容，无需重导入
+      await router.replace({ query: { ...route.query, modelId: savedId } })
+    } else if (canvasEditRevision === targetEditRevision && currentXml.value === xml) {
+      // 内容仍是我们刚保存的那份（用户没在保存期间继续编辑）时，
+      // 才用服务端回读的 XML 归一化画布
+      const detail = await getWorkflowDraft(savedId)
+      // 回读期间用户可能继续画图或切换草稿；只有原会话、编辑代次和内容都仍有效才排队导入。
+      if (
+        detail.data?.editorSource &&
+        isCurrentDraftSession(targetSessionId, savedId) &&
+        canvasEditRevision === targetEditRevision &&
+        currentXml.value === xml
+      ) {
+        const normalizedXml = detail.data.editorSource
+        const imported = await enqueueXmlImport(
+          normalizedXml,
+          () =>
+            isCurrentDraftSession(targetSessionId, savedId) &&
+            canvasEditRevision === targetEditRevision &&
+            currentXml.value === xml,
+        )
+        if (imported) currentXml.value = normalizedXml
       }
-      await router.replace({ query: { ...route.query, modelId: modelId.value } })
     }
     ElMessage.success(t('common.messages.operationSuccess'))
     return true
@@ -338,7 +424,13 @@ async function publishProcess() {
     // 保存失败时 modelId 可能仍是上一次的旧值，直接部署会把“旧版本”发布出去，
     // 用户却看到“发布成功”，造成版本错乱。
     const saved = await saveProcess()
-    if (!saved || !modelId.value) return
+    const publishId = lastSavedId.value
+    if (!saved || !publishId) return
+    // 保存期间切过草稿：此时发布哪一份都不对，直接放弃并提示
+    if (publishId !== modelId.value) {
+      ElMessage.warning(t('bpm.modeler.messages.draftSwitched'))
+      return
+    }
     // 发布前先检查表达式参数是否填全：后端解析时会因缺参直接失败，
     // 提前拦住并指出是哪个元素、哪个参数，比让用户对着报错猜要快得多。
     const missing = await findMissingExpressionParameter(currentXml.value)
@@ -351,7 +443,7 @@ async function publishProcess() {
       )
       return
     }
-    await deployWorkflowDraft(modelId.value)
+    await deployWorkflowDraft(publishId)
     ElMessage.success(t('common.messages.operationSuccess'))
     returnToDefinition()
   } finally {
@@ -417,16 +509,64 @@ async function findMissingExpressionParameter(
   return null
 }
 
-async function loadDraft(id: string) {
+async function loadDraft(id: string, sessionId: number) {
   if (!id || !designerReady.value) return
-  const { data } = await getWorkflowDraft(id)
-  if (!data.editorSource || id !== modelId.value) return
-  processName.value = data.name || processName.value
-  processKey.value = data.key || processKey.value
-  processCategory.value = data.category || ''
-  processDescription.value = data.description || ''
-  currentXml.value = data.editorSource
-  await designerRef.value?.importXml(data.editorSource)
+  const isCurrent = () => isCurrentDraftSession(sessionId, id)
+  draftLoaded.value = false
+  try {
+    const { data } = await getWorkflowDraft(id)
+    // 已被更新的切换取代：交给那次调用去收尾，这里不动标志位
+    if (!isCurrent()) return
+    if (!data.editorSource) {
+      // 详情有 ID/名称/key 但没有 XML：这是一张空草稿。
+      // 必须按当前草稿的元数据重新初始化画布，否则会把上一份草稿的 XML 提交过来。
+      processName.value = data.name || t('bpm.modeler.process.defaultName')
+      processKey.value = data.key || createDefaultProcessKey()
+      processCategory.value = data.category || ''
+      processDescription.value = data.description || ''
+      const blank = createBlankProcessXml(processKey.value, processName.value)
+      currentXml.value = blank
+      const imported = await enqueueXmlImport(blank, isCurrent)
+      if (!imported || !isCurrent()) return
+      draftLoaded.value = true
+      return
+    }
+    processName.value = data.name || processName.value
+    processKey.value = data.key || processKey.value
+    processCategory.value = data.category || ''
+    processDescription.value = data.description || ''
+    currentXml.value = data.editorSource
+    const imported = await enqueueXmlImport(data.editorSource, isCurrent)
+    if (!imported || !isCurrent()) return
+    draftLoaded.value = true
+  } catch {
+    // 旧会话失败不能打扰当前草稿；当前草稿失败则保持未就绪，禁止覆盖真实内容。
+    if (isCurrent()) ElMessage.error(t('bpm.modeler.messages.loadFailed'))
+  }
+}
+
+/**
+ * 回到「新建」状态：清掉上一个草稿的图与元信息。
+ * 从 modeler?modelId=A 直接切到无 modelId 时（同实例），画布不会自己重置。
+ */
+async function resetToNewDraft(sessionId: number) {
+  const isCurrent = () => isCurrentDraftSession(sessionId, '')
+  draftLoaded.value = false
+  processName.value = t('bpm.modeler.process.defaultName')
+  processKey.value = createDefaultProcessKey()
+  processCategory.value = ''
+  processDescription.value = ''
+  // 必须用新 processKey 重新生成：复用旧 XML 会让新草稿带着上一份的流程标识
+  const blank = createBlankProcessXml(processKey.value)
+  currentXml.value = blank
+  try {
+    const imported = await enqueueXmlImport(blank, isCurrent)
+    if (!imported || !isCurrent()) return
+    lastSavedId.value = ''
+    draftLoaded.value = true
+  } catch {
+    if (isCurrent()) ElMessage.error(t('bpm.modeler.messages.loadFailed'))
+  }
 }
 
 // bpmn-js 必须完成初始化后才能导入草稿；直接在父组件 onMounted 调用会形成竞态。
@@ -434,8 +574,16 @@ watch(
   [designerReady, () => route.query.modelId],
   ([ready, routeModelId]) => {
     const id = typeof routeModelId === 'string' ? routeModelId : ''
+    const switched = id !== modelId.value
     modelId.value = id
-    if (ready && id) void loadDraft(id)
+    const sessionId = ++draftSessionId
+    if (!ready) return
+    if (id) {
+      void loadDraft(id, sessionId)
+      return
+    }
+    // 切到「新建」：必须把画布恢复到默认流程，否则会带着上一个草稿的内容保存成新草稿
+    if (switched) void resetToNewDraft(sessionId)
   },
   { immediate: true },
 )

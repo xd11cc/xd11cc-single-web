@@ -37,7 +37,10 @@ export const zh = {
     copyFailed: '复制失败，请手动复制 XML',
     importSuccess: '已导入 {filename}',
     importFailed: '导入失败，请选择有效的 BPMN XML 文件',
-    expressionParameterMissing: '「{element}」的表达式参数「{parameter}」未填写，请先在右侧属性面板补全',
+    loadFailed: '草稿加载失败，请刷新页面重试（加载完成前不允许保存，以免覆盖草稿）',
+    draftSwitched: '保存期间草稿已切换，本次发布已取消，请确认当前草稿后重试',
+    expressionParameterMissing:
+      '「{element}」的表达式参数「{parameter}」未填写，请先在右侧属性面板补全',
   },
   property: {
     inspector: 'INSPECTOR',
@@ -200,6 +203,9 @@ export const en = {
     copyFailed: 'Copy failed. Please copy the XML manually.',
     importSuccess: 'Imported {filename}',
     importFailed: 'Import failed. Select a valid BPMN XML file.',
+    loadFailed: 'Failed to load the draft. Refresh to retry (saving stays blocked until it loads).',
+    draftSwitched:
+      'The draft changed while saving, so publishing was cancelled. Check the current draft and retry.',
     expressionParameterMissing:
       'The expression parameter "{parameter}" of "{element}" is empty. Fill it in the property panel first.',
   },

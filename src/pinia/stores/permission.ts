@@ -104,8 +104,16 @@ export const usePermissionStore = defineStore('permission', () => {
    */
   const generateRoutes = async (
     fetchRoutes: () => Promise<ResponseVO<RouteVO[]>> = getRoutes,
+    /**
+     * 请求返回后、写入 store 之前调用：返回 false 表示这次初始化已经过期
+     * （例如期间用户换了账号），此时不写 routes / addRoutes。
+     *
+     * 之所以放在 store 里判断，是因为调用方（守卫）拿到结果时侧栏可能已经被覆盖了。
+     */
+    isStillCurrent?: () => boolean,
   ): Promise<RouteRecordRaw[]> => {
     const { data } = await fetchRoutes()
+    if (isStillCurrent && !isStillCurrent()) return []
     const accessedRoutes = transformBackendRoutes(data ?? [])
     routes.value = publicRoutes.concat(accessedRoutes)
     addRoutes.value = accessedRoutes

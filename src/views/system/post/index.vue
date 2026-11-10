@@ -3,9 +3,26 @@
     :slotProps="crud.slotProps"
     :columns="columns"
     :formRules="formRules"
+    :submit-disabled="!deptPermsLoaded && isEditing"
     :add-title="$t('system.post.dialogs.add')"
     :edit-title="$t('system.post.dialogs.edit')"
   >
+    <!-- 部门回填失败时的弹窗内提示（仅编辑；新增不受影响） -->
+    <template #dialog-banner>
+      <el-alert
+        v-if="isEditing && deptError"
+        type="warning"
+        :closable="false"
+        show-icon
+        class="perms-alert"
+      >
+        <span>{{ $t('system.post.messages.deptLoadFailed') }}</span>
+        <el-button link type="primary" size="small" @click="retryDeptLoad">
+          {{ $t('common.retry') }}
+        </el-button>
+      </el-alert>
+    </template>
+
     <!-- 搜索区字段 -->
     <template #search-form="{ searchData }">
       <el-form-item prop="postCode" :label="$t('system.post.columns.postCode')">
@@ -165,6 +182,7 @@ import { ref, nextTick } from 'vue'
 import type { FormRules, TreeInstance } from 'element-plus'
 import UseCrudView from '@/common/components/useCrud/index.vue'
 import { useCrud } from '@/common/composables/useCrud'
+import { createLazyLoader } from '@/common/composables/useLazyResource'
 import { useDict } from '@/common/composables/useDict'
 import { postPage, addPost, modifyPostById, removePostByIds, getPostDeptIds } from './apis'
 import type { SystemPostVO, SystemPostQueryVO } from './apis/type'
@@ -195,10 +213,23 @@ const columns = computed<TableColumnDef[]>(() => [
   },
 ])
 
+const deptTreeData = ref<SystemDeptTreeVO[]>([])
+const deptTreeRef = ref<TreeInstance>()
+const deptPermsLoaded = ref(true)
+let deptPermissionRequestId = 0
+
 const crud = useCrud<SystemPostQueryVO, SystemPostVO>({
   pageApi: (query) => postPage(query),
+  // 新增不需要历史部门范围：部门树没加载好也可以先建岗位，稍后到编辑页补。
+  // 只有编辑会覆盖原范围，因此那里必须拦住。
   addApi: (data) => addPost(data),
-  updateApi: (data) => modifyPostById(data),
+  updateApi: (data) => {
+    if (!deptPermsLoaded.value) {
+      ElMessage.warning($t('system.post.messages.deptPermissionsNotReady'))
+      return Promise.reject(new Error('department permissions not ready'))
+    }
+    return modifyPostById(data)
+  },
   removeApi: (ids) => removePostByIds(ids),
   defaultForm: () => ({ status: '0' }),
   removeConfirmText: (row) => $t('system.post.messages.deleteConfirm', { postName: row?.postName }),
@@ -219,26 +250,69 @@ const crud = useCrud<SystemPostQueryVO, SystemPostVO>({
     }
     return payload
   },
-  // 编辑时回填部门勾选（模块特有逻辑），替代原先对 handleEdit 的 monkey-patch
-  onDialogOpen: ({ isAdd, row }) => {
-    if (isAdd) return
-    nextTick(() => {
-      deptTreeRef.value?.setCheckedKeys([])
-      if (row?.id) {
-        getPostDeptIds(row.id).then(({ data }) => {
-          data.forEach((id) => {
-            deptTreeRef.value?.setChecked(id, true, false)
-          })
-        })
-      }
-    })
+  // 新增和编辑都依赖已渲染的部门树；编辑还需完成原权限回填。
+  onDialogOpen: ({ isAdd, row, session }) => {
+    const requestId = ++deptPermissionRequestId
+    void loadDeptPermissions(session, isAdd ? undefined : row?.id, requestId)
   },
 })
 
-// ─── 依赖数据（部门树） ───────────────────────────────────
-const deptTreeData = ref<SystemDeptTreeVO[]>([])
-const deptTreeRef = ref<TreeInstance>()
+/** 是否在编辑已有记录：只有编辑会覆盖原部门范围 */
+const isEditing = computed(() => crud.state.formData.value?.id != null)
+/** 部门回填是否失败（编辑时用它给出持久提示 + 重试入口） */
+const deptError = ref(false)
 
+/** 回填部门范围（可重试） */
+async function loadDeptPermissions(session: number, postId: number | undefined, requestId: number) {
+  const isCurrent = () =>
+    requestId === deptPermissionRequestId && crud.state.isCurrentSession(session)
+
+  deptPermsLoaded.value = false
+  deptError.value = false
+  await nextTick()
+  if (!isCurrent()) return
+  deptTreeRef.value?.setCheckedKeys([])
+
+  const treeReady = await deptTreeLoader.ensure()
+  if (!isCurrent()) return
+  if (!treeReady || !deptTreeRef.value) {
+    deptError.value = true
+    return
+  }
+
+  // 新增没有历史部门要回填
+  if (!postId) {
+    deptPermsLoaded.value = true
+    return
+  }
+
+  try {
+    const { data } = await getPostDeptIds(postId)
+    if (!isCurrent()) return
+    await nextTick()
+    if (!isCurrent()) return
+    if (!applyDeptCheckedIds(data)) {
+      deptError.value = true
+      return
+    }
+    deptPermsLoaded.value = true
+  } catch {
+    deptError.value = true
+  }
+}
+
+/** 用户点「重试」：清缓存后按当前会话重新回填 */
+function retryDeptLoad() {
+  deptTreeLoader.reset()
+  const requestId = ++deptPermissionRequestId
+  void loadDeptPermissions(
+    crud.state.sessionId,
+    crud.state.formData.value.id as number | undefined,
+    requestId,
+  )
+}
+
+// ─── 依赖数据（部门树） ───────────────────────────────────
 const formRules: FormRules = {
   postCode: [{ required: true, trigger: 'blur', message: () => $t('system.post.form.postCode') }],
   postName: [{ required: true, trigger: 'blur', message: () => $t('system.post.form.postName') }],
@@ -247,14 +321,31 @@ const formRules: FormRules = {
   ],
 }
 
-function getDeptTree() {
-  deptTreeList({}).then(({ data }) => {
-    deptTreeData.value = data
-  })
+const deptTreeLoader = createLazyLoader(async () => {
+  const { data } = await deptTreeList({})
+  deptTreeData.value = data ?? []
+  // 等树渲染出节点，setChecked 才能生效
+  await nextTick()
+})
+
+function applyDeptCheckedIds(ids: number[]): boolean {
+  const tree = deptTreeRef.value
+  if (!tree) return false
+  const availableIds = new Set<number>()
+  const visit = (nodes: SystemDeptTreeVO[]) => {
+    for (const node of nodes) {
+      availableIds.add(node.id)
+      if (node.children?.length) visit(node.children)
+    }
+  }
+  visit(deptTreeData.value)
+  if (ids.some((id) => !availableIds.has(id))) return false
+  ids.forEach((id) => tree.setChecked(id, true, false))
+  return true
 }
 
 // ─── 初始化依赖数据 ──────────────────────────────────────
-getDeptTree()
+void deptTreeLoader.ensure()
 </script>
 
 <style lang="scss" scoped>

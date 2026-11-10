@@ -8,6 +8,7 @@ import { useTagsViewStore } from './tags-view'
 import type { RouteRecordRaw } from 'vue-router'
 import { usePermissionStore } from './permission'
 import { resetUnauthorizedHandling } from '@/common/utils/request'
+import { resetPermissionInitialization } from '@/router/permission-init'
 
 export const useUserStore = defineStore('user', () => {
   const token = ref<string>(getToken() || '')
@@ -46,7 +47,11 @@ export const useUserStore = defineStore('user', () => {
 
   // 获取用户详情
   const getInfo = async () => {
+    // 记录发起时的登录态：若请求期间用户登出/换号，迟到的响应会把上一个人的
+    // 用户 ID、角色和权限写进新会话（token 已经是新人的了）
+    const tokenAtRequest = token.value
     const { data } = await getUserInfo()
+    if (token.value !== tokenAtRequest) return
     userId.value = data.id
     username.value = data.username
     nickname.value = data.nickname || ''
@@ -66,7 +71,11 @@ export const useUserStore = defineStore('user', () => {
 
   // 登出
   const logout = async () => {
+    // 记下发起登出时的登录态：请求期间用户可能已经换号登录，
+    // 旧登出的回调不能把新会话清掉
+    const tokenAtLogout = token.value
     await _logout()
+    if (token.value !== tokenAtLogout) return
     resetToken()
   }
 
@@ -91,6 +100,8 @@ export const useUserStore = defineStore('user', () => {
     postName.value = ''
     roleNames.value = []
     resetRouter()
+    // 清掉权限初始化的单飞 Promise：否则换号登录时新导航会 await 上一个会话的初始化
+    resetPermissionInitialization()
     const permissionStore = usePermissionStore()
     permissionStore.reset()
     resetTagsView(true)

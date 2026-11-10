@@ -3,11 +3,28 @@
     :slotProps="crud.slotProps"
     :columns="columns"
     :formRules="formRules"
+    :submit-disabled="!noticeFormReady && isEditing"
     :add-title="$t('system.notice.dialogs.add')"
     :edit-title="$t('system.notice.dialogs.edit')"
     dialog-width="min(800px, calc(100vw - 32px))"
     label-width="144px"
   >
+    <!-- 详情回填失败时的弹窗内提示（仅编辑；新增不受影响） -->
+    <template #dialog-banner>
+      <el-alert
+        v-if="isEditing && noticeError"
+        type="warning"
+        :closable="false"
+        show-icon
+        class="perms-alert"
+      >
+        <span>{{ $t('system.notice.messages.detailsLoadFailed') }}</span>
+        <el-button link type="primary" size="small" @click="retryNoticeDetail">
+          {{ $t('common.retry') }}
+        </el-button>
+      </el-alert>
+    </template>
+
     <!-- 搜索区字段 -->
     <template #search-form="{ searchData }">
       <el-form-item prop="title" :label="$t('system.notice.search.title')">
@@ -73,7 +90,7 @@
         size="small"
         disable-transitions
       >
-        {{ getDictItem('system_notice_type', String(row.type))?.value }}
+        {{ getDictItem('system_notice_type', String(row.type))?.label }}
       </el-tag>
     </template>
 
@@ -88,7 +105,7 @@
         size="small"
         disable-transitions
       >
-        {{ getDictItem('system_notice_status', String(row.status))?.value }}
+        {{ getDictItem('system_notice_status', String(row.status))?.label }}
       </el-tag>
     </template>
 
@@ -273,10 +290,10 @@
             detailData.title
           }}</el-descriptions-item>
           <el-descriptions-item :label="$t('system.notice.columns.type')">
-            {{ getDictItem('system_notice_type', String(detailData.type))?.value }}
+            {{ getDictItem('system_notice_type', String(detailData.type))?.label }}
           </el-descriptions-item>
           <el-descriptions-item :label="$t('system.notice.columns.status')">
-            {{ getDictItem('system_notice_status', String(detailData.status))?.value }}
+            {{ getDictItem('system_notice_status', String(detailData.status))?.label }}
           </el-descriptions-item>
           <el-descriptions-item :label="$t('system.notice.columns.scope')">{{
             scopeLabel(detailData.scope)
@@ -308,6 +325,7 @@ import { Icon } from '@iconify/vue'
 import type { FormRules } from 'element-plus'
 import UseCrudView from '@/common/components/useCrud/index.vue'
 import { useCrud } from '@/common/composables/useCrud'
+import { createLazyLoader } from '@/common/composables/useLazyResource'
 import { useDict } from '@/common/composables/useDict'
 import {
   noticePage,
@@ -331,6 +349,105 @@ const $t = t
 defineOptions({
   name: 'Notice',
 })
+
+const crud = useCrud<SystemNoticeQueryVO, SystemNoticeVO>({
+  pageApi: (query) => noticePage(query),
+  // 新增不需要回填历史详情，直接提交；只有编辑要等详情与范围就绪
+  addApi: (data) => addNotice(data),
+  updateApi: (data) => {
+    if (!noticeFormReady.value) {
+      ElMessage.warning($t('system.notice.messages.detailsNotReady'))
+      return Promise.reject(new Error('notice form data not ready'))
+    }
+    return modifyNoticeById(data)
+  },
+  removeApi: (ids) => removeNoticeByIds(ids),
+  defaultForm: () => ({ type: '1', scope: '1' }),
+  // 发布范围依赖弹窗内的部门树勾选状态，提交前统一组装载荷
+  transformPayload: (form, isAdd) => ({
+    ...(isAdd ? {} : { id: form.id }),
+    title: form.title,
+    content: form.content,
+    type: form.type,
+    scope: form.scope,
+    scopeDeptIds:
+      form.scope === NOTICE_SCOPE.DEPT
+        ? (deptTreeRef.value?.getCheckedKeys(false) as number[]) || []
+        : undefined,
+    scopeUserIds: form.scope === NOTICE_SCOPE.USER ? form.scopeUserIds || [] : undefined,
+    remark: form.remark,
+  }),
+  removeConfirmText: (row) => $t('system.notice.messages.deleteConfirm', { title: row?.title }),
+  batchRemoveConfirmText: (count) => $t('system.notice.messages.batchDeleteConfirm', { count }),
+  // 编辑需要完整数据（列表接口不返回 content 与发布范围），依赖数据就绪前禁止提交。
+  onDialogOpen: ({ isAdd, row, form, session }) => {
+    ++noticeDetailRequestId
+    noticeScopeRequestId++
+    if (isAdd) {
+      noticeHydrationSession = -1
+      noticeHydrationFailedSession = -1
+      noticeError.value = false
+      noticeFormReady.value = true
+      return
+    }
+    noticeHydrationSession = session
+    void hydrateNoticeDetail(session, row?.id, form)
+  },
+})
+
+/** 是否在编辑已有记录：只有编辑需要等详情与范围回填 */
+const isEditing = computed(() => crud.state.formData.value?.id != null)
+/** 详情回填是否失败（编辑时给出持久提示 + 重试入口） */
+const noticeError = ref(false)
+
+/**
+ * 回填编辑所需的详情与发布范围。
+ * 独立成函数是为了「加载失败」时能就地重试，而不是让用户关掉弹窗重开。
+ */
+async function hydrateNoticeDetail(session: number, noticeId: number | undefined, form: any) {
+  ++noticeDetailRequestId
+  const requestId = noticeDetailRequestId
+  noticeFormReady.value = false
+  noticeError.value = false
+  noticeHydrationSession = session
+  noticeHydrationFailedSession = -1
+
+  const isCurrent = () =>
+    requestId === noticeDetailRequestId &&
+    Boolean(crud.state.dialogVisible.value) &&
+    crud.state.isCurrentSession(session) &&
+    crud.state.formData.value === form
+
+  try {
+    if (!noticeId) throw new Error('notice id is missing')
+    const { data } = await getNoticeById(noticeId)
+    if (!isCurrent()) return
+    const scopeDeptIds = parseIdList(data.scopeDeptIds)
+    const scopeUserIds = parseIdList(data.scopeUserIds)
+    if (!scopeDeptIds || !scopeUserIds) throw new Error('notice scope ids are invalid')
+    Object.assign(form, { ...data, scopeDeptIds, scopeUserIds })
+
+    const optionsReady = await ensureNoticeScopeOptions(data.scope, isCurrent, scopeDeptIds)
+    if (!isCurrent()) return
+    if (!optionsReady) throw new Error('notice scope options are not ready')
+    noticeFormReady.value = true
+  } catch {
+    if (isCurrent()) {
+      noticeHydrationFailedSession = session
+      noticeError.value = true
+    }
+  } finally {
+    if (noticeHydrationSession === session) noticeHydrationSession = -1
+  }
+}
+
+/** 用户点「重试」：清掉范围选项缓存后按当前会话重新回填 */
+function retryNoticeDetail() {
+  deptOptionsLoader.reset()
+  userOptionsLoader.reset()
+  const form = crud.state.formData.value
+  void hydrateNoticeDetail(crud.state.sessionId, form.id, form)
+}
 
 /**
  * <p>与后端 system_notice.status 一致，类型为 char(2) 字符串，
@@ -362,6 +479,68 @@ const userListData = ref<SystemUserVO[]>([])
 
 const detailVisible = ref(false)
 const detailData = ref<SystemNoticeVO>({})
+const noticeFormReady = ref(true)
+let noticeDetailRequestId = 0
+let noticeScopeRequestId = 0
+let noticeHydrationSession = -1
+let noticeHydrationFailedSession = -1
+
+const deptOptionsLoader = createLazyLoader(async () => {
+  const { data } = await deptTreeList({})
+  deptTreeData.value = data ?? []
+  // 等树渲染出节点，setChecked 才能生效
+  await nextTick()
+})
+
+const userOptionsLoader = createLazyLoader(async () => {
+  const { data } = await userList()
+  userListData.value = data ?? []
+  await nextTick()
+})
+
+function parseIdList(value?: string): number[] | null {
+  if (!value) return []
+  const parts = value.split(',').map((item) => item.trim())
+  if (parts.some((item) => !item)) return null
+  const ids = parts.map(Number)
+  return ids.every((id) => Number.isSafeInteger(id) && id > 0) ? ids : null
+}
+
+function applyNoticeDeptIds(ids: number[]): boolean {
+  const tree = deptTreeRef.value
+  if (!tree) return false
+  const availableIds = new Set<number>()
+  const visit = (nodes: SystemDeptTreeVO[]) => {
+    for (const node of nodes) {
+      availableIds.add(node.id)
+      if (node.children?.length) visit(node.children)
+    }
+  }
+  visit(deptTreeData.value)
+  if (ids.some((id) => !availableIds.has(id))) return false
+  tree.setCheckedKeys([], false)
+  ids.forEach((id) => tree.setChecked(id, true, false))
+  return true
+}
+
+async function ensureNoticeScopeOptions(
+  scope: string | undefined,
+  isCurrent: () => boolean,
+  deptIds?: number[],
+): Promise<boolean> {
+  if (scope === NOTICE_SCOPE.DEPT) {
+    if (!(await deptOptionsLoader.ensure())) return false
+    await nextTick()
+    if (!isCurrent()) return false
+    return deptIds === undefined || applyNoticeDeptIds(deptIds)
+  }
+  if (scope === NOTICE_SCOPE.USER) {
+    if (!(await userOptionsLoader.ensure())) return false
+    await nextTick()
+    return isCurrent()
+  }
+  return isCurrent()
+}
 
 // scope 展示文案由字典 system_notice_scope 提供
 function scopeLabel(scope?: string) {
@@ -402,51 +581,57 @@ const columns = computed<TableColumnDef[]>(() => [
   },
 ])
 
-const crud = useCrud<SystemNoticeQueryVO, SystemNoticeVO>({
-  pageApi: (query) => noticePage(query),
-  addApi: (data) => addNotice(data),
-  updateApi: (data) => modifyNoticeById(data),
-  removeApi: (ids) => removeNoticeByIds(ids),
-  defaultForm: () => ({ type: '1', scope: '1' }),
-  // 发布范围依赖弹窗内的部门树勾选状态，提交前统一组装载荷
-  transformPayload: (form, isAdd) => ({
-    ...(isAdd ? {} : { id: form.id }),
-    title: form.title,
-    content: form.content,
-    type: form.type,
-    scope: form.scope,
-    scopeDeptIds:
-      form.scope === NOTICE_SCOPE.DEPT
-        ? (deptTreeRef.value?.getCheckedKeys(false) as number[]) || []
-        : undefined,
-    scopeUserIds: form.scope === NOTICE_SCOPE.USER ? form.scopeUserIds || [] : undefined,
-    remark: form.remark,
-  }),
-  removeConfirmText: (row) => $t('system.notice.messages.deleteConfirm', { title: row?.title }),
-  batchRemoveConfirmText: (count) => $t('system.notice.messages.batchDeleteConfirm', { count }),
-  // 编辑需要完整数据（列表接口不返回 content 与发布范围），打开弹窗后补齐
-  onDialogOpen: ({ isAdd, row, form }) => {
-    if (isAdd) return
-    getNoticeById(row.id).then(({ data }) => {
-      Object.assign(form, {
-        ...data,
-        scopeDeptIds: data.scopeDeptIds ? data.scopeDeptIds.split(',').map(Number) : [],
-        scopeUserIds: data.scopeUserIds ? data.scopeUserIds.split(',').map(Number) : [],
-      })
-      if (data.scope === NOTICE_SCOPE.DEPT && form.scopeDeptIds?.length) {
-        nextTick(() => {
-          form.scopeDeptIds.forEach((id: number) => {
-            deptTreeRef.value?.setChecked(id, true, false)
-          })
-        })
-      }
-    })
-  },
-})
+watch(
+  [
+    () => crud.state.formData.value.scope,
+    () => crud.state.sessionId,
+    () => crud.state.dialogVisible,
+  ],
+  ([scope, session, dialogVisible]) => {
+    const requestId = ++noticeScopeRequestId
+    if (!dialogVisible) return
+    // 编辑打开时，onDialogOpen 负责详情与原始范围的整体回填。
+    // 若详情失败，范围变更也不能把不完整的编辑表单重新标记为可提交。
+    if (noticeHydrationSession === session || noticeHydrationFailedSession === session) return
 
-function handleDetail(row: SystemNoticeVO) {
+    const isCurrent = () =>
+      requestId === noticeScopeRequestId &&
+      crud.state.dialogVisible.value &&
+      crud.state.isCurrentSession(session) &&
+      crud.state.formData.value.scope === scope
+    if (scope !== NOTICE_SCOPE.DEPT && scope !== NOTICE_SCOPE.USER) {
+      noticeFormReady.value = true
+      return
+    }
+
+    noticeFormReady.value = false
+    void ensureNoticeScopeOptions(scope, isCurrent)
+      .then((ready) => {
+        if (!isCurrent()) return
+        if (ready) noticeFormReady.value = true
+        else ElMessage.warning($t('system.notice.messages.detailsNotReady'))
+      })
+      .catch(() => {
+        if (isCurrent()) ElMessage.warning($t('system.notice.messages.detailsNotReady'))
+      })
+  },
+  { flush: 'post' },
+)
+
+async function handleDetail(row: SystemNoticeVO) {
+  const id = row.id
   detailData.value = row
   detailVisible.value = true
+  if (!id) return
+  try {
+    // 列表行不一定带全文（不同后端版本的投影字段可能不同），详情单独取一次
+    const { data } = await getNoticeById(id)
+    // 期间用户可能已点了另一条的详情
+    if (detailData.value?.id !== id) return
+    detailData.value = { ...row, ...data }
+  } catch {
+    // 取详情失败时保留列表里的数据，标题等仍可阅读
+  }
 }
 
 function handlePublish(row: SystemNoticeVO) {
@@ -483,12 +668,8 @@ function handleRevoke(row: SystemNoticeVO) {
   })
 }
 
-deptTreeList({}).then(({ data }) => {
-  deptTreeData.value = data
-})
-userList().then(({ data }) => {
-  userListData.value = data
-})
+void deptOptionsLoader.ensure()
+void userOptionsLoader.ensure()
 </script>
 
 <style lang="scss" scoped>

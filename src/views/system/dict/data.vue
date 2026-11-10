@@ -225,7 +225,12 @@ defineOptions({
 const { getDictItem, getDictList } = useDict(['system_status'])
 
 const route = useRoute()
-const dictType = route.query.dictType as string | undefined
+// 页面会被 keep-alive 缓存：从字典类型 A 跳到 B 时组件不会重建，
+// 因此这里必须跟着 route.query 变，不能只在 setup 里读一次
+const dictType = computed(() => {
+  const value = route.query.dictType
+  return typeof value === 'string' ? value : undefined
+})
 
 const dictTypeOptions = ref<SystemDictTypeVO[]>([])
 
@@ -275,15 +280,21 @@ const crud = useCrud<SystemDictDataQueryVO, SystemDictDataVO>({
   updateApi: (data) => modifyDictDataById(data),
   removeApi: (ids) => removeDictDataByIds(ids),
   // 从字典类型页跳转过来时带上 dictType，重置时也要恢复它
-  defaultQuery: () => ({ dictType }) as SystemDictDataQueryVO,
+  defaultQuery: () => ({ dictType: dictType.value }) as SystemDictDataQueryVO,
   defaultForm: () => ({
-    dictType,
+    dictType: dictType.value,
     sort: 0,
     status: '0',
     listClass: 'primary',
   }),
   removeConfirmText: (row) => $t('system.dict.data.messages.deleteConfirm', { value: row?.value }),
   batchRemoveConfirmText: (count) => $t('system.dict.data.messages.batchDeleteConfirm', { count }),
+})
+
+// 从 A 类型切到 B 类型时（同一实例），把查询条件与列表一起切过去
+watch(dictType, (next, prev) => {
+  if (next === prev) return
+  crud.slotProps.resetSearch()
 })
 
 function getDictTypeList() {

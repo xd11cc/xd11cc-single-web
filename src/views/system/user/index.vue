@@ -54,7 +54,11 @@
       <el-button type="primary" @click="handleAdd" v-permission="['system:user:add']">
         <template #icon><Icon icon="lucide:plus-circle" /></template>{{ $t('common.add') }}
       </el-button>
-      <el-button type="danger" @click="handleBatchRemove">
+      <el-button
+        type="danger"
+        @click="handleBatchRemove"
+        v-permission="['system:user:delete']"
+      >
         <template #icon><Icon icon="lucide:trash-2" /></template>{{ $t('common.batchDelete') }} ({{
           rowSelection.length
         }})
@@ -63,7 +67,7 @@
 
     <!-- 选择列：固定在生成列之前 -->
     <template #table-prefix>
-      <el-table-column type="selection" width="50" align="center" />
+      <el-table-column v-if="canDeleteUsers" type="selection" width="50" align="center" />
     </template>
 
     <!-- 状态列：自定义单元格；其余列由壳按 columns 配置生成 -->
@@ -280,6 +284,7 @@ import type { FormRules } from 'element-plus'
 import type { TableColumnDef } from '@@/composables/useTableColumns'
 import UseCrudView from '@/common/components/useCrud/index.vue'
 import { useCrud } from '@/common/composables/useCrud'
+import { useLatestRequest } from '@/common/composables/useLatestRequest'
 import { useDict } from '@/common/composables/useDict'
 import { userPage, addUser, modifyUserById, removeUserByIds, resetPassword } from './apis'
 import type { SystemUserVO, SystemUserQueryVO } from './apis/type'
@@ -289,8 +294,16 @@ import type { SystemRoleVO } from '@/views/system/role/apis/type'
 import { deptTreeList } from '@/views/system/dept/apis'
 import { postListByDeptId } from '@/views/system/post/apis'
 import { roleList } from '@/views/system/role/apis'
+import { useUserStore } from '@/pinia/stores/user'
 
 const { t } = useI18n()
+const userStore = useUserStore()
+// 与 v-permission 指令保持一致：超管通配权限或明确的用户删除权限才可批量删除。
+const canDeleteUsers = computed(() =>
+  userStore.permissions.some(
+    (permission) => permission === '*:*:*' || permission === 'system:user:delete',
+  ),
+)
 const $t = t
 
 defineOptions({ name: 'User' })
@@ -299,6 +312,9 @@ defineOptions({ name: 'User' })
 const { getDictList, getDictItem } = useDict(['system_status', 'system_user_sex'])
 
 // ─── CRUD 核心（状态 + 搜索/分页/删除/弹窗生命周期） ──────
+// 快速切换部门时，先发的请求可能后回来，把岗位列表换成上一个部门的
+const postRequest = useLatestRequest()
+
 const crud = useCrud<SystemUserQueryVO, SystemUserVO>({
   pageApi: (query) => userPage(query),
   addApi: (data) => addUser(data),
@@ -309,7 +325,13 @@ const crud = useCrud<SystemUserQueryVO, SystemUserVO>({
   // 编辑时补加载岗位列表（模块特有逻辑）
   onDialogOpen: ({ isAdd, row }) => {
     if (isAdd || !row?.deptId) return
+    const rowId = row.id
+    // 与 handleDeptChange 共用同一个序号：紧接着换部门时，这次初始化请求会被判为过期，
+    // 否则它迟到返回会把新部门下的岗位覆盖掉
+    const requestId = postRequest.begin()
     postListByDeptId(row.deptId).then(({ data }) => {
+      if (!postRequest.isCurrent(requestId)) return
+      if (crud.state.formData.value.id !== rowId) return
       postList.value = data
     })
   },
@@ -378,12 +400,15 @@ function findDeptNode(tree: SystemDeptTreeVO[], id: number): SystemDeptTreeVO | 
 }
 
 // ─── 部门联动岗位（模块特有逻辑，保留在父组件） ────────────
+
 function handleDeptChange(deptId: number | undefined) {
   postList.value = []
+  const requestId = postRequest.begin()
   if (deptId) {
     const node = findDeptNode(deptTreeData.value, deptId)
     crud.state.formData.value.deptName = node?.deptName
     postListByDeptId(deptId).then(({ data }) => {
+      if (!postRequest.isCurrent(requestId)) return
       postList.value = data
     })
   } else {

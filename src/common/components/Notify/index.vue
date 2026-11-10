@@ -144,20 +144,26 @@ const tabList = ref<TabItem[]>([
 
 const totalUnread = computed(() => tabList.value.reduce((sum, item) => sum + item.unread, 0))
 
-function fetchUnreadCount() {
-  unreadCount().then(({ data }) => {
+async function fetchUnreadCount(): Promise<void> {
+  try {
+    const { data } = await unreadCount()
     tabList.value[0].unread = data['notice'] || 0
     tabList.value[1].unread = data['message'] || 0
     tabList.value[2].unread = data['todo'] || 0
-  })
+  } catch {
+    // request 层已提示请求失败；保留当前计数，并在下次打开/推送时重试。
+  }
 }
 
-function fetchNoticeList(type: string) {
+async function fetchNoticeList(type: string): Promise<void> {
   const tab = tabList.value.find((t) => t.type === type)
   if (!tab) return
-  myNoticePage({ type, currentPage: 1, pageSize: 20 }).then(({ data }) => {
+  try {
+    const { data } = await myNoticePage({ type, currentPage: 1, pageSize: 20 })
     tab.list = data.rows
-  })
+  } catch {
+    // request 层已提示请求失败；保留当前列表，避免失败响应清空用户正在查看的数据。
+  }
 }
 
 function handlePopoverShow() {
@@ -165,23 +171,42 @@ function handlePopoverShow() {
   tabList.value.forEach((tab) => fetchNoticeList(tab.type))
 }
 
-function handleRead(notice: SystemNoticeUserDTO) {
-  if (notice.readStatus === READ_STATUS.UNREAD && notice.noticeId) {
-    markAsRead(notice.noticeId).then(() => {
-      notice.readStatus = READ_STATUS.READ
-      const tab = tabList.value.find((t) => t.type === notice.type)
-      if (tab && tab.unread > 0) tab.unread--
-    })
+/** 正在标记已读的通知 ID：防止连点同一条导致未读数被扣多次 */
+const readInFlight = new Set<number>()
+
+function hasBeenMarkedRead(notice: SystemNoticeUserDTO): boolean {
+  return notice.readStatus === READ_STATUS.READ
+}
+
+async function handleRead(notice: SystemNoticeUserDTO): Promise<void> {
+  const noticeId = notice.noticeId
+  if (notice.readStatus !== READ_STATUS.UNREAD || !noticeId) return
+  if (readInFlight.has(noticeId)) return
+  readInFlight.add(noticeId)
+  try {
+    await markAsRead(noticeId)
+    // 两个响应都成功时，状态已经是 READ，不能重复扣减
+    if (hasBeenMarkedRead(notice)) return
+    notice.readStatus = READ_STATUS.READ
+    const tab = tabList.value.find((t) => t.type === notice.type)
+    if (tab && tab.unread > 0) tab.unread--
+  } catch {
+    // request 层已提示请求失败；保持未读，允许用户稍后重试。
+  } finally {
+    readInFlight.delete(noticeId)
   }
 }
 
-function handleMarkAllRead() {
+async function handleMarkAllRead(): Promise<void> {
   const tab = tabList.value.find((t) => t.name === activeName.value)
   if (!tab) return
-  markAllAsRead(tab.type).then(() => {
+  try {
+    await markAllAsRead(tab.type)
     tab.unread = 0
     tab.list.forEach((item) => (item.readStatus = READ_STATUS.READ))
-  })
+  } catch {
+    // request 层已提示请求失败；保留未读状态，等待用户再次操作。
+  }
 }
 
 function handleHistory() {

@@ -21,6 +21,8 @@ const service = axios.create({
 
 // 防止 token 过期时多个并发请求同时触发 401 导致重复跳转
 let isHandlingUnauthorized = false
+/** null 表示该请求明确未带 token；undefined 仅表示没有可用的请求快照。 */
+const requestTokenSnapshots = new WeakMap<object, string | null>()
 
 // 请求拦截器
 service.interceptors.request.use(
@@ -29,6 +31,10 @@ service.interceptors.request.use(
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`
     }
+    const authorization = config.headers['Authorization'] ?? config.headers['authorization']
+    const tokenUsed =
+      typeof authorization === 'string' ? authorization.replace(/^Bearer\s+/i, '') || null : null
+    requestTokenSnapshots.set(config, tokenUsed)
     return config
   },
 
@@ -38,7 +44,28 @@ service.interceptors.request.use(
   },
 )
 
-export function handleUnauthorized() {
+/** 取回请求发起时的认证快照；未经过本实例拦截器的响应配置则回退读取 Authorization。 */
+function tokenOfRequest(config?: object): string | null | undefined {
+  if (!config) return undefined
+  if (requestTokenSnapshots.has(config)) return requestTokenSnapshots.get(config)
+
+  const headers = (config as { headers?: Record<string, unknown> }).headers
+  const authorization = headers?.Authorization ?? headers?.authorization
+  if (typeof authorization === 'string') {
+    return authorization.replace(/^Bearer\s+/i, '') || null
+  }
+  return undefined
+}
+
+/**
+ * 处理 401。
+ *
+ * `tokenUsed` 是这个请求发起时的认证快照：如果它（包括 null 的未登录态）
+ * 已经不同于当前 token，说明期间用户已换会话，不能清掉新登录态。
+ */
+export function handleUnauthorized(tokenUsed?: string | null) {
+  const currentToken = getToken() || null
+  if (tokenUsed !== undefined && tokenUsed !== currentToken) return
   if (isHandlingUnauthorized) return
   isHandlingUnauthorized = true
   ElMessage.warning(i18n.global.t('common.network.unauthorized'))
@@ -83,7 +110,7 @@ service.interceptors.response.use(
           break
         case 401:
           console.error('未授权或者token过期')
-          handleUnauthorized()
+          handleUnauthorized(tokenOfRequest(response.config))
           return Promise.reject(new Error(errorMsg))
         case 403:
           console.error('未授权')
@@ -116,7 +143,7 @@ service.interceptors.response.use(
         break
       case 401:
         console.error('未授权或者token过期')
-        handleUnauthorized()
+        handleUnauthorized(tokenOfRequest(error.config))
         break
       case 403:
         console.error('未授权')

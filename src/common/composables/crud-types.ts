@@ -38,6 +38,8 @@ export interface BaseCrudOptions<TOpenContext = { isAdd: boolean; form: Record<s
 export interface CrudDialogSlotProps {
   formData: any
   dialogVisible: boolean
+  /** 当前弹窗会话号（由 useCrud/useTreeCrud 维护）：提交过程中用它判断是否已过期 */
+  readonly sessionId: number
   handleSubmit: (isAdd: boolean) => Promise<ResponseVO<any> | void>
   handleClose: () => void
 }

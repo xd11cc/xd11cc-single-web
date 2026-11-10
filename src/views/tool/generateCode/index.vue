@@ -53,7 +53,7 @@
         append-to-body
         destroy-on-close
       >
-        <el-tabs v-model="activeTab" class="code-tabs">
+        <el-tabs v-model="activeTab" v-loading="previewLoading" class="code-tabs">
           <el-tab-pane
             v-for="item in previewCodeData"
             :key="item.fileName"
@@ -73,6 +73,7 @@ import { Icon } from '@iconify/vue'
 import { useI18n } from 'vue-i18n'
 import UseCrudView from '@/common/components/useCrud/index.vue'
 import { useCrud } from '@/common/composables/useCrud'
+import { useLatestRequest } from '@/common/composables/useLatestRequest'
 import type { TableColumnDef } from '@@/composables/useTableColumns'
 import { type PreviewCodeVO, type TableInfoQueryVO, type TableInfoVO } from './apis/type'
 import { generateCodePage, generateCode } from './apis'
@@ -101,12 +102,32 @@ const dialogVisible = ref(false)
 const previewCodeData = ref<PreviewCodeVO[]>([])
 const activeTab = ref('')
 
+// 连续点不同行的「生成代码」时，先发的请求可能后回来，把预览换成上一张表的代码
+const previewRequest = useLatestRequest()
+
+const previewLoading = ref(false)
+
 function handleGenerateCode(row: TableInfoVO) {
+  if (!row.tableName) return
   dialogVisible.value = true
-  generateCode(row.tableName!).then((res) => {
-    previewCodeData.value = res.data
-    activeTab.value = res.data[0]?.fileName ?? ''
-  })
+  // 先清空：否则加载期间弹窗里还是上一张表的代码，用户可能复制错
+  previewCodeData.value = []
+  activeTab.value = ''
+  previewLoading.value = true
+  const requestId = previewRequest.begin()
+  generateCode(row.tableName)
+    .then((res) => {
+      if (!previewRequest.isCurrent(requestId)) return
+      previewCodeData.value = res.data
+      activeTab.value = res.data[0]?.fileName ?? ''
+    })
+    .catch(() => {
+      if (!previewRequest.isCurrent(requestId)) return
+      previewCodeData.value = []
+    })
+    .finally(() => {
+      if (previewRequest.isCurrent(requestId)) previewLoading.value = false
+    })
 }
 </script>
 

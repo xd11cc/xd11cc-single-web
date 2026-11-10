@@ -143,7 +143,10 @@ const handleLogin = () => {
     useStore
       .userLogin(loginFormData)
       .then(() => {
-        router.push(route.query.redirect ? decodeURIComponent(route.query.redirect as string) : '/')
+        // 守卫用 encodeURIComponent 编码写入，vue-router 读取 query 时已解码一次；
+        // 再解一次会把嵌套地址里的 %26 变成新的参数分隔符，导致回跳地址被截断
+        const redirect = route.query.redirect
+        router.push(typeof redirect === 'string' && redirect ? redirect : '/')
         showWelcome(username)
       })
       .catch(() => {

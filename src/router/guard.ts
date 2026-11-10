@@ -17,7 +17,7 @@ const CHUNK_RELOAD_KEY = 'router-chunk-reload-target'
 
 // 多次导航同时发生时复用同一个初始化任务，避免重复请求、重复注册路由，
 // 以及后发导航在路由尚未注册时被错误放行。
-let permissionInitialization: Promise<void> | null = null
+import { getPermissionInitialization, setPermissionInitialization } from './permission-init'
 
 /**
  * 记录上次为哪个目标做过 chunk 恢复，以及发生时间。
@@ -82,27 +82,41 @@ export function registerNavigationGuard(router: Router) {
     // 用户信息和动态路由必须作为一个完整初始化过程。首次打开页面时，
     // 即使连续触发多次导航，也只会执行一次并等待路由真正注册完成。
     if (permissionStore.routesReady) return true
+    // 记下本次初始化对应的登录态：catch 里也要用它判断该不该清 Token
+    const tokenAtStart = userStore.token
     try {
-      if (!permissionInitialization) {
-        permissionInitialization = (async () => {
+      if (!getPermissionInitialization()) {
+        const isStillCurrent = () => Boolean(tokenAtStart) && userStore.token === tokenAtStart
+        let task: Promise<void>
+        task = (async () => {
           if (userStore.roles.length === 0) {
             await userStore.getInfo()
           }
-          // 后端只返回当前用户有权限的菜单，因此这里不再做前端角色过滤
-          await permissionStore.generateRoutes()
+          // 初始化期间用户可能登出或换号：此时不能拿旧会话的数据继续注册路由
+          if (!isStillCurrent()) return
+          // 后端只返回当前用户有权限的菜单，因此这里不再做前端角色过滤。
+          // 判定传进 store，避免「先写入侧栏、后校验登录态」的顺序问题。
+          await permissionStore.generateRoutes(undefined, isStillCurrent)
+          // generateRoutes 也是异步的，注册前再确认一次
+          if (!isStillCurrent()) return
           // 将后端返回的动态路由添加到 Router 中
           permissionStore.addRoutes.forEach((route) => router.addRoute(route))
           permissionStore.markRoutesReady()
         })().finally(() => {
-          permissionInitialization = null
+          // 只清掉自己这一个：期间可能已经被登出重置、甚至换号后开始了新的初始化
+          if (getPermissionInitialization() === task) setPermissionInitialization(null)
         })
+        setPermissionInitialization(task)
       }
-      await permissionInitialization
+      await getPermissionInitialization()
       // 设置 replace: true，因此导航将不会留下历史记录
       return { ...to, replace: true }
     } catch (error) {
-      // 过程中发生错误，直接重置 Token，并重定向到登录页面
-      userStore.resetToken()
+      // 旧会话初始化失败时，用户可能已经换成新账号登录了。
+      // 只有登录态没变才清 Token，否则会把新账号误踢下线。
+      if (!tokenAtStart || userStore.token === tokenAtStart) {
+        userStore.resetToken()
+      }
       console.error('Failed to load user permissions', error)
       ElMessage.error(i18n.global.t('common.messages.routeGuardError'))
       return LOGIN_PATH
