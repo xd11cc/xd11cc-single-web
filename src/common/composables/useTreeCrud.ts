@@ -1,7 +1,8 @@
 import type { ResponseVO } from 'types/api'
 import { onScopeDispose, reactive, ref } from 'vue'
 import { useLatestRequest } from './useLatestRequest'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { useCrudDialog } from './useCrudDialog'
+import { ElMessage } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import type { BaseCrudOptions } from './crud-types'
 
@@ -79,18 +80,23 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
   const treeData = ref<T[]>([])
   const loading = ref(false)
   const treeError = ref(false)
-  const submitLoading = ref(false)
 
   const searchData = reactive(options.defaultQuery?.() || {}) as Q
 
-  const dialogVisible = ref(false)
-  const formData = ref<any>(options.defaultForm?.() || {})
-  const parentRow = ref<T | null>(null)
   const request = useLatestRequest()
-  const dialogSessionId = ref(0)
+  // 弹窗状态、会话号、提交守卫、删除确认统一走共享实现
+  const dialog = useCrudDialog<T>({
+    defaultForm: options.defaultForm,
+    addApi: options.addApi,
+    updateApi: options.updateApi,
+    transformPayload: options.transformPayload,
+    onDialogOpen: options.onDialogOpen,
+  })
+  const { dialogVisible, formData } = dialog
+  /** 「新增子级」时挂的父节点（树形特有） */
+  const parentRow = dialog.extraRow
 
   onScopeDispose(() => {
-    dialogSessionId.value++
     loading.value = false
   })
 
@@ -125,16 +131,7 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
 
   function openDialog(form: Record<string, any>, parent: T | null = null) {
     if (request.isDisposed()) return
-    dialogSessionId.value++
-    formData.value = form
-    parentRow.value = parent
-    dialogVisible.value = true
-    options.onDialogOpen?.({
-      isAdd: !form?.[idKey],
-      form,
-      parent: parent ?? undefined,
-      session: dialogSessionId.value,
-    })
+    dialog.openDialog(form, !form?.[idKey], { parent: parent ?? undefined }, parent)
   }
 
   function handleAdd() {
@@ -163,35 +160,17 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
   }
 
   function handleClose() {
-    dialogSessionId.value++
-    formData.value = options.defaultForm?.() || {}
-    parentRow.value = null
-    dialogVisible.value = false
+    dialog.closeDialog()
   }
 
-  async function handleSubmit(isAdd: boolean): Promise<ResponseVO<any> | void> {
-    if (request.isDisposed() || submitLoading.value) return
-    const api = isAdd ? options.addApi : options.updateApi
-    if (!api) return
-
-    const sessionId = dialogSessionId.value
-    submitLoading.value = true
-    try {
-      const payload = options.transformPayload?.(formData.value, isAdd) ?? { ...formData.value }
-      const res = await api(payload)
-      if (request.isDisposed()) return res
-      ElMessage.success(res.msg || t('common.messages.operationSuccess'))
-      if (sessionId === dialogSessionId.value) {
-        dialogVisible.value = false
+  function handleSubmit(isAdd: boolean): Promise<ResponseVO<any> | void> {
+    return dialog.submit(isAdd, {
+      isDisposed: () => request.isDisposed(),
+      onClosed: () => {
         parentRow.value = null
-      }
-      await getTreeData()
-      return res
-    } catch {
-      return
-    } finally {
-      if (!request.isDisposed()) submitLoading.value = false
-    }
+      },
+      afterSuccess: getTreeData,
+    })
   }
 
   async function handleRemove(row: T) {
@@ -205,16 +184,7 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
 
     const confirmText = options.removeConfirmText?.(row) ?? t('common.messages.deleteConfirm')
 
-    try {
-      await ElMessageBox.confirm(confirmText, t('common.messages.confirmTitle'), {
-        confirmButtonText: t('common.confirm'),
-        cancelButtonText: t('common.cancel'),
-        type: 'warning',
-      })
-    } catch {
-      // 用户取消
-      return
-    }
+    if (!(await dialog.confirmRemove(confirmText))) return
 
     if (request.isDisposed()) return
     try {
@@ -242,16 +212,16 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
     },
     refresh: getTreeData,
     get formData() {
-      return formData.value
+      return dialog.formData.value
     },
     get dialogVisible() {
-      return dialogVisible.value
+      return dialog.dialogVisible.value
     },
     get sessionId() {
-      return dialogSessionId.value
+      return dialog.sessionId()
     },
     set dialogVisible(val: boolean) {
-      dialogVisible.value = val
+      dialog.dialogVisible.value = val
     },
     handleAdd,
     handleAddChild,
@@ -268,15 +238,6 @@ export function useTreeCrud<Q = any, T = any>(options: UseTreeCrudOptions<Q, T>)
   return {
     slotProps,
     refresh: getTreeData,
-    state: {
-      formData,
-      dialogVisible,
-      /** 当前弹窗会话号（打开/关闭都会变） */
-      get sessionId() {
-        return dialogSessionId.value
-      },
-      /** 该会话号是否仍是当前弹窗 */
-      isCurrentSession: (session: number) => session === dialogSessionId.value,
-    },
+    state: dialog.state,
   }
 }

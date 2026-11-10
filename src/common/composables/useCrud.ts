@@ -1,8 +1,9 @@
 import type { ComponentPublicInstance } from 'vue'
-import { reactive, ref, watch, onMounted, onScopeDispose } from 'vue'
+import { reactive, ref, watch, onMounted } from 'vue'
 import { useLatestRequest } from './useLatestRequest'
+import { useCrudDialog } from './useCrudDialog'
 import type { ResponseVO } from 'types/api'
-import { ElMessage, ElMessageBox } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { useI18n } from 'vue-i18n'
 import type { BaseCrudOptions } from './crud-types'
 
@@ -109,16 +110,16 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
   // ─── 搜索 ─────────────────────────────────────────────
   const searchData = reactive(options.defaultQuery?.() || {}) as Q
 
-  // ─── 弹窗 ─────────────────────────────────────────────
-  const dialogVisible = ref(false)
-  const formData = ref<any>(options.defaultForm?.() || {})
   const request = useLatestRequest()
-  /** 弹窗会话号：提交返回时用它判断这次提交是否已经过期 */
-  const dialogSessionId = ref(0)
-
-  onScopeDispose(() => {
-    dialogSessionId.value++
+  // ─── 弹窗（状态、会话号、提交守卫、删除确认都交给共享实现） ───
+  const dialog = useCrudDialog<T>({
+    defaultForm: options.defaultForm,
+    addApi: options.addApi,
+    updateApi: options.updateApi,
+    transformPayload: options.transformPayload,
+    onDialogOpen: options.onDialogOpen,
   })
+  const { dialogVisible, formData } = dialog
 
   // ─── 生命周期 ──────────────────────────────────────────
   onMounted(() => getTableData())
@@ -182,28 +183,15 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
 
   // ─── 弹窗开关 ──────────────────────────────────────────
   function handleAdd() {
-    dialogSessionId.value++
-    formData.value = options.defaultForm?.() || {}
-    dialogVisible.value = true
-    options.onDialogOpen?.({ isAdd: true, form: formData.value, session: dialogSessionId.value })
+    dialog.openDialog(options.defaultForm?.() || {}, true)
   }
 
   function handleEdit(row: T) {
-    dialogSessionId.value++
-    formData.value = { ...row }
-    dialogVisible.value = true
-    options.onDialogOpen?.({
-      isAdd: false,
-      form: formData.value,
-      row,
-      session: dialogSessionId.value,
-    })
+    dialog.openDialog({ ...(row as Record<string, any>) }, false, { row }, row)
   }
 
   function handleClose() {
-    dialogSessionId.value++
-    formData.value = options.defaultForm?.() || {}
-    dialogVisible.value = false
+    dialog.closeDialog()
   }
 
   // ─── 单条删除 ──────────────────────────────────────────
@@ -216,16 +204,7 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
     if (request.isDisposed() || !removeApi) return
 
     const confirmText = options.removeConfirmText?.(row) ?? t('common.messages.deleteConfirm')
-    try {
-      await ElMessageBox.confirm(confirmText, t('common.messages.confirmTitle'), {
-        confirmButtonText: t('common.confirm'),
-        cancelButtonText: t('common.cancel'),
-        type: 'warning',
-      })
-    } catch {
-      // 用户取消时 ElMessageBox 会 reject；取消不应产生未处理的 rejection。
-      return
-    }
+    if (!(await dialog.confirmRemove(confirmText))) return
 
     // 用户可能在确认框打开期间离开列表；确认结果返回后必须重新校验生命周期。
     if (request.isDisposed()) return
@@ -255,16 +234,7 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
     const confirmText =
       options.batchRemoveConfirmText?.(count) ?? t('common.messages.deleteSelected', { count })
 
-    try {
-      await ElMessageBox.confirm(confirmText, t('common.messages.confirmTitle'), {
-        confirmButtonText: t('common.confirm'),
-        cancelButtonText: t('common.cancel'),
-        type: 'warning',
-      })
-    } catch {
-      // 取消批量删除同样会产生 reject，一并接住。
-      return
-    }
+    if (!(await dialog.confirmRemove(confirmText))) return
 
     if (request.isDisposed()) return
 
@@ -282,22 +252,7 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
 
   // ─── 提交（校验 + API 调用 + 成功/失败处理） ──────────
   function handleSubmit(isAdd: boolean): Promise<ResponseVO<any> | void> {
-    const api = isAdd ? options.addApi : options.updateApi
-    if (!api) return Promise.resolve()
-    const payload = options.transformPayload?.(formData.value, isAdd) ?? { ...formData.value }
-    const sessionId = dialogSessionId.value
-    return api(payload)
-      .then((res) => {
-        ElMessage.success(res.msg || t('common.messages.operationSuccess'))
-        // 请求期间用户可能已关掉弹窗、甚至打开了另一行的编辑弹窗；
-        // 只有会话未变时才关闭，否则会把新弹窗一起关掉
-        if (sessionId === dialogSessionId.value) {
-          dialogVisible.value = false
-        }
-        getTableData()
-        return res
-      })
-      .catch(() => {})
+    return dialog.submit(isAdd, { afterSuccess: getTableData })
   }
 
   // ─── 分页 ──────────────────────────────────────────────
@@ -340,16 +295,16 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
     handleCurrentChange,
     handleSizeChange,
     get formData() {
-      return formData.value
+      return dialog.formData.value
     },
     get dialogVisible() {
-      return dialogVisible.value
+      return dialog.dialogVisible.value
     },
     get sessionId() {
-      return dialogSessionId.value
+      return dialog.sessionId()
     },
     set dialogVisible(val: boolean) {
-      dialogVisible.value = val
+      dialog.dialogVisible.value = val
     },
     handleAdd,
     handleEdit,
@@ -369,15 +324,7 @@ export function useCrud<Q = any, T = any>(options: UseCrudOptions<Q, T>) {
   return {
     slotProps,
     refresh: getTableData,
-    state: {
-      formData,
-      dialogVisible,
-      /** 当前弹窗会话号（打开/关闭都会变） */
-      get sessionId() {
-        return dialogSessionId.value
-      },
-      /** 该会话号是否仍是当前弹窗：异步回填返回后用它判断结果是否已过期 */
-      isCurrentSession: (session: number) => session === dialogSessionId.value,
-    },
+    // 弹窗状态统一由共享实现提供（同一个会话号，页面回填与提交守卫共用）
+    state: dialog.state,
   }
 }

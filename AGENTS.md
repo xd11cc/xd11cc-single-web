@@ -14,27 +14,41 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 | 状态 / 路由 | Pinia 3、vue-router 4（动态路由，后端下发菜单）                                   |
 | 国际化      | vue-i18n 11，`zh-CN` / `en-US` 双文件                                             |
 | 其他        | axios、echarts 6、bpmn-js 18（流程设计器）                                        |
-| 测试        | vitest 5 + @vue/test-utils + happy-dom，**362 用例 / 41 文件**                    |
+| 测试        | vitest 5 + @vue/test-utils + happy-dom，**367 用例 / 42 文件**                    |
 
 接口约定：前缀 `/xd11cc`，统一响应 `ResponseVO{ code, msg, data }`，分页 `PageData{ rows, total }`（定义在 `types/api.d.ts`）。
 
 ## 2. 目录地图
 
-| 路径                        | 职责                                                                                                                   | 入口文件                      |
-| --------------------------- | ---------------------------------------------------------------------------------------------------------------------- | ----------------------------- |
-| `src/views/`                | 业务页面，按域分包（system / bpm / approval / tool / monitor / login）                                                 | 每域 `index.vue` + `apis/`    |
-| `src/common/components/`    | 跨域组件（useCrud / treeCrud 壳、Chat、Notify、Screenfull…）                                                           | —                             |
-| `src/common/composables/`   | 组合式：useCrud、useTreeCrud、useDict、useChat、useWebSocket、usePageErrorBoundary、useLatestRequest、useLazyResource… | —                             |
-| `src/common/utils/`         | `request.ts`（请求封装）、`webSocket.ts`（连接状态机）、`page-error.ts`（错误分类）                                    | —                             |
-| `vite/`                     | 构建期插件：`icon-subset.ts`（图标按需打包）                                                                           | —                             |
-| `src/common/apis/`          | 跨域接口：`file.ts`（`/file/upload`，返回可持久化的 `objectKey`）                                                      | —                             |
-| `src/common/assets/styles/` | `themes.css` 三层令牌、`variables.css` 布局变量                                                                        | —                             |
-| `src/layouts/`              | 布局外壳（LeftMode/TopMode/LeftTopMode）、导航、标签栏                                                                 | `layouts/index.vue`           |
-| `src/pinia/stores/`         | 5 个 store：app / permission / settings / tags-view / user                                                             | —                             |
-| `src/router/`               | 公共路由 + 导航守卫 + 路由转换                                                                                         | `router/index.ts`、`guard.ts` |
-| `src/i18n/locales/`         | 按域拆分的双语文案                                                                                                     | `locales/index.ts`            |
-| `types/`                    | 全局类型（`api.d.ts`）+ 自动生成的 `types/auto/*`                                                                      | —                             |
-| `tests/`                    | vitest 用例（不在 `tsconfig.include` 内，不影响类型检查）；`tests/concurrency/` 专盯异步时序                           | `vitest.config.ts`            |
+| 路径                        | 职责                                                                                         | 入口文件                      |
+| --------------------------- | -------------------------------------------------------------------------------------------- | ----------------------------- |
+| `src/views/`                | 业务页面，按域分包（system / bpm / approval / tool / monitor / login）                       | 每域 `index.vue` + `apis/`    |
+| `src/common/components/`    | 跨域组件（useCrud / treeCrud 壳、Chat、Notify、Screenfull…）                                 | —                             |
+| `src/common/composables/`   | 20 个组合式，按用途分五组（见下方说明）                                                      | —                             |
+| `src/common/utils/`         | `request.ts`（请求封装）、`webSocket.ts`（连接状态机）、`page-error.ts`（错误分类）          | —                             |
+| `vite/`                     | 构建期插件：`icon-subset.ts`（图标按需打包）                                                 | —                             |
+| `src/common/apis/`          | 跨域接口：`file.ts`（`/file/upload`，返回可持久化的 `objectKey`）                            | —                             |
+| `src/common/assets/styles/` | `themes.css` 三层令牌、`variables.css` 布局变量                                              | —                             |
+| `src/layouts/`              | 布局外壳（LeftMode/TopMode/LeftTopMode）、导航、标签栏                                       | `layouts/index.vue`           |
+| `src/pinia/stores/`         | 5 个 store：app / permission / settings / tags-view / user                                   | —                             |
+| `src/router/`               | 公共路由 + 导航守卫 + 路由转换                                                               | `router/index.ts`、`guard.ts` |
+| `src/i18n/locales/`         | 按域拆分的双语文案                                                                           | `locales/index.ts`            |
+| `types/`                    | 全局类型（`api.d.ts`）+ 自动生成的 `types/auto/*`                                            | —                             |
+| `tests/`                    | vitest 用例（不在 `tsconfig.include` 内，不影响类型检查）；`tests/concurrency/` 专盯异步时序 | `vitest.config.ts`            |
+
+**`common/composables/` 分组**（文件名保持平铺，按名字搜索即可）：
+
+| 组             | 文件                                                                                      | 说明                                                                     |
+| -------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| 列表页壳       | `useCrud` `useTreeCrud` `useCrudDialog` `useTableColumns` `useCrudShellView` `crud-types` | 一套机制的零件，改壳时常一起改；`useCrudDialog` 是两者共用的弹窗生命周期 |
+| 数据与基础设施 | `useDict` `useOssUrl` `useLatestRequest` `useLazyResource`                                | 字典映射 / OSS 地址 / 过期响应守卫 / 幂等懒加载                          |
+| 布局与外观     | `useDevice` `useLayoutMode` `useTitle` `useTheme` `useWatermark` `useRouteListener`       | 设备判断、布局模式、标题、主题、水印、路由监听                           |
+| 实时与通信     | `useWebSocket` `useTodoQueue` `useChat`                                                   | 连接状态机 → 待办弹窗 / 聊天                                             |
+| 错误边界       | `usePageErrorBoundary`                                                                    | 与 `utils/page-error.ts` 配套                                            |
+
+> 这 20 个文件**不分子目录**：分类边界本身就是模糊的（`useDict` 算数据还是壳辅助？），
+> 而平铺时「放哪」从不是问题。等文件数超过 30，或某一组超过 8 个，再按**消费方**拆
+> 子目录（如 `crud/`、`realtime/`），不要按抽象类型拆。
 
 ## 3. 关键机制（改动前必读）
 
@@ -43,7 +57,7 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 **列表页壳**：22 个表格页全部走壳——20 个用 `useCrud` + `UseCrudView`（其中 9 个 `readonly`），2 个树形页用 `useTreeCrud` + `TreeCrudView`；没有手写表格。
 
 两个壳**只保留各自不同的部分**（表格主体、数据源、工具栏差异）；其余共享：
-`common/components/crudShell/` 下的 `SearchCard`（搜索区）、`TableColumns`（生成列，会把页面的 `#cell-<prop>` 透传下去）、`FormDialog`（新增/修改弹窗，**内置重复提交与过期提交保护**）；逻辑侧用 `useCrudShellView`（列偏好 / `cell-*` 插槽转发 / 冷启动判定）与 `common/composables/crud-types.ts`（共享 option 字段 `BaseCrudOptions`、`CrudShellPropsBase`）。**加公共 prop 或改提交行为时改这些共享件，别只改一个壳。**
+`common/components/crudShell/` 下的 `SearchCard`（搜索区）、`TableColumns`（生成列，会把页面的 `#cell-<prop>` 透传下去）、`FormDialog`（新增/修改弹窗，**内置重复提交与过期提交保护**）；逻辑侧用 `useCrudDialog`（弹窗状态/会话号/提交守卫/删除确认）、`useCrudShellView`（列偏好 / `cell-*` 插槽转发 / 冷启动判定）与 `common/composables/crud-types.ts`（共享 option 字段 `BaseCrudOptions`、`CrudShellPropsBase`）。**加公共 prop 或改提交行为时改这些共享件，别只改一个壳。**
 
 页面只提供 `pageApi`、表单字段与 `columns`；分页/搜索/弹窗/批量删除/列渲染由壳负责。
 
@@ -59,11 +73,13 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 
 **冷启动**（加载中且无数据、非失败态）用 `Skeleton` 占位：列表壳与树表壳用 `variant="table"`，审批详情抽屉用 `variant="page"`；其余加载态仍用 `v-table-loading` 扫描线——有旧数据时保留数据，翻页不会整表消失。骨架自带 180ms 延迟，快接口不出骨架；行高已与 `el-table` 对齐（骨架 41px / 表格 40px）。
 
-**弹窗会话号（唯一来源在 `useCrud` / `useTreeCrud`）**：每次打开/关闭弹窗都会递增，三处消费同一份：
+**弹窗会话号（唯一来源在 `useCrudDialog`，两个壳共用）**：每次打开/关闭弹窗都会递增，三处消费同一份：
 
 - `slotProps.sessionId` —— `FormDialog` 用它挡「校验还没回来就关窗 / 连点」的重复提交；
 - `onDialogOpen` 上下文里的 `session` —— 页面异步回填返回后用它判断结果是否过期；
 - `crud.state.isCurrentSession(session)` / `crud.state.sessionId` —— 页面侧判定与取快照。
+
+弹窗状态、会话号、提交守卫、删除确认都在 `common/composables/useCrudDialog.ts`；两个壳只保留自己不同的部分（分页 / 树 / parentRow / 批量删除）。
 
 **不要自己再造会话计数器**，用记录 ID 判断也不够（同一条记录会被重新打开）。这套保护见 `tests/crud-dialog-session.spec.ts`。
 
@@ -122,7 +138,7 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | `pnpm dev`                      | 开发服务器（`.env.dev`）                                                                                                 |
 | `pnpm typecheck`                | `vue-tsc --noEmit`                                                                                                       |
-| `pnpm test:unit`                | vitest 全量，41 文件 / 362 用例（约 6s）；`test:unit:watch` 为监听模式                                                   |
+| `pnpm test:unit`                | vitest 全量，42 文件 / 367 用例（约 6s）；`test:unit:watch` 为监听模式                                                   |
 | `pnpm build`                    | **已串联** `typecheck → test:unit → vite build`，任一失败即中断                                                          |
 | `pnpm build:dev` / `build:test` | 只打包，不跑测试                                                                                                         |
 | `pnpm format`                   | Prettier 格式化 `src/`                                                                                                   |
@@ -158,4 +174,4 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 
 ## 7. 复杂度热点
 
-`views/system/user/profile` (1137) · `approval/components/ApprovalDetailDrawer` (862) · `views/dashboard` (701) · `views/bpm/modeler/index` (689) · `views/bpm/definition` (636) · `views/system/notice` (517)。改动这些文件前先读现有结构，不要顺手重构。
+`views/system/user/profile` (1148) · `approval/components/ApprovalDetailDrawer` (862) · `views/bpm/modeler/index` (837) · `views/dashboard` (701) · `views/system/notice` (688) · `views/bpm/definition` (627)。改动这些文件前先读现有结构，不要顺手重构。
