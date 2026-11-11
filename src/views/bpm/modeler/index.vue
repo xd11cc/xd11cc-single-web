@@ -377,8 +377,10 @@ async function saveProcess(): Promise<boolean> {
     lastSavedId.value = savedId
 
     // 保存期间已切换到别的草稿：这次保存确实落库了，但不能再改当前 modelId，
-    // 也不能把画布重新导入成刚保存的内容（那会覆盖用户正在编辑的新草稿）
-    if (modelId.value !== targetModelId) {
+    // 也不能把画布重新导入成刚保存的内容（那会覆盖用户正在编辑的新草稿）。
+    // 必须同时比会话号：新建 → 切走 → 再回新建时，两边的 modelId 都是空字符串，
+    // 只比 modelId 会让旧响应把新草稿当成刚保存的那份。
+    if (modelId.value !== targetModelId || draftSessionId !== targetSessionId) {
       ElMessage.success(t('common.messages.operationSuccess'))
       return true
     }

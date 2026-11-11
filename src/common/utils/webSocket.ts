@@ -78,6 +78,8 @@ export class WebSocketClient {
   private token: string | null = null
   private visibilityHandler: (() => void) | null = null
   private onStatusChange?: (status: WsStatus) => void
+  /** 服务端明确拒绝（正常关闭/策略拒绝/token 失效）：此后不再自动重连 */
+  private terminalClosed = false
 
   // 事件订阅：action -> callback[]
   private listeners: Map<string, WsEventCallback[]> = new Map()
@@ -141,17 +143,26 @@ export class WebSocketClient {
     this.setStatus(WsStatus.CONNECTING)
 
     try {
+      // 先解绑并关闭上一个 socket：它的回调仍闭包在 this 上，若保留，
+      // 迟到的 close/error 会清掉新 socket 的定时器、改掉连接状态并再排一次重连。
+      this.detachSocket()
       this.clearAllTimers()
-      this.ws = new WebSocket(fullUrl)
+      this.terminalClosed = false
 
-      this.ws.onopen = () => {
+      const socket = new WebSocket(fullUrl)
+      this.ws = socket
+
+      socket.onopen = () => {
+        // 已被替换的 socket 迟到事件一律忽略
+        if (this.ws !== socket) return
         this.reconnectCount = 0
         this.setStatus(WsStatus.CONNECTED)
         this.startHeartbeat()
         this.startVisibilityListener()
       }
 
-      this.ws.onmessage = (event) => {
+      socket.onmessage = (event) => {
+        if (this.ws !== socket) return
         const raw = event.data as string
 
         // 心跳响应
@@ -159,7 +170,7 @@ export class WebSocketClient {
 
         // 后端主动心跳
         if (raw === 'PING') {
-          this.ws?.send('PONG')
+          socket.send('PONG')
           return
         }
 
@@ -172,7 +183,9 @@ export class WebSocketClient {
         }
       }
 
-      this.ws.onclose = (event) => {
+      socket.onclose = (event) => {
+        // 已被替换的旧 socket：它的关闭与当前连接无关
+        if (this.ws !== socket) return
         // 手动关闭时 close() 已经上报过 DISCONNECTED；浏览器可能在新连接建立后
         // 才派发这个事件，此处若再写状态就会把新连接覆盖成断开。
         if (this.isManualClose) return
@@ -186,6 +199,8 @@ export class WebSocketClient {
           event.code === WsCloseCode.POLICY_VIOLATION ||
           event.code === WsCloseCode.INVALID_TOKEN
         ) {
+          // 这些关闭是「别再连了」：记下来，避免页面重新可见时又被可见性监听拉起
+          this.terminalClosed = true
           return
         }
 
@@ -194,7 +209,8 @@ export class WebSocketClient {
         }
       }
 
-      this.ws.onerror = (error) => {
+      socket.onerror = (error) => {
+        if (this.ws !== socket) return
         if (this.isManualClose) return
         console.error(`[WebSocket] 连接异常:`, error)
         this.setStatus(WsStatus.DISCONNECTED)
@@ -254,6 +270,7 @@ export class WebSocketClient {
           this.startHeartbeat()
         } else if (
           !this.isManualClose &&
+          !this.terminalClosed &&
           (this.status === WsStatus.DISCONNECTED || this.status === WsStatus.RECONNECTING)
         ) {
           this.reconnectCount = 0
@@ -318,15 +335,33 @@ export class WebSocketClient {
     this.isManualClose = true
     this.clearAllTimers()
     this.stopVisibilityListener()
-    if (this.ws) {
-      this.ws.close(WsCloseCode.NORMAL_CLOSURE, '手动关闭连接')
-      this.ws = null
-    }
+    this.detachSocket(WsCloseCode.NORMAL_CLOSURE, '手动关闭连接')
     this.listeners.clear()
     this.setStatus(WsStatus.DISCONNECTED)
     // 解绑状态回调：close 之后这个实例仍然可能收到浏览器的迟到事件，
     // 保留回调就会继续写外部的共享状态（如把新连接标成断开）。
     this.onStatusChange = undefined
+  }
+
+  /**
+   * 解绑并关闭当前 socket。
+   *
+   * 浏览器对已关闭连接的 close/error 事件是异步派发的，保留回调就会在「已经换过连接」
+   * 之后继续执行，清掉新连接的定时器、改掉状态、再排一次重连。
+   */
+  private detachSocket(code?: number, reason?: string) {
+    const socket = this.ws
+    if (!socket) return
+    socket.onopen = null
+    socket.onmessage = null
+    socket.onclose = null
+    socket.onerror = null
+    try {
+      socket.close(code, reason)
+    } catch {
+      // 已经处于关闭状态，忽略
+    }
+    this.ws = null
   }
 
   /**
