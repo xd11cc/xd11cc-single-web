@@ -79,6 +79,7 @@
       :label-width="labelWidth"
       :label-position="labelPosition"
       :submit-disabled="submitDisabled"
+      :form-disabled="formDisabled"
     >
       <template #banner>
         <slot name="dialog-banner" />

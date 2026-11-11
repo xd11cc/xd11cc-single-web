@@ -3,7 +3,8 @@
     :slotProps="crud.slotProps"
     :columns="columns"
     :formRules="formRules"
-    :submit-disabled="!noticeFormReady && isEditing"
+    :submit-disabled="!hydration.ready.value && isEditing"
+    :form-disabled="!hydration.ready.value && isEditing"
     :add-title="$t('system.notice.dialogs.add')"
     :edit-title="$t('system.notice.dialogs.edit')"
     dialog-width="min(800px, calc(100vw - 32px))"
@@ -12,14 +13,14 @@
     <!-- 详情回填失败时的弹窗内提示（仅编辑；新增不受影响） -->
     <template #dialog-banner>
       <el-alert
-        v-if="isEditing && noticeError"
+        v-if="isEditing && hydration.error.value"
         type="warning"
         :closable="false"
         show-icon
         class="perms-alert"
       >
         <span>{{ $t('system.notice.messages.detailsLoadFailed') }}</span>
-        <el-button link type="primary" size="small" @click="retryNoticeDetail">
+        <el-button link type="primary" size="small" @click="hydration.retry()">
           {{ $t('common.retry') }}
         </el-button>
       </el-alert>
@@ -326,6 +327,7 @@ import type { FormRules } from 'element-plus'
 import UseCrudView from '@/common/components/useCrud/index.vue'
 import { useCrud } from '@/common/composables/useCrud'
 import { createLazyLoader } from '@/common/composables/useLazyResource'
+import { useEditHydration } from '@/common/composables/useEditHydration'
 import { useDict } from '@/common/composables/useDict'
 import {
   noticePage,
@@ -355,7 +357,7 @@ const crud = useCrud<SystemNoticeQueryVO, SystemNoticeVO>({
   // 新增不需要回填历史详情，直接提交；只有编辑要等详情与范围就绪
   addApi: (data) => addNotice(data),
   updateApi: (data) => {
-    if (!noticeFormReady.value) {
+    if (!hydration.ready.value) {
       ElMessage.warning($t('system.notice.messages.detailsNotReady'))
       return Promise.reject(new Error('notice form data not ready'))
     }
@@ -380,74 +382,56 @@ const crud = useCrud<SystemNoticeQueryVO, SystemNoticeVO>({
   removeConfirmText: (row) => $t('system.notice.messages.deleteConfirm', { title: row?.title }),
   batchRemoveConfirmText: (count) => $t('system.notice.messages.batchDeleteConfirm', { count }),
   // 编辑需要完整数据（列表接口不返回 content 与发布范围），依赖数据就绪前禁止提交。
-  onDialogOpen: ({ isAdd, row, form, session }) => {
-    ++noticeDetailRequestId
-    noticeScopeRequestId++
-    if (isAdd) {
-      noticeHydrationSession = -1
-      noticeHydrationFailedSession = -1
-      noticeError.value = false
-      noticeFormReady.value = true
-      return
-    }
-    noticeHydrationSession = session
-    void hydrateNoticeDetail(session, row?.id, form)
+  onDialogOpen: ({ session }) => {
+    hydration.start(session)
   },
 })
 
 /** 是否在编辑已有记录：只有编辑需要等详情与范围回填 */
 const isEditing = computed(() => crud.state.formData.value?.id != null)
-/** 详情回填是否失败（编辑时给出持久提示 + 重试入口） */
-const noticeError = ref(false)
-
 /**
- * 回填编辑所需的详情与发布范围。
- * 独立成函数是为了「加载失败」时能就地重试，而不是让用户关掉弹窗重开。
+ * 关联数据回填闸门。
+ *
+ * 编辑需要「完整详情 + 发布范围选项」都就位才能保存：列表接口不带 content 与范围，
+ * 直接提交会把正文和接收范围覆盖成空值。
  */
-async function hydrateNoticeDetail(session: number, noticeId: number | undefined, form: any) {
-  ++noticeDetailRequestId
-  const requestId = noticeDetailRequestId
-  noticeFormReady.value = false
-  noticeError.value = false
-  noticeHydrationSession = session
-  noticeHydrationFailedSession = -1
+const hydration = useEditHydration({
+  isCurrentSession: (session) => crud.state.isCurrentSession(session),
+  isVisible: () => crud.state.dialogVisible.value,
+  resetSources: () => {
+    deptOptionsLoader.reset()
+    userOptionsLoader.reset()
+  },
+})
 
-  const isCurrent = () =>
-    requestId === noticeDetailRequestId &&
-    Boolean(crud.state.dialogVisible.value) &&
-    crud.state.isCurrentSession(session) &&
-    crud.state.formData.value === form
-
-  try {
-    if (!noticeId) throw new Error('notice id is missing')
-    const { data } = await getNoticeById(noticeId)
-    if (!isCurrent()) return
-    const scopeDeptIds = parseIdList(data.scopeDeptIds)
-    const scopeUserIds = parseIdList(data.scopeUserIds)
-    if (!scopeDeptIds || !scopeUserIds) throw new Error('notice scope ids are invalid')
-    Object.assign(form, { ...data, scopeDeptIds, scopeUserIds })
-
-    const optionsReady = await ensureNoticeScopeOptions(data.scope, isCurrent, scopeDeptIds)
-    if (!isCurrent()) return
-    if (!optionsReady) throw new Error('notice scope options are not ready')
-    noticeFormReady.value = true
-  } catch {
-    if (isCurrent()) {
-      noticeHydrationFailedSession = session
-      noticeError.value = true
-    }
-  } finally {
-    if (noticeHydrationSession === session) noticeHydrationSession = -1
-  }
-}
-
-/** 用户点「重试」：清掉范围选项缓存后按当前会话重新回填 */
-function retryNoticeDetail() {
-  deptOptionsLoader.reset()
-  userOptionsLoader.reset()
+hydration.register('detail', async ({ isCurrent }) => {
   const form = crud.state.formData.value
-  void hydrateNoticeDetail(crud.state.sessionId, form.id, form)
-}
+  const noticeId = form.id as number | undefined
+  // 新增不需要回填历史详情
+  if (!noticeId) return true
+
+  const { data } = await getNoticeById(noticeId)
+  if (!isCurrent()) return false
+  const scopeDeptIds = parseIdList(data.scopeDeptIds)
+  const scopeUserIds = parseIdList(data.scopeUserIds)
+  if (!scopeDeptIds || !scopeUserIds) return false
+  Object.assign(form, { ...data, scopeDeptIds, scopeUserIds })
+
+  const optionsReady = await ensureNoticeScopeOptions(data.scope, isCurrent, scopeDeptIds)
+  if (!isCurrent()) return false
+  return optionsReady
+})
+
+// 范围选项由「详情」顺带加载；只有用户切范围时才单独重跑这一步
+hydration.register(
+  'options',
+  async ({ isCurrent }) => {
+    const ready = await ensureNoticeScopeOptions(crud.state.formData.value.scope, isCurrent)
+    if (!isCurrent()) return false
+    return ready
+  },
+  { runOnStart: false },
+)
 
 /**
  * <p>与后端 system_notice.status 一致，类型为 char(2) 字符串，
@@ -479,11 +463,6 @@ const userListData = ref<SystemUserVO[]>([])
 
 const detailVisible = ref(false)
 const detailData = ref<SystemNoticeVO>({})
-const noticeFormReady = ref(true)
-let noticeDetailRequestId = 0
-let noticeScopeRequestId = 0
-let noticeHydrationSession = -1
-let noticeHydrationFailedSession = -1
 
 const deptOptionsLoader = createLazyLoader(async () => {
   const { data } = await deptTreeList({})
@@ -581,39 +560,14 @@ const columns = computed<TableColumnDef[]>(() => [
   },
 ])
 
+// 用户切换发布范围时只重跑「范围选项」这一步；期间 ready 回落，避免用未加载完的选项提交。
 watch(
-  [
-    () => crud.state.formData.value.scope,
-    () => crud.state.sessionId,
-    () => crud.state.dialogVisible,
-  ],
-  ([scope, session, dialogVisible]) => {
-    const requestId = ++noticeScopeRequestId
-    if (!dialogVisible) return
-    // 编辑打开时，onDialogOpen 负责详情与原始范围的整体回填。
-    // 若详情失败，范围变更也不能把不完整的编辑表单重新标记为可提交。
-    if (noticeHydrationSession === session || noticeHydrationFailedSession === session) return
-
-    const isCurrent = () =>
-      requestId === noticeScopeRequestId &&
-      crud.state.dialogVisible.value &&
-      crud.state.isCurrentSession(session) &&
-      crud.state.formData.value.scope === scope
-    if (scope !== NOTICE_SCOPE.DEPT && scope !== NOTICE_SCOPE.USER) {
-      noticeFormReady.value = true
-      return
-    }
-
-    noticeFormReady.value = false
-    void ensureNoticeScopeOptions(scope, isCurrent)
-      .then((ready) => {
-        if (!isCurrent()) return
-        if (ready) noticeFormReady.value = true
-        else ElMessage.warning($t('system.notice.messages.detailsNotReady'))
-      })
-      .catch(() => {
-        if (isCurrent()) ElMessage.warning($t('system.notice.messages.detailsNotReady'))
-      })
+  () => crud.state.formData.value.scope,
+  () => {
+    if (!crud.state.dialogVisible.value) return
+    // 详情回填会整体应用服务端的范围，此时不必重复加载
+    if (hydration.statusOf('detail') === 'running') return
+    hydration.restart('options')
   },
   { flush: 'post' },
 )

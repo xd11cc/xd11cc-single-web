@@ -34,4 +34,12 @@ export interface CrudShellPropsBase {
    * 为 true 时弹窗的「确定」不可点，handleFormSubmit 也会直接返回。
    */
   submitDisabled?: boolean
+  /**
+   * 禁用整张表单（如编辑时依赖数据还在回填）。
+   *
+   * 与 submitDisabled 的区别：那个只挡提交，用户仍可在字段里输入；
+   * 回填会整体覆盖表单时（如通知详情），必须连输入一起禁掉，
+   * 否则用户刚打的字会被迟到的响应冲掉。
+   */
+  formDisabled?: boolean
 }

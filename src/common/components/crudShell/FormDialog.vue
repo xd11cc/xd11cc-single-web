@@ -14,6 +14,7 @@
     <el-form
       ref="formRef"
       class="adaptive-form"
+      :disabled="formDisabled"
       :model="slotProps.formData"
       :rules="formRules"
       :label-width="labelWidth"
@@ -27,7 +28,7 @@
       <el-button @click="slotProps.handleClose">{{ $t('common.cancel') }}</el-button>
       <el-button
         type="primary"
-        :loading="submitLoading"
+        :loading="isSubmitting"
         :disabled="submitDisabled"
         @click="handleFormSubmit"
       >
@@ -67,6 +68,8 @@ const props = withDefaults(
     labelPosition?: 'left' | 'right' | 'top'
     /** 禁止提交（依赖数据未就绪时用） */
     submitDisabled?: boolean
+    /** 回填期间禁用整张表单，避免用户输入被迟到响应覆盖 */
+    formDisabled?: boolean
   }>(),
   {
     readonly: false,
@@ -79,7 +82,15 @@ const { t } = useI18n()
 const $t = t
 
 const formRef = ref<FormInstance>()
-const submitLoading = ref(false)
+/**
+ * 正在提交的会话号（null 表示没有提交在途）。
+ *
+ * 用会话号而不是布尔值，是为了让锁的作用域与会话一致：
+ * 用户关掉弹窗再打开另一条记录后，新会话不应继承上一个会话的 loading 与阻塞。
+ */
+const lockedSession = ref<number | null>(null)
+/** 当前会话是否正在提交（决定按钮 loading） */
+const isSubmitting = computed(() => lockedSession.value === props.slotProps.sessionId)
 
 let isDisposed = false
 
@@ -106,7 +117,7 @@ async function handleFormSubmit() {
   // 已在提交中、已销毁、弹窗已关或表单不存在时，这次点击不再发起提交
   if (
     isDisposed ||
-    submitLoading.value ||
+    isSubmitting.value ||
     props.submitDisabled ||
     !props.slotProps.dialogVisible ||
     !form
@@ -115,9 +126,9 @@ async function handleFormSubmit() {
   }
 
   const formData = props.slotProps.formData
-  // 会话号来自 useCrud/useTreeCrud，与页面层回填用的是同一份
+  // 会话号来自 useCrudDialog，与页面层回填用的是同一份
   const sessionId = props.slotProps.sessionId
-  submitLoading.value = true
+  lockedSession.value = sessionId
   try {
     // el-form 不传回调时返回 Promise；校验失败会 reject，用 catch 收住
     const valid = await form.validate?.()
@@ -137,7 +148,8 @@ async function handleFormSubmit() {
     // 校验未通过 / 提交被拒绝：request 层已提示，这里只需恢复按钮
     return
   } finally {
-    if (!isDisposed) submitLoading.value = false
+    // 只解自己这把锁：期间可能已经开了新会话，不能把别人的锁清掉
+    if (lockedSession.value === sessionId) lockedSession.value = null
   }
 }
 

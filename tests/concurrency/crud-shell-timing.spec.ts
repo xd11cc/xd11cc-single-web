@@ -60,7 +60,7 @@ vi.mock('@/common/components/useCrud/index.vue', async () => {
   return {
     default: defineComponent({
       name: 'ReviewCrudView',
-      props: ['slotProps', 'columns', 'submitDisabled'],
+      props: ['slotProps', 'columns', 'submitDisabled', 'formDisabled'],
       setup(props, { slots }) {
         provide(
           'review-active-row',
@@ -103,7 +103,17 @@ vi.mock('@/common/components/useCrud/index.vue', async () => {
             ),
             h('div', { class: 'review-table-append' }, slots['table-append']?.(props.slotProps)),
             props.slotProps.dialogVisible
-              ? h('div', { class: 'review-form' }, slots['form-fields']?.(props.slotProps))
+              ? h('div', { class: 'review-banner' }, slots['dialog-banner']?.())
+              : null,
+            props.slotProps.dialogVisible
+              ? h(
+                  'div',
+                  {
+                    class: 'review-form',
+                    'data-form-disabled': props.formDisabled ? 'true' : 'false',
+                  },
+                  slots['form-fields']?.(props.slotProps),
+                )
               : null,
             props.slotProps.dialogVisible
               ? h(
@@ -287,7 +297,14 @@ const Upload = defineComponent({
     () =>
       vnode('div', slots.default?.()),
 })
+const Alert = defineComponent({
+  setup:
+    (_, { slots }) =>
+    () =>
+      vnode('div', { class: 'alert' }, slots.default?.()),
+})
 const stubs = {
+  ElAlert: Alert,
   ElButton: Button,
   ElForm: Container,
   ElFormItem: FormItem,
@@ -392,6 +409,42 @@ describe('本轮新增：业务请求的遗漏路径', () => {
     await wrapper.get('[data-review-submit]').trigger('click')
     await flushPromises()
     expect(calls('/system/role/modifyById')).toEqual([])
+  })
+
+  it('菜单回填失败后重试，不能顺带清空已回填的部门权限', async () => {
+    const fallback = fixture.request.getMockImplementation()!
+    let menuAttempts = 0
+    fixture.request.mockImplementation((config: any) => {
+      if (config.url === '/system/role/menuIds/1') {
+        menuAttempts++
+        // 第一次失败，制造「需要重试」的局面；第二次成功
+        return menuAttempts === 1 ? Promise.reject(new Error('menu offline')) : ok([11])
+      }
+      return fallback(config)
+    })
+    fixture.responses.set('/system/role/deptIds/1', ok([1]))
+
+    const wrapper = await render(RolePage)
+    crud(wrapper).handleEdit({ id: 1, roleName: 'A', roleCode: 'a', dataScope: '5' })
+    await flushPromises()
+
+    // 部门已经回填成功
+    const checkedAfterLoad = wrapper
+      .findAll('[data-checked]')
+      .map((node) => node.attributes('data-checked'))
+    expect(checkedAfterLoad).toContain('1')
+
+    // 菜单失败 → 出现重试
+    const retry = wrapper.findAll('button').find((btn) => btn.text() === 'common.retry')
+    expect(retry, '没有出现重试按钮').toBeTruthy()
+    await retry!.trigger('click')
+    await flushPromises()
+
+    // 重试只补跑菜单，不该动部门勾选
+    await crud(wrapper).handleSubmit(false)
+    const payload = calls('/system/role/modifyById')[0]?.data
+    expect(payload, '重试后没能提交').toBeTruthy()
+    expect(payload.deptIds, '重试菜单时把部门权限清空了').toEqual([1])
   })
 
   it('部门树未返回时，自定义数据范围角色不能提交空权限', async () => {
@@ -785,6 +838,27 @@ describe('本轮新增：业务请求的遗漏路径', () => {
     expect(wrapper.get('[data-review-submit]').attributes('disabled')).toBeUndefined()
     await crud(wrapper).handleSubmit(false)
     expect(calls('/system/notice/modifyById')[0].data.content).toBe('完整通知正文')
+  })
+
+  it('通知详情回填完成前，表单字段应被禁用（避免输入被迟到响应覆盖）', async () => {
+    const detailPending = deferred()
+    fixture.responses.set('/system/notice/getById/1', detailPending.promise)
+    const wrapper = await render(NoticePage)
+    crud(wrapper).handleEdit({ id: 1, title: '列表里的标题', type: '1', scope: '1' })
+    await flushPromises()
+
+    expect(
+      wrapper.get('.review-form').attributes('data-form-disabled'),
+      '详情还在路上时表单可编辑，用户输入会被覆盖',
+    ).toBe('true')
+
+    detailPending.resolve({
+      code: 200,
+      data: { id: 1, title: '库里的标题', type: '1', scope: '1', content: '正文' },
+    })
+    await flushPromises()
+
+    expect(wrapper.get('.review-form').attributes('data-form-disabled')).toBe('false')
   })
 
   it('通知部门范围树尚未加载和回填时禁止提交', async () => {

@@ -14,7 +14,7 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 | 状态 / 路由 | Pinia 3、vue-router 4（动态路由，后端下发菜单）                                   |
 | 国际化      | vue-i18n 11，`zh-CN` / `en-US` 双文件                                             |
 | 其他        | axios、echarts 6、bpmn-js 18（流程设计器）                                        |
-| 测试        | vitest 5 + @vue/test-utils + happy-dom，**367 用例 / 42 文件**                    |
+| 测试        | vitest 5 + @vue/test-utils + happy-dom，**387 用例 / 44 文件**                    |
 
 接口约定：前缀 `/xd11cc`，统一响应 `ResponseVO{ code, msg, data }`，分页 `PageData{ rows, total }`（定义在 `types/api.d.ts`）。
 
@@ -24,7 +24,7 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 | --------------------------- | -------------------------------------------------------------------------------------------- | ----------------------------- |
 | `src/views/`                | 业务页面，按域分包（system / bpm / approval / tool / monitor / login）                       | 每域 `index.vue` + `apis/`    |
 | `src/common/components/`    | 跨域组件（useCrud / treeCrud 壳、Chat、Notify、Screenfull…）                                 | —                             |
-| `src/common/composables/`   | 20 个组合式，按用途分五组（见下方说明）                                                      | —                             |
+| `src/common/composables/`   | 21 个组合式，按用途分五组（见下方说明）                                                      | —                             |
 | `src/common/utils/`         | `request.ts`（请求封装）、`webSocket.ts`（连接状态机）、`page-error.ts`（错误分类）          | —                             |
 | `vite/`                     | 构建期插件：`icon-subset.ts`（图标按需打包）                                                 | —                             |
 | `src/common/apis/`          | 跨域接口：`file.ts`（`/file/upload`，返回可持久化的 `objectKey`）                            | —                             |
@@ -38,15 +38,15 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 
 **`common/composables/` 分组**（文件名保持平铺，按名字搜索即可）：
 
-| 组             | 文件                                                                                      | 说明                                                                     |
-| -------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
-| 列表页壳       | `useCrud` `useTreeCrud` `useCrudDialog` `useTableColumns` `useCrudShellView` `crud-types` | 一套机制的零件，改壳时常一起改；`useCrudDialog` 是两者共用的弹窗生命周期 |
-| 数据与基础设施 | `useDict` `useOssUrl` `useLatestRequest` `useLazyResource`                                | 字典映射 / OSS 地址 / 过期响应守卫 / 幂等懒加载                          |
-| 布局与外观     | `useDevice` `useLayoutMode` `useTitle` `useTheme` `useWatermark` `useRouteListener`       | 设备判断、布局模式、标题、主题、水印、路由监听                           |
-| 实时与通信     | `useWebSocket` `useTodoQueue` `useChat`                                                   | 连接状态机 → 待办弹窗 / 聊天                                             |
-| 错误边界       | `usePageErrorBoundary`                                                                    | 与 `utils/page-error.ts` 配套                                            |
+| 组             | 文件                                                                                                         | 说明                                                                     |
+| -------------- | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| 列表页壳       | `useCrud` `useTreeCrud` `useCrudDialog` `useEditHydration` `useTableColumns` `useCrudShellView` `crud-types` | 一套机制的零件，改壳时常一起改；`useCrudDialog` 是两者共用的弹窗生命周期 |
+| 数据与基础设施 | `useDict` `useOssUrl` `useLatestRequest` `useLazyResource`                                                   | 字典映射 / OSS 地址 / 过期响应守卫 / 幂等懒加载                          |
+| 布局与外观     | `useDevice` `useLayoutMode` `useTitle` `useTheme` `useWatermark` `useRouteListener`                          | 设备判断、布局模式、标题、主题、水印、路由监听                           |
+| 实时与通信     | `useWebSocket` `useTodoQueue` `useChat`                                                                      | 连接状态机 → 待办弹窗 / 聊天                                             |
+| 错误边界       | `usePageErrorBoundary`                                                                                       | 与 `utils/page-error.ts` 配套                                            |
 
-> 这 20 个文件**不分子目录**：分类边界本身就是模糊的（`useDict` 算数据还是壳辅助？），
+> 这 21 个文件**不分子目录**：分类边界本身就是模糊的（`useDict` 算数据还是壳辅助？），
 > 而平铺时「放哪」从不是问题。等文件数超过 30，或某一组超过 8 个，再按**消费方**拆
 > 子目录（如 `crud/`、`realtime/`），不要按抽象类型拆。
 
@@ -57,7 +57,7 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 **列表页壳**：22 个表格页全部走壳——20 个用 `useCrud` + `UseCrudView`（其中 9 个 `readonly`），2 个树形页用 `useTreeCrud` + `TreeCrudView`；没有手写表格。
 
 两个壳**只保留各自不同的部分**（表格主体、数据源、工具栏差异）；其余共享：
-`common/components/crudShell/` 下的 `SearchCard`（搜索区）、`TableColumns`（生成列，会把页面的 `#cell-<prop>` 透传下去）、`FormDialog`（新增/修改弹窗，**内置重复提交与过期提交保护**）；逻辑侧用 `useCrudDialog`（弹窗状态/会话号/提交守卫/删除确认）、`useCrudShellView`（列偏好 / `cell-*` 插槽转发 / 冷启动判定）与 `common/composables/crud-types.ts`（共享 option 字段 `BaseCrudOptions`、`CrudShellPropsBase`）。**加公共 prop 或改提交行为时改这些共享件，别只改一个壳。**
+`common/components/crudShell/` 下的 `SearchCard`（搜索区）、`TableColumns`（生成列，会把页面的 `#cell-<prop>` 透传下去）、`FormDialog`（新增/修改弹窗，**内置重复提交与过期提交保护**；`submitDisabled` 只挡提交、`formDisabled` 连输入一起禁）；逻辑侧用 `useCrudDialog`（弹窗状态/会话号/提交守卫/删除确认）、`useCrudShellView`（列偏好 / `cell-*` 插槽转发 / 冷启动判定）与 `common/composables/crud-types.ts`（共享 option 字段 `BaseCrudOptions`、`CrudShellPropsBase`）。**加公共 prop 或改提交行为时改这些共享件，别只改一个壳。**
 
 页面只提供 `pageApi`、表单字段与 `columns`；分页/搜索/弹窗/批量删除/列渲染由壳负责。
 
@@ -81,9 +81,25 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 
 弹窗状态、会话号、提交守卫、删除确认都在 `common/composables/useCrudDialog.ts`；两个壳只保留自己不同的部分（分页 / 树 / parentRow / 批量删除）。
 
+**提交锁按会话划分**（`FormDialog` 的 `lockedSession` + `useCrudDialog` 的 `submittingSession`）：同一个会话内连点只发一次请求；**会话切换后新弹窗不再继承旧请求的 loading，也不被旧请求阻塞**。两把锁都只在"锁还是自己这个会话"时才释放——否则旧请求收尾会把新会话的锁清掉。见 `tests/crud-dialog-lock.spec.ts`。
+
 **不要自己再造会话计数器**，用记录 ID 判断也不够（同一条记录会被重新打开）。这套保护见 `tests/crud-dialog-session.spec.ts`。
 
 **懒加载依赖**：需要「初次用时才拉、并发只发一次、失败可重试」的数据（菜单树、部门树、用户列表…）统一用 `common/composables/useLazyResource.ts` 的 `createLazyLoader`，不要手写 `let loaded` + `inflight` 那一套。需要等渲染的场景（ElTree 的 `setChecked`）把 `await nextTick()` 放进 loader 里，这样 `ensure()` 返回时节点已存在。
+
+**编辑弹窗的关联数据回填**：角色/岗位/通知都需要「取依赖 → 应用历史关联 ID → 就绪后才能保存」，统一用 `common/composables/useEditHydration.ts`：
+
+- `register(key, task)` 登记步骤，**全部成功才算 `ready`**——不要让某个分支自己把就绪标志置真（历史上就是这样把空权限提交上去的）；
+- 步骤里的 `isCurrent()` 同时校验「未被新触发取代 + 会话未变 + 弹窗仍开」，**每次 `await` 之后都要重新判**；
+- 抛错或返回 `false` 记为失败，页面用 `hydration.error` 显示提示条并调 `hydration.retry()`；
+- **`retry()` 补跑所有「未确认」的步骤**：失败的和从未执行的（状态 `skipped`）都算，按登记顺序**串行**执行，前一步失败即停；**已成功（`ok`）的步骤不重跑**——否则详情步骤会把服务端数据重新覆盖到表单，用户重试前编辑的内容会丢；
+- 依赖变化只需重跑某一步时用 `restart(key)`（如角色切换数据范围），期间 `ready` 自动回落；
+- 由别的步骤顺带完成、不需在打开时单独跑的步骤用 `register(key, task, { runOnStart: false })`（如通知的发布范围选项）：打开时状态为 `skipped`（不阻塞就绪但不代表执行过），`retry()` 会真正补跑它；
+- 页面里只为编辑拦截提交：`:submit-disabled="!hydration.ready && isEditing"`，新增不受影响；
+- **每个步骤只重置自己负责的数据**：历史 bug 是「菜单」步骤顺手清了部门树勾选，重试菜单时把已回填的部门范围抹掉，保存即提交空 `deptIds`（后端先删后插 = 清空原权限）；
+- 回填会整体覆盖表单的页面（如通知详情）要同时传 `:form-disabled="!hydration.ready && isEditing"`，否则用户先打的字会被迟到的响应冲掉。
+
+见 `tests/edit-hydration.spec.ts` 与 `tests/concurrency/crud-shell-timing.spec.ts`。
 
 **请求层**：`request.ts` 统一注入 token、401 并发去重（`handleUnauthorized` + `resetUnauthorizedHandling`）、默认超时 10s（长任务用 `LONG_REQUEST_TIMEOUT=60s`）、错误文案本地化。业务码非 200 直接 reject。
 
@@ -138,7 +154,7 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | `pnpm dev`                      | 开发服务器（`.env.dev`）                                                                                                 |
 | `pnpm typecheck`                | `vue-tsc --noEmit`                                                                                                       |
-| `pnpm test:unit`                | vitest 全量，42 文件 / 367 用例（约 6s）；`test:unit:watch` 为监听模式                                                   |
+| `pnpm test:unit`                | vitest 全量，44 文件 / 387 用例（约 6s）；`test:unit:watch` 为监听模式                                                   |
 | `pnpm build`                    | **已串联** `typecheck → test:unit → vite build`，任一失败即中断                                                          |
 | `pnpm build:dev` / `build:test` | 只打包，不跑测试                                                                                                         |
 | `pnpm format`                   | Prettier 格式化 `src/`                                                                                                   |

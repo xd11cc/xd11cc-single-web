@@ -53,7 +53,13 @@ export function useCrudDialog<T = any>(options: UseCrudDialogOptions) {
   const dialogVisible = ref(false)
   const formData = ref<any>(options.defaultForm?.() || {})
   const dialogSessionId = ref(0)
-  const submitLoading = ref(false)
+  /**
+   * 正在提交的会话号（null 表示空闲）。
+   *
+   * 与会话号绑定而不是用布尔值：会话切换后新会话的提交不应被上一个会话挡住
+   * （UI 层的锁在 FormDialog，这里挡的是脚本里直接调用 handleSubmit 的重复提交）。
+   */
+  const submittingSession = ref<number | null>(null)
   /** 各壳的附加状态（树形壳用来挂 parentRow），不参与共享逻辑 */
   const extraRow = ref<T | null>(null)
 
@@ -114,14 +120,14 @@ export function useCrudDialog<T = any>(options: UseCrudDialogOptions) {
     hooks: UseCrudDialogSubmitHooks = {},
   ): Promise<ResponseVO<any> | void> {
     const { isDisposed, onClosed, afterSuccess } = hooks
-    // 提交进行中：避免上一次请求没回来时重复发起
-    if (submitLoading.value) return
     if (isDisposed?.()) return
     const api = isAdd ? options.addApi : options.updateApi
     if (!api) return
 
     const sessionIdAtSubmit = dialogSessionId.value
-    submitLoading.value = true
+    // 只挡「同一会话」的重复提交；换了会话就是新的一次提交
+    if (submittingSession.value === sessionIdAtSubmit) return
+    submittingSession.value = sessionIdAtSubmit
     try {
       const payload = options.transformPayload?.(formData.value, isAdd) ?? { ...formData.value }
       const res = await api(payload)
@@ -138,7 +144,8 @@ export function useCrudDialog<T = any>(options: UseCrudDialogOptions) {
       // request 层已提示错误；这里收口 rejection，避免事件处理器留下未处理异常
       return
     } finally {
-      submitLoading.value = false
+      // 只解自己这把锁：期间可能已切到新会话
+      if (submittingSession.value === sessionIdAtSubmit) submittingSession.value = null
     }
   }
 
@@ -174,7 +181,7 @@ export function useCrudDialog<T = any>(options: UseCrudDialogOptions) {
   return {
     dialogVisible,
     formData,
-    submitLoading,
+    submittingSession,
     sessionId,
     isCurrentSession,
     /** 各壳的附加行（树形壳用 parentRow） */

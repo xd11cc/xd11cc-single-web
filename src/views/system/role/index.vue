@@ -5,19 +5,19 @@
     :formRules="formRules"
     :add-title="$t('system.role.dialogs.add')"
     :edit-title="$t('system.role.dialogs.edit')"
-    :submit-disabled="!permsLoaded && isEditing"
+    :submit-disabled="!hydration.ready.value && isEditing"
   >
     <!-- 权限回填失败时的弹窗内提示（仅编辑；新增不受影响） -->
     <template #dialog-banner>
       <el-alert
-        v-if="isEditing && permsError"
+        v-if="isEditing && hydration.error.value"
         type="warning"
         :closable="false"
         show-icon
         class="perms-alert"
       >
         <span>{{ $t('system.role.messages.permsLoadFailed') }}</span>
-        <el-button link type="primary" size="small" @click="retryPermissionLoad">
+        <el-button link type="primary" size="small" @click="hydration.retry()">
           {{ $t('common.retry') }}
         </el-button>
       </el-alert>
@@ -213,6 +213,7 @@ import type { FormRules, TreeInstance } from 'element-plus'
 import UseCrudView from '@/common/components/useCrud/index.vue'
 import { useCrud } from '@/common/composables/useCrud'
 import { createLazyLoader } from '@/common/composables/useLazyResource'
+import { useEditHydration } from '@/common/composables/useEditHydration'
 import { useDict } from '@/common/composables/useDict'
 import {
   rolePage,
@@ -257,10 +258,9 @@ const crud = useCrud<SystemRoleQueryVO, SystemRoleVO>({
   removeConfirmText: (row) => $t('system.role.messages.deleteConfirm', { roleName: row?.roleName }),
   batchRemoveConfirmText: (count) => $t('system.role.messages.batchDeleteConfirm', { count }),
   // 编辑时回填菜单/部门勾选、补 dataScope 默认值（模块特有逻辑）
-  onDialogOpen: ({ isAdd, form, row, session }) => {
+  onDialogOpen: ({ isAdd, form, session }) => {
     if (!isAdd && !form.dataScope) form.dataScope = '1'
-    deptPermsLoaded.value = form.dataScope !== '5'
-    void loadMenuPermissions(session, isAdd ? undefined : row?.id)
+    hydration.start(session)
   },
   // 新增不需要历史权限：菜单树没加载好也可以先建角色，稍后到编辑页补权限。
   // 只有编辑才会「先删后插」覆盖原权限，因此那里必须拦住。
@@ -268,7 +268,7 @@ const crud = useCrud<SystemRoleQueryVO, SystemRoleVO>({
   updateApi: (data) => {
     // 边界兜底：权限没回填完就提交，后端「先删后插」会把原权限清空。
     // 按钮已禁用，这里再挡一道。
-    if (!permsLoaded.value) {
+    if (!hydration.ready.value) {
       ElMessage.warning($t('system.role.messages.permsNotReady'))
       return Promise.reject(new Error('permissions not loaded'))
     }
@@ -298,114 +298,66 @@ const crud = useCrud<SystemRoleQueryVO, SystemRoleVO>({
   },
 })
 
-/**
- * 回填菜单权限。
- * 独立成函数是因为「加载失败」时用户需要能重试，而不是关掉弹窗重开。
- */
-async function loadMenuPermissions(session: number, roleId: number | undefined) {
-  const isCurrent = () => crud.state.isCurrentSession(session)
-  menuPermsLoaded.value = false
-  permsError.value = false
-  await nextTick()
-  if (!isCurrent()) return
-  menuTreeRef.value?.setCheckedKeys([])
-  deptTreeRef.value?.setCheckedKeys([])
-
-  const menuTreeReady = await menuTreeLoader.ensure()
-  if (!isCurrent()) return
-  if (!menuTreeReady) {
-    permsError.value = true
-    return
-  }
-
-  // 新增没有历史权限要回填
-  if (!roleId) {
-    menuPermsLoaded.value = true
-    return
-  }
-
-  try {
-    const { data: menuIds } = await getRoleMenuIds(roleId)
-    if (!isCurrent()) return
-    await nextTick()
-    if (!isCurrent()) return
-    if (!applyTreeCheckedIds(menuTreeRef.value, menuTreeData.value, menuIds)) {
-      permsError.value = true
-      return
-    }
-    menuPermsLoaded.value = true
-  } catch {
-    // 失败时保持禁止提交，并让提示条给出重试入口
-    permsError.value = true
-  }
-}
-
 /** 是否在编辑已有记录：只有编辑才会覆盖原权限，因此只有它需要强制等待回填 */
 const isEditing = computed(() => crud.state.formData.value?.id != null)
 
-/** 回填自定义范围下的部门权限（同样要可重试） */
-async function loadDeptPermissions(session: number, roleId: number | undefined, requestId: number) {
-  const isCurrent = () =>
-    requestId === deptPermissionRequestId &&
-    crud.state.dialogVisible &&
-    crud.state.isCurrentSession(session) &&
-    crud.state.formData.value.dataScope === '5'
+/**
+ * 关联数据回填闸门：菜单权限必跑，部门权限仅在「自定义范围」下跑。
+ *
+ * 两个步骤都成功才算就绪——任何一个分支单独置真都会让保存带着空关联提交，
+ * 而后端是「先删后插」，等于把原权限清空。
+ */
+const hydration = useEditHydration({
+  isCurrentSession: (session) => crud.state.isCurrentSession(session),
+  isVisible: () => crud.state.dialogVisible.value,
+  resetSources: () => {
+    menuTreeLoader.reset()
+    deptTreeLoader.reset()
+  },
+})
 
+hydration.register('menu', async ({ isCurrent }) => {
+  const form = crud.state.formData.value
   await nextTick()
-  if (!isCurrent()) return
-  const treeReady = await deptTreeLoader.ensure()
-  if (!isCurrent()) return
-  if (!treeReady) {
-    permsError.value = true
-    return
-  }
-  if (!roleId) {
-    // 新增角色没有历史部门范围要回填，确认树可用即可
-    deptPermsLoaded.value = true
-    return
-  }
+  if (!isCurrent()) return false
+  // 只重置自己负责的菜单树：部门勾选由 dept 步骤管理。
+  // 之前这里连部门树一起清，重试「菜单」时会把已回填的部门范围抹掉，
+  // 保存就会提交空 deptIds，后端「先删后插」等于清空原部门权限。
+  menuTreeRef.value?.setCheckedKeys([])
+
+  if (!(await menuTreeLoader.ensure())) return false
+  if (!isCurrent()) return false
+
+  // 新增没有历史权限要回填，确认树可用即可
+  const roleId = form.id as number | undefined
+  if (!roleId) return true
+
+  const { data: menuIds } = await getRoleMenuIds(roleId)
+  if (!isCurrent()) return false
+  await nextTick()
+  if (!isCurrent()) return false
+  return applyTreeCheckedIds(menuTreeRef.value, menuTreeData.value, menuIds)
+})
+
+hydration.register('dept', async ({ isCurrent }) => {
+  const form = crud.state.formData.value
+  // 只有「自定义」范围才需要部门权限；其余情况视为已满足
+  if (form.dataScope !== '5') return true
+
+  const stillCustom = () => isCurrent() && crud.state.formData.value.dataScope === '5'
+  await nextTick()
+  if (!stillCustom()) return false
+  if (!(await deptTreeLoader.ensure())) return false
+  if (!stillCustom()) return false
+
+  const roleId = form.id as number | undefined
+  if (!roleId) return true
 
   deptTreeRef.value?.setCheckedKeys([])
-  try {
-    const { data } = await getRoleDeptIds(roleId)
-    if (!isCurrent()) return
-    if (!applyTreeCheckedIds(deptTreeRef.value, deptTreeData.value, data)) {
-      permsError.value = true
-      return
-    }
-    deptPermsLoaded.value = true
-  } catch {
-    permsError.value = true
-  }
-}
-
-/** 用户点「重试」：清掉加载器缓存，按当前弹窗会话重新回填菜单与部门 */
-function retryPermissionLoad() {
-  permsError.value = false
-  menuTreeLoader.reset()
-  deptTreeLoader.reset()
-  const session = crud.state.sessionId
-  const scope = crud.state.formData.value.dataScope
-  const roleId = crud.state.formData.value.id as number | undefined
-  deptPermsLoaded.value = scope !== '5'
-  void loadMenuPermissions(session, roleId)
-  if (scope === '5') {
-    const requestId = ++deptPermissionRequestId
-    void loadDeptPermissions(session, roleId, requestId)
-  }
-}
-
-/**
- * 权限回填的两个独立就绪位。
- *
- * 只用一个标志是不够的：部门 watcher 单独把标志置为就绪时，菜单请求可能还在路上，
- * 那时保存会提交空 menuIds，而后端是「先删后插」——等于把权限清空。
- */
-const menuPermsLoaded = ref(false)
-const deptPermsLoaded = ref(false)
-const permsLoaded = computed(() => menuPermsLoaded.value && deptPermsLoaded.value)
-/** 权限回填是否失败（编辑时用它给出「为什么不能保存」的持久提示） */
-const permsError = ref(false)
+  const { data } = await getRoleDeptIds(roleId)
+  if (!stillCustom()) return false
+  return applyTreeCheckedIds(deptTreeRef.value, deptTreeData.value, data)
+})
 
 // ─── 依赖数据（菜单树 / 部门树） ──────────────────────────
 const menuTreeData = ref<SystemMenuTreeVO[]>([])
@@ -461,25 +413,12 @@ function applyTreeCheckedIds(
   return true
 }
 
-// 同一弹窗内切换数据范围也会使旧请求过期，不能仅按 roleId 判断。
-let deptPermissionRequestId = 0
+// 同一弹窗内切换数据范围时只重跑部门这一步；期间 ready 自动回落，避免用旧勾选提交。
 watch(
-  [
-    () => crud.state.formData.value.dataScope,
-    () => crud.state.sessionId,
-    () => crud.state.dialogVisible,
-  ],
-  ([scope, session, dialogVisible]) => {
-    const requestId = ++deptPermissionRequestId
-    if (!dialogVisible) return
-    if (scope !== '5') {
-      deptPermsLoaded.value = true
-      return
-    }
-
-    // 部门树或权限 ID 尚未成功加载并回填前禁止提交。
-    deptPermsLoaded.value = false
-    void loadDeptPermissions(session, crud.state.formData.value.id as number | undefined, requestId)
+  () => crud.state.formData.value.dataScope,
+  () => {
+    if (!crud.state.dialogVisible.value) return
+    hydration.restart('dept')
   },
   { flush: 'post' },
 )

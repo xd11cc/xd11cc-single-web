@@ -119,7 +119,36 @@ describe('useCrudDialog', () => {
     wrapper.unmount()
   })
 
-  it('提交进行中不会重复发起', async () => {
+  it('旧会话的提交在途时，新会话仍可提交（按会话串行）', async () => {
+    const first = deferred<{ code: number; msg: string; data: number }>()
+    const second = deferred<{ code: number; msg: string; data: number }>()
+    const addApi = vi
+      .fn<() => Promise<{ code: number; msg: string; data: number }>>()
+      .mockReturnValueOnce(first.promise)
+      .mockReturnValueOnce(second.promise)
+    let dialog!: ReturnType<typeof useCrudDialog>
+    const wrapper = withSetup(() => {
+      dialog = useCrudDialog({ addApi })
+    })
+    await flushPromises()
+
+    dialog.openDialog({ name: 'A' }, true)
+    const submittingA = dialog.submit(true)
+
+    // 会话 A 还没回来，用户关掉并打开 B
+    dialog.closeDialog()
+    dialog.openDialog({ name: 'B' }, true)
+    const submittingB = dialog.submit(true)
+
+    expect(addApi, '新会话被上一个会话的锁挡住了').toHaveBeenCalledTimes(2)
+
+    first.resolve({ code: 200, msg: 'ok', data: 1 })
+    second.resolve({ code: 200, msg: 'ok', data: 2 })
+    await Promise.all([submittingA, submittingB])
+    wrapper.unmount()
+  })
+
+  it('同一会话内提交进行中不会重复发起', async () => {
     const pending = deferred<{ code: number; msg: string; data: number }>()
     const addApi = vi.fn(() => pending.promise)
     let dialog!: ReturnType<typeof useCrudDialog>
