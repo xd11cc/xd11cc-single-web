@@ -34,7 +34,10 @@ export function useWebSocket() {
       wsClient = null
     }
 
-    wsClient = new WebSocketClient(
+    // 用局部引用构造，回调里据此校验「事件来自当前客户端」，
+    // 避免旧实例的迟到事件改写新连接的状态
+    let client!: WebSocketClient
+    client = new WebSocketClient(
       {
         url: BASE_WS_URL,
         heartbeatInterval: 25000,
@@ -44,9 +47,11 @@ export function useWebSocket() {
       },
       resolvedToken,
       (newStatus) => {
+        if (wsClient !== client) return
         status.value = newStatus
       },
     )
+    wsClient = client
 
     // 全局消息监听（记录最后一条消息）
     wsClient.on('*', (message: WsPushMessage) => {

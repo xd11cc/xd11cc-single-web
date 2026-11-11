@@ -173,6 +173,9 @@ export class WebSocketClient {
       }
 
       this.ws.onclose = (event) => {
+        // 手动关闭时 close() 已经上报过 DISCONNECTED；浏览器可能在新连接建立后
+        // 才派发这个事件，此处若再写状态就会把新连接覆盖成断开。
+        if (this.isManualClose) return
         console.warn(`[WebSocket] 连接关闭：${event.code}`)
         this.clearAllTimers()
         this.setStatus(WsStatus.DISCONNECTED)
@@ -192,6 +195,7 @@ export class WebSocketClient {
       }
 
       this.ws.onerror = (error) => {
+        if (this.isManualClose) return
         console.error(`[WebSocket] 连接异常:`, error)
         this.setStatus(WsStatus.DISCONNECTED)
       }
@@ -320,6 +324,9 @@ export class WebSocketClient {
     }
     this.listeners.clear()
     this.setStatus(WsStatus.DISCONNECTED)
+    // 解绑状态回调：close 之后这个实例仍然可能收到浏览器的迟到事件，
+    // 保留回调就会继续写外部的共享状态（如把新连接标成断开）。
+    this.onStatusChange = undefined
   }
 
   /**

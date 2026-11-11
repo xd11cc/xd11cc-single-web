@@ -14,7 +14,7 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 | 状态 / 路由 | Pinia 3、vue-router 4（动态路由，后端下发菜单）                                   |
 | 国际化      | vue-i18n 11，`zh-CN` / `en-US` 双文件                                             |
 | 其他        | axios、echarts 6、bpmn-js 18（流程设计器）                                        |
-| 测试        | vitest 5 + @vue/test-utils + happy-dom，**387 用例 / 44 文件**                    |
+| 测试        | vitest 5 + @vue/test-utils + happy-dom，**390 用例 / 45 文件**                    |
 
 接口约定：前缀 `/xd11cc`，统一响应 `ResponseVO{ code, msg, data }`，分页 `PageData{ rows, total }`（定义在 `types/api.d.ts`）。
 
@@ -109,6 +109,8 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 
 **实时推送**：`webSocket.ts`（连接/心跳/指数退避/可见性恢复）→ `useWebSocket` → `useTodoQueue`（待办弹窗）、`useChat`（聊天）、Notify 组件。
 
+**重连时的旧连接事件**：`connect()` 会先 close 旧客户端再建新的，而浏览器的 close/error 事件是**异步派发**的，可能在新连接建立之后才到。若旧客户端照常写状态，就会把「已连接」覆盖成「已断开」。三道防线缺一不可：`close()` 之后 `onclose`/`onerror` 直接 return（手动关闭已上报过）、`close()` 解绑 `onStatusChange`、`useWebSocket` 的状态回调校验 `wsClient === client`。见 `tests/websocket-status.spec.ts`。
+
 **聊天会话**：聊天数据只驻留内存。`Chat` 随布局卸载时调用 `useChat.destroy()`，清空消息/联系人/未读/选中项/面板状态并解除监听；`refreshOnlineUsers` 用「会话版本 + 当前 userId」双重校验丢弃过期响应，避免换账号后读到上一个人的会话。
 
 **页面错误边界**：`usePageErrorBoundary(scope)`（`AppMain` 与 `layouts/index.vue` 共用）+ `utils/page-error.ts` 的 `shouldShowPageError`。**只有**资源/动态模块加载失败与 `setup`/`render` 自身抛错才整页兜底；接口失败、事件处理器里未捕获的 rejection 只打日志、页面保持可用。改这块前先看 `tests/page-error.spec.ts`。
@@ -154,7 +156,7 @@ Vue 3 + TypeScript 的后台管理系统前端，配套 Spring Boot 后端（不
 | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
 | `pnpm dev`                      | 开发服务器（`.env.dev`）                                                                                                 |
 | `pnpm typecheck`                | `vue-tsc --noEmit`                                                                                                       |
-| `pnpm test:unit`                | vitest 全量，44 文件 / 387 用例（约 6s）；`test:unit:watch` 为监听模式                                                   |
+| `pnpm test:unit`                | vitest 全量，45 文件 / 390 用例（约 6s）；`test:unit:watch` 为监听模式                                                   |
 | `pnpm build`                    | **已串联** `typecheck → test:unit → vite build`，任一失败即中断                                                          |
 | `pnpm build:dev` / `build:test` | 只打包，不跑测试                                                                                                         |
 | `pnpm format`                   | Prettier 格式化 `src/`                                                                                                   |
