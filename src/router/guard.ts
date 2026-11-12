@@ -7,6 +7,7 @@ import NProgress from 'nprogress'
 import { setRouteChange } from '@@/composables/useRouteListener'
 import { i18n } from '@/i18n'
 import { isChunkLoadError } from '@@/utils/page-error'
+import { isUnauthorizedError } from '@@/utils/unauthorized'
 
 NProgress.configure({ showSpinner: false })
 
@@ -118,7 +119,10 @@ export function registerNavigationGuard(router: Router) {
         userStore.resetToken()
       }
       console.error('Failed to load user permissions', error)
-      ElMessage.error(i18n.global.t('common.messages.routeGuardError'))
+      // 认证失效已由响应拦截器提示「登录已过期」并跳转，这里再弹一次就是重复
+      if (!isUnauthorizedError(error)) {
+        ElMessage.error(i18n.global.t('common.messages.routeGuardError'))
+      }
       return LOGIN_PATH
     }
   })

@@ -78,6 +78,7 @@ import request, {
   resetUnauthorizedHandling,
   LONG_REQUEST_TIMEOUT,
 } from '@@/utils/request'
+import { isUnauthorizedError } from '@@/utils/unauthorized'
 
 const requestInterceptor = () => h.requestHandlers[0].ok
 const responseOk = () => h.responseHandlers[0].ok
@@ -219,5 +220,68 @@ describe('request 封装', () => {
   it('默认导出可被调用（get/post 都走它）', async () => {
     await request({ url: '/x', method: 'GET' } as any)
     expect(h.instanceCalls.at(-1)).toMatchObject({ url: '/x', method: 'GET' })
+  })
+
+  // ==================== 后端 msg 优先（本次改动）====================
+
+  it('HTTP 403 使用后端 msg，而不是泛化的状态码文案', async () => {
+    const error = {
+      response: { status: 403, data: { code: 1001011, msg: '没有操作权限' } },
+    }
+
+    await expect(responseErr()(error)).rejects.toBe(error)
+
+    expect(errorMessage).toHaveBeenCalledWith('没有操作权限')
+    expect(errorMessage).not.toHaveBeenCalledWith('common.network.forbidden')
+  })
+
+  it('HTTP 400 同样透出后端的字段级报错', async () => {
+    const error = {
+      response: { status: 400, data: { code: 400, msg: '请求参数有误：用户名不能为空' } },
+    }
+
+    await expect(responseErr()(error)).rejects.toBe(error)
+
+    expect(errorMessage).toHaveBeenCalledWith('请求参数有误：用户名不能为空')
+  })
+
+  it('后端 500 没有 ResponseVO 信封时回退到本地化文案', async () => {
+    // Spring 默认错误页是 {timestamp,status,error,path}，没有 msg 字段
+    const error = {
+      response: { status: 500, data: { status: 500, error: 'Internal Server Error' } },
+    }
+
+    await expect(responseErr()(error)).rejects.toBe(error)
+
+    expect(errorMessage).toHaveBeenCalledWith('common.network.serverError')
+  })
+
+  // ==================== 401 标记（供路由守卫去重）====================
+
+  it('HTTP 401 会被标记为已处理，守卫据此不再重复提示', async () => {
+    const error: any = { response: { status: 401, data: { code: 401, msg: '未授权' } } }
+
+    await expect(responseErr()(error)).rejects.toBe(error)
+
+    expect(isUnauthorizedError(error)).toBe(true)
+    // 401 只弹 warning，不弹 error
+    expect(warningMessage).toHaveBeenCalledTimes(1)
+    expect(errorMessage).not.toHaveBeenCalled()
+  })
+
+  it('业务码 401 的 reject 值同样带已处理标记', async () => {
+    const rejected = await responseOk()({ data: { code: 401, msg: 'expired' } }).catch(
+      (e: unknown) => e,
+    )
+
+    expect(isUnauthorizedError(rejected)).toBe(true)
+  })
+
+  it('非 401 的失败不会被误判为已处理（守卫仍会提示）', async () => {
+    const error: any = { response: { status: 500, data: { msg: 'boom' } } }
+
+    await expect(responseErr()(error)).rejects.toBe(error)
+
+    expect(isUnauthorizedError(error)).toBe(false)
   })
 })

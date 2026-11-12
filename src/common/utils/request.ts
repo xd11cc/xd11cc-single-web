@@ -4,6 +4,9 @@ import { getToken } from '@@/utils/cache/cookies'
 import { router } from '@/router'
 import { useUserStore } from '@/pinia/stores/user'
 import { i18n } from '@/i18n'
+// 认证失效标记抽到独立模块：路由守卫要用它，而守卫直接引本文件会形成
+// router → guard → request → router 的循环依赖。
+import { markUnauthorizedHandled } from '@@/utils/unauthorized'
 
 // 创建axios实例
 // 默认 10s：3s 对跨公网 HTTPS + 慢 SQL 的后台接口过短，易误报超时。
@@ -96,6 +99,26 @@ function getLocalizedErrorMessage(status?: number) {
   return i18n.global.t(keyMap[status || 0] || 'common.network.unknown')
 }
 
+/**
+ * 错误提示文案：优先用后端 ResponseVO 的 msg。
+ *
+ * 后端在 400/403 等场景会给出具体原因（如「没有操作权限」），
+ * 只用状态码映射会把它们压成一句泛化提示。
+ */
+function resolveErrorMessage(error: unknown, status?: number): string {
+  const data = (error as { response?: { data?: unknown } } | null)?.response?.data
+  if (
+    data &&
+    typeof data === 'object' &&
+    !(data instanceof Blob) &&
+    !(data instanceof ArrayBuffer)
+  ) {
+    const msg = (data as { msg?: unknown }).msg
+    if (typeof msg === 'string' && msg.trim()) return msg
+  }
+  return getLocalizedErrorMessage(status)
+}
+
 // 响应拦截器
 service.interceptors.response.use(
   (response) => {
@@ -111,7 +134,7 @@ service.interceptors.response.use(
         case 401:
           console.error('未授权或者token过期')
           handleUnauthorized(tokenOfRequest(response.config))
-          return Promise.reject(new Error(errorMsg))
+          return Promise.reject(markUnauthorizedHandled(new Error(errorMsg)))
         case 403:
           console.error('未授权')
           break
@@ -143,6 +166,8 @@ service.interceptors.response.use(
         break
       case 401:
         console.error('未授权或者token过期')
+        // 打上标记，让路由守卫等调用方知道这次认证失效已经提示过、跳转过
+        markUnauthorizedHandled(error)
         handleUnauthorized(tokenOfRequest(error.config))
         break
       case 403:
@@ -156,7 +181,7 @@ service.interceptors.response.use(
         break
     }
     if (status && status !== 401) {
-      ElMessage.error(getLocalizedErrorMessage(status))
+      ElMessage.error(resolveErrorMessage(error, status))
     } else if (!status && error.code !== 'ECONNABORTED') {
       ElMessage.error(getLocalizedErrorMessage())
     }
